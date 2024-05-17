@@ -1,4 +1,4 @@
-package com.sadna.sadnamarket.domain.api;
+package com.sadna.sadnamarket.api;
 
 public class Response {
     private String dataJson;
@@ -19,5 +19,13 @@ public class Response {
 
     public String getDataJson() {
         return this.dataJson;
+    }
+
+    public boolean getError() {
+        return this.error;
+    }
+
+    public String getErrorString() {
+        return this.errorString;
     }
 }

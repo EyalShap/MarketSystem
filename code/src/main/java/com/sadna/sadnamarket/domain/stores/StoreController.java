@@ -1,9 +1,5 @@
 package com.sadna.sadnamarket.domain.stores;
 
-import com.sadna.sadnamarket.domain.api.Response;
-import com.sadna.sadnamarket.domain.users.UserController;
-import org.apache.catalina.User;
-
 import java.util.HashMap;
 
 public class StoreController {
@@ -25,8 +21,10 @@ public class StoreController {
 
     // returns id of newly created store
     public int createStore(int founderId, String storeName) {
-        // if store with storeName already exists, throw an exception
-        if(storeExists(storeName))
+        // if store already exists, throw an exception
+        if(storeIdExists(nextStoreId))
+            throw new IllegalArgumentException(String.format("A store with the id \"%d\" already exists.", nextStoreId));
+        if(storeNameExists(storeName))
             throw new IllegalArgumentException(String.format("A store with the name \"%s\" already exists.", storeName));
 
         Store createdStore = new Store(nextStoreId, storeName, founderId);
@@ -35,7 +33,11 @@ public class StoreController {
         return nextStoreId - 1;
     }
 
-    private boolean storeExists(String storeName) {
+    private boolean storeIdExists(int storeId) {
+        return stores.containsKey(storeId);
+    }
+
+    private boolean storeNameExists(String storeName) {
         for(Store store : stores.values()) {
             if(store.getStoreName().equals(storeName)) {
                 return true;
