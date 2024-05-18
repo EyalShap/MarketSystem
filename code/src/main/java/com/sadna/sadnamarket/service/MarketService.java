@@ -36,14 +36,19 @@ public class MarketService {
 
     // returns id of the created store
     public Response createStore(int founderId, String storeName) {
-        //check if the user can create a new store
-        if(!userController.canCreateStore(founderId)) {
-            return Response.createResponse(true, String.format("User with id %d can not create a new store.", founderId));
-        }
-
         try {
             int newStoreId = storeController.createStore(founderId, storeName); // will throw an exception if the store already exists
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response addProductToStore(int userId, int storeId, String productName) {
+        try {
+            int newProductId = storeController.addProductToStore(userId, storeId, productName);
+            return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
         catch (Exception e) {
             return Response.createResponse(true, e.getMessage());

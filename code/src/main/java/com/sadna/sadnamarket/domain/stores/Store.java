@@ -1,12 +1,14 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Store {
     private int storeId;
     private String storeName;
     private int founderId;
+    private List<Integer> productIds;
     private List<Integer> ownerIds;
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
@@ -15,6 +17,7 @@ public class Store {
         this.storeId = storeId;
         this.storeName = storeName;
         this.founderId = founderId;
+        this.productIds = new ArrayList<>();
         this.ownerIds = new ArrayList<>();
         this.ownerIds.add(founderId);
         this.buyPolicyIds = new ArrayList<>();
@@ -32,5 +35,12 @@ public class Store {
 
     public int getFounderId() {
         return this.founderId;
+    }
+
+    public void addProduct(int productId) {
+        if(productIds.contains(productId))
+            throw new IllegalArgumentException(String.format("A product with id %d already exists.", productId));
+
+        productIds.add(productId);
     }
 }

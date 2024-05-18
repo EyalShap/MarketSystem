@@ -26,4 +26,9 @@ public class UserController {
         // Dana added this proxy function for the store creation use case
         return true;
     }
+
+    public boolean canAddProductsToStore(int userId, int storeId) {
+        // Dana added this proxy function for the stock management use case
+        return true;
+    }
 }

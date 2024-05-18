@@ -1,5 +1,8 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.sadna.sadnamarket.domain.products.ProductController;
+import com.sadna.sadnamarket.domain.users.UserController;
+
 import java.util.HashMap;
 
 public class StoreController {
@@ -21,7 +24,8 @@ public class StoreController {
 
     // returns id of newly created store
     public int createStore(int founderId, String storeName) {
-        // if store already exists, throw an exception
+        if(!UserController.getInstance().canCreateStore(founderId))
+            throw new IllegalArgumentException(String.format("User with id %d can not create a new store.", founderId));
         if(storeIdExists(nextStoreId))
             throw new IllegalArgumentException(String.format("A store with the id \"%d\" already exists.", nextStoreId));
         if(storeNameExists(storeName))
@@ -44,5 +48,16 @@ public class StoreController {
             }
         }
         return false;
+    }
+
+    public int addProductToStore(int userId, int storeId, String productName) {
+        if(!UserController.getInstance().canAddProductsToStore(userId, storeId))
+            throw new IllegalArgumentException(String.format("User with id %d can not add a product to store with id %d.", userId, storeId));
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+
+        int newProductId = ProductController.getInstance().addProduct(storeId, productName);
+        stores.get(storeId).addProduct(newProductId);
+        return newProductId;
     }
 }
