@@ -5,4 +5,12 @@ package com.sadna.sadnamarket.domain.products;
 //you may delete these comments when beggining work
 //have fun :)
 public class ProductController {
+    private static ProductController instance;
+
+    public static ProductController getInstance() {
+        if (instance == null) {
+            instance = new ProductController();
+        }
+        return instance;
+    }
 }
