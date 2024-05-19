@@ -6,6 +6,7 @@ import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.stores.StoreController;
 import com.sadna.sadnamarket.domain.users.ManagerPermission;
 import com.sadna.sadnamarket.domain.users.UserController;
+import com.sadna.sadnamarket.domain.users.UserDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -106,6 +107,36 @@ public class MarketService {
         try {
             boolean storeClosed = storeController.closeStore(userId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(storeClosed));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getOwners(int userId, int storeId) {
+        try {
+            List<UserDTO> owners = storeController.getOwners(userId, storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(owners));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getManagers(int userId, int storeId) {
+        try {
+            List<UserDTO> managers = storeController.getManagers(userId, storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(managers));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getSellers(int userId, int storeId) {
+        try {
+            List<UserDTO> sellers = storeController.getSellers(userId, storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(sellers));
         }
         catch (Exception e) {
             return Response.createResponse(true, e.getMessage());

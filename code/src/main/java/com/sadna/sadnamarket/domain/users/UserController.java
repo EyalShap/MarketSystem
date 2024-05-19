@@ -49,6 +49,33 @@ public class UserController {
         // Dana added this proxy function for the close store use case
     }
 
+    public UserDTO getUser(int userId) {
+        // Dana added this proxy function for the info request use case
+        return new UserDTO();
+    }
+
+    public void sendStoreOwnerRequest(int currentOwnerId, int newOwnerId, int storeId) {
+        // Dana added this proxy function for the add store owner use case
+        // Assuming this function checks if currentOwnerId can assign newOwnerId as owner to storeId
+    }
+
+    public void sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, List<ManagerPermission> permissions) {
+        // Dana added this proxy function for the add store manager use case
+        // Assuming this function checks if currentOwnerId can assign newManagerId as manager to storeId
+    }
+
+    public void acceptStoreOwnerRequest(int newOwnerId, int storeId) {
+        // Dana added this proxy function for the add store owner use case
+        // This function should add all of the roles and stuff
+        StoreController.getInstance().addStoreOwner(newOwnerId, storeId);
+    }
+
+    public void acceptStoreManagerRequest(int newManagerId, int storeId, List<ManagerPermission> permissions) {
+        // Dana added this proxy function for the add store owner use case
+        // This function should add all of the roles and stuff
+        StoreController.getInstance().addStoreManager(newManagerId, storeId);
+    }
+
     /*
     public void addStoreOwnerRole(int currentOwnerId, int newOwnerId, int storeId) {
         // Dana added this proxy function for adding a new owner use case

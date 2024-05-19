@@ -1,9 +1,12 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.domain.products.ProductController;
+import com.sadna.sadnamarket.domain.users.ManagerPermission;
 import com.sadna.sadnamarket.domain.users.UserController;
+import com.sadna.sadnamarket.domain.users.UserDTO;
 import org.apache.catalina.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -92,16 +95,39 @@ public class StoreController {
         return productId;
     }
 
-    /*
-    public int addStoreOwner(int currentOwnerId, int newOwnerId, int storeId) {
-        stores.get(storeId).addStoreOwner(currentOwnerId, newOwnerId);
-        return newOwnerId;
+    public void sendStoreOwnerRequest(int currentOwnerId, int newOwnerId, int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!stores.get(storeId).isStoreOwner(currentOwnerId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d.", currentOwnerId, storeId));
+        if(stores.get(storeId).isStoreOwner(newOwnerId))
+            throw new IllegalArgumentException(String.format("A user with id %d is already an owner of store %d.", newOwnerId, storeId));
+
+        UserController.getInstance().sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
     }
 
-    public int addStoreManager(int currentOwnerId, int newManagerId, int storeId) {
-        stores.get(storeId).addStoreManager(currentOwnerId, newManagerId);
-        return newManagerId;
-    }*/
+    public void sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, List<ManagerPermission> permissions) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!stores.get(storeId).isStoreManager(currentOwnerId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d.", currentOwnerId, storeId));
+        if(stores.get(storeId).isStoreManager(newManagerId))
+            throw new IllegalArgumentException(String.format("A user with id %d is already a manager of store %d.", newManagerId, storeId));
+
+        UserController.getInstance().sendStoreOwnerRequest(currentOwnerId, newManagerId, storeId);
+    }
+
+    public void addStoreOwner(int newOwnerId, int storeId) {
+        stores.get(storeId).addStoreOwner(newOwnerId);
+    }
+
+    public void addStoreManager(int newManagerId, int storeId) {
+        stores.get(storeId).addStoreManager(newManagerId);
+    }
 
     public boolean closeStore(int userId, int storeId) {
         if(!storeIdExists(storeId))
@@ -125,5 +151,55 @@ public class StoreController {
     private boolean isStoreActive(int storeId) {
         return stores.get(storeId).getIsActive();
     }
+
+    public List<UserDTO> getOwners(int userId, int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+        List<Integer> ownerIds = stores.get(storeId).getOwnerIds();
+        List<UserDTO> owners = new ArrayList<>();
+        for(int ownerId : ownerIds) {
+            owners.add(UserController.getInstance().getUser(ownerId));
+        }
+        return owners;
+    }
+
+    public List<UserDTO> getManagers(int userId, int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+        List<Integer> managerIds = stores.get(storeId).getManagerIds();
+        List<UserDTO> managers = new ArrayList<>();
+        for(int managerId : managerIds) {
+            managers.add(UserController.getInstance().getUser(managerId));
+        }
+        return managers;
+    }
+
+    public List<UserDTO> getSellers(int userId, int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+        List<Integer> sellerIds = stores.get(storeId).getSellerIds();
+        List<UserDTO> sellers = new ArrayList<>();
+        for(int sellerId : sellerIds) {
+            sellers.add(UserController.getInstance().getUser(sellerId));
+        }
+        return sellers;
+    }
+
+
 
 }

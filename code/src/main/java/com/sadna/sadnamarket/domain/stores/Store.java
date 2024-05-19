@@ -12,8 +12,10 @@ public class Store {
     private int founderId;
     private List<Integer> ownerIds;
     private List<Integer> managerIds;
+    private List<Integer> sellerIds;
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
+
 
     public Store(int storeId, String storeName, int founderId) {
         this.storeId = storeId;
@@ -24,6 +26,7 @@ public class Store {
         this.ownerIds = new ArrayList<>();
         this.ownerIds.add(founderId);
         this.managerIds = new ArrayList<>();
+        this.sellerIds = new ArrayList<>();
         this.buyPolicyIds = new ArrayList<>();
         this.buyPolicyIds.add(0); // assuming buyPolicyId = 0 is default policy
         this.discountPolicyIds = new ArrayList<>();
@@ -53,6 +56,10 @@ public class Store {
         return this.managerIds;
     }
 
+    public List<Integer> getSellerIds() {
+        return this.sellerIds;
+    }
+
     public void addProduct(int productId) {
         if(productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d already exists.", productId));
@@ -71,32 +78,21 @@ public class Store {
         return productIds.contains(productId);
     }
 
-    /*
-    public void addStoreOwner(int currentOwnerId, int newOwnerId) {
-        if(!isStoreOwner(currentOwnerId))
-            throw new IllegalArgumentException(String.format("A user with id %d can not add a new owner to store with id %d.", currentOwnerId, storeId));
-        if(isStoreOwner(newOwnerId))
-            throw new IllegalArgumentException(String.format("A user with id %d is already a owner of store with id %d.", newOwnerId, storeId));
-
-        ownerIds.add(newOwnerId);
-    }
-
-    private boolean isStoreOwner(int userId) {
+    public boolean isStoreOwner(int userId) {
         return ownerIds.contains(userId);
     }
 
-    public void addStoreManager(int currentOwnerId, int newManagerId) {
-        if(!isStoreOwner(currentOwnerId))
-            throw new IllegalArgumentException(String.format("A user with id %d can not add a new owner to store with id %d.", currentOwnerId, storeId));
-        if(isStoreManager(newManagerId))
-            throw new IllegalArgumentException(String.format("A user with id %d is already a manager of store with id %d.", newManagerId, storeId));
-
-        managerIds.add(newManagerId);
+    public boolean isStoreManager(int userId) {
+        return managerIds.contains(userId);
     }
 
-    private boolean isStoreManager(int userId) {
-        return managerIds.contains(userId);
-    }*/
+    public void addStoreOwner(int newOwnerId) {
+        ownerIds.add(newOwnerId);
+    }
+
+    public void addStoreManager(int newManagerId) {
+        managerIds.add(newManagerId);
+    }
 
     public void closeStore(int userId) {
         if(!this.isActive)
