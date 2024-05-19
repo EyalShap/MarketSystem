@@ -38,18 +38,29 @@ public class StoreRestController {
         return marketService.updateProductInStore(userId, storeId, productId, newProductName);
     }
 
-    /*
-    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/addStoreOwner" -Method POST -Body "currentOwnerId=0&newOwnerId=1&storeId=0"
-    @PostMapping("/addStoreOwner")
-    public Response addStoreOwner(@RequestParam int currentOwnerId, @RequestParam int newOwnerId, @RequestParam int storeId) {
-        return marketService.addStoreOwner(currentOwnerId, newOwnerId, storeId);
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/sendStoreOwnerRequest" -Method POST -Body "currentOwnerId=0&newOwnerId=1&storeId=0"
+    @PostMapping("/sendStoreOwnerRequest")
+    public Response sendStoreOwnerRequest(@RequestParam int currentOwnerId, @RequestParam int newOwnerId, @RequestParam int storeId) {
+        return marketService.sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
     }
 
-    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/addStoreManager" -Method POST -Body "currentOwnerId=0&newOwnerId=1&managerPermissions=0&managerPermissions=1&managerPermissions=2"
-    @PostMapping("/addStoreManager")
-    public Response addStoreOwner(@RequestParam int currentOwnerId, @RequestParam int newManagerId, @RequestParam int storeId, @RequestParam Set<Integer> managerPermissions) {
-        return marketService.addStoreManager(currentOwnerId, newManagerId, storeId, managerPermissions);
-    }*/
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/sendStoreManagerRequest" -Method POST -Body "currentOwnerId=0&newOwnerId=1&managerPermissions=0&managerPermissions=1&managerPermissions=2"
+    @PostMapping("/sendStoreManagerRequest")
+    public Response sendStoreManagerRequest(@RequestParam int currentOwnerId, @RequestParam int newManagerId, @RequestParam int storeId, @RequestParam Set<Integer> managerPermissions) {
+        return marketService.sendStoreManagerRequest(currentOwnerId, newManagerId, storeId, managerPermissions);
+    }
+
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/acceptStoreOwnerRequest" -Method POST -Body "currentOwnerId=0&storeId=0"
+    @PostMapping("/acceptStoreOwnerRequest")
+    public Response acceptStoreOwnerRequest(@RequestParam int newOwnerId, @RequestParam int storeId) {
+        return marketService.acceptStoreOwnerRequest(newOwnerId, storeId);
+    }
+
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/acceptStoreManagerRequest" -Method POST -Body "newManagerId=1&storeId=0"
+    @PostMapping("/acceptStoreManagerRequest")
+    public Response acceptStoreManagerRequest(@RequestParam int newManagerId, @RequestParam int storeId) {
+        return marketService.acceptStoreManagerRequest(newManagerId, storeId);
+    }
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/closeStore" -Method PUT -Body "userId=0&storeId=0" -ContentType "application/x-www-form-urlencoded"
     @PutMapping("/closeStore")

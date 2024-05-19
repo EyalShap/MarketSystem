@@ -80,29 +80,6 @@ public class MarketService {
         }
     }
 
-    /*
-    public Response addStoreOwner(int currentOwnerId, int newOwnerId, int storeId) {
-        try {
-            userController.addStoreOwnerRole(currentOwnerId, newOwnerId, storeId);
-            storeController.addStoreOwner(currentOwnerId, newOwnerId, storeId);
-            return Response.createResponse(false, objectMapper.writeValueAsString(newOwnerId));
-        }
-        catch (Exception e) {
-            return Response.createResponse(true, e.getMessage());
-        }
-    }
-
-    public Response addStoreManager(int currentOwnerId, int newManagerId, int storeId, Set<Integer> managerPermissionSet) {
-        try {
-            userController.addStoreManagerRole(currentOwnerId, newManagerId, storeId, managerPermissionSet);
-            storeController.addStoreManager(currentOwnerId, newManagerId, storeId);
-            return Response.createResponse(false, objectMapper.writeValueAsString(newManagerId));
-        }
-        catch (Exception e) {
-            return Response.createResponse(true, e.getMessage());
-        }
-    }*/
-
     public Response closeStore(int userId, int storeId) {
         try {
             boolean storeClosed = storeController.closeStore(userId, storeId);
@@ -142,4 +119,45 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    public Response sendStoreOwnerRequest(int currentOwnerId, int newOwnerId, int storeId) {
+        try {
+            storeController.sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, Set<Integer> permissions) {
+        try {
+            storeController.sendStoreManagerRequest(currentOwnerId, newManagerId, storeId, permissions);
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response acceptStoreOwnerRequest(int newOwnerId, int storeId) {
+        try {
+            userController.acceptStoreOwnerRequest(newOwnerId, storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(newOwnerId));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response acceptStoreManagerRequest(int newManagerId, int storeId) {
+        try {
+            userController.acceptStoreManagerRequest(newManagerId, storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(newManagerId));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
 }

@@ -9,6 +9,7 @@ import org.apache.catalina.User;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class StoreController {
     private static StoreController instance;
@@ -108,7 +109,7 @@ public class StoreController {
         UserController.getInstance().sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
     }
 
-    public void sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, List<ManagerPermission> permissions) {
+    public void sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, Set<Integer> permissions) {
         if(!storeIdExists(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
         if(!isStoreActive(storeId))
@@ -118,7 +119,7 @@ public class StoreController {
         if(stores.get(storeId).isStoreManager(newManagerId))
             throw new IllegalArgumentException(String.format("A user with id %d is already a manager of store %d.", newManagerId, storeId));
 
-        UserController.getInstance().sendStoreOwnerRequest(currentOwnerId, newManagerId, storeId);
+        UserController.getInstance().sendStoreManagerRequest(currentOwnerId, newManagerId, storeId, permissions);
     }
 
     public void addStoreOwner(int newOwnerId, int storeId) {
