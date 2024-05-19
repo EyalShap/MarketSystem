@@ -45,6 +45,14 @@ public class Store {
         return this.isActive;
     }
 
+    public List<Integer> getOwnerIds() {
+        return this.ownerIds;
+    }
+
+    public List<Integer> getManagerIds() {
+        return this.managerIds;
+    }
+
     public void addProduct(int productId) {
         if(productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d already exists.", productId));
@@ -95,6 +103,7 @@ public class Store {
             throw new IllegalArgumentException(String.format("A store with id %d is already closed.", storeId));
         if(founderId != userId)
             throw new IllegalArgumentException(String.format("A user with id %d can not close the store with id %d (not a founder).", userId, storeId));
+
         this.isActive = false;
     }
 

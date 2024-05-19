@@ -5,6 +5,7 @@ import com.sadna.sadnamarket.domain.users.UserController;
 import org.apache.catalina.User;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class StoreController {
     private static StoreController instance;
@@ -107,6 +108,17 @@ public class StoreController {
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
 
         stores.get(storeId).closeStore(userId);
+
+        String msg = String.format("The store \"%s\" was closed.", stores.get(storeId).getStoreName());
+        List<Integer> ownerIds = stores.get(storeId).getOwnerIds();
+        List<Integer> managerIds = stores.get(storeId).getManagerIds();
+        for(int ownerId : ownerIds) {
+            UserController.getInstance().notify(ownerId, msg);
+        }
+        for(int managerId : managerIds) {
+            UserController.getInstance().notify(managerId, msg);
+        }
+
         return true;
     }
 

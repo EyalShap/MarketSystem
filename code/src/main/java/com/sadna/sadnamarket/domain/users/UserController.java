@@ -45,6 +45,10 @@ public class UserController {
         return true;
     }
 
+    public void notify(int userId, String msg) {
+        // Dana added this proxy function for the close store use case
+    }
+
     /*
     public void addStoreOwnerRole(int currentOwnerId, int newOwnerId, int storeId) {
         // Dana added this proxy function for adding a new owner use case
