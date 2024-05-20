@@ -23,4 +23,13 @@ public class Cart {
         return baskets.isEmpty();
     }
 
+    public void changeQuantity(Basket basket,int productId ,int quntity){
+        basket.changeQuantity(productId,quntity);
+    }
+
+    public void purchase(){
+        for(Basket basket: baskets.values()){
+            basket.purchase();
+        }
+    }
 }

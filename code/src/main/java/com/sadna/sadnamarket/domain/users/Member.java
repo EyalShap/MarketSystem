@@ -7,22 +7,19 @@ import java.util.HashMap;
 public class Member extends IUser {
     private List<UserRole> roles;
     private HashMap<String,Integer> orders;
-    
+    private List<Notification> notifes;
 
     private boolean isLoggedIn;
 
-
+    public List<UserRole> getUserRoles(){
+        return roles;
+    }
     private Member(){
         roles=new ArrayList<>();
         orders=new HashMap<>();
         isLoggedIn=false;
     }
-    @Override
-    public void addToCart() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addToCart'");
-    }
-
+   
     @Override
     public boolean isLoggedIn() {
         return isLoggedIn;
@@ -30,24 +27,27 @@ public class Member extends IUser {
 
 
     public void setCart(Cart cart){
-        this.cart=cart;
+        if (this.cart.isEmpty())
+            this.cart=cart;
     }
 
-    public void login(Cart guestCart){
-        if(cart.isEmpty()){
-            cart=guestCart;
-        }
-        isLoggedIn=true;
+    public void setLogin(boolean isLoggedIn){
+        this.isLoggedIn=true;
     }
 
     public void addNotification(String message){
+        notifes.add(new Notification(message));
+    }
+    public void addRequest(){
+        
+    }
 
+    public void logout(){
+        this.setLogin(false);
     }
-    public void addRequest(){
-        
-    }
-    public void addRequest(){
-        
+   
+    public void purchase(){
+        this.cart.purchase();
     }
 
 

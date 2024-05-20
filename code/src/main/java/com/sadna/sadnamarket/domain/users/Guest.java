@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.domain.auth.AuthFacade;
+
 public class Guest extends IUser {
 
     
@@ -10,16 +12,12 @@ public class Guest extends IUser {
 
 
     @Override
-    public void addToCart() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addToCart'");
-    }
-
-    @Override
     public boolean isLoggedIn() {
         return false;
     }
   
-    
-    
+    public void login(String username,String password){
+        AuthFacade.getInstance().auth(username, password);
+        UserController.getInstance().setCart(this.cart,username);
+    }
 }

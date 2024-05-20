@@ -12,8 +12,10 @@ import java.util.NoSuchElementException;
 public class UserController {
     private static UserController instance;
     private static HashMap<String,Member> members;
-    private static HashMap<String,Member> userNameAndPassword;
+    private static HashMap<Integer,Guest> guests;
+    private static HashMap<String,String> userNameAndPassword;
     private static String systemManagerUserName;
+    public static int guestId;
 
     private UserController() {
         members=new HashMap<>();
@@ -28,30 +30,54 @@ public class UserController {
         return instance;
     }  
     
-    public boolean canAddProductsToStore(int userId, int storeId) {
-        // Dana added this proxy function for the stock management use case
-        return true;
+    public synchronized void enterAsGuest(){
+        guests.put(guestId,new Guest());
+        guestId++;
     }
 
-    public boolean canDeleteProductsFromStore(int userId, int storeId) {
-        // Dana added this proxy function for the stock management use case
-        return true;
+    public boolean checkPremssionToStore(String userName, int storeId,Permission permission){
+        Member member=getMember(userName);
+        for(UserRole role: member.getUserRoles()){
+            if(role.getStoreId()==storeId && role.hasPermission(permission)){
+                return true;
+            }
+        }
+        return false;
     }
 
-    public boolean canUpdateProductsInStore(int userId, int storeId) {
-        // Dana added this proxy function for the stock management use case
-        return true;
+    public boolean canAddProductsToStore(String userName, int storeId) {
+        return checkPremssionToStore(userName,storeId,Permission.ADD_PRODUCTS);
     }
 
-    public void notify(int userId, String msg) {
-        // Dana added this proxy function for the close store use case
+    public boolean canDeleteProductsFromStore(String userName, int storeId) {
+        return checkPremssionToStore(userName,storeId,Permission.DELETE_PRODUCTS);
     }
-    public void login(String userName,String password,Cart cart){//the cart of the guest
+
+    public boolean canUpdateProductsInStore(String userName, int storeId) {
+        return checkPremssionToStore(userName,storeId,Permission.UPDATE_PRODUCTS);
+    }
+
+    public void notify(String userName, String msg) {
+        getMember(userName).addNotification(msg);
+    }
+
+
+    public void login(String userName,String password){//the cart of the guest
         if(!hasUser(userName))
             throw new NoSuchElementException("User doesnt exist in system");
-        getMember(userName).login(cart);
+        getMember(userName).setLogin(true);
     }
+    public IUser logout(String userName){//the cart of the guest
+        if(!hasUser(userName))
+            throw new NoSuchElementException("User doesnt exist in system");
 
+        getMember(userName).logout();
+        Guest guest=new Guest();
+        return guest;
+    }
+    public void setCart(Cart cart,String userName){
+        getMember(userName).setCart(cart);
+    }
     private boolean hasUser(String userName){
         return userNameAndPassword.containsKey(userName);
     }

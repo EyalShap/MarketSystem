@@ -18,4 +18,15 @@ public class Basket {
     public boolean hasProduct(int productId){
         return products.containsKey(productId);
     }
+    public void changeQuantity(int productId,int quantity) {
+        products.put(productId,quantity);
+    }
+
+    public void purchase(){
+        /*TODO: 1.update new amount of product in the store
+                2.make order object to memorize for the member and for the store
+        */
+    }
+
+
 }

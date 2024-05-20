@@ -25,7 +25,7 @@ private static AuthFacade instance;
     }
 
 
-    public String login(String username, String password) {
+    public String auth(String username, String password) {
         
         UserController.getInstance().login(username,password); 
         // If the user is authenticated, generate a JWT token for the user
