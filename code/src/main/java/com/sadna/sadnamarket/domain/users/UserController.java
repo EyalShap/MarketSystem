@@ -1,12 +1,9 @@
 package com.sadna.sadnamarket.domain.users;
 
-import com.sadna.sadnamarket.domain.stores.Store;
-import com.sadna.sadnamarket.domain.stores.StoreController;
-
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.NoSuchElementException;
+;
+
 
 //this is the facade of the Users package
 //it merely exists so the folder appears on git
@@ -14,8 +11,12 @@ import java.util.Set;
 //have fun :)
 public class UserController {
     private static UserController instance;
+    private static HashMap<String,Member> members;
+    private static HashMap<String,Member> userNameAndPassword;
 
     private UserController() {
+        members=new HashMap<>();
+        userNameAndPassword=new HashMap<>();
     }
 
     public static UserController getInstance() {
@@ -23,11 +24,6 @@ public class UserController {
             instance = new UserController();
         }
         return instance;
-    }
-
-    public boolean canCreateStore(int userId) {
-        // Dana added this proxy function for the store creation use case
-        return true;
     }
 
     public boolean canAddProductsToStore(int userId, int storeId) {
@@ -48,7 +44,15 @@ public class UserController {
     public void notify(int userId, String msg) {
         // Dana added this proxy function for the close store use case
     }
+    public void login(String userName,String password){
+        if(!hasUser(userName))
+            throw new NoSuchElementException("User doesnt exist in system");
+        
+    }
 
+    private boolean hasUser(String userName){
+        return userNameAndPassword.containsKey(userName);
+    }
     /*
     public void addStoreOwnerRole(int currentOwnerId, int newOwnerId, int storeId) {
         // Dana added this proxy function for adding a new owner use case
