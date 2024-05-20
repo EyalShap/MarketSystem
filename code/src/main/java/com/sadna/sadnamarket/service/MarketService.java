@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.stores.StoreController;
-import com.sadna.sadnamarket.domain.users.ManagerPermission;
 import com.sadna.sadnamarket.domain.users.UserController;
 import org.springframework.stereotype.Service;
 

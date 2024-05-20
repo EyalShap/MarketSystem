@@ -44,15 +44,29 @@ public class UserController {
     public void notify(int userId, String msg) {
         // Dana added this proxy function for the close store use case
     }
-    public void login(String userName,String password){
+    public void login(String userName,String password,Cart cart){//the cart of the guest
         if(!hasUser(userName))
             throw new NoSuchElementException("User doesnt exist in system");
-        
+        getMember(userName).login(cart);
     }
 
     private boolean hasUser(String userName){
         return userNameAndPassword.containsKey(userName);
     }
+
+    public void register(String userName, String Password){
+        if(hasUser(userName)){
+            throw new IllegalArgumentException("This name already in use");
+        }
+
+    }
+
+    public Member getMember(String userName){
+        if(!hasUser(userName))
+            throw new NoSuchElementException("User doesnt exist in system");
+        return members.get(userName);
+    }
+
     /*
     public void addStoreOwnerRole(int currentOwnerId, int newOwnerId, int storeId) {
         // Dana added this proxy function for adding a new owner use case

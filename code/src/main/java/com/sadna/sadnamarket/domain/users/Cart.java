@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class Cart {
 
     private HashMap<Integer,Basket> baskets;
+    
     public Cart(){
         baskets=new HashMap<>();
     }
@@ -17,4 +18,9 @@ public class Cart {
     public boolean hasProduct(int productId){
         return baskets.containsKey(productId);
     }
+
+    public boolean isEmpty(){
+        return baskets.isEmpty();
+    }
+
 }

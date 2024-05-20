@@ -1,6 +1,13 @@
 package com.sadna.sadnamarket.domain.users;
 
-public class Guest implements IUser {
+public class Guest extends IUser {
+
+    
+
+    public Guest(){
+        cart=new Cart();
+    }
+
 
     @Override
     public void addToCart() {
@@ -12,8 +19,7 @@ public class Guest implements IUser {
     public boolean isLoggedIn() {
         return false;
     }
-    public void login(){
-        // TODO
-    }
+  
+    
     
 }

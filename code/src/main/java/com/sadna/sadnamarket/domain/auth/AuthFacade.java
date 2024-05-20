@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.auth;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+
 import com.sadna.sadnamarket.domain.users.UserController;
 
 // import org.springframework.http.ResponseEntity;
@@ -23,20 +25,14 @@ private static AuthFacade instance;
     }
 
 
-    public boolean login(String username, String password) {
+    public String login(String username, String password) {
         
-    if (UserController.login(username,password)) {
+        UserController.getInstance().login(username,password); 
         // If the user is authenticated, generate a JWT token for the user
         String token = tokenService.generateToken(username);
         
-        // Return the token to the client (you may want to return the token in a different way, such as through a DTO)
-        System.out.println("Login successful");
-        return true;
-    } else {
-        // If authentication fails, return false
-        System.out.println("Login failed. Invalid username or password.");
-        return false;
-    }
+        return token;
+    
     }
 
     public void logout() {

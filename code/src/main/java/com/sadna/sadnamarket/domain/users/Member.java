@@ -4,17 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 
-public class Member implements IUser {
+public class Member extends IUser {
     private List<UserRole> roles;
     private HashMap<String,Integer> orders;
     
+
     private boolean isLoggedIn;
 
 
     private Member(){
         roles=new ArrayList<>();
         orders=new HashMap<>();
-        isLoggedIn=true;
+        isLoggedIn=false;
     }
     @Override
     public void addToCart() {
@@ -26,6 +27,19 @@ public class Member implements IUser {
     public boolean isLoggedIn() {
         return isLoggedIn;
     }
+
+
+    public void setCart(Cart cart){
+        this.cart=cart;
+    }
+
+    public void login(Cart guestCart){
+        if(cart.isEmpty()){
+            cart=guestCart;
+        }
+        isLoggedIn=true;
+    }
+
     public void addNotification(String message){
 
     }
