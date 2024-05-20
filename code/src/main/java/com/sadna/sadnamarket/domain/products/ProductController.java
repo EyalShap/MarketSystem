@@ -21,21 +21,14 @@ public class ProductController {
         return instance;
     }
 
-    public int addProduct(int storeId, String productName, int productQuantity, int productPrice) {
+    public int addProduct(int storeId, String productName, int productPrice, String productCategory) {
         if (storeId < 0) {
             throw new IllegalArgumentException(String.format("Store ID %d is invalid.", storeId));
         }
-        if (productName == null || productName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Product name cannot be null or empty.");
-        }
-        if (productQuantity < 0) {
-            throw new IllegalArgumentException("Product quantity cannot be negative.");
-        }
-        if (productPrice < 0) {
-            throw new IllegalArgumentException("Product price cannot be negative.");
-        }
 
-        Product createdProduct = new Product(nextProductId, productName, productQuantity, productPrice);
+        checkProductAttributes(productName, productPrice, productCategory);
+
+        Product createdProduct = new Product(nextProductId, productName, productPrice, productCategory);
 
         List<Product> storeProducts = products.get(storeId);
         if (storeProducts == null) {
@@ -49,54 +42,90 @@ public class ProductController {
     }
 
     public void removeProduct(int storeId, int productId) {
-        if (!products.containsKey(storeId)) {
+        if (!isStoreExist(storeId))
             throw new IllegalArgumentException(String.format("Store ID %d does not exist.", storeId));
-        }
 
         List<Product> storeProducts = products.get(storeId);
-        if (storeProducts == null || storeProducts.stream().noneMatch(product -> product.getProductID() == productId)) {
+
+        if (isProductExistInStore(storeId, productId)) {
+            Product productToRemove = getProduct(storeId, productId);
+            productToRemove.disableProduct();// turn off his active flag
+        } else
             throw new IllegalArgumentException(
                     String.format("Product ID %d does not exist in store ID %d.", productId, storeId));
-        }
-
-        storeProducts.removeIf(product -> product.getProductID() == productId);
     }
 
-    public void updateProduct(int storeId, int productId, String newProductName, Integer newQuantity,
-            Integer newPrice) {
-        if (!products.containsKey(storeId)) {
+    public void updateProduct(int storeId, int productId, String newProductName,
+            int newPrice, String newCategory) {
+        if (!isStoreExist(storeId))
             throw new IllegalArgumentException(String.format("Store ID %d does not exist.", storeId));
-        }
 
+        if (!isProductExistInStore(storeId, productId))
+            throw new IllegalArgumentException(
+                    String.format("Product ID %d does not exist in store ID %d.", productId, storeId));
+
+        checkProductAttributes(newProductName, newPrice, newCategory);
+
+        Product productToUpdate = getProduct(storeId, productId);
+
+        if (!productToUpdate.isActiveProduct())
+            throw new IllegalArgumentException(
+                    String.format("Product ID %d was deleted from store ID %d.", productId, storeId));
+
+        productToUpdate.setProductName(newProductName);
+        productToUpdate.setProductPrice(newPrice);
+        productToUpdate.setProductCategory(newCategory);
+    }
+
+    private Product getProduct(int storeId, int productId) {
         List<Product> storeProducts = products.get(storeId);
-        Product productToUpdate = null;
+        Product result = null;
         for (Product product : storeProducts) {
             if (product.getProductID() == productId) {
-                productToUpdate = product;
+                result = product;
                 break;
             }
         }
+        return result;
+    }
 
-        if (productToUpdate == null) {
-            throw new IllegalArgumentException(
-                    String.format("Product ID %d does not exist in store ID %d.", productId, storeId));
-        }
+    private void checkProductAttributes(String newProductName, int newPrice, String newCategory) {
+        String isValidProductName = checkProductName(newProductName);
+        String isValidProductPrice = checkProductPrice(newPrice);
+        String isValidProductCategory = checkProductCategory(newCategory);
 
-        if (newProductName != null && !newProductName.trim().isEmpty()) {
-            productToUpdate.setProductName(newProductName);
+        boolean isAllValid = isValidProductName.isEmpty() && isValidProductPrice.isEmpty()
+                && isValidProductCategory.isEmpty();
+
+        if (!isAllValid) {
+            StringBuilder result = new StringBuilder("Product can be updated because: ");
+            result.append(isValidProductName).append(isValidProductPrice).append(isValidProductCategory);
+            throw new IllegalArgumentException(String.valueOf(result));
         }
-        if (newQuantity != null) {
-            if (newQuantity < 0) {
-                throw new IllegalArgumentException("Product quantity cannot be negative.");
-            }
-            productToUpdate.setProductAmount(newQuantity);
-        }
-        if (newPrice != null) {
-            if (newPrice < 0) {
-                throw new IllegalArgumentException("Product price cannot be negative.");
-            }
-            productToUpdate.setProductPrice(newPrice);
-        }
+    }
+
+    private String checkProductName(String productName) {
+        return (productName == null || productName.trim().isEmpty()) ? "Product name cannot be null or empty. " : "";
+    }
+
+    private String checkProductPrice(Integer productPrice) {
+        return productPrice < 0 ? "Product price cannot be negative. " : "";
+    }
+
+    private String checkProductCategory(String productCategory) {
+        return (productCategory == null || productCategory.trim().isEmpty())
+                ? "Product category cannot be null or empty. "
+                : "";
+    }
+
+    private boolean isStoreExist(int storeId) {
+        return products.containsKey(storeId);
+    }
+
+    private boolean isProductExistInStore(int storeId, int productId) {
+        List<Product> storeProducts = products.get(storeId);
+        return !(storeProducts == null
+                || storeProducts.stream().noneMatch(product -> product.getProductID() == productId));
     }
 
     // package-private for tests
@@ -122,13 +151,13 @@ public class ProductController {
         }
         return result.toString();
     }
-
+    //
     // public static void main(String[] args) {
     // ProductController controller = ProductController.getInstance();
     // try {
-    // controller.addProduct(1, "product1", 10, 100);
-    // controller.addProduct(1, "product2", 5, 98780);
-    // controller.addProduct(2, "product3", 5, 98780);
+    // controller.addProduct(1, "product1", 10, "cat1");
+    // controller.addProduct(1, "product2", 5, "cat1");
+    // controller.addProduct(2, "product3", 5, "cat2");
     //
     // System.out.println("Initial state:");
     // System.out.println(controller);
@@ -138,7 +167,7 @@ public class ProductController {
     // System.out.println("After removal:");
     // System.out.println(controller);
     //
-    // controller.updateProduct(1, 1, "updatedProduct2", 20, 20000);
+    // controller.updateProduct(1, 1, "updatedProduct2", 20, "cat3");
     //
     // System.out.println("After update:");
     // System.out.println(controller);

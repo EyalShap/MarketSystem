@@ -5,14 +5,15 @@ import java.text.MessageFormat;
 public class Product {
     final private int productID;
     private String productName;
-    private int productQuantity;
     private int productPrice;
+    private String productCategory;
+    private boolean isActive = true;
 
-    public Product(int productID, String productName, int productQuantity, int productPrice) {
+    public Product(int productID, String productName, int productPrice, String productCategory) {
         this.productID = productID;
         this.productName = productName;
-        this.productQuantity = productQuantity;
         this.productPrice = productPrice;
+        this.productCategory = productCategory;
     }
 
     public int getProductID() {
@@ -27,14 +28,6 @@ public class Product {
         this.productName = productName;
     }
 
-    public int getProductAmount() {
-        return productQuantity;
-    }
-
-    public void setProductAmount(int productAmount) {
-        this.productQuantity = productAmount;
-    }
-
     public int getProductPrice() {
         return productPrice;
     }
@@ -43,10 +36,27 @@ public class Product {
         this.productPrice = productPrice;
     }
 
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public boolean isActiveProduct() {
+        return this.isActive;
+    }
+
+    public void disableProduct() {
+        this.isActive = false;
+    }
+
     @Override
     public String toString() {
         return MessageFormat.format(
-                "Product'{'productID={0}, productName=''{1}'', productQuantity={2}, productPrice={3}'}'", productID,
-                productName, productQuantity, productPrice);
+                "Product'{'productID={0}, productName=''{1}'', productPrice={2}, productCategory=''{3}'', isActive={4}}'",
+                productID,
+                productName, productPrice, productCategory, isActive);
     }
 }
