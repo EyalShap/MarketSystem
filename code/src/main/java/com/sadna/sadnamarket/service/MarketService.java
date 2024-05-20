@@ -160,5 +160,14 @@ public class MarketService {
         }
     }
 
+    public Response getStoreOrderHistory(int userId, int storeId) {
+        try {
+            String history = storeController.getStoreOrderHisotry(userId, storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(history));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 
 }

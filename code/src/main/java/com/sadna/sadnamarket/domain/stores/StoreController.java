@@ -239,6 +239,10 @@ public class StoreController {
             }
         }
 
+        if(orderIndex == 1) {
+            orderHistory += "There are no orders.\n";
+        }
+
         return orderHistory;
     }
 

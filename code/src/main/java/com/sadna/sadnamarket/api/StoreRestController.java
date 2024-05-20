@@ -68,21 +68,27 @@ public class StoreRestController {
         return marketService.closeStore(userId, storeId);
     }
 
-    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getOwners" -Method GET -Body "userId=0&storeId=0"
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreOrderHistory?userId=0&storeId=0" -Method GET
     @GetMapping("/getOwners")
     public Response getOwners(@RequestParam int userId, @RequestParam int storeId) {
         return marketService.getOwners(userId, storeId);
     }
 
-    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getManagers" -Method GET -Body "userId=0&storeId=0"
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreOrderHistory?userId=0&storeId=0" -Method GET
     @GetMapping("/getManagers")
     public Response getManagers(@RequestParam int userId, @RequestParam int storeId) {
         return marketService.getManagers(userId, storeId);
     }
 
-    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getSellers" -Method GET -Body "userId=0&storeId=0"
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreOrderHistory?userId=0&storeId=0" -Method GET
     @GetMapping("/getSellers")
     public Response getSellers(@RequestParam int userId, @RequestParam int storeId) {
         return marketService.getSellers(userId, storeId);
+    }
+
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreOrderHistory?userId=0&storeId=0" -Method GET
+    @GetMapping("/getStoreOrderHistory")
+    public Response getStoreOrderHistory(@RequestParam int userId, @RequestParam int storeId) {
+        return marketService.getStoreOrderHistory(userId, storeId);
     }
 }
