@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.Store;
@@ -9,6 +10,7 @@ import com.sadna.sadnamarket.service.MarketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,35 +103,46 @@ public class StoreRestController {
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreInfo?storeId=0" -Method GET
     @GetMapping("/getStoreInfo")
     public Response getStoreInfo(@RequestParam int storeId) {
-        /*Response response = marketService.getStoreInfo(storeId);
-        if(!response.getError()) {
-            try {
-                StoreDTO storeDTO = objectMapper.readValue(response.getDataJson(), StoreDTO.class);
-                System.out.println(String.format("Store id: %d, Store name: %s", storeDTO.getStoreId(), storeDTO.getStoreName()));
-            }
-            catch(Exception e) {
-            }
+        Response response = marketService.getStoreInfo(storeId);
+        if(response.getError()) {
+            return response;
         }
-        return response;*/
-        return marketService.getStoreInfo(storeId);
+
+        Response res;
+        try {
+            StoreDTO storeDTO = objectMapper.readValue(response.getDataJson(), StoreDTO.class);
+            res = Response.createResponse(false, objectMapper.writeValueAsString(String.format("Store id: %d, Store name: %s", storeDTO.getStoreId(), storeDTO.getStoreName())));
+        }
+        catch(Exception e) {
+            res = Response.createResponse(true, e.getMessage());
+        }
+
+        return res;
     }
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getProductsInfo?storeId=0" -Method GET
     @GetMapping("/getProductsInfo")
     public Response getProductsInfo(@RequestParam int storeId) {
-        /*Response response = marketService.getProductsInfo(storeId);
-        if(!response.getError()) {
-            try {
-                Map<ProductDTO, Integer> products = objectMapper.readValue(response.getDataJson(), new TypeReference<Map<ProductDTO, Integer>>() {});
-                for(ProductDTO product : products.keySet()) {
-                    System.out.println(String.format("Product id: %d, Product name: %s, Product amount: %d, Product price: %d", product.getProductId(), product.getProductName(), products.get(product), product.getProductPrice()));
-                }
-            }
-            catch(Exception e) {
-            }
+        Response response = marketService.getProductsInfo(storeId);
+        if(response.getError()) {
+            return response;
         }
-        return response;*/
-        return marketService.getProductsInfo(storeId);
+
+        Response res;
+        List<String> productInfos = new ArrayList<>();
+        try {
+            Map<String, Integer> products = objectMapper.readValue(response.getDataJson(), new TypeReference<Map<String, Integer>>() {});
+            for(String productJson : products.keySet()) {
+                ProductDTO product = objectMapper.readValue(productJson, ProductDTO.class);
+                productInfos.add(String.format("Product id: %d, Product name: %s, Product amount: %d, Product price: %d", product.getProductId(), product.getProductName(), products.get(productJson), product.getProductPrice()));
+            }
+            res = Response.createResponse(false, objectMapper.writeValueAsString(productInfos));
+        }
+        catch(Exception e) {
+            res = Response.createResponse(true, e.getMessage());
+        }
+
+        return res;
     }
 
 

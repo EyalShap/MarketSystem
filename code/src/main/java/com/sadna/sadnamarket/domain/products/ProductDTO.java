@@ -1,6 +1,13 @@
 package com.sadna.sadnamarket.domain.products;
 
 public class ProductDTO {
+    private int productId;
+    private String productName;
+    private int productPrice;
+
+    public ProductDTO() {
+
+    }
 
     public int getProductId() {
         // dana added this proxy function for the get store products use case

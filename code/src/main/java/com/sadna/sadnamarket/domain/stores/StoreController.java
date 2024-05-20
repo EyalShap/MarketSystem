@@ -292,16 +292,17 @@ public class StoreController {
         return stores.get(storeId).getStoreDTO();
     }
 
-    public Map<ProductDTO, Integer> getProductsInfo(int storeId) {
+    public Map<String, Integer> getProductsInfo(int storeId) throws JsonProcessingException {
         if(!storeIdExists(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         Map<Integer, Integer> productIdsAmounts = stores.get(storeId).getProductAmounts();
-        Map<ProductDTO, Integer> productDTOsAmounts = new HashMap<>();
+        Map<String, Integer> productDTOsAmounts = new HashMap<>();
         for(int productId : productIdsAmounts.keySet()) {
-            productDTOsAmounts.put(ProductController.getInstance().getProductDTO(productId), productDTOsAmounts.get(productId));
+            int amount = productIdsAmounts.get(productId);
+            productDTOsAmounts.put(objectMapper.writeValueAsString(ProductController.getInstance().getProductDTO(productId)), amount);
         }
         return productDTOsAmounts;
     }

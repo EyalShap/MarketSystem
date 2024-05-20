@@ -19,6 +19,9 @@ public class StoreDTO {
     private List<Integer> discountPolicyIds;
     private List<Integer> orderIds;
 
+    public StoreDTO() {
+    }
+
     public StoreDTO(int storeId, boolean isActive, String storeName, Map<Integer, Integer> productAmounts, int founderId, List<Integer> ownerIds, List<Integer> managerIds, List<Integer> sellerIds, List<Integer> buyPolicyIds, List<Integer> discountPolicyIds, List<Integer> orderIds) {
         this.storeId = storeId;
         this.isActive = isActive;

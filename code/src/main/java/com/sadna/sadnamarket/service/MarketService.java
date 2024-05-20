@@ -188,8 +188,7 @@ public class MarketService {
 
     public Response getProductsInfo(int storeId) {
         try {
-
-            Map<ProductDTO, Integer> productDTOs = storeController.getProductsInfo(storeId);
+            Map<String, Integer> productDTOs = storeController.getProductsInfo(storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
         }
         catch (Exception e) {
