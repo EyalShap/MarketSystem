@@ -7,7 +7,7 @@ public class StoreOwner implements UserRole {
         this.storeId=storeId;
     }
 
-    public boolean hasPermission(){
+    public boolean hasPermission(Permission permission){
         return true;
     }
     @Override

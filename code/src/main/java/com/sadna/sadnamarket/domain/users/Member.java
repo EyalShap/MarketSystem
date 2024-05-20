@@ -7,6 +7,7 @@ import java.util.HashMap;
 public class Member implements IUser {
     private List<UserRole> roles;
     private HashMap<String,Integer> orders;
+    
     private boolean isLoggedIn;
 
 
@@ -25,7 +26,7 @@ public class Member implements IUser {
     public boolean isLoggedIn() {
         return isLoggedIn;
     }
-    public void addNotification(){
+    public void addNotification(String message){
 
     }
 
