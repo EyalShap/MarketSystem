@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.HashMap;
 
 public class Member implements IUser {
-    private List<userRole> roles;
+    private List<UserRole> roles;
     private HashMap<String,Integer> orders;
     private boolean isLoggedIn;
 
