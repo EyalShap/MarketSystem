@@ -23,7 +23,7 @@ public class OrderController {
         return instance;
     }
 
-    
+
     public List<OrderDTO> getOrders(int storeId) {
         LinkedList<OrderDTO> ordersStore = new LinkedList<OrderDTO>();
         for (int orderId : orders.keySet()) {
