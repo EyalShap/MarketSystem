@@ -205,26 +205,52 @@ public class StoreController {
         return sellers;
     }
 
+    /*public String getStoreOrderHisotry(int userId, int storeId) throws JsonProcessingException {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request order history.", userId, storeId));
+
+        List<OrderDTO> orders = OrderController.getInstance().getOrders(storeId);
+        String orderHistory = String.format("Order History of store %d:\n", storeId);
+
+        int orderIndex = 1;
+
+        for(OrderDTO order : orders) {
+            orderHistory += "------------------------------------------------------------\n";
+            orderHistory += getOrderInfo(order, orderIndex);
+            orderHistory += getProductsInfo(order);
+            orderHistory += "------------------------------------------------------------\n\n";
+            orderIndex++;
+        }
+
+        if(orderIndex == 1) {
+            orderHistory += "There are no orders.\n";
+        }
+
+        return orderHistory;
+    }*/
+
     public String getStoreOrderHisotry(int userId, int storeId) throws JsonProcessingException {
         if(!storeIdExists(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
         if(!stores.get(storeId).isStoreOwner(userId))
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request order history.", userId, storeId));
 
-        Map<Integer, Map<Integer, OrderDTO>> orders = OrderController.getInstance().getOrders();
+        List<OrderDTO> orders = new ArrayList<>();
+        for(int orderId : stores.get(storeId).getOrderIds()) {
+            orders.add(OrderController.getInstance().getOrder(orderId));
+        }
         String orderHistory = String.format("Order History of store %d:\n", storeId);
 
         int orderIndex = 1;
 
-        for(int orderId : orders.keySet()) {
-            if(orders.get(orderId).containsKey(storeId)) {
-                OrderDTO orderDTO = orders.get(orderId).get(storeId);
-                orderHistory += "------------------------------------------------------------\n";
-                orderHistory += getOrderInfo(orderDTO, orderIndex);
-                orderHistory += getProductsInfo(orderDTO);
-                orderHistory += "------------------------------------------------------------\n\n";
-                orderIndex++;
-            }
+        for(OrderDTO order : orders) {
+            orderHistory += "------------------------------------------------------------\n";
+            orderHistory += getOrderInfo(order, orderIndex);
+            orderHistory += getProductsInfo(order);
+            orderHistory += "------------------------------------------------------------\n\n";
+            orderIndex++;
         }
 
         if(orderIndex == 1) {

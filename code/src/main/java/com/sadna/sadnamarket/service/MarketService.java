@@ -2,6 +2,8 @@ package com.sadna.sadnamarket.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.StoreController;
@@ -171,8 +173,13 @@ public class MarketService {
 
     public Response getStoreInfo(int storeId) {
         try {
+            Set<String> fields = Set.of("storeId", "storeName");
+            SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+            filterProvider.addFilter("filter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
+
             StoreDTO storeDTO = storeController.getStoreInfo(storeId);
-            return Response.createResponse(false, objectMapper.writeValueAsString(storeDTO));
+            String json = objectMapper.writer(filterProvider).writeValueAsString(storeDTO);
+            return Response.createResponse(false, json);
         }
         catch (Exception e) {
             return Response.createResponse(true, e.getMessage());
@@ -181,6 +188,7 @@ public class MarketService {
 
     public Response getProductsInfo(int storeId) {
         try {
+
             Map<ProductDTO, Integer> productDTOs = storeController.getProductsInfo(storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
         }

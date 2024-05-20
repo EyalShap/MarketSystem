@@ -101,7 +101,7 @@ public class StoreRestController {
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreInfo?storeId=0" -Method GET
     @GetMapping("/getStoreInfo")
     public Response getStoreInfo(@RequestParam int storeId) {
-        Response response = marketService.getStoreInfo(storeId);
+        /*Response response = marketService.getStoreInfo(storeId);
         if(!response.getError()) {
             try {
                 StoreDTO storeDTO = objectMapper.readValue(response.getDataJson(), StoreDTO.class);
@@ -110,13 +110,14 @@ public class StoreRestController {
             catch(Exception e) {
             }
         }
-        return response;
+        return response;*/
+        return marketService.getStoreInfo(storeId);
     }
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getProductsInfo?storeId=0" -Method GET
     @GetMapping("/getProductsInfo")
     public Response getProductsInfo(@RequestParam int storeId) {
-        Response response = marketService.getProductsInfo(storeId);
+        /*Response response = marketService.getProductsInfo(storeId);
         if(!response.getError()) {
             try {
                 Map<ProductDTO, Integer> products = objectMapper.readValue(response.getDataJson(), new TypeReference<Map<ProductDTO, Integer>>() {});
@@ -127,7 +128,8 @@ public class StoreRestController {
             catch(Exception e) {
             }
         }
-        return response;
+        return response;*/
+        return marketService.getProductsInfo(storeId);
     }
 
 

@@ -15,7 +15,7 @@ public class Store {
     private List<Integer> sellerIds;
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
-
+    private List<Integer> orderIds;
 
     public Store(int storeId, String storeName, int founderId) {
         this.storeId = storeId;
@@ -30,6 +30,7 @@ public class Store {
         this.buyPolicyIds = new ArrayList<>();
         this.buyPolicyIds.add(0); // assuming buyPolicyId = 0 is default policy
         this.discountPolicyIds = new ArrayList<>();
+        this.orderIds = new ArrayList<>();
     }
 
     public int getStoreId() {
@@ -70,6 +71,10 @@ public class Store {
 
     public List<Integer> getDiscountPolicyIds() {
         return this.discountPolicyIds;
+    }
+
+    public List<Integer> getOrderIds() {
+        return this.orderIds;
     }
 
     public void addProduct(int productId, int amount) {
@@ -127,7 +132,8 @@ public class Store {
     }
 
     public StoreDTO getStoreDTO() {
-        return new StoreDTO(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds);
+        return new StoreDTO(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds, orderIds);
     }
+
 
 }

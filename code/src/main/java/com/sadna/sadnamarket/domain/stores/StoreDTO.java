@@ -1,8 +1,11 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
 import java.util.List;
 import java.util.Map;
 
+@JsonFilter("filter")
 public class StoreDTO {
     private int storeId;
     private boolean isActive;
@@ -14,8 +17,9 @@ public class StoreDTO {
     private List<Integer> sellerIds;
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
+    private List<Integer> orderIds;
 
-    public StoreDTO(int storeId, boolean isActive, String storeName, Map<Integer, Integer> productAmounts, int founderId, List<Integer> ownerIds, List<Integer> managerIds, List<Integer> sellerIds, List<Integer> buyPolicyIds, List<Integer> discountPolicyIds) {
+    public StoreDTO(int storeId, boolean isActive, String storeName, Map<Integer, Integer> productAmounts, int founderId, List<Integer> ownerIds, List<Integer> managerIds, List<Integer> sellerIds, List<Integer> buyPolicyIds, List<Integer> discountPolicyIds, List<Integer> orderIds) {
         this.storeId = storeId;
         this.isActive = isActive;
         this.storeName = storeName;
@@ -26,6 +30,7 @@ public class StoreDTO {
         this.sellerIds = sellerIds;
         this.buyPolicyIds = buyPolicyIds;
         this.discountPolicyIds = discountPolicyIds;
+        this.orderIds = orderIds;
     }
 
     public int getStoreId() {
@@ -66,5 +71,9 @@ public class StoreDTO {
 
     public List<Integer> getDiscountPolicyIds() {
         return this.discountPolicyIds;
+    }
+
+    public List<Integer> getOrderIds() {
+        return this.orderIds;
     }
 }

@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.domain.orders;
 
 import com.sadna.sadnamarket.domain.users.UserController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,14 @@ public class OrderController {
         return instance;
     }
 
-    public Map<Integer, Map<Integer, OrderDTO>> getOrders() {
+    public List<OrderDTO> getOrders(int storeId) {
         // dana added this proxy function for the get store order history use case
-        return new HashMap<>();
+        return new ArrayList<>();
+    }
+
+    public OrderDTO getOrder(int orderId) {
+        // dana added this proxy function for the get store order history use case
+        return new OrderDTO();
     }
 
 
