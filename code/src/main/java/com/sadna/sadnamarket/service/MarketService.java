@@ -3,16 +3,15 @@ package com.sadna.sadnamarket.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
+import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.StoreController;
+import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.users.ManagerPermission;
 import com.sadna.sadnamarket.domain.users.UserController;
 import com.sadna.sadnamarket.domain.users.UserDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 //this is the main facade
 //there will be a function for every use case
@@ -164,6 +163,26 @@ public class MarketService {
         try {
             String history = storeController.getStoreOrderHisotry(userId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getStoreInfo(int storeId) {
+        try {
+            StoreDTO storeDTO = storeController.getStoreInfo(storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(storeDTO));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getProductsInfo(int storeId) {
+        try {
+            Map<ProductDTO, Integer> productDTOs = storeController.getProductsInfo(storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
         }
         catch (Exception e) {
             return Response.createResponse(true, e.getMessage());

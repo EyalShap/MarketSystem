@@ -1,11 +1,16 @@
 package com.sadna.sadnamarket.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.Store;
+import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.service.MarketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -13,6 +18,7 @@ import java.util.Set;
 public class StoreRestController {
     
     MarketService marketService = MarketService.getInstance();
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/createStore" -Method POST -Body "founderId=0&storeName=MyStore"
     @PostMapping("/createStore")
@@ -91,4 +97,38 @@ public class StoreRestController {
     public Response getStoreOrderHistory(@RequestParam int userId, @RequestParam int storeId) {
         return marketService.getStoreOrderHistory(userId, storeId);
     }
+
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreInfo?storeId=0" -Method GET
+    @GetMapping("/getStoreInfo")
+    public Response getStoreInfo(@RequestParam int storeId) {
+        Response response = marketService.getStoreInfo(storeId);
+        if(!response.getError()) {
+            try {
+                StoreDTO storeDTO = objectMapper.readValue(response.getDataJson(), StoreDTO.class);
+                System.out.println(String.format("Store id: %d, Store name: %s", storeDTO.getStoreId(), storeDTO.getStoreName()));
+            }
+            catch(Exception e) {
+            }
+        }
+        return response;
+    }
+
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getProductsInfo?storeId=0" -Method GET
+    @GetMapping("/getProductsInfo")
+    public Response getProductsInfo(@RequestParam int storeId) {
+        Response response = marketService.getProductsInfo(storeId);
+        if(!response.getError()) {
+            try {
+                Map<ProductDTO, Integer> products = objectMapper.readValue(response.getDataJson(), new TypeReference<Map<ProductDTO, Integer>>() {});
+                for(ProductDTO product : products.keySet()) {
+                    System.out.println(String.format("Product id: %d, Product name: %s, Product amount: %d, Product price: %d", product.getProductId(), product.getProductName(), products.get(product), product.getProductPrice()));
+                }
+            }
+            catch(Exception e) {
+            }
+        }
+        return response;
+    }
+
+
 }

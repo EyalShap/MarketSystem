@@ -1,12 +1,13 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import java.util.List;
+import java.util.Map;
 
 public class StoreDTO {
     private int storeId;
     private boolean isActive;
     private String storeName;
-    private List<Integer> productIds;
+    private Map<Integer, Integer> productAmounts;
     private int founderId;
     private List<Integer> ownerIds;
     private List<Integer> managerIds;
@@ -14,11 +15,11 @@ public class StoreDTO {
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
 
-    public StoreDTO(int storeId, boolean isActive, String storeName, List<Integer> productIds, int founderId, List<Integer> ownerIds, List<Integer> managerIds, List<Integer> sellerIds, List<Integer> buyPolicyIds, List<Integer> discountPolicyIds) {
+    public StoreDTO(int storeId, boolean isActive, String storeName, Map<Integer, Integer> productAmounts, int founderId, List<Integer> ownerIds, List<Integer> managerIds, List<Integer> sellerIds, List<Integer> buyPolicyIds, List<Integer> discountPolicyIds) {
         this.storeId = storeId;
         this.isActive = isActive;
         this.storeName = storeName;
-        this.productIds = productIds;
+        this.productAmounts = productAmounts;
         this.founderId = founderId;
         this.ownerIds = ownerIds;
         this.managerIds = managerIds;
@@ -39,8 +40,8 @@ public class StoreDTO {
         return this.storeName;
     }
 
-    public List<Integer> getProductIds() {
-        return this.productIds;
+    public Map<Integer, Integer> getProductAmounts() {
+        return this.productAmounts;
     }
 
     public int getFounderId() {

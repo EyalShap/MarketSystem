@@ -69,7 +69,7 @@ public class StoreController {
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         int newProductId = ProductController.getInstance().addProduct(storeId, productName, productQuantity, productPrice);
-        stores.get(storeId).addProduct(newProductId);
+        stores.get(storeId).addProduct(newProductId, productQuantity);
         return newProductId;
     }
 
@@ -220,20 +220,8 @@ public class StoreController {
             if(orders.get(orderId).containsKey(storeId)) {
                 OrderDTO orderDTO = orders.get(orderId).get(storeId);
                 orderHistory += "------------------------------------------------------------\n";
-                orderHistory += String.format("%d. On date %s\n", orderIndex, orderDTO.getOrderDate().toString());
-                orderHistory += String.format("Store name at the time of order: \"%s\"", orderDTO.getStoreName());
-                orderHistory += "Order products:\n";
-
-                List<Integer> orderProductsIds = orderDTO.getProductIds();
-                int productIndex = 1;
-
-                for(int productId : orderProductsIds) {
-                    ProductDTO productDTO = objectMapper.readValue(orderDTO.getProductDescription(productId), ProductDTO.class);
-                    orderHistory += String.format("%d.\n", productIndex);
-                    orderHistory += String.format("%d X %s\n", orderDTO.getProductAmount(productId), productDTO);
-                    orderHistory += String.format("Price: %d\n\n", productDTO.getProductPrice());
-                    productIndex++;
-                }
+                orderHistory += getOrderInfo(orderDTO, orderIndex);
+                orderHistory += getProductsInfo(orderDTO);
                 orderHistory += "------------------------------------------------------------\n\n";
                 orderIndex++;
             }
@@ -246,7 +234,49 @@ public class StoreController {
         return orderHistory;
     }
 
+    private String getOrderInfo(OrderDTO orderDTO, int orderIndex) {
+        String res = String.format("%d. On date %s\n", orderIndex, orderDTO.getOrderDate().toString());
+        res += String.format("Store name at the time of order: \"%s\"", orderDTO.getStoreName());
+        res += "Order products:\n";
+        return res;
+    }
 
+    private String getProductsInfo(OrderDTO orderDTO) throws JsonProcessingException {
+        List<Integer> orderProductsIds = orderDTO.getProductIds();
+        int productIndex = 1;
+        String res = "";
 
+        for(int productId : orderProductsIds) {
+            ProductDTO productDTO = objectMapper.readValue(orderDTO.getProductDescription(productId), ProductDTO.class);
+            res += String.format("%d.\n", productIndex);
+            res += String.format("%d X %s\n", orderDTO.getProductAmount(productId), productDTO);
+            res += String.format("Price: %d\n\n", productDTO.getProductPrice());
+            productIndex++;
+        }
 
+        return res;
+    }
+
+    public StoreDTO getStoreInfo(int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+        return stores.get(storeId).getStoreDTO();
+    }
+
+    public Map<ProductDTO, Integer> getProductsInfo(int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+        Map<Integer, Integer> productIdsAmounts = stores.get(storeId).getProductAmounts();
+        Map<ProductDTO, Integer> productDTOsAmounts = new HashMap<>();
+        for(int productId : productIdsAmounts.keySet()) {
+            productDTOsAmounts.put(ProductController.getInstance().getProductDTO(productId), productDTOsAmounts.get(productId));
+        }
+        return productDTOsAmounts;
+    }
 }
