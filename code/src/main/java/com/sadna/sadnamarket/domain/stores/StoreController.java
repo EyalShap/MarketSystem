@@ -26,8 +26,8 @@ public class StoreController {
 
     // returns id of newly created store
     public int createStore(int founderId, String storeName) {
-        if(!UserController.getInstance().canCreateStore(founderId))
-            throw new IllegalArgumentException(String.format("User with id %d can not create a new store.", founderId));
+        // if(!UserController.getInstance().canCreateStore(founderId))
+        //     throw new IllegalArgumentException(String.format("User with id %d can not create a new store.", founderId));
         if(storeIdExists(nextStoreId))
             throw new IllegalArgumentException(String.format("A store with the id \"%d\" already exists.", nextStoreId));
         if(storeNameExists(storeName))
