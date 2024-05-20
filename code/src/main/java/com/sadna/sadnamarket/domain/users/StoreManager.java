@@ -28,4 +28,8 @@ public class StoreManager implements UserRole {
     public int getStoreId(){
         return storeId;
     }
+    @Override
+    public String toString(){
+        return "store founder of store: "+getStoreId();
+    }
 }

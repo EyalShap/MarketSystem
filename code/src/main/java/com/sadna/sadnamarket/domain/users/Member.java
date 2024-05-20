@@ -43,6 +43,12 @@ public class Member extends IUser {
     public void addNotification(String message){
 
     }
+    public void addRequest(){
+        
+    }
+    public void addRequest(){
+        
+    }
 
 
 

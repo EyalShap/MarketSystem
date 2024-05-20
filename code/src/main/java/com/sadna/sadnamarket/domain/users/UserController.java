@@ -13,10 +13,12 @@ public class UserController {
     private static UserController instance;
     private static HashMap<String,Member> members;
     private static HashMap<String,Member> userNameAndPassword;
+    private static String systemManagerUserName;
 
     private UserController() {
         members=new HashMap<>();
         userNameAndPassword=new HashMap<>();
+        systemManagerUserName=null;
     }
 
     public static UserController getInstance() {
@@ -24,8 +26,8 @@ public class UserController {
             instance = new UserController();
         }
         return instance;
-    }
-
+    }  
+    
     public boolean canAddProductsToStore(int userId, int storeId) {
         // Dana added this proxy function for the stock management use case
         return true;
