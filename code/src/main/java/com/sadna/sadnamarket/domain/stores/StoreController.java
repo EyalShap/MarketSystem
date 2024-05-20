@@ -1,6 +1,12 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.domain.orders.Order;
+import com.sadna.sadnamarket.domain.orders.OrderController;
+import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.products.ProductController;
+import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.ManagerPermission;
 import com.sadna.sadnamarket.domain.users.UserController;
 import com.sadna.sadnamarket.domain.users.UserDTO;
@@ -12,6 +18,7 @@ public class StoreController {
     private static StoreController instance;
     private int nextStoreId;
     private Map<Integer, Store> stores;
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     private StoreController() {
         this.nextStoreId = 0;
@@ -197,6 +204,44 @@ public class StoreController {
         }
         return sellers;
     }
+
+    public String getStoreOrderHisotry(int userId, int storeId) throws JsonProcessingException {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request order history.", userId, storeId));
+
+        Map<Integer, Map<Integer, OrderDTO>> orders = OrderController.getInstance().getOrders();
+        String orderHistory = String.format("Order History of store %d:\n", storeId);
+
+        int orderIndex = 1;
+
+        for(int orderId : orders.keySet()) {
+            if(orders.get(orderId).containsKey(storeId)) {
+                OrderDTO orderDTO = orders.get(orderId).get(storeId);
+                orderHistory += "------------------------------------------------------------\n";
+                orderHistory += String.format("%d. On date %s\n", orderIndex, orderDTO.getOrderDate().toString());
+                orderHistory += String.format("Store name at the time of order: \"%s\"", orderDTO.getStoreName());
+                orderHistory += "Order products:\n";
+
+                List<Integer> orderProductsIds = orderDTO.getProductIds();
+                int productIndex = 1;
+
+                for(int productId : orderProductsIds) {
+                    ProductDTO productDTO = objectMapper.readValue(orderDTO.getProductDescription(productId), ProductDTO.class);
+                    orderHistory += String.format("%d.\n", productIndex);
+                    orderHistory += String.format("%d X %s\n", orderDTO.getProductAmount(productId), productDTO);
+                    orderHistory += String.format("Price: %d\n\n", productDTO.getProductPrice());
+                    productIndex++;
+                }
+                orderHistory += "------------------------------------------------------------\n\n";
+                orderIndex++;
+            }
+        }
+
+        return orderHistory;
+    }
+
 
 
 
