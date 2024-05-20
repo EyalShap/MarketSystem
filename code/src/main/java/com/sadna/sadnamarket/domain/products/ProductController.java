@@ -21,19 +21,19 @@ public class ProductController {
     }
 
     // there should be all the product fields as parameters
-    public int addProduct(int storeId, String productName) {
+    public int addProduct(int storeId, String productName, int productQuantity, int productPrice) {
         // dana added this proxy function for stock management use case
         // assuming it returns the product id of the new product
         nextProductId++;
         return nextProductId - 1;
     }
 
-    public void removeProduct(int productId) {
+    public void removeProduct(int storeId, int productId) {
         // dana added this proxy function for stock management use case
     }
 
-    // there should be all the product fields as parameters
-    public void updateProduct(int productId, String newProductName) {
+    public void updateProduct(int storeId, int productId, String newProductName, Integer newQuantity, Integer newPrice) {
         // dana added this proxy function for stock management use case
     }
+
 }

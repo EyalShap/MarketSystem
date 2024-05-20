@@ -49,22 +49,41 @@ public class UserController {
         // Dana added this proxy function for the close store use case
     }
 
-    /*
-    public void addStoreOwnerRole(int currentOwnerId, int newOwnerId, int storeId) {
-        // Dana added this proxy function for adding a new owner use case
-        // Assuming this function checks if currentOwnerId can assign new owners to storeId
+    public UserDTO getUser(int userId) {
+        // Dana added this proxy function for the info request use case
+        return new UserDTO();
     }
 
-    public void addStoreManagerRole(int currentOwnerId, int newManagerId, int storeId, Set<Integer> managerPermissions) {
-        // Dana added this proxy function for adding a new manager use case
-        // Assuming this function checks if currentOwnerId can assign managers to storeId
+    public void sendStoreOwnerRequest(int currentOwnerId, int newOwnerId, int storeId) {
+        // Dana added this proxy function for the add store owner use case
+        // Assuming this function checks if currentOwnerId can assign newOwnerId as owner to storeId
     }
 
-    private Set<ManagerPermission> getPermissions(Set<Integer> managerPermissions) {
+    public void sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, Set<Integer> permissions) {
+        // Dana added this proxy function for the add store manager use case
+        // Assuming this function checks if currentOwnerId can assign newManagerId as manager to storeId
+        Set<ManagerPermission> convertedPermissions = convertPermissions(permissions);
+    }
+
+    private Set<ManagerPermission> convertPermissions(Set<Integer> managerPermissions) {
         Set<ManagerPermission> res = new HashSet<>();
         for(int permission : managerPermissions) {
             res.add(ManagerPermission.getPermission(permission));
         }
         return res;
-    }*/
+    }
+
+    public void acceptStoreOwnerRequest(int newOwnerId, int storeId) {
+        // Dana added this proxy function for the add store owner use case
+        // This function should add all of the roles and stuff
+        StoreController.getInstance().addStoreOwner(newOwnerId, storeId);
+    }
+
+    public void acceptStoreManagerRequest(int newManagerId, int storeId) {
+        // Dana added this proxy function for the add store owner use case
+        // This function should add all of the roles and stuff
+        // The permissions should be in the NewManagerRequest object in the list of the user notifications / requests
+        StoreController.getInstance().addStoreManager(newManagerId, storeId);
+    }
+
 }

@@ -1,16 +1,24 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.domain.orders.Order;
+import com.sadna.sadnamarket.domain.orders.OrderController;
+import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.products.ProductController;
+import com.sadna.sadnamarket.domain.products.ProductDTO;
+import com.sadna.sadnamarket.domain.users.ManagerPermission;
 import com.sadna.sadnamarket.domain.users.UserController;
+import com.sadna.sadnamarket.domain.users.UserDTO;
 import org.apache.catalina.User;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class StoreController {
     private static StoreController instance;
     private int nextStoreId;
-    private HashMap<Integer, Store> stores;
+    private Map<Integer, Store> stores;
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     private StoreController() {
         this.nextStoreId = 0;
@@ -52,7 +60,7 @@ public class StoreController {
         return false;
     }
 
-    public int addProductToStore(int userId, int storeId, String productName) {
+    public int addProductToStore(int userId, int storeId, String productName, int productQuantity, int productPrice) {
         if(!UserController.getInstance().canAddProductsToStore(userId, storeId))
             throw new IllegalArgumentException(String.format("User with id %d can not add a product to store with id %d.", userId, storeId));
         if(!storeIdExists(storeId))
@@ -60,7 +68,7 @@ public class StoreController {
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-        int newProductId = ProductController.getInstance().addProduct(storeId, productName);
+        int newProductId = ProductController.getInstance().addProduct(storeId, productName, productQuantity, productPrice);
         stores.get(storeId).addProduct(newProductId);
         return newProductId;
     }
@@ -74,11 +82,11 @@ public class StoreController {
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         stores.get(storeId).deleteProduct(productId);
-        ProductController.getInstance().removeProduct(productId);
+        ProductController.getInstance().removeProduct(storeId, productId);
         return productId;
     }
 
-    public int updateProduct(int userId, int storeId, int productId, String newProductName) {
+    public int updateProduct(int userId, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
         if(!UserController.getInstance().canUpdateProductsInStore(userId, storeId))
             throw new IllegalArgumentException(String.format("User with id %d can not update a product in store with id %d.", userId, storeId));
         if(!storeIdExists(storeId))
@@ -88,20 +96,43 @@ public class StoreController {
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-        ProductController.getInstance().updateProduct(productId, newProductName);
+        ProductController.getInstance().updateProduct(storeId, productId, newProductName, newQuantity, newPrice);
         return productId;
     }
 
-    /*
-    public int addStoreOwner(int currentOwnerId, int newOwnerId, int storeId) {
-        stores.get(storeId).addStoreOwner(currentOwnerId, newOwnerId);
-        return newOwnerId;
+    public void sendStoreOwnerRequest(int currentOwnerId, int newOwnerId, int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!stores.get(storeId).isStoreOwner(currentOwnerId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d.", currentOwnerId, storeId));
+        if(stores.get(storeId).isStoreOwner(newOwnerId))
+            throw new IllegalArgumentException(String.format("A user with id %d is already an owner of store %d.", newOwnerId, storeId));
+
+        UserController.getInstance().sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
     }
 
-    public int addStoreManager(int currentOwnerId, int newManagerId, int storeId) {
-        stores.get(storeId).addStoreManager(currentOwnerId, newManagerId);
-        return newManagerId;
-    }*/
+    public void sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, Set<Integer> permissions) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!stores.get(storeId).isStoreManager(currentOwnerId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d.", currentOwnerId, storeId));
+        if(stores.get(storeId).isStoreManager(newManagerId))
+            throw new IllegalArgumentException(String.format("A user with id %d is already a manager of store %d.", newManagerId, storeId));
+
+        UserController.getInstance().sendStoreManagerRequest(currentOwnerId, newManagerId, storeId, permissions);
+    }
+
+    public void addStoreOwner(int newOwnerId, int storeId) {
+        stores.get(storeId).addStoreOwner(newOwnerId);
+    }
+
+    public void addStoreManager(int newManagerId, int storeId) {
+        stores.get(storeId).addStoreManager(newManagerId);
+    }
 
     public boolean closeStore(int userId, int storeId) {
         if(!storeIdExists(storeId))
@@ -125,5 +156,97 @@ public class StoreController {
     private boolean isStoreActive(int storeId) {
         return stores.get(storeId).getIsActive();
     }
+
+    public List<UserDTO> getOwners(int userId, int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+        List<Integer> ownerIds = stores.get(storeId).getOwnerIds();
+        List<UserDTO> owners = new ArrayList<>();
+        for(int ownerId : ownerIds) {
+            owners.add(UserController.getInstance().getUser(ownerId));
+        }
+        return owners;
+    }
+
+    public List<UserDTO> getManagers(int userId, int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+        List<Integer> managerIds = stores.get(storeId).getManagerIds();
+        List<UserDTO> managers = new ArrayList<>();
+        for(int managerId : managerIds) {
+            managers.add(UserController.getInstance().getUser(managerId));
+        }
+        return managers;
+    }
+
+    public List<UserDTO> getSellers(int userId, int storeId) {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+        List<Integer> sellerIds = stores.get(storeId).getSellerIds();
+        List<UserDTO> sellers = new ArrayList<>();
+        for(int sellerId : sellerIds) {
+            sellers.add(UserController.getInstance().getUser(sellerId));
+        }
+        return sellers;
+    }
+
+    public String getStoreOrderHisotry(int userId, int storeId) throws JsonProcessingException {
+        if(!storeIdExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        if(!stores.get(storeId).isStoreOwner(userId))
+            throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request order history.", userId, storeId));
+
+        Map<Integer, Map<Integer, OrderDTO>> orders = OrderController.getInstance().getOrders();
+        String orderHistory = String.format("Order History of store %d:\n", storeId);
+
+        int orderIndex = 1;
+
+        for(int orderId : orders.keySet()) {
+            if(orders.get(orderId).containsKey(storeId)) {
+                OrderDTO orderDTO = orders.get(orderId).get(storeId);
+                orderHistory += "------------------------------------------------------------\n";
+                orderHistory += String.format("%d. On date %s\n", orderIndex, orderDTO.getOrderDate().toString());
+                orderHistory += String.format("Store name at the time of order: \"%s\"", orderDTO.getStoreName());
+                orderHistory += "Order products:\n";
+
+                List<Integer> orderProductsIds = orderDTO.getProductIds();
+                int productIndex = 1;
+
+                for(int productId : orderProductsIds) {
+                    ProductDTO productDTO = objectMapper.readValue(orderDTO.getProductDescription(productId), ProductDTO.class);
+                    orderHistory += String.format("%d.\n", productIndex);
+                    orderHistory += String.format("%d X %s\n", orderDTO.getProductAmount(productId), productDTO);
+                    orderHistory += String.format("Price: %d\n\n", productDTO.getProductPrice());
+                    productIndex++;
+                }
+                orderHistory += "------------------------------------------------------------\n\n";
+                orderIndex++;
+            }
+        }
+
+        if(orderIndex == 1) {
+            orderHistory += "There are no orders.\n";
+        }
+
+        return orderHistory;
+    }
+
+
+
 
 }
