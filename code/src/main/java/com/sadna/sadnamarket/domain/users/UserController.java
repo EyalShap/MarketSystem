@@ -15,7 +15,7 @@ public class UserController {
     private static HashMap<Integer,Guest> guests;
     private static HashMap<String,String> userNameAndPassword;
     private static String systemManagerUserName;
-    public static int guestId;
+    public static int guestId=1;
 
     private UserController() {
         members=new HashMap<>();
@@ -30,18 +30,17 @@ public class UserController {
         return instance;
     }  
     
-    public synchronized void enterAsGuest(){
-        guests.put(guestId,new Guest());
+    public synchronized int enterAsGuest(){
+        guests.put(guestId,new Guest(guestId));
         guestId++;
+        return guestId;
     }
-
-    public boolean checkPremssionToStore(String userName, int storeId,Permission permission){
+    public synchronized void exitGuest(int guestId){
+        guests.remove(guestId);
+    }
+    private boolean checkPremssionToStore(String userName, int storeId,Permission permission){
         Member member=getMember(userName);
-        for(UserRole role: member.getUserRoles()){
-            if(role.getStoreId()==storeId && role.hasPermission(permission)){
-                return true;
-            }
-        }
+        member.hasPermissionToRole(permission,storeId);
         return false;
     }
 
@@ -61,19 +60,40 @@ public class UserController {
         getMember(userName).addNotification(msg);
     }
 
-
+    public void setSystemManagerUserName(String username){
+        systemManagerUserName=username;
+    }
+    public String setSystemManagerUserName(){
+        return systemManagerUserName;
+    }
     public void login(String userName,String password){//the cart of the guest
-        if(!hasUser(userName))
-            throw new NoSuchElementException("User doesnt exist in system");
+        validateAuth(userName, password);
         getMember(userName).setLogin(true);
     }
-    public IUser logout(String userName){//the cart of the guest
+
+    public void login(String userName,String password, int guestId){//the cart of the guest
+        validateAuth(userName, password);
+        Member member=getMember(userName);
+        member.setLogin(true);
+        member.setCart(guests.get(guestId).getCart());
+        guests.remove(guestId);
+    }
+    private boolean isPasswordCorrect(String userName,String password){
+        return userNameAndPassword.get(userName).equals(password);
+    }
+
+    private void validateAuth(String userName,String password){
+        if(!hasUser(userName))
+            throw new NoSuchElementException("User doesnt exist in system");
+        if(!isPasswordCorrect(userName,password))
+            throw new NoSuchElementException("User doesnt exist in system");
+    }
+    public int logout(String userName){//the cart of the guest
         if(!hasUser(userName))
             throw new NoSuchElementException("User doesnt exist in system");
 
         getMember(userName).logout();
-        Guest guest=new Guest();
-        return guest;
+        return enterAsGuest();
     }
     public void setCart(Cart cart,String userName){
         getMember(userName).setCart(cart);
@@ -86,7 +106,9 @@ public class UserController {
         if(hasUser(userName)){
             throw new IllegalArgumentException("This name already in use");
         }
-
+        Member member=new Member();
+        members.put(userName, member);
+        userNameAndPassword.put(userName, Password);
     }
 
     public Member getMember(String userName){
@@ -103,6 +125,22 @@ public class UserController {
     public void removeRole(String username,int storeId){
         members.get(username).removeRole(storeId);
     }
+    private void addPremssionToStore(String userName, int storeId,Permission permission){
+        Member member=getMember(userName);
+        member.addPermissionToRole(permission, storeId);
+    }
+    public void AddPermissionAddProductsToStore(String userName, int storeId) {
+        addPremssionToStore(userName,storeId,Permission.ADD_PRODUCTS);
+    }
+
+    public void AddPermissionDeleteProductsFromStore(String userName, int storeId) {
+        addPremssionToStore(userName,storeId,Permission.DELETE_PRODUCTS);
+    }
+
+    public void AddPermissionUpdateProductsInStore(String userName, int storeId) {
+        addPremssionToStore(userName,storeId,Permission.UPDATE_PRODUCTS);
+    }
+
     /*
     public void addStoreOwnerRole(int currentOwnerId, int newOwnerId, int storeId) {
         // Dana added this proxy function for adding a new owner use case

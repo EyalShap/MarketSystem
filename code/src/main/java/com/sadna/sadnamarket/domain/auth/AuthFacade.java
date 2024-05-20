@@ -1,7 +1,5 @@
 package com.sadna.sadnamarket.domain.auth;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-
 import com.sadna.sadnamarket.domain.users.UserController;
 
 // import org.springframework.http.ResponseEntity;
@@ -34,7 +32,15 @@ private static AuthFacade instance;
         return token;
     
     }
-
+    public String auth(String username, String password,int guestId) {
+        
+        UserController.getInstance().login(username,password); 
+        // If the user is authenticated, generate a JWT token for the user
+        String token = tokenService.generateToken(username);
+        
+        return token;
+    
+    }
     public void logout() {
         // Logic to log out the current user
     }

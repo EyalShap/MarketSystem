@@ -1,4 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,16 +10,19 @@ public class Member extends IUser {
     private List<UserRole> roles;
     private HashMap<String,Integer> orders;
     private List<Notification> notifes;
+    private static final Logger logger = LogManager.getLogger(Member.class);
 
     private boolean isLoggedIn;
 
     public List<UserRole> getUserRoles(){
         return roles;
     }
-    private Member(){
+    public Member(){
         roles=new ArrayList<>();
         orders=new HashMap<>();
         isLoggedIn=false;
+        logger.info("hiiii");
+        
     }
    
     @Override
@@ -61,6 +66,21 @@ public class Member extends IUser {
                 roles.remove(role); break;
         }
         
+    }
+    public void addPermissionToRole(Permission permission, int storeId){
+        for(UserRole role: getUserRoles()){
+            if(role.getStoreId()==storeId){
+                role.addPermission(permission);
+            }
+        }
+    }
+    public boolean hasPermissionToRole(Permission permission, int storeId){
+        for(UserRole role: getUserRoles()){
+            if(role.getStoreId()==storeId && role.hasPermission(permission)){
+                return true;
+            }
+        }
+        return false;
     }
     
 }

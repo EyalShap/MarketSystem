@@ -19,10 +19,13 @@ public class StoreManager implements UserRole {
         }
     }
     public void addPermission(Permission permission){
-
+        permissions.add(permission);
     }
     public void removePermission(Permission permission){
-
+        if( hasPermission(permission))
+            removePermission(permission);
+        else
+           throw new IllegalArgumentException("user doesnt has this permission");
     }
     public boolean hasPermission(Permission permission){
         return permissions.contains(permission);

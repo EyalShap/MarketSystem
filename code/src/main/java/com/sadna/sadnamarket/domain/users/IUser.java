@@ -10,10 +10,12 @@ abstract class IUser {
     public abstract boolean isLoggedIn();
     
     // Regular method
-    public void addToCart(int productId) {
-        cart.addProduct(productId, 1);
+    public void addToCart(int productId, int amount) {
+        cart.addProduct(productId, amount);
     }
-
+    public Cart getCart(){
+        return this.cart;
+    }
     
     
 }

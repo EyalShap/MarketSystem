@@ -30,5 +30,13 @@ public class StoreOwner implements UserRole {
     public String toString(){
         return "store owner of store: "+storeId;
     }
+    @Override
+    public void addPermission(Permission permission) {
+        throw new IllegalStateException("store owner has all the roles");
+    }
+    @Override
+    public boolean isApointedByUser(String username) {
+        return appointments.contains(username);
+    }
     
 }

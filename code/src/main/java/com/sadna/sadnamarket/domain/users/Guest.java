@@ -6,7 +6,7 @@ public class Guest extends IUser {
 
     
 
-    public Guest(){
+    public Guest(int guestId){
         cart=new Cart();
     }
 
@@ -18,6 +18,5 @@ public class Guest extends IUser {
   
     public void login(String username,String password){
         AuthFacade.getInstance().auth(username, password);
-        UserController.getInstance().setCart(this.cart,username);
     }
 }
