@@ -6,6 +6,7 @@ import java.util.List;
 public class StoreManager implements UserRole {
     private int storeId;
     private List<Permission> permissions;
+    private List<String> appointments;
 
     public StoreManager(int storeId){
         this.storeId=storeId;
@@ -13,8 +14,9 @@ public class StoreManager implements UserRole {
     }
     @Override
     public void leaveRole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'leaveRole'");
+        for (String username: appointments) {
+            UserController.getInstance().removeRole(username,storeId);
+        }
     }
     public void addPermission(Permission permission){
 
@@ -28,6 +30,7 @@ public class StoreManager implements UserRole {
     public int getStoreId(){
         return storeId;
     }
+    
     @Override
     public String toString(){
         return "store founder of store: "+getStoreId();

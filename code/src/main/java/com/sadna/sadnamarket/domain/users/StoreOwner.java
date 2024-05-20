@@ -19,8 +19,9 @@ public class StoreOwner implements UserRole {
     }
     @Override
     public void leaveRole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'leaveRole'");
+        for (String username: appointments) {
+            UserController.getInstance().removeRole(username,storeId);
+        }
     }
     public int getStoreId(){
         return storeId;

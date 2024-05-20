@@ -38,8 +38,8 @@ public class Member extends IUser {
     public void addNotification(String message){
         notifes.add(new Notification(message));
     }
-    public void addRequest(){
-        
+    public void addRequest(String message,int store_id){
+        notifes.add(new Request(message,store_id));
     }
 
     public void logout(){
@@ -50,7 +50,17 @@ public class Member extends IUser {
         this.cart.purchase();
     }
 
+    public void addRole(UserRole role){
+        roles.add(role);
+    }
 
-
+    public void removeRole(int storeId){
+        for (UserRole role : roles) {
+            if(role.getStoreId()==storeId)
+                role.leaveRole();
+                roles.remove(role); break;
+        }
+        
+    }
     
 }

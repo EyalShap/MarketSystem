@@ -94,7 +94,15 @@ public class UserController {
             throw new NoSuchElementException("User doesnt exist in system");
         return members.get(userName);
     }
-
+    public void addStoreManager(String username,int storeId){
+        members.get(username).addRole(new StoreManager(storeId));
+    }
+    public void addStoreOwner(String username,int storeId){
+        members.get(username).addRole(new StoreOwner(storeId));
+    }
+    public void removeRole(String username,int storeId){
+        members.get(username).removeRole(storeId);
+    }
     /*
     public void addStoreOwnerRole(int currentOwnerId, int newOwnerId, int storeId) {
         // Dana added this proxy function for adding a new owner use case
