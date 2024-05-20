@@ -50,9 +50,9 @@ public class MarketService {
         }
     }
 
-    public Response addProductToStore(int userId, int storeId, String productName) {
+    public Response addProductToStore(int userId, int storeId, String productName, int productQuantity, int productPrice) {
         try {
-            int newProductId = storeController.addProductToStore(userId, storeId, productName);
+            int newProductId = storeController.addProductToStore(userId, storeId, productName, productQuantity, productPrice);
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
         catch (Exception e) {
@@ -70,9 +70,9 @@ public class MarketService {
         }
     }
 
-    public Response updateProductInStore(int userId, int storeId, int productId, String newProductName) {
+    public Response updateProductInStore(int userId, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
         try {
-            int updateProductId = storeController.updateProduct(userId, storeId, productId, newProductName);
+            int updateProductId = storeController.updateProduct(userId, storeId, productId, newProductName, newQuantity, newPrice);
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }
         catch (Exception e) {

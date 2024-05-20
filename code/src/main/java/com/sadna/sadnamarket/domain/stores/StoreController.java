@@ -6,15 +6,12 @@ import com.sadna.sadnamarket.domain.users.UserController;
 import com.sadna.sadnamarket.domain.users.UserDTO;
 import org.apache.catalina.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class StoreController {
     private static StoreController instance;
     private int nextStoreId;
-    private HashMap<Integer, Store> stores;
+    private Map<Integer, Store> stores;
 
     private StoreController() {
         this.nextStoreId = 0;
@@ -56,7 +53,7 @@ public class StoreController {
         return false;
     }
 
-    public int addProductToStore(int userId, int storeId, String productName) {
+    public int addProductToStore(int userId, int storeId, String productName, int productQuantity, int productPrice) {
         if(!UserController.getInstance().canAddProductsToStore(userId, storeId))
             throw new IllegalArgumentException(String.format("User with id %d can not add a product to store with id %d.", userId, storeId));
         if(!storeIdExists(storeId))
@@ -64,7 +61,7 @@ public class StoreController {
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-        int newProductId = ProductController.getInstance().addProduct(storeId, productName);
+        int newProductId = ProductController.getInstance().addProduct(storeId, productName, productQuantity, productPrice);
         stores.get(storeId).addProduct(newProductId);
         return newProductId;
     }
@@ -78,11 +75,11 @@ public class StoreController {
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         stores.get(storeId).deleteProduct(productId);
-        ProductController.getInstance().removeProduct(productId);
+        ProductController.getInstance().removeProduct(storeId, productId);
         return productId;
     }
 
-    public int updateProduct(int userId, int storeId, int productId, String newProductName) {
+    public int updateProduct(int userId, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
         if(!UserController.getInstance().canUpdateProductsInStore(userId, storeId))
             throw new IllegalArgumentException(String.format("User with id %d can not update a product in store with id %d.", userId, storeId));
         if(!storeIdExists(storeId))
@@ -92,7 +89,7 @@ public class StoreController {
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-        ProductController.getInstance().updateProduct(productId, newProductName);
+        ProductController.getInstance().updateProduct(storeId, productId, newProductName, newQuantity, newPrice);
         return productId;
     }
 

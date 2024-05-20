@@ -20,10 +20,10 @@ public class StoreRestController {
         return marketService.createStore(founderId, storeName);
     }
 
-    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/addProductToStore" -Method POST -Body "userId=1&storeId=0&productName=Apple"
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/addProductToStore" -Method POST -Body "userId=1&storeId=0&productName=Apple&productQuantity=10&productPrice=5"
     @PostMapping("/addProductToStore")
-    public Response addProductToStore(@RequestParam int userId, @RequestParam int storeId, @RequestParam String productName) {
-        return marketService.addProductToStore(userId, storeId, productName);
+    public Response addProductToStore(@RequestParam int userId, @RequestParam int storeId, @RequestParam String productName, @RequestParam int productQuantity, @RequestParam int productPrice) {
+        return marketService.addProductToStore(userId, storeId, productName, productQuantity, productPrice);
     }
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/deleteProductFromStore?userId=1&storeId=0&productId=0" -Method DELETE
@@ -32,10 +32,10 @@ public class StoreRestController {
         return marketService.deleteProductFromStore(userId, storeId, productId);
     }
 
-    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/updateProductInStore" -Method PUT -Body "userId=1&storeId=0&productId=0&newProductName=Banana" -ContentType "application/x-www-form-urlencoded"
+    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/updateProductInStore" -Method PUT -Body "userId=1&storeId=0&productId=0&newProductName=Banana&newQuantity=12&newPrice=4" -ContentType "application/x-www-form-urlencoded"
     @PutMapping("/updateProductInStore")
-    public Response updateProductInStore(@RequestParam int userId, @RequestParam int storeId, @RequestParam int productId, @RequestParam String newProductName) {
-        return marketService.updateProductInStore(userId, storeId, productId, newProductName);
+    public Response updateProductInStore(@RequestParam int userId, @RequestParam int storeId, @RequestParam int productId, @RequestParam String newProductName, @RequestParam int newQuantity, @RequestParam int newPrice) {
+        return marketService.updateProductInStore(userId, storeId, productId, newProductName, newQuantity, newPrice);
     }
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/sendStoreOwnerRequest" -Method POST -Body "currentOwnerId=0&newOwnerId=1&storeId=0"
