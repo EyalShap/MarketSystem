@@ -73,6 +73,16 @@ public class UserFacade {
         return true;
     }
 
+    public boolean canAddBuyPolicy(int storeId, int userId) {
+        // Dana added this proxy function
+        return true;
+    }
+
+    public boolean canAddDiscountPolicy(int storeId, int userId) {
+        // Dana added this proxy function
+        return true;
+    }
+
     public boolean userExists(int userId) {
         // Dana added this proxy function
         return true;

@@ -152,5 +152,13 @@ public class Store {
         this.sellerIds.add(sellerId);
     }
 
+    public void addBuyPolicy(int policyId) {
+        this.buyPolicyIds.add(policyId);
+    }
+
+    public void addDiscountPolicy(int policyId) {
+        this.discountPolicyIds.add(policyId);
+    }
+
 
 }

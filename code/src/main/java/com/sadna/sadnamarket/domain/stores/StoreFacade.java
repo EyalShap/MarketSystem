@@ -2,6 +2,8 @@ package com.sadna.sadnamarket.domain.stores;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
@@ -15,6 +17,8 @@ public class StoreFacade {
     private UserFacade userFacade;
     private ProductFacade productFacade;
     private OrderFacade orderFacade;
+    private BuyPolicyFacade buyPolicyFacade;
+    private DiscountPolicyFacade discountPolicyFacade;
     private IStoreRepository storeRepository;
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -35,6 +39,14 @@ public class StoreFacade {
 
     public void setOrderFacade(OrderFacade orderFacade) {
         this.orderFacade = orderFacade;
+    }
+
+    public void setBuyPolicyFacade(BuyPolicyFacade buyPolicyFacade) {
+        this.buyPolicyFacade = buyPolicyFacade;
+    }
+
+    public void setDiscountPolicyFacade(DiscountPolicyFacade discountPolicyFacade) {
+        this.discountPolicyFacade = discountPolicyFacade;
     }
 
     // returns id of newly created store
@@ -91,6 +103,8 @@ public class StoreFacade {
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d.", currentOwnerId, storeId));
         if(storeRepository.findStoreByID(storeId).isStoreOwner(newOwnerId))
             throw new IllegalArgumentException(String.format("A user with id %d is already an owner of store %d.", newOwnerId, storeId));
+        if(!userFacade.userExists(newOwnerId))
+            throw new IllegalArgumentException(String.format("A user with id %d does not exist.", newOwnerId));
 
         userFacade.sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
     }
@@ -104,6 +118,8 @@ public class StoreFacade {
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d.", currentOwnerId, storeId));
         if(storeRepository.findStoreByID(storeId).isStoreManager(newManagerId))
             throw new IllegalArgumentException(String.format("A user with id %d is already a manager of store %d.", newManagerId, storeId));
+        if(!userFacade.userExists(newManagerId))
+            throw new IllegalArgumentException(String.format("A user with id %d does not exist.", newManagerId));
 
         userFacade.sendStoreManagerRequest(currentOwnerId, newManagerId, storeId, permissions);
     }
@@ -295,4 +311,27 @@ public class StoreFacade {
         storeRepository.findStoreByID(storeId).addSeller(sellerId);
         return sellerId;
     }
+
+    public int addBuyPolicy(int userId, int storeId) {
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!userFacade.canAddBuyPolicy(storeId, userId))
+            throw new IllegalArgumentException(String.format("A user with id %d can not add buy policy to store with id %d.", userId, storeId));
+
+        int newPolicyId = buyPolicyFacade.addBuyPolicy();
+        storeRepository.findStoreByID(storeId).addBuyPolicy(newPolicyId);
+        return newPolicyId;
+    }
+
+    public int addDiscountPolicy(int userId, int storeId) {
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!userFacade.canAddDiscountPolicy(storeId, userId))
+            throw new IllegalArgumentException(String.format("A user with id %d can not add discount policy to store with id %d.", userId, storeId));
+
+        int newPolicyId = buyPolicyFacade.addBuyPolicy();
+        storeRepository.findStoreByID(storeId).addDiscountPolicy(newPolicyId);
+        return newPolicyId;
+    }
+
 }

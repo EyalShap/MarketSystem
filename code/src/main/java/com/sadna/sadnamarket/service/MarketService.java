@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sadna.sadnamarket.api.Response;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.IStoreRepository;
@@ -26,6 +28,8 @@ public class MarketService {
     private ProductFacade productFacade;
     private OrderFacade orderFacade;
     private StoreFacade storeFacade;
+    private BuyPolicyFacade buyPolicyFacade;
+    private DiscountPolicyFacade discountPolicyFacade;
     private static ObjectMapper objectMapper = new ObjectMapper();
     Logger logger = LoggerFactory.getLogger(MarketService.class);
 
@@ -34,10 +38,14 @@ public class MarketService {
         this.productFacade = new ProductFacade();
         this.orderFacade = new OrderFacade();
         this.storeFacade = new StoreFacade(storeRepository);
+        this.buyPolicyFacade = new BuyPolicyFacade();
+        this.discountPolicyFacade = new DiscountPolicyFacade();
 
         this.storeFacade.setUserFacade(userFacade);
         this.storeFacade.setProductFacade(productFacade);
         this.storeFacade.setOrderFacade(orderFacade);
+        this.storeFacade.setBuyPolicyFacade(buyPolicyFacade);
+        this.storeFacade.setDiscountPolicyFacade(discountPolicyFacade);
     }
 
     // ----------------------- Stores -----------------------
@@ -243,4 +251,27 @@ public class MarketService {
         }
     }
 
+    public Response addBuyPolicy(int userId, int storeId) {
+        try {
+            int policyId = storeFacade.addBuyPolicy(userId, storeId);
+            logger.info(String.format("User %d added buy policy with id %d to store %d.", userId, policyId, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
+        }
+        catch (Exception e) {
+            logger.error("addBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response addDiscountPolicy(int userId, int storeId) {
+        try {
+            int policyId = storeFacade.addDiscountPolicy(userId, storeId);
+            logger.info(String.format("User %d added discount policy with id %d to store %d.", userId, policyId, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
+        }
+        catch (Exception e) {
+            logger.error("addDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }
