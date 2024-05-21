@@ -1,8 +1,4 @@
 package com.sadna.sadnamarket.domain.users;
-
-import com.sadna.sadnamarket.domain.users.Member;
-import com.sadna.sadnamarket.domain.users.UserFacade;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,16 +6,13 @@ import java.util.NoSuchElementException;
 
 public class MemoryRepo implements IUserRepository {
     private static HashMap<String,Member> members;
-    private static HashMap<Integer,Guest> guests;
-    private static HashMap<String,String> userNameAndPassword;
 
     public MemoryRepo() {
         members=new HashMap<>();
-        userNameAndPassword=new HashMap<>();
     }
 
     @Override
-    public Member findById(String userName) {
+    public Member getMember(String userName) {
        if(hasMember(userName)){
             return members.get(userName);
        }
@@ -42,12 +35,10 @@ public class MemoryRepo implements IUserRepository {
 
     @Override
     public void store(Member member) {
-        members.put()
+        members.put(member.getName(),member);
     }
 
-    @Override
-    public void delete(String userName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
+   
+
+   
 }

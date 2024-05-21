@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.HashMap;
 
 public class Member extends IUser {
+    private String name;
     private List<UserRole> roles;
     private HashMap<String,Integer> orders;
     private List<Notification> notifes;
@@ -17,11 +18,12 @@ public class Member extends IUser {
     public List<UserRole> getUserRoles(){
         return roles;
     }
-    public Member(){
+    public Member(String name){
         roles=new ArrayList<>();
         orders=new HashMap<>();
         isLoggedIn=false;
         logger.info("hiiii");
+        this.name=name;
         
     }
    
@@ -59,14 +61,14 @@ public class Member extends IUser {
         roles.add(role);
     }
 
-    public void removeRole(int storeId){
-        for (UserRole role : roles) {
-            if(role.getStoreId()==storeId)
-                role.leaveRole();
-                roles.remove(role); break;
-        }
+    // public void removeRole(int storeId){
+    //     for (UserRole role : roles) {
+    //         if(role.getStoreId()==storeId)
+    //             role.leaveRole();
+    //             roles.remove(role); break;
+    //     }
         
-    }
+    //}
     public void addPermissionToRole(Permission permission, int storeId){
         for(UserRole role: getUserRoles()){
             if(role.getStoreId()==storeId){
@@ -81,6 +83,10 @@ public class Member extends IUser {
             }
         }
         return false;
+    }
+
+    public String getName(){
+        return name;
     }
     
 }

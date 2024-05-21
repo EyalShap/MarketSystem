@@ -17,12 +17,7 @@ public class StoreOwner implements UserRole {
             return false;
         return true;
     }
-    @Override
-    public void leaveRole() {
-        for (String username: appointments) {
-            UserFacade.getInstance().removeRole(username,storeId);
-        }
-    }
+   
     public int getStoreId(){
         return storeId;
     }
@@ -37,6 +32,10 @@ public class StoreOwner implements UserRole {
     @Override
     public boolean isApointedByUser(String username) {
         return appointments.contains(username);
+    }
+    @Override
+    public List<String> getAppointers() {
+       return appointments;
     }
     
 }
