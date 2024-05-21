@@ -1,4 +1,5 @@
 package com.sadna.sadnamarket.domain.users;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -8,7 +9,7 @@ public class UserFacade {
     private IUserRepository iUserRepo; 
     private static String systemManagerUserName;
 
-    private UserFacade(IUserRepository userRepo) {
+    public UserFacade(IUserRepository userRepo) {
         this.iUserRepo=userRepo;
         systemManagerUserName=null;
     }
@@ -31,6 +32,27 @@ public class UserFacade {
         iUserRepo.getMember(userName).addNotification(msg);
     }
 
+    public List<NotificationDTO> getNotifications(String userName){
+        List<Notification> notifes= iUserRepo.getMember(userName).getNotifications();
+        List<NotificationDTO> notificationDTOs=new ArrayList<NotificationDTO>();
+        for(Notification notif : notifes){
+            notificationDTOs.add(new NotificationDTO(notif));
+        }
+        return notificationDTOs;
+    }
+
+    public boolean isLoggedIn(String userName){
+        if(isExist(userName)){
+            Member member= iUserRepo.getMember(userName);
+            return member.isLoggedIn();
+        }
+        return false;
+    }
+
+    public boolean isExist(String userName){
+        return iUserRepo.hasMember(userName);
+    }
+
     public void setSystemManagerUserName(String username){
         systemManagerUserName=username;
     }
@@ -39,6 +61,10 @@ public class UserFacade {
     }
     public void login(String userName,String password){
         iUserRepo.getMember(userName).setLogin(true);
+    }
+
+    public void addRequest(String senderName,String userName, String message,int store_id){
+        iUserRepo.getMember(userName).addRequest(this,senderName,message, store_id);
     }
 
     public void login(String userName,String password, int guestId){//the cart of the guest
@@ -73,11 +99,11 @@ public class UserFacade {
     public void addStoreManager(String username,int storeId){
         iUserRepo.getMember(username).addRole(new StoreManager(storeId));
     }
-    public void addStoreOwner(String username,int storeId){
-        iUserRepo.getMember(username).addRole(new StoreOwner(storeId));
+    public void addStoreOwner(String username,String asignee, int storeId){
+        iUserRepo.getMember(username).addRole(new StoreOwner(storeId,asignee));
     }
     public void addStoreFounder(String username,int storeId){
-        iUserRepo.getMember(username).addRole(new StoreFounder(storeId));
+        iUserRepo.getMember(username).addRole(new StoreFounder(storeId,username));
     }
     public void addPremssionToStore(String userName, int storeId,Permission permission){
         Member member=iUserRepo.getMember(userName);

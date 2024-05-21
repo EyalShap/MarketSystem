@@ -11,6 +11,7 @@ public class MemoryRepo implements IUserRepository {
 
     public MemoryRepo() {
         members=new HashMap<>();
+        guests=new HashMap<>();
     }
 
     @Override
@@ -41,12 +42,14 @@ public class MemoryRepo implements IUserRepository {
     }
 
     public int addGuest(){
-        guests.put(guestId, new Guest(guestId));
-        return guestId++;
+        guests.put(++guestId, new Guest(guestId));
+        return guestId;
     }
    
     public void deleteGuest(int guestID){
-        guests.remove(guestID);
+        System.out.println("im here");
+        if(hasGuest(guestID)){
+            guests.remove(guestID);}
     }
 
      public boolean hasGuest(int guestID){

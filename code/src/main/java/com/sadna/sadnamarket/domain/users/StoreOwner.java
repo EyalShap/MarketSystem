@@ -3,13 +3,17 @@ package com.sadna.sadnamarket.domain.users;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+
 public class StoreOwner implements UserRole {
     private int storeId;
     private List<String> appointments;
+    private String apointee;
 
-    public StoreOwner(int storeId){
+    public StoreOwner(int storeId,String apointee){
         this.storeId=storeId;
         appointments=new ArrayList<String>();
+        this.apointee=apointee;
     }
     @Override
     public boolean hasPermission(Permission permission){
@@ -42,5 +46,15 @@ public class StoreOwner implements UserRole {
         userRoleVisitor.visitStoreOwner(this, storeId,member,userFacade);
     }
 
-    
+    public void addOwner(UserFacade userFacade,String senderName,String sentName){
+        if(sentName.equals(apointee)){
+            throw new IllegalAccessError("you cant apoint the one who apointed you");
+        }
+        userFacade.addRequest(senderName,sentName,"Hi, You have a request to be a Owener at: "+storeId,storeId);
+    }
+    @Override
+    public void addManager(UserFacade userFacade, String senderName, String sentName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addManager'");
+    }
 }

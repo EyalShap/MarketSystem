@@ -19,4 +19,10 @@ public class Notification {
     public String toString(){
         return "got message: "+ message+ " on: "+date.toString();
     }
+    public String getMessage(){
+        return message;
+    }
+    public LocalDateTime getDate(){
+        return date;
+    }
 }

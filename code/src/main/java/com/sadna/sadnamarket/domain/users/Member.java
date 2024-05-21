@@ -20,6 +20,7 @@ public class Member extends IUser {
     }
     public Member(String name){
         roles=new ArrayList<>();
+        notifes=new ArrayList<>();
         orders=new HashMap<>();
         isLoggedIn=false;
         logger.info("hiiii");
@@ -39,15 +40,22 @@ public class Member extends IUser {
     }
 
     public void setLogin(boolean isLoggedIn){
-        this.isLoggedIn=true;
+        this.isLoggedIn=isLoggedIn;
     }
 
     public void addNotification(String message){
         notifes.add(new Notification(message));
     }
-    public void addRequest(String message,int store_id){
-        notifes.add(new Request(message,store_id));
+    public void addRequest(UserFacade userFacade,String senderName,String sentName,int store_id){
+        for(UserRole role: getUserRoles()){
+            if(role.getStoreId()==store_id){
+                role.addOwner(userFacade, senderName, sentName);;
+            }
+        }
     }
+
+
+    
 
     public void logout(){
         this.setLogin(false);
@@ -86,6 +94,9 @@ public class Member extends IUser {
             }
         }
         return false;
+    }
+    public List<Notification> getNotifications(){
+        return notifes;
     }
 
     public String getName(){

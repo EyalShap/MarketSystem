@@ -1,10 +1,12 @@
 package com.sadna.sadnamarket.domain.users;
 
 public class Request extends Notification{
+    private String senderName;
     private int storeId;
-    private int sender;
-    public Request(String msg, int storeId) {
+    public Request(String senderName,String msg, int storeId) {
+        
         super(msg);
+        this.senderName=senderName;
         this.storeId=storeId;
     }
     @Override
@@ -17,6 +19,6 @@ public class Request extends Notification{
     }
     @Override
     public String toString(){
-        return super.toString()+" from store "+storeId+" from user: "+sender;
+        return super.toString()+" from store "+storeId+" from user: "+senderName;
     }
 }
