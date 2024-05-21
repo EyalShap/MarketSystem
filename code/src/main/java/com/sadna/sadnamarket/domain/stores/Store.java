@@ -81,12 +81,14 @@ public class Store {
         if(productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d already exists.", productId));
         if(amount < 0)
-            throw new IllegalArgumentException(String.format("%d is an illegal amount of products."));
+            throw new IllegalArgumentException(String.format("%d is an illegal amount of products.", amount));
 
         productAmounts.put(productId, amount);
     }
 
     public void deleteProduct(int productId) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
         if(!productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
 
@@ -94,6 +96,8 @@ public class Store {
     }
 
     public void setProductAmounts(int productId, int newAmount) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
         if(!productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
         if(newAmount < 0)
@@ -103,6 +107,8 @@ public class Store {
     }
 
     public int buyStoreProduct(int productId, int amount) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
         if(!productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
         if(amount < 0)
@@ -129,12 +135,35 @@ public class Store {
         return managerIds.contains(userId);
     }
 
+    public boolean isSeller(int userId) {
+        return sellerIds.contains(userId);
+    }
+
     public void addStoreOwner(int newOwnerId) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(isStoreOwner(newOwnerId))
+            throw new IllegalArgumentException(String.format("User %d is already a owner of store %d.", newOwnerId, storeId));
+
         ownerIds.add(newOwnerId);
     }
 
     public void addStoreManager(int newManagerId) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(isStoreManager(newManagerId))
+            throw new IllegalArgumentException(String.format("User %d is already a manager of store %d.", newManagerId, storeId));
+
         managerIds.add(newManagerId);
+    }
+
+    public void addSeller(int sellerId) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(isSeller(sellerId))
+            throw new IllegalArgumentException(String.format("User %d is already a seller of store %d.", sellerId, storeId));
+
+        this.sellerIds.add(sellerId);
     }
 
     public void closeStore() {
@@ -148,17 +177,31 @@ public class Store {
         return new StoreDTO(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds, orderIds);
     }
 
-    public void addSeller(int sellerId) {
-        this.sellerIds.add(sellerId);
-    }
-
     public void addBuyPolicy(int policyId) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(buyPolicyIds.contains(policyId))
+            throw new IllegalArgumentException(String.format("A buy policy with id %d already exists in store %d.", policyId, storeId));
+
         this.buyPolicyIds.add(policyId);
     }
 
     public void addDiscountPolicy(int policyId) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(discountPolicyIds.contains(policyId))
+            throw new IllegalArgumentException(String.format("A discount policy with id %d already exists in store %d.", policyId, storeId));
+
         this.discountPolicyIds.add(policyId);
     }
 
+    public void addOrderId(int orderId) {
+        if(!isActive)
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(orderIds.contains(orderId))
+            throw new IllegalArgumentException(String.format("A order with id %d already exists in store %d.", orderId, storeId));
+
+        this.orderIds.add(orderId);
+    }
 
 }

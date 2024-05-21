@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @JsonFilter("filter")
 public class StoreDTO {
@@ -78,5 +79,18 @@ public class StoreDTO {
 
     public List<Integer> getOrderIds() {
         return this.orderIds;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StoreDTO storeDTO = (StoreDTO) o;
+        return storeId == storeDTO.storeId && isActive == storeDTO.isActive && founderId == storeDTO.founderId && Objects.equals(storeName, storeDTO.storeName) && Objects.equals(productAmounts, storeDTO.productAmounts) && Objects.equals(ownerIds, storeDTO.ownerIds) && Objects.equals(managerIds, storeDTO.managerIds) && Objects.equals(sellerIds, storeDTO.sellerIds) && Objects.equals(buyPolicyIds, storeDTO.buyPolicyIds) && Objects.equals(discountPolicyIds, storeDTO.discountPolicyIds) && Objects.equals(orderIds, storeDTO.orderIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds, orderIds);
     }
 }

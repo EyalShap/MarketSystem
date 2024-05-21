@@ -1,11 +1,9 @@
 package com.sadna.sadnamarket.domain.users;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-
-public class UserDTO {
+public class MemberDTO {
     private int userId;
 
-    public UserDTO() {
+    public MemberDTO() {
     }
 
 

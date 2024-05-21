@@ -1,7 +1,5 @@
 package com.sadna.sadnamarket.domain.users;
 
-import com.sadna.sadnamarket.domain.stores.StoreFacade;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,9 +29,9 @@ public class UserFacade {
         // Dana added this proxy function for the close store use case
     }
 
-    public UserDTO getUser(int userId) {
+    public MemberDTO getUser(int userId) {
         // Dana added this proxy function for the info request use case
-        return new UserDTO();
+        return new MemberDTO();
     }
 
     public void sendStoreOwnerRequest(int currentOwnerId, int newOwnerId, int storeId) {

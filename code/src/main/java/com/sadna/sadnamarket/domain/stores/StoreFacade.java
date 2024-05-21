@@ -8,7 +8,7 @@ import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
-import com.sadna.sadnamarket.domain.users.UserDTO;
+import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 
 import java.util.*;
@@ -73,8 +73,6 @@ public class StoreFacade {
     public int deleteProduct(int userId, int storeId, int productId) {
         if(!userFacade.canDeleteProductsFromStore(userId, storeId))
             throw new IllegalArgumentException(String.format("User with id %d can not delete a product from store with id %d.", userId, storeId));
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         storeRepository.findStoreByID(storeId).deleteProduct(productId);
         productFacade.removeProduct(storeId, productId);
@@ -86,8 +84,6 @@ public class StoreFacade {
             throw new IllegalArgumentException(String.format("User with id %d can not update a product in store with id %d.", userId, storeId));
         if(!storeRepository.findStoreByID(storeId).productExists(productId))
             throw new IllegalArgumentException(String.format("A store with id %d does not have a product with id %d.", storeId, productId));
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         storeRepository.findStoreByID(storeId).setProductAmounts(productId, newQuantity);
         productFacade.updateProduct(storeId, productId, newProductName, newQuantity, newPrice);
@@ -155,42 +151,42 @@ public class StoreFacade {
         return storeRepository.findStoreByID(storeId).getIsActive();
     }
 
-    public List<UserDTO> getOwners(int userId, int storeId) {
+    public List<MemberDTO> getOwners(int userId, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(userId))
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<Integer> ownerIds = storeRepository.findStoreByID(storeId).getOwnerIds();
-        List<UserDTO> owners = new ArrayList<>();
+        List<MemberDTO> owners = new ArrayList<>();
         for(int ownerId : ownerIds) {
             owners.add(userFacade.getUser(ownerId));
         }
         return owners;
     }
 
-    public List<UserDTO> getManagers(int userId, int storeId) {
+    public List<MemberDTO> getManagers(int userId, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(userId))
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<Integer> managerIds = storeRepository.findStoreByID(storeId).getManagerIds();
-        List<UserDTO> managers = new ArrayList<>();
+        List<MemberDTO> managers = new ArrayList<>();
         for(int managerId : managerIds) {
             managers.add(userFacade.getUser(managerId));
         }
         return managers;
     }
 
-    public List<UserDTO> getSellers(int userId, int storeId) {
+    public List<MemberDTO> getSellers(int userId, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(userId))
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<Integer> sellerIds = storeRepository.findStoreByID(storeId).getSellerIds();
-        List<UserDTO> sellers = new ArrayList<>();
+        List<MemberDTO> sellers = new ArrayList<>();
         for(int sellerId : sellerIds) {
             sellers.add(userFacade.getUser(sellerId));
         }
@@ -294,15 +290,10 @@ public class StoreFacade {
     }
 
     public int buyStoreProduct(int storeId, int productId, int amount) {
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-
         return storeRepository.findStoreByID(storeId).buyStoreProduct(productId, amount);
     }
 
     public int addSeller(int storeId, int adderId, int sellerId) {
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
         if(!userFacade.canAddSellerToStore(storeId, adderId))
             throw new IllegalArgumentException(String.format("A user with id %d can not add sellers to store with id %d.", adderId, storeId));
         if(!userFacade.userExists(sellerId))
@@ -313,8 +304,6 @@ public class StoreFacade {
     }
 
     public int addBuyPolicy(int userId, int storeId) {
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
         if(!userFacade.canAddBuyPolicy(storeId, userId))
             throw new IllegalArgumentException(String.format("A user with id %d can not add buy policy to store with id %d.", userId, storeId));
 
@@ -324,14 +313,17 @@ public class StoreFacade {
     }
 
     public int addDiscountPolicy(int userId, int storeId) {
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
         if(!userFacade.canAddDiscountPolicy(storeId, userId))
             throw new IllegalArgumentException(String.format("A user with id %d can not add discount policy to store with id %d.", userId, storeId));
 
         int newPolicyId = buyPolicyFacade.addBuyPolicy();
         storeRepository.findStoreByID(storeId).addDiscountPolicy(newPolicyId);
         return newPolicyId;
+    }
+
+    public int addOrderId(int storeId, int orderId) {
+        storeRepository.findStoreByID(storeId).addOrderId(orderId);
+        return orderId;
     }
 
 }
