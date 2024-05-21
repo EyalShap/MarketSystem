@@ -3,11 +3,11 @@ package com.sadna.sadnamarket.domain.users;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 
 public class Guest extends IUser {
+    int guestID;
 
-    
-
-    public Guest(int guestId){
+    public Guest(int guestID){
         cart=new Cart();
+        this.guestID=guestID;
     }
 
 
@@ -16,7 +16,5 @@ public class Guest extends IUser {
         return false;
     }
   
-    public void login(String username,String password){
-        AuthFacade.getInstance().auth(username, password);
-    }
+    
 }

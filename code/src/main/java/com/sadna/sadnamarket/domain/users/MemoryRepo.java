@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 
 public class MemoryRepo implements IUserRepository {
     private static HashMap<String,Member> members;
+    private static HashMap<Integer,Guest> guests;
+    private int guestId=0;
 
     public MemoryRepo() {
         members=new HashMap<>();
@@ -38,7 +40,29 @@ public class MemoryRepo implements IUserRepository {
         members.put(member.getName(),member);
     }
 
+    public int addGuest(){
+        guests.put(guestId, new Guest(guestId));
+        return guestId++;
+    }
    
+    public void deleteGuest(int guestID){
+        guests.remove(guestID);
+    }
 
+     public boolean hasGuest(int guestID){
+        if(guests.containsKey(guestID))
+            return true;
+        else{ 
+            throw new NoSuchElementException("guest doesnt exist");
+        }
+    }
+
+    @Override
+    public Guest getGuest(int guestID) {
+       if(hasGuest(guestID)){
+            return guests.get(guestID);
+       }
+       else return null;
+    }
    
 }

@@ -12,22 +12,18 @@ import java.util.NoSuchElementException;
 public class UserFacade {
     private IUserRepository iUserRepo; 
     private static String systemManagerUserName;
-    public static int guestId=1;
 
     private UserFacade(IUserRepository userRepo) {
         this.iUserRepo=userRepo;
         systemManagerUserName=null;
     }
-
-    
     
     public synchronized int enterAsGuest(){
-        guests.put(guestId,new Guest(guestId));
-        guestId++;
-        return guestId;
+       return iUserRepo.addGuest();
     }
+
     public synchronized void exitGuest(int guestId){
-        guests.remove(guestId);
+        iUserRepo.deleteGuest(guestId);
     }
 
     public boolean checkPremssionToStore(String userName, int storeId,Permission permission){
@@ -47,16 +43,15 @@ public class UserFacade {
         return systemManagerUserName;
     }
     public void login(String userName,String password){//the cart of the guest
-        validateAuth(userName, password);
+       
         iUserRepo.getMember(userName).setLogin(true);
     }
 
     public void login(String userName,String password, int guestId){//the cart of the guest
-        validateAuth(userName, password);
         Member member=iUserRepo.getMember(userName);
         member.setLogin(true);
-        member.setCart(guests.get(guestId).getCart());
-        guests.remove(guestId);
+        member.setCart(iUserRepo.getGuest(guestId).getCart());
+        iUserRepo.deleteGuest(guestId);
     }
     
 
@@ -74,12 +69,8 @@ public class UserFacade {
   
 
     public void register(String userName, String Password){
-        if(hasUser(userName)){
-            throw new IllegalArgumentException("This name already in use");
-        }
         Member member=new Member(userName);
         iUserRepo.store(member);
-        userNameAndPassword.put(userName, Password);
     }
 
    
