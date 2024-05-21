@@ -13,15 +13,23 @@ public class AuthFacade {
         tokenService=new TokenService();
     }
     
-    public String auth(String username, String password) {
-        
-        iAuthRepository.login(username,password); 
-        // If the user is authenticated, generate a JWT token for the user
-        String token = tokenService.generateToken(username);
+    public String login(String username, String password) {
+        String token = auth(username,password);
         return token;
     
     }
-    public String auth(String jwt) {
+    public String login(String username, String password, int guestId) {
+        // If the user is authenticated, generate a JWT token for the user
+        String token = auth(username,password);
+        return token;
+    
+    }
+    private String auth(String username, String password){
+        iAuthRepository.login(username,password); 
+        // If the user is authenticated, generate a JWT token for the user
+        return tokenService.generateToken(username);
+    }
+    public String login(String jwt) {
         if(!tokenService.validateToken(jwt))
             throw new IllegalArgumentException("jwt isnt valid");
         else 
