@@ -15,6 +15,9 @@ public class ProductDTO {
         this.isActive = isActive;
     }
 
+    public ProductDTO(){
+    }
+
     public int getProductID() {
         return productID;
     }
@@ -29,11 +32,15 @@ public class ProductDTO {
 
     public String getProductName() {
         // dana added this proxy function for the get store order history use case
-        return "";
+        return this.productName;
     }
 
-    public int getProductPrice() {
+    public double getProductPrice() {
         // dana added this proxy function for the get store order history use case
-        return 0;
+        return this.productPrice;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

@@ -19,6 +19,11 @@ public class MarketServiceTestAdapter {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
+    public boolean reset(){
+        //function that resets the service and repositories
+        return true;
+        //please implement when possible
+    }
     public Response guestEnterSystem(){
         return Response.createResponse(false, "Imagine this is session ID or something");
     }
@@ -51,13 +56,15 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, "true");
     }
 
-    public Response getStoreData(int storeId) throws JsonProcessingException {
-        StoreDTO dto = new StoreDTO(0,true,"name", new ArrayList<>(), 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    public Response getStoreData(String token, int userId, int storeId) throws JsonProcessingException {
+        //empty token and -1 userId if guest
+        StoreDTO dto = new StoreDTO(4,true,"TestStore", new ArrayList<>(), 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         return Response.createResponse(false, objectMapper.writeValueAsString(dto));
     }
 
-    public Response getProductData(int productId) throws JsonProcessingException {
-        ProductDTO dto = new ProductDTO(0, "name", 0, "product", true);
+    public Response getProductData(String token, int userId, int productId) throws JsonProcessingException {
+        //empty token and -1 userId if guest
+        ProductDTO dto = new ProductDTO(5, "TestProduct", 0, "product", true);
         return Response.createResponse(false, objectMapper.writeValueAsString(dto));
     }
 

@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class StoreDTO {
@@ -27,10 +29,15 @@ public class StoreDTO {
         this.discountPolicyIds = discountPolicyIds;
     }
 
+    public StoreDTO(){
+
+    }
+
     public int getStoreId() {
         return this.storeId;
     }
 
+    @JsonProperty("isActive")
     public boolean isActive() {
         return this.isActive;
     }
@@ -65,5 +72,9 @@ public class StoreDTO {
 
     public List<Integer> getDiscountPolicyIds() {
         return this.discountPolicyIds;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
