@@ -1,10 +1,12 @@
 package com.sadna.sadnamarket.domain.users;
 
+import java.util.List;
+
 public interface UserRole {
-    void leaveRole();
     int getStoreId();
     boolean hasPermission(Permission permission);
     void addPermission(Permission permission);
     boolean isApointedByUser(String username);
+    List<String> getAppointers(); 
     
 } 
