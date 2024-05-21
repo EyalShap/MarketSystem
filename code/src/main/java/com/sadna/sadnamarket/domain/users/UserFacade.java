@@ -76,7 +76,9 @@ public class UserFacade {
     public void addStoreOwner(String username,int storeId){
         iUserRepo.getMember(username).addRole(new StoreOwner(storeId));
     }
-   
+    public void addStoreFounder(String username,int storeId){
+        iUserRepo.getMember(username).addRole(new StoreFounder(storeId));
+    }
     public void addPremssionToStore(String userName, int storeId,Permission permission){
         Member member=iUserRepo.getMember(userName);
         member.addPermissionToRole(permission, storeId);
@@ -87,29 +89,10 @@ public class UserFacade {
         List<UserRole> roles=member.getUserRoles();
         for(UserRole role : roles){
            // role
+           if(role.getStoreId()==storeId){
+            role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
+           }
         }
-
-        // for (String username: appointments) {
-        //     UserFacade.getInstance().removeRole(username,storeId);
-        // }
     }
 
-    /*
-    public void addStoreOwnerRole(int currentOwnerId, int newOwnerId, int storeId) {
-        // Dana added this proxy function for adding a new owner use case
-        // Assuming this function checks if currentOwnerId can assign new owners to storeId
-    }
-
-    public void addStoreManagerRole(int currentOwnerId, int newManagerId, int storeId, Set<Integer> managerPermissions) {
-        // Dana added this proxy function for adding a new manager use case
-        // Assuming this function checks if currentOwnerId can assign managers to storeId
-    }
-
-    private Set<ManagerPermission> getPermissions(Set<Integer> managerPermissions) {
-        Set<ManagerPermission> res = new HashSet<>();
-        for(int permission : managerPermissions) {
-            res.add(ManagerPermission.getPermission(permission));
-        }
-        return res;
-    }*/
 }

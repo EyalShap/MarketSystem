@@ -60,6 +60,9 @@ public class Member extends IUser {
     public void addRole(UserRole role){
         roles.add(role);
     }
+    public void removeRole(UserRole role){
+        roles.remove(role);
+    }
 
     // public void removeRole(int storeId){
     //     for (UserRole role : roles) {

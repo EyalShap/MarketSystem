@@ -10,9 +10,10 @@ public class StoreFounder extends StoreOwner{
         return true;
     }
     @Override
-    public void leaveRole() {
-        throw new IllegalStateException("Owner cant leave store");
+    public void leaveRole(UserRoleVisitor userRoleVisitor,int storeId,Member member,UserFacade userFacade) {
+        userRoleVisitor.visitStoreFounder(this,this.getStoreId(),member);
     }
+
     @Override
     public String toString(){
         return "store founder of store: "+getStoreId();

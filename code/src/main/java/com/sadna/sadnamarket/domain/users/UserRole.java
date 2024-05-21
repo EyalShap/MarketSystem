@@ -8,6 +8,6 @@ public interface UserRole {
     void addPermission(Permission permission);
     boolean isApointedByUser(String username);
     List<String> getAppointers(); 
-    public void leaveRole();
+    public void leaveRole(UserRoleVisitor userRoleVisitor,int storeId,Member member,UserFacade userFacade);
     
 } 

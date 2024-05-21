@@ -38,9 +38,9 @@ public class StoreOwner implements UserRole {
        return appointments;
     }
     @Override
-    public void leaveRole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'leaveRole'");
+    public void leaveRole(UserRoleVisitor userRoleVisitor,int storeId,Member member,UserFacade userFacade) {
+        userRoleVisitor.visitStoreOwner(this, storeId,member,userFacade);
     }
+
     
 }
