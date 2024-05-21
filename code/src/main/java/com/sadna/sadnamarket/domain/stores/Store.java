@@ -1,27 +1,27 @@
 package com.sadna.sadnamarket.domain.stores;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.sadna.sadnamarket.domain.products.ProductDTO;
+
+import java.util.*;
 
 public class Store {
     private int storeId;
     private boolean isActive;
     private String storeName;
-    private List<Integer> productIds;
+    private Map<Integer, Integer> productAmounts;
     private int founderId;
     private List<Integer> ownerIds;
     private List<Integer> managerIds;
     private List<Integer> sellerIds;
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
-
+    private List<Integer> orderIds;
 
     public Store(int storeId, String storeName, int founderId) {
         this.storeId = storeId;
         this.isActive = true;
         this.storeName = storeName;
-        this.productIds = new ArrayList<>();
+        this.productAmounts = new HashMap<>();
         this.founderId = founderId;
         this.ownerIds = new ArrayList<>();
         this.ownerIds.add(founderId);
@@ -30,6 +30,7 @@ public class Store {
         this.buyPolicyIds = new ArrayList<>();
         this.buyPolicyIds.add(0); // assuming buyPolicyId = 0 is default policy
         this.discountPolicyIds = new ArrayList<>();
+        this.orderIds = new ArrayList<>();
     }
 
     public int getStoreId() {
@@ -60,22 +61,49 @@ public class Store {
         return this.sellerIds;
     }
 
-    public void addProduct(int productId) {
+    public Map<Integer, Integer> getProductAmounts() {
+        return this.productAmounts;
+    }
+
+    public List<Integer> getBuyPolicyIds() {
+        return this.buyPolicyIds;
+    }
+
+    public List<Integer> getDiscountPolicyIds() {
+        return this.discountPolicyIds;
+    }
+
+    public List<Integer> getOrderIds() {
+        return this.orderIds;
+    }
+
+    public void addProduct(int productId, int amount) {
         if(productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d already exists.", productId));
+        if(amount < 0)
+            throw new IllegalArgumentException(String.format("%d is an illegal amount of products."));
 
-        productIds.add(productId);
+        productAmounts.put(productId, amount);
     }
 
     public void deleteProduct(int productId) {
         if(!productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
 
-        productIds.remove(productId);
+        productAmounts.remove(productId);
+    }
+
+    public void setProductAmounts(int productId, int newAmount) {
+        if(!productExists(productId))
+            throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
+        if(newAmount < 0)
+            throw new IllegalArgumentException(String.format("%d is an illegal amount of products."));
+
+        productAmounts.put(productId, newAmount);
     }
 
     public boolean productExists(int productId) {
-        return productIds.contains(productId);
+        return productAmounts.containsKey(productId);
     }
 
     public boolean isStoreOwner(int userId) {
@@ -102,5 +130,10 @@ public class Store {
 
         this.isActive = false;
     }
+
+    public StoreDTO getStoreDTO() {
+        return new StoreDTO(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds, orderIds);
+    }
+
 
 }

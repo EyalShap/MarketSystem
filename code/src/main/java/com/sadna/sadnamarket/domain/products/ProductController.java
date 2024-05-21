@@ -36,4 +36,9 @@ public class ProductController {
         // dana added this proxy function for stock management use case
     }
 
+    public ProductDTO getProductDTO(int productId) {
+        // dana added this proxy function for get products use case
+        return new ProductDTO();
+    }
+
 }
