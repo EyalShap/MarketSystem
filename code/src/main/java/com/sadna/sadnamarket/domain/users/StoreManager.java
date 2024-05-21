@@ -14,7 +14,7 @@ public class StoreManager implements UserRole {
     }
     @Override
     public void leaveRole(UserRoleVisitor userRoleVisitor,int storeId,Member member,UserFacade userFacade) {
-        userRoleVisitor.visitStoreManager(this,this.getStoreId());
+        userRoleVisitor.visitStoreManager(this,this.getStoreId(),member);
     }
     public void addPermission(Permission permission){
         permissions.add(permission);
