@@ -13,11 +13,11 @@ public class StoreManager implements UserRole {
         permissions=new ArrayList<>();
     }
     @Override
-    // public void leaveRole() {
-    //     for (String username: appointments) {
-    //         UserFacade.getInstance().removeRole(username,storeId);
-    //     }
-    // }
+    public void leaveRole() {
+        for (String username: appointments) {
+          //  UserFacade.getInstance().removeRole(username,storeId);
+        }
+    }
     public void addPermission(Permission permission){
         permissions.add(permission);
     }

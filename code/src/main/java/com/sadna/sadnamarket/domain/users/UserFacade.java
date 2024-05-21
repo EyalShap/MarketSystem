@@ -1,14 +1,9 @@
 package com.sadna.sadnamarket.domain.users;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 
-//this is the facade of the Users package
-//it merely exists so the folder appears on git
-//you may delete these comments when beggining work
-//have fun :)
+
 public class UserFacade {
     private IUserRepository iUserRepo; 
     private static String systemManagerUserName;
@@ -42,15 +37,16 @@ public class UserFacade {
     public String setSystemManagerUserName(){
         return systemManagerUserName;
     }
-    public void login(String userName,String password){//the cart of the guest
-       
+    public void login(String userName,String password){
         iUserRepo.getMember(userName).setLogin(true);
     }
 
     public void login(String userName,String password, int guestId){//the cart of the guest
         Member member=iUserRepo.getMember(userName);
+        if(member.getCart().isEmpty()){
+            member.setCart(iUserRepo.getGuest(guestId).getCart());
+        }
         member.setLogin(true);
-        member.setCart(iUserRepo.getGuest(guestId).getCart());
         iUserRepo.deleteGuest(guestId);
     }
     

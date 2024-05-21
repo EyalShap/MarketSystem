@@ -37,5 +37,10 @@ public class StoreOwner implements UserRole {
     public List<String> getAppointers() {
        return appointments;
     }
+    @Override
+    public void leaveRole() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'leaveRole'");
+    }
     
 }
