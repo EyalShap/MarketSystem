@@ -1,32 +1,36 @@
 package com.sadna.sadnamarket.domain.stores;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.sadna.sadnamarket.domain.products.ProductDTO;
+
+import java.util.*;
 
 public class Store {
     private int storeId;
     private boolean isActive;
     private String storeName;
-    private List<Integer> productIds;
+    private Map<Integer, Integer> productAmounts;
     private int founderId;
     private List<Integer> ownerIds;
     private List<Integer> managerIds;
+    private List<Integer> sellerIds;
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
+    private List<Integer> orderIds;
 
     public Store(int storeId, String storeName, int founderId) {
         this.storeId = storeId;
         this.isActive = true;
         this.storeName = storeName;
-        this.productIds = new ArrayList<>();
+        this.productAmounts = new HashMap<>();
         this.founderId = founderId;
         this.ownerIds = new ArrayList<>();
         this.ownerIds.add(founderId);
         this.managerIds = new ArrayList<>();
+        this.sellerIds = new ArrayList<>();
         this.buyPolicyIds = new ArrayList<>();
         this.buyPolicyIds.add(0); // assuming buyPolicyId = 0 is default policy
         this.discountPolicyIds = new ArrayList<>();
+        this.orderIds = new ArrayList<>();
     }
 
     public int getStoreId() {
@@ -53,58 +57,100 @@ public class Store {
         return this.managerIds;
     }
 
-    public void addProduct(int productId) {
+    public List<Integer> getSellerIds() {
+        return this.sellerIds;
+    }
+
+    public Map<Integer, Integer> getProductAmounts() {
+        return this.productAmounts;
+    }
+
+    public List<Integer> getBuyPolicyIds() {
+        return this.buyPolicyIds;
+    }
+
+    public List<Integer> getDiscountPolicyIds() {
+        return this.discountPolicyIds;
+    }
+
+    public List<Integer> getOrderIds() {
+        return this.orderIds;
+    }
+
+    public void addProduct(int productId, int amount) {
         if(productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d already exists.", productId));
+        if(amount < 0)
+            throw new IllegalArgumentException(String.format("%d is an illegal amount of products."));
 
-        productIds.add(productId);
+        productAmounts.put(productId, amount);
     }
 
     public void deleteProduct(int productId) {
         if(!productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
 
-        productIds.remove(productId);
+        productAmounts.remove(productId);
+    }
+
+    public void setProductAmounts(int productId, int newAmount) {
+        if(!productExists(productId))
+            throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
+        if(newAmount < 0)
+            throw new IllegalArgumentException(String.format("%d is an illegal amount of products.", newAmount));
+
+        productAmounts.put(productId, newAmount);
+    }
+
+    public int buyStoreProduct(int productId, int amount) {
+        if(!productExists(productId))
+            throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
+        if(amount < 0)
+            throw new IllegalArgumentException(String.format("%d is an illegal amount of products.", amount));
+
+        int currAmount = productAmounts.get(productId);
+        if(amount > currAmount)
+            throw new IllegalArgumentException(String.format("You can not buy %d of product %d because there are only %d in the store.", amount, productId, currAmount));
+
+        int newAmount = currAmount - amount;
+        setProductAmounts(productId, newAmount);
+        return newAmount;
     }
 
     public boolean productExists(int productId) {
-        return productIds.contains(productId);
+        return productAmounts.containsKey(productId);
     }
 
-    /*
-    public void addStoreOwner(int currentOwnerId, int newOwnerId) {
-        if(!isStoreOwner(currentOwnerId))
-            throw new IllegalArgumentException(String.format("A user with id %d can not add a new owner to store with id %d.", currentOwnerId, storeId));
-        if(isStoreOwner(newOwnerId))
-            throw new IllegalArgumentException(String.format("A user with id %d is already a owner of store with id %d.", newOwnerId, storeId));
-
-        ownerIds.add(newOwnerId);
-    }
-
-    private boolean isStoreOwner(int userId) {
+    public boolean isStoreOwner(int userId) {
         return ownerIds.contains(userId);
     }
 
-    public void addStoreManager(int currentOwnerId, int newManagerId) {
-        if(!isStoreOwner(currentOwnerId))
-            throw new IllegalArgumentException(String.format("A user with id %d can not add a new owner to store with id %d.", currentOwnerId, storeId));
-        if(isStoreManager(newManagerId))
-            throw new IllegalArgumentException(String.format("A user with id %d is already a manager of store with id %d.", newManagerId, storeId));
+    public boolean isStoreManager(int userId) {
+        return managerIds.contains(userId);
+    }
 
+    public void addStoreOwner(int newOwnerId) {
+        ownerIds.add(newOwnerId);
+    }
+
+    public void addStoreManager(int newManagerId) {
         managerIds.add(newManagerId);
     }
 
-    private boolean isStoreManager(int userId) {
-        return managerIds.contains(userId);
-    }*/
-
-    public void closeStore(int userId) {
+    public void closeStore() {
         if(!this.isActive)
             throw new IllegalArgumentException(String.format("A store with id %d is already closed.", storeId));
-        if(founderId != userId)
-            throw new IllegalArgumentException(String.format("A user with id %d can not close the store with id %d (not a founder).", userId, storeId));
 
         this.isActive = false;
     }
+
+    public StoreDTO getStoreDTO() {
+        return new StoreDTO(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds, orderIds);
+    }
+
+    public void addSeller(int sellerId) {
+        this.sellerIds.add(sellerId);
+    }
+
 
 }
