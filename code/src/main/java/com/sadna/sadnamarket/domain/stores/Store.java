@@ -97,9 +97,24 @@ public class Store {
         if(!productExists(productId))
             throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
         if(newAmount < 0)
-            throw new IllegalArgumentException(String.format("%d is an illegal amount of products."));
+            throw new IllegalArgumentException(String.format("%d is an illegal amount of products.", newAmount));
 
         productAmounts.put(productId, newAmount);
+    }
+
+    public int buyStoreProduct(int productId, int amount) {
+        if(!productExists(productId))
+            throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
+        if(amount < 0)
+            throw new IllegalArgumentException(String.format("%d is an illegal amount of products.", amount));
+
+        int currAmount = productAmounts.get(productId);
+        if(amount > currAmount)
+            throw new IllegalArgumentException(String.format("You can not buy %d of product %d because there are only %d in the store.", amount, productId, currAmount));
+
+        int newAmount = currAmount - amount;
+        setProductAmounts(productId, newAmount);
+        return newAmount;
     }
 
     public boolean productExists(int productId) {
@@ -122,17 +137,19 @@ public class Store {
         managerIds.add(newManagerId);
     }
 
-    public void closeStore(int userId) {
+    public void closeStore() {
         if(!this.isActive)
             throw new IllegalArgumentException(String.format("A store with id %d is already closed.", storeId));
-        if(founderId != userId)
-            throw new IllegalArgumentException(String.format("A user with id %d can not close the store with id %d (not a founder).", userId, storeId));
 
         this.isActive = false;
     }
 
     public StoreDTO getStoreDTO() {
         return new StoreDTO(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds, orderIds);
+    }
+
+    public void addSeller(int sellerId) {
+        this.sellerIds.add(sellerId);
     }
 
 

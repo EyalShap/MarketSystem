@@ -18,7 +18,10 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/stores")
 public class StoreRestController {
-    
+
+    // don't need this for version 1
+
+    /*
     MarketService marketService = MarketService.getInstance();
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -144,6 +147,6 @@ public class StoreRestController {
 
         return res;
     }
-
+    */
 
 }

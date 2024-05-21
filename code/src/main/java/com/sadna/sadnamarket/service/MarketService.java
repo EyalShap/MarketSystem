@@ -1,16 +1,16 @@
 package com.sadna.sadnamarket.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sadna.sadnamarket.api.Response;
-import com.sadna.sadnamarket.domain.products.ProductDTO;
-import com.sadna.sadnamarket.domain.stores.StoreController;
+import com.sadna.sadnamarket.domain.orders.OrderFacade;
+import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.stores.IStoreRepository;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
-import com.sadna.sadnamarket.domain.users.ManagerPermission;
-import com.sadna.sadnamarket.domain.users.UserController;
 import com.sadna.sadnamarket.domain.users.UserDTO;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,21 +21,21 @@ import java.util.*;
 
 @Service
 public class MarketService {
-    private static MarketService instance;
-    private static UserController userController;
-    private static StoreController storeController;
+    private UserFacade userFacade;
+    private ProductFacade productFacade;
+    private OrderFacade orderFacade;
+    private StoreFacade storeFacade;
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private MarketService() {
-        this.userController = UserController.getInstance();
-        this.storeController = StoreController.getInstance();
-    }
+    public MarketService(IStoreRepository storeRepository) {
+        this.userFacade = new UserFacade();
+        this.productFacade = new ProductFacade();
+        this.orderFacade = new OrderFacade();
+        this.storeFacade = new StoreFacade(storeRepository);
 
-    public static MarketService getInstance() {
-        if (instance == null) {
-            instance = new MarketService();
-        }
-        return instance;
+        this.storeFacade.setUserFacade(userFacade);
+        this.storeFacade.setProductFacade(productFacade);
+        this.storeFacade.setOrderFacade(orderFacade);
     }
 
     // ----------------------- Stores -----------------------
@@ -43,7 +43,7 @@ public class MarketService {
     // returns id of the created store
     public Response createStore(int founderId, String storeName) {
         try {
-            int newStoreId = storeController.createStore(founderId, storeName); // will throw an exception if the store already exists
+            int newStoreId = storeFacade.createStore(founderId, storeName); // will throw an exception if the store already exists
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
         }
         catch (Exception e) {
@@ -53,7 +53,7 @@ public class MarketService {
 
     public Response addProductToStore(int userId, int storeId, String productName, int productQuantity, int productPrice) {
         try {
-            int newProductId = storeController.addProductToStore(userId, storeId, productName, productQuantity, productPrice);
+            int newProductId = storeFacade.addProductToStore(userId, storeId, productName, productQuantity, productPrice);
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
         catch (Exception e) {
@@ -63,7 +63,7 @@ public class MarketService {
 
     public Response deleteProductFromStore(int userId, int storeId, int productId) {
         try {
-            int deletedProductId = storeController.deleteProduct(userId, storeId, productId);
+            int deletedProductId = storeFacade.deleteProduct(userId, storeId, productId);
             return Response.createResponse(false, objectMapper.writeValueAsString(deletedProductId));
         }
         catch (Exception e) {
@@ -73,7 +73,7 @@ public class MarketService {
 
     public Response updateProductInStore(int userId, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
         try {
-            int updateProductId = storeController.updateProduct(userId, storeId, productId, newProductName, newQuantity, newPrice);
+            int updateProductId = storeFacade.updateProduct(userId, storeId, productId, newProductName, newQuantity, newPrice);
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }
         catch (Exception e) {
@@ -83,7 +83,7 @@ public class MarketService {
 
     public Response closeStore(int userId, int storeId) {
         try {
-            boolean storeClosed = storeController.closeStore(userId, storeId);
+            boolean storeClosed = storeFacade.closeStore(userId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(storeClosed));
         }
         catch (Exception e) {
@@ -93,7 +93,7 @@ public class MarketService {
 
     public Response getOwners(int userId, int storeId) {
         try {
-            List<UserDTO> owners = storeController.getOwners(userId, storeId);
+            List<UserDTO> owners = storeFacade.getOwners(userId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(owners));
         }
         catch (Exception e) {
@@ -103,7 +103,7 @@ public class MarketService {
 
     public Response getManagers(int userId, int storeId) {
         try {
-            List<UserDTO> managers = storeController.getManagers(userId, storeId);
+            List<UserDTO> managers = storeFacade.getManagers(userId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(managers));
         }
         catch (Exception e) {
@@ -113,7 +113,7 @@ public class MarketService {
 
     public Response getSellers(int userId, int storeId) {
         try {
-            List<UserDTO> sellers = storeController.getSellers(userId, storeId);
+            List<UserDTO> sellers = storeFacade.getSellers(userId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(sellers));
         }
         catch (Exception e) {
@@ -123,7 +123,7 @@ public class MarketService {
 
     public Response sendStoreOwnerRequest(int currentOwnerId, int newOwnerId, int storeId) {
         try {
-            storeController.sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
+            storeFacade.sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -133,7 +133,7 @@ public class MarketService {
 
     public Response sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, Set<Integer> permissions) {
         try {
-            storeController.sendStoreManagerRequest(currentOwnerId, newManagerId, storeId, permissions);
+            storeFacade.sendStoreManagerRequest(currentOwnerId, newManagerId, storeId, permissions);
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -143,7 +143,7 @@ public class MarketService {
 
     public Response acceptStoreOwnerRequest(int newOwnerId, int storeId) {
         try {
-            userController.acceptStoreOwnerRequest(newOwnerId, storeId);
+            userFacade.acceptStoreOwnerRequest(newOwnerId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(newOwnerId));
         }
         catch (Exception e) {
@@ -153,7 +153,7 @@ public class MarketService {
 
     public Response acceptStoreManagerRequest(int newManagerId, int storeId) {
         try {
-            userController.acceptStoreManagerRequest(newManagerId, storeId);
+            userFacade.acceptStoreManagerRequest(newManagerId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(newManagerId));
         }
         catch (Exception e) {
@@ -163,7 +163,7 @@ public class MarketService {
 
     public Response getStoreOrderHistory(int userId, int storeId) {
         try {
-            String history = storeController.getStoreOrderHisotry(userId, storeId);
+            String history = storeFacade.getStoreOrderHisotry(userId, storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
         }
         catch (Exception e) {
@@ -177,7 +177,7 @@ public class MarketService {
             SimpleFilterProvider filterProvider = new SimpleFilterProvider();
             filterProvider.addFilter("filter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
 
-            StoreDTO storeDTO = storeController.getStoreInfo(storeId);
+            StoreDTO storeDTO = storeFacade.getStoreInfo(storeId);
             String json = objectMapper.writer(filterProvider).writeValueAsString(storeDTO);
             return Response.createResponse(false, json);
         }
@@ -188,8 +188,18 @@ public class MarketService {
 
     public Response getProductsInfo(int storeId) {
         try {
-            Map<String, Integer> productDTOs = storeController.getProductsInfo(storeId);
+            Map<String, Integer> productDTOs = storeFacade.getProductsInfo(storeId);
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response addSellerToStore(int storeId, int adderId, int sellerId) {
+        try {
+            storeFacade.addSeller(storeId, adderId, sellerId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(sellerId));
         }
         catch (Exception e) {
             return Response.createResponse(true, e.getMessage());
