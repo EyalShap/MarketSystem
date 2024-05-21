@@ -1,0 +1,26 @@
+2024-05-21 16:52:28 INFO  c.s.s.SadnaMarketApplication - Starting SadnaMarketApplication using Java 22.0.1 with PID 14852 (C:\Users\danaf\OneDrive\שולחן העבודה\uni\שנה ג\סמסטר ב\סדנא\code\MarketSystem\code\target\classes started by danaf in C:\Users\danaf\OneDrive\שולחן העבודה\uni\שנה ג\סמסטר ב\סדנא\code\MarketSystem\code)
+2024-05-21 16:52:28 INFO  c.s.s.SadnaMarketApplication - No active profile set, falling back to 1 default profile: "default"
+2024-05-21 16:52:29 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2024-05-21 16:52:29 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2024-05-21 16:52:29 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2024-05-21 16:52:29 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2024-05-21 16:52:29 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-05-21 16:52:29 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1315 ms
+2024-05-21 16:52:29 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2024-05-21 16:52:29 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2024-05-21 16:52:29 INFO  c.s.s.SadnaMarketApplication - Started SadnaMarketApplication in 2.702 seconds (process running for 3.129)
+2024-05-21 16:52:29 INFO  c.s.s.service.MarketService - Log test
+2024-05-21 16:52:29 ERROR c.s.s.service.MarketService - createStore: A store with the name "hi" already exists.
+2024-05-21 17:02:39 INFO  c.s.s.SadnaMarketApplication - Starting SadnaMarketApplication using Java 22.0.1 with PID 6964 (C:\Users\danaf\OneDrive\שולחן העבודה\uni\שנה ג\סמסטר ב\סדנא\code\MarketSystem\code\target\classes started by danaf in C:\Users\danaf\OneDrive\שולחן העבודה\uni\שנה ג\סמסטר ב\סדנא\code\MarketSystem\code)
+2024-05-21 17:02:39 INFO  c.s.s.SadnaMarketApplication - No active profile set, falling back to 1 default profile: "default"
+2024-05-21 17:02:40 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2024-05-21 17:02:40 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2024-05-21 17:02:40 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2024-05-21 17:02:40 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2024-05-21 17:02:40 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-05-21 17:02:40 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1260 ms
+2024-05-21 17:02:41 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2024-05-21 17:02:41 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2024-05-21 17:02:41 INFO  c.s.s.SadnaMarketApplication - Started SadnaMarketApplication in 2.54 seconds (process running for 3.018)
+2024-05-21 17:02:41 INFO  c.s.s.service.MarketService - User 0 created a store with id 0.
+2024-05-21 17:02:41 ERROR c.s.s.service.MarketService - createStore: A store with the name "hi" already exists.
