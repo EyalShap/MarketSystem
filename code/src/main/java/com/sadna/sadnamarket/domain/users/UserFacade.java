@@ -9,26 +9,17 @@ import java.util.NoSuchElementException;
 //it merely exists so the folder appears on git
 //you may delete these comments when beggining work
 //have fun :)
-public class UserController {
-    private static UserController instance;
-    private static HashMap<String,Member> members;
-    private static HashMap<Integer,Guest> guests;
-    private static HashMap<String,String> userNameAndPassword;
+public class UserFacade {
+    private IUserRepository iUserRepo; 
     private static String systemManagerUserName;
     public static int guestId=1;
 
-    private UserController() {
-        members=new HashMap<>();
-        userNameAndPassword=new HashMap<>();
+    private UserFacade(IUserRepository userRepo) {
+        this.iUserRepo=userRepo;
         systemManagerUserName=null;
     }
 
-    public static UserController getInstance() {
-        if (instance == null) {
-            instance = new UserController();
-        }
-        return instance;
-    }  
+    
     
     public synchronized int enterAsGuest(){
         guests.put(guestId,new Guest(guestId));
@@ -38,22 +29,11 @@ public class UserController {
     public synchronized void exitGuest(int guestId){
         guests.remove(guestId);
     }
-    private boolean checkPremssionToStore(String userName, int storeId,Permission permission){
+
+    public boolean checkPremssionToStore(String userName, int storeId,Permission permission){
         Member member=getMember(userName);
         member.hasPermissionToRole(permission,storeId);
         return false;
-    }
-
-    public boolean canAddProductsToStore(String userName, int storeId) {
-        return checkPremssionToStore(userName,storeId,Permission.ADD_PRODUCTS);
-    }
-
-    public boolean canDeleteProductsFromStore(String userName, int storeId) {
-        return checkPremssionToStore(userName,storeId,Permission.DELETE_PRODUCTS);
-    }
-
-    public boolean canUpdateProductsInStore(String userName, int storeId) {
-        return checkPremssionToStore(userName,storeId,Permission.UPDATE_PRODUCTS);
     }
 
     public void notify(String userName, String msg) {
@@ -111,11 +91,7 @@ public class UserController {
         userNameAndPassword.put(userName, Password);
     }
 
-    public Member getMember(String userName){
-        if(!hasUser(userName))
-            throw new NoSuchElementException("User doesnt exist in system");
-        return members.get(userName);
-    }
+   
     public void addStoreManager(String username,int storeId){
         members.get(username).addRole(new StoreManager(storeId));
     }
@@ -125,20 +101,9 @@ public class UserController {
     public void removeRole(String username,int storeId){
         members.get(username).removeRole(storeId);
     }
-    private void addPremssionToStore(String userName, int storeId,Permission permission){
+    public void addPremssionToStore(String userName, int storeId,Permission permission){
         Member member=getMember(userName);
         member.addPermissionToRole(permission, storeId);
-    }
-    public void AddPermissionAddProductsToStore(String userName, int storeId) {
-        addPremssionToStore(userName,storeId,Permission.ADD_PRODUCTS);
-    }
-
-    public void AddPermissionDeleteProductsFromStore(String userName, int storeId) {
-        addPremssionToStore(userName,storeId,Permission.DELETE_PRODUCTS);
-    }
-
-    public void AddPermissionUpdateProductsInStore(String userName, int storeId) {
-        addPremssionToStore(userName,storeId,Permission.UPDATE_PRODUCTS);
     }
 
     /*

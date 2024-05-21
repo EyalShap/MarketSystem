@@ -15,7 +15,7 @@ public class StoreManager implements UserRole {
     @Override
     public void leaveRole() {
         for (String username: appointments) {
-            UserController.getInstance().removeRole(username,storeId);
+            UserFacade.getInstance().removeRole(username,storeId);
         }
     }
     public void addPermission(Permission permission){
@@ -37,5 +37,9 @@ public class StoreManager implements UserRole {
     @Override
     public String toString(){
         return "store founder of store: "+getStoreId();
+    }
+    @Override
+    public boolean isApointedByUser(String username) {
+        return false;
     }
 }

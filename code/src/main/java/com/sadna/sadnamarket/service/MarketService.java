@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.stores.StoreController;
-import com.sadna.sadnamarket.domain.users.UserController;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,12 +19,12 @@ import java.util.Set;
 @Service
 public class MarketService {
     private static MarketService instance;
-    private static UserController userController;
+    private static UserFacade userController;
     private static StoreController storeController;
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     private MarketService() {
-        this.userController = UserController.getInstance();
+        this.userController = UserFacade.getInstance();
         this.storeController = StoreController.getInstance();
     }
 

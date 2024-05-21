@@ -1,7 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.domain.products.ProductController;
-import com.sadna.sadnamarket.domain.users.UserController;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.apache.catalina.User;
 
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public class StoreController {
     }
 
     public int addProductToStore(int userId, int storeId, String productName) {
-        if(!UserController.getInstance().canAddProductsToStore(userId, storeId))
+        if(!UserFacade.getInstance().canAddProductsToStore(userId, storeId))
             throw new IllegalArgumentException(String.format("User with id %d can not add a product to store with id %d.", userId, storeId));
         if(!storeIdExists(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
@@ -66,7 +66,7 @@ public class StoreController {
     }
 
     public int deleteProduct(int userId, int storeId, int productId) {
-        if(!UserController.getInstance().canDeleteProductsFromStore(userId, storeId))
+        if(!UserFacade.getInstance().canDeleteProductsFromStore(userId, storeId))
             throw new IllegalArgumentException(String.format("User with id %d can not delete a product from store with id %d.", userId, storeId));
         if(!storeIdExists(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
@@ -79,7 +79,7 @@ public class StoreController {
     }
 
     public int updateProduct(int userId, int storeId, int productId, String newProductName) {
-        if(!UserController.getInstance().canUpdateProductsInStore(userId, storeId))
+        if(!UserFacade.getInstance().canUpdateProductsInStore(userId, storeId))
             throw new IllegalArgumentException(String.format("User with id %d can not update a product in store with id %d.", userId, storeId));
         if(!storeIdExists(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
@@ -113,10 +113,10 @@ public class StoreController {
         List<Integer> ownerIds = stores.get(storeId).getOwnerIds();
         List<Integer> managerIds = stores.get(storeId).getManagerIds();
         for(int ownerId : ownerIds) {
-            UserController.getInstance().notify(ownerId, msg);
+            UserFacade.getInstance().notify(ownerId, msg);
         }
         for(int managerId : managerIds) {
-            UserController.getInstance().notify(managerId, msg);
+            UserFacade.getInstance().notify(managerId, msg);
         }
 
         return true;

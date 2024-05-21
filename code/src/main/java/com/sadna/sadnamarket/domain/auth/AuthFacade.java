@@ -1,6 +1,6 @@
 package com.sadna.sadnamarket.domain.auth;
 
-import com.sadna.sadnamarket.domain.users.UserController;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 
 // import org.springframework.http.ResponseEntity;
 // import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +25,7 @@ private static AuthFacade instance;
 
     public String auth(String username, String password) {
         
-        UserController.getInstance().login(username,password); 
+        UserFacade.getInstance().login(username,password); 
         // If the user is authenticated, generate a JWT token for the user
         String token = tokenService.generateToken(username);
         
@@ -34,7 +34,7 @@ private static AuthFacade instance;
     }
     public String auth(String username, String password,int guestId) {
         
-        UserController.getInstance().login(username,password); 
+        UserFacade.getInstance().login(username,password); 
         // If the user is authenticated, generate a JWT token for the user
         String token = tokenService.generateToken(username);
         

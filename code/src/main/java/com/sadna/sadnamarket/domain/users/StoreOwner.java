@@ -20,7 +20,7 @@ public class StoreOwner implements UserRole {
     @Override
     public void leaveRole() {
         for (String username: appointments) {
-            UserController.getInstance().removeRole(username,storeId);
+            UserFacade.getInstance().removeRole(username,storeId);
         }
     }
     public int getStoreId(){
