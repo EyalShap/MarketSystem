@@ -67,4 +67,15 @@ public class UserFacade {
         // The permissions should be in the NewManagerRequest object in the list of the user notifications / requests
         //StoreFacade.getInstance().addStoreManager(newManagerId, storeId);
     }
+
+    public boolean canAddSellerToStore(int storeId, int userId) {
+        // Dana added this proxy function
+        return true;
+    }
+
+    public boolean userExists(int userId) {
+        // Dana added this proxy function
+        return true;
+    }
+
 }

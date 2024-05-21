@@ -148,5 +148,9 @@ public class Store {
         return new StoreDTO(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds, orderIds);
     }
 
+    public void addSeller(int sellerId) {
+        this.sellerIds.add(sellerId);
+    }
+
 
 }

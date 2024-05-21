@@ -11,11 +11,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 public class SadnaMarketApplication {
 	public static void main(String[] args) {
-		//SpringApplication.run(SadnaMarketApplication.class, args);
-		IStoreRepository repo = new MemoryStoreRepository();
-		MarketService service = new MarketService(repo);
-		System.out.println(service.createStore(0, "Hi").getDataJson());
-		System.out.println(service.getManagers(0, 0).getDataJson());
+		SpringApplication.run(SadnaMarketApplication.class, args);
 	}
 
 }

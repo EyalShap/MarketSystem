@@ -196,4 +196,14 @@ public class MarketService {
         }
     }
 
+    public Response addSellerToStore(int storeId, int adderId, int sellerId) {
+        try {
+            storeFacade.addSeller(storeId, adderId, sellerId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(sellerId));
+        }
+        catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
 }

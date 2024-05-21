@@ -283,4 +283,16 @@ public class StoreFacade {
 
         return storeRepository.findStoreByID(storeId).buyStoreProduct(productId, amount);
     }
+
+    public int addSeller(int storeId, int adderId, int sellerId) {
+        if(!isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!userFacade.canAddSellerToStore(storeId, adderId))
+            throw new IllegalArgumentException(String.format("A user with id %d can not add sellers to store with id %d.", adderId, storeId));
+        if(!userFacade.userExists(sellerId))
+            throw new IllegalArgumentException(String.format("A user with id %d does not exist.", sellerId));
+
+        storeRepository.findStoreByID(storeId).addSeller(sellerId);
+        return sellerId;
+    }
 }
