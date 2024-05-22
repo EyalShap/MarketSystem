@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
+
 
 
 public class UserFacade {
@@ -63,8 +66,36 @@ public class UserFacade {
     public void login(String userName,String password){
         iUserRepo.getMember(userName).setLogin(true);
     }
-
-    
+    public void addProductToCart(String username,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getMember(username).addProductToCart(storeId, productId, amount);
+    }
+    public void addProductToCart(int guestId,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getGuest(guestId).addProductToCart(storeId, productId, amount);
+    }
+    public void removeProductFromCart(String username,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getMember(username).removeProductFromCart(storeId, productId);
+    }
+    public void removeProductFromCart(int guestId,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getGuest(guestId).removeProductFromCart(storeId, productId);
+    }
+    public void changeQuantityCart(String username,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getMember(username).changeQuantityCart(storeId, productId, amount);
+    }
+    public void changeQuantityCart(int guestId,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getGuest(guestId).changeQuantityCart(storeId, productId, amount);
+    }
     public Member getMember(String userName){
         return iUserRepo.getMember(userName);
     }    

@@ -87,14 +87,6 @@ public class Member extends IUser {
         roles.remove(role);
     }
 
-    // public void removeRole(int storeId){
-    //     for (UserRole role : roles) {
-    //         if(role.getStoreId()==storeId)
-    //             role.leaveRole();
-    //             roles.remove(role); break;
-    //     }
-        
-    //}
     public void addPermissionToRole(Permission permission, int storeId){
         for(UserRole role: getUserRoles()){
             if(role.getStoreId()==storeId){
@@ -126,6 +118,7 @@ public class Member extends IUser {
      public void acceptToManager(int requestID) {
         notifes.get(requestID).acceptManager(this);
     }
+
    
     
     

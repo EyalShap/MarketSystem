@@ -3,8 +3,6 @@ package com.sadna.sadnamarket.domain.users;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-
 public class StoreOwner implements UserRole {
     private int storeId;
     private List<String> appointments;
