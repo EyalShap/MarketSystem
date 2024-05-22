@@ -1,26 +1,18 @@
 package com.sadna.sadnamarket.domain.orders;
 
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class OrderController {
+public class MemoryOrderRepository implements IOrderRepository {
     private Map<Integer, Map<Integer, Order>> orders;
-    private static OrderController instance;
     private int nextOrderId;
-    private OrderController() {
+    public MemoryOrderRepository() {
         orders = new HashMap<>();
         this.nextOrderId = 0;
     }
-
-    public static OrderController getInstance() {
-        if (instance == null) {
-            instance = new OrderController();
-        }
-        return instance;
-    }
+    @Override
     public int createOrder(Map<Integer, OrderDTO> storeOrdersDTO){
         if (storeOrdersDTO == null) {
             throw new IllegalArgumentException("The order is null.");
@@ -58,7 +50,7 @@ public class OrderController {
         return order;
     }
 
-
+    @Override
     public List<OrderDTO> getOrders(int storeId) {
         LinkedList<OrderDTO> ordersStore = new LinkedList<OrderDTO>();
         for (int orderId : orders.keySet()) {
@@ -88,7 +80,7 @@ public class OrderController {
     public void resetOrders(){
         orders = new HashMap<>();
     }
-    public static void main(String[] args) {
-    }
+
+
 
 }
