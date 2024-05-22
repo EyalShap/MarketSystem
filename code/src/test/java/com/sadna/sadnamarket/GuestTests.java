@@ -56,22 +56,16 @@ class GuestTests {
     void guestSignUpTest() {
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "john@john.com", "John Doe", "thisIsn'tWhatAHashLooksLike");
+        String username = "JohnDoe";
+        resp = bridge.signUp(uuid, "john@john.com", username, "thisIsn'tWhatAHashLooksLike");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertFalse(resp.getError());
-        String resJson = resp.getDataJson();
-        Assertions.assertDoesNotThrow(() -> objectMapper.readTree(resJson));
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        resp = bridge.memberExists(node.get("userId").asInt());
+        String token = resp.getDataJson();
+        resp = bridge.memberExists(username);
         Assertions.assertNotEquals(resp, null);
         Assertions.assertFalse(resp.getError());
         Assertions.assertEquals(resp.getDataJson(), "true");
-        resp = bridge.tokenValid(node.get("token").asText());
+        resp = bridge.authenticate(token,username);
         Assertions.assertNotEquals(resp, null);
         Assertions.assertFalse(resp.getError());
         Assertions.assertEquals(resp.getDataJson(), "true");
@@ -81,11 +75,12 @@ class GuestTests {
     void guestSignupMemberAlreadyExistsTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "john@john.com", "John Doe", "thisIsn'tWhatAHashLooksLike");
-        resp = bridge.signUp(uuid, "john@john.com", "John Doe", "thisIsn'tWhatAHashLooksLike");
+        String username = "JohnDoe";
+        bridge.signUp(uuid, "john@john.com", username, "thisIsn'tWhatAHashLooksLike");
+        resp = bridge.signUp(uuid, "john@john.com", username, "thisIsn'tWhatAHashLooksLike");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
-        resp = bridge.signUp(uuid, "john@john.com", "Jane Doe", "thisIsn'tWhatAHashLooksLike");
+        resp = bridge.signUp(uuid, "jane@john.com", username, "thisIsn'tWhatAHashLooksLikeEither");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
     }
@@ -94,27 +89,24 @@ class GuestTests {
     void guestLoginTest() {
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "john@john.com", "John Doe", "thisIsn'tWhatAHashLooksLike");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        bridge.logout(node.get("token").asText());
-        resp = bridge.login("john@john.com", "thisIsn'tWhatAHashLooksLike");
+        String username = "JohnDoe";
+        resp = bridge.signUp(uuid, "john@john.com", username, "thisIsn'tWhatAHashLooksLike");
+        String token = resp.getDataJson();
+        bridge.logout(token);
+        resp = bridge.login(username, "thisIsn'tWhatAHashLooksLike");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertFalse(resp.getError());
-        String resJson1 = resp.getDataJson();
-        Assertions.assertDoesNotThrow(() -> objectMapper.readTree(resJson1));
+        String token1 = resp.getDataJson();
+        Assertions.assertNotEquals("", token1);
     }
 
     @Test
     void guestLoginAlreadyLoggedInTest(){
         Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();bridge.signUp(uuid, "john@john.com", "John Doe", "thisIsn'tWhatAHashLooksLike");
-        resp = bridge.login("john@john.com", "thisIsn'tWhatAHashLooksLike");
+        String uuid = resp.getDataJson();
+        String username = "JohnDoe";
+        bridge.signUp(uuid, "john@john.com", username, "thisIsn'tWhatAHashLooksLike");
+        resp = bridge.login(username, "thisIsn'tWhatAHashLooksLike");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
     }
@@ -123,16 +115,11 @@ class GuestTests {
     void guestLoginWrongPasswordTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "john@john.com", "John Doe", "thisIsn'tWhatAHashLooksLike");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        bridge.logout(node.get("token").asText());
-        resp = bridge.login("john@john.com", "thisPasswordIsWrong");
+        String username = "JohnDoe";
+        resp = bridge.signUp(uuid, "john@john.com", username, "thisIsn'tWhatAHashLooksLike");
+        String token = resp.getDataJson();
+        bridge.logout(token);
+        resp = bridge.login(username, "thisPasswordIsVeryWrong");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
     }
@@ -141,21 +128,14 @@ class GuestTests {
     void getStoreDataTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "guywhoowns@store.com", "Guy Store", "password");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        String ownerToken = node.get("token").asText();
-        int ownerId = node.get("userId").asInt();
-        resp = bridge.openStore(ownerToken, ownerId, "TestStore");
+        String ownerUsername = "GuyStore";
+        resp = bridge.signUp(uuid, "guywhoowns@store.com", ownerUsername, "password");
+        String ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
-        Assertions.assertDoesNotThrow(() -> bridge.getStoreData("", -1, storeId));
+        Assertions.assertDoesNotThrow(() -> bridge.getStoreData("", "", storeId));
         try{
-            resp = bridge.getStoreData("", -1, storeId);
+            resp = bridge.getStoreData("", "", storeId);
             Assertions.assertFalse(resp.getError());
             String json = resp.getDataJson();
             Assertions.assertDoesNotThrow(() -> objectMapper.readValue(json, StoreDTO.class));
@@ -171,19 +151,12 @@ class GuestTests {
     void getStoreDataDoesntExistTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "guywhoowns@store.com", "Guy Store", "password");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        String ownerToken = node.get("token").asText();
-        int ownerId = node.get("userId").asInt();
-        bridge.openStore(ownerToken, ownerId, "TestStore");
+        String ownerUsername = "GuyStore";
+        resp = bridge.signUp(uuid, "guywhoowns@store.com", ownerUsername, "password");
+        String ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         try{
-            resp = bridge.getStoreData("", -1, Integer.MAX_VALUE);
+            resp = bridge.getStoreData("", "", Integer.MAX_VALUE);
             Assertions.assertTrue(resp.getError());
         }catch (Exception e){
 
@@ -194,21 +167,14 @@ class GuestTests {
     void getClosedStoreDataNotOwnerTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "guywhoowns@store.com", "Guy Store", "password");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        String ownerToken = node.get("token").asText();
-        int ownerId = node.get("userId").asInt();
-        resp = bridge.openStore(ownerToken, ownerId, "TestStore");
+        String ownerUsername = "GuyStore";
+        resp = bridge.signUp(uuid, "guywhoowns@store.com", ownerUsername, "password");
+        String ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
         try{
-            bridge.closeStore(ownerToken, ownerId, storeId);
-            resp = bridge.getStoreData("", -1, storeId);
+            bridge.closeStore(ownerToken, ownerUsername, storeId);
+            resp = bridge.getStoreData("", "", storeId);
             Assertions.assertTrue(resp.getError());
         }catch (Exception e){
 
@@ -219,24 +185,17 @@ class GuestTests {
     void getClosedStoreDataOwnerTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "guywhoowns@store.com", "Guy Store", "password");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        String ownerToken = node.get("token").asText();
-        int ownerId = node.get("userId").asInt();
-        resp = bridge.openStore(ownerToken, ownerId, "TestStore");
+        String ownerUsername = "GuyStore";
+        resp = bridge.signUp(uuid, "guywhoowns@store.com", ownerUsername, "password");
+        String ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
-        Assertions.assertDoesNotThrow(() -> bridge.getStoreData(ownerToken, ownerId, storeId));
+        Assertions.assertDoesNotThrow(() -> bridge.getStoreData(ownerToken, ownerUsername, storeId));
         try{
-            bridge.closeStore(ownerToken, ownerId, storeId);
-            resp = bridge.getStoreData("", -1, storeId);
+            bridge.closeStore(ownerToken, ownerUsername, storeId);
+            resp = bridge.getStoreData("", "", storeId);
             Assertions.assertTrue(resp.getError());
-            resp = bridge.getStoreData(ownerToken, ownerId, storeId);
+            resp = bridge.getStoreData(ownerToken, ownerUsername, storeId);
             Assertions.assertFalse(resp.getError());
             String json1 = resp.getDataJson();
             Assertions.assertDoesNotThrow(() -> objectMapper.readValue(json1, StoreDTO.class));
@@ -252,24 +211,17 @@ class GuestTests {
     void getProductDataTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "guywhoowns@store.com", "Guy Store", "password");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        String ownerToken = node.get("token").asText();
-        int ownerId = node.get("userId").asInt();
-        resp = bridge.openStore(ownerToken, ownerId, "TestStore");
+        String ownerUsername = "GuyStore";
+        resp = bridge.signUp(uuid, "guywhoowns@store.com", ownerUsername, "password");
+        String ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.addProductToStore(ownerToken, ownerId, storeId,
+        resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", false));
         int productId = Integer.parseInt(resp.getDataJson());
-        Assertions.assertDoesNotThrow(() -> bridge.getProductData("", -1, productId));
+        Assertions.assertDoesNotThrow(() -> bridge.getProductData("", "", productId));
         try{
-            resp = bridge.getProductData("", -1, productId);
+            resp = bridge.getProductData("", "", productId);
             Assertions.assertFalse(resp.getError());
             String json = resp.getDataJson();
             Assertions.assertDoesNotThrow(() -> objectMapper.readValue(json, ProductDTO.class));
@@ -285,22 +237,15 @@ class GuestTests {
     void getProductDataDoesntExistTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "guywhoowns@store.com", "Guy Store", "password");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        String ownerToken = node.get("token").asText();
-        int ownerId = node.get("userId").asInt();
-        resp = bridge.openStore(ownerToken, ownerId, "TestStore");
+        String ownerUsername = "GuyStore";
+        resp = bridge.signUp(uuid, "guywhoowns@store.com", ownerUsername, "password");
+        String ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
-        bridge.addProductToStore(ownerToken, ownerId, storeId,
+        bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", false));
         try{
-            resp = bridge.getProductData("", -1, Integer.MAX_VALUE);
+            resp = bridge.getProductData("", "", Integer.MAX_VALUE);
             Assertions.assertTrue(resp.getError());
         }catch (Exception e){
 
@@ -311,24 +256,17 @@ class GuestTests {
     void getProductDataClosedStoreNotOwnerTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "guywhoowns@store.com", "Guy Store", "password");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        String ownerToken = node.get("token").asText();
-        int ownerId = node.get("userId").asInt();
-        resp = bridge.openStore(ownerToken, ownerId, "TestStore");
+        String ownerUsername = "GuyStore";
+        resp = bridge.signUp(uuid, "guywhoowns@store.com", ownerUsername, "password");
+        String ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.addProductToStore(ownerToken, ownerId, storeId,
+        resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", false));
         int productId = Integer.parseInt(resp.getDataJson());
         try{
-            bridge.closeStore(ownerToken, ownerId, storeId);
-            resp = bridge.getProductData("", -1, productId);
+            bridge.closeStore(ownerToken, ownerUsername, storeId);
+            resp = bridge.getProductData("", "", productId);
             Assertions.assertTrue(resp.getError());
         }catch (Exception e){
 
@@ -339,25 +277,18 @@ class GuestTests {
     void getProductDataClosedStoreOwnerTest(){
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "guywhoowns@store.com", "Guy Store", "password");
-        String resJson = resp.getDataJson();
-        JsonNode node = null;
-        try {
-            node = objectMapper.readTree(resJson);
-        }catch (Exception e){
-
-        }
-        String ownerToken = node.get("token").asText();
-        int ownerId = node.get("userId").asInt();
-        resp = bridge.openStore(ownerToken, ownerId, "TestStore");
+        String ownerUsername = "GuyStore";
+        resp = bridge.signUp(uuid, "guywhoowns@store.com", ownerUsername, "password");
+        String ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.addProductToStore(ownerToken, ownerId, storeId,
+        resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", false));
         int productId = Integer.parseInt(resp.getDataJson());
-        Assertions.assertDoesNotThrow(() -> bridge.getProductData(ownerToken, ownerId, productId));
+        Assertions.assertDoesNotThrow(() -> bridge.getProductData(ownerToken, ownerUsername, productId));
         try{
-            bridge.closeStore(ownerToken, ownerId, storeId);
-            resp = bridge.getProductData(ownerToken, ownerId, productId);
+            bridge.closeStore(ownerToken, ownerUsername, storeId);
+            resp = bridge.getProductData(ownerToken, ownerUsername, productId);
             Assertions.assertFalse(resp.getError());
             String json1 = resp.getDataJson();
             Assertions.assertDoesNotThrow(() -> objectMapper.readValue(json1, ProductDTO.class));

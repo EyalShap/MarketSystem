@@ -4,8 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
+import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
+import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.domain.users.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -18,6 +21,12 @@ public class MarketServiceTestAdapter {
     MarketService real;
 
     ObjectMapper objectMapper = new ObjectMapper();
+
+
+    //attention
+    //String userId is actually username
+    //i am lazy
+
 
     public boolean reset(){
         //function that resets the service and repositories
@@ -37,32 +46,32 @@ public class MarketServiceTestAdapter {
     }
 
     public Response signUp(String uuid, String email, String username, String passwordHash){
-        return Response.createResponse(false, "{\"userId\": \"4\", \"token\": \"3424234\"}");
+        return Response.createResponse(false, "3424234"); //returns token
     }
 
-    public Response memberExists(int userId){
+    public Response memberExists(String userId){
         return Response.createResponse(false, "true");
     }
 
-    public Response tokenValid(String token){
+    public Response authenticate(String token, String username){
         return Response.createResponse(false, "true");
     }
 
-    public Response login(String email, String passwordHash){
-        return Response.createResponse(false, "{\"userId\": \"4\", \"token\": \"3424234\"}");
+    public Response login(String username, String passwordHash){
+        return Response.createResponse(false, "3424234"); //returns token
     }
 
     public Response logout(String token){
         return Response.createResponse(false, "true");
     }
 
-    public Response getStoreData(String token, int userId, int storeId) throws JsonProcessingException {
+    public Response getStoreData(String token, String userId, int storeId) throws JsonProcessingException {
         //empty token and -1 userId if guest
         StoreDTO dto = new StoreDTO(4,true,"TestStore", new ArrayList<>(), 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         return Response.createResponse(false, objectMapper.writeValueAsString(dto));
     }
 
-    public Response getProductData(String token, int userId, int productId) throws JsonProcessingException {
+    public Response getProductData(String token, String userId, int productId) throws JsonProcessingException {
         //empty token and -1 userId if guest
         ProductDTO dto = new ProductDTO(5, "TestProduct", 0, "product", true);
         return Response.createResponse(false, objectMapper.writeValueAsString(dto));
@@ -96,7 +105,7 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, objectMapper.writeValueAsString(productToAmount));
     }
 
-    public Response getMemberBasket(String token, int userId, int storeId) throws JsonProcessingException {
+    public Response getMemberBasket(String token, String userId, int storeId) throws JsonProcessingException {
         Map<Integer, Integer> productToAmount = new HashMap<>();
         productToAmount.put(0, 1);
         return Response.createResponse(false, objectMapper.writeValueAsString(productToAmount));
@@ -110,7 +119,7 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, objectMapper.writeValueAsString(storeToBasket));
     }
 
-    public Response getMemberCart(String token, int userId) throws JsonProcessingException {
+    public Response getMemberCart(String token, String userId) throws JsonProcessingException {
         Map<Integer, Integer> productToAmount = new HashMap<>();
         productToAmount.put(0, 1);
         Map<Integer, Map<Integer, Integer>> storeToBasket = new HashMap<>();
@@ -118,11 +127,11 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, objectMapper.writeValueAsString(storeToBasket));
     }
 
-    public Response buyCartGuest(String uuid) {
+    public Response buyCartGuest(String uuid, CreditCardDTO creditDetails, AddressDTO address) {
         return Response.createResponse(false, "4"); //returns orderId
     }
 
-    public Response buyCartMember(String token, int userId) {
+    public Response buyCartMember(String token, String userId, CreditCardDTO creditDetails) {
         return Response.createResponse(false, "4"); //returns orderId
     }
 
@@ -130,69 +139,79 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, "true");
     }
 
-    public Response openStore(String token, int userId, String storeName) {
+    public Response openStore(String token, String userId, String storeName) {
         return Response.createResponse(false, "4"); //returns store id
     }
 
-    public Response addProductToStore(String token, int userId, int storeId, ProductDTO productDetails) {
+    public Response addProductToStore(String token, String userId, int storeId, ProductDTO productDetails) {
         return Response.createResponse(false, "5"); //returns product id
     }
 
-    public Response removeProductFromStore(String token, int userId, int storeId, int productId) {
+    public Response removeProductFromStore(String token, String userId, int storeId, int productId) {
         return Response.createResponse(false, "true");
     }
 
-    public Response editStoreProduct(String token, int userId, int storeId, int productId, ProductDTO productDetails) {
+    public Response editStoreProduct(String token, String userId, int storeId, int productId, ProductDTO productDetails) {
         return Response.createResponse(false, "true");
     }
 
-    public Response appointOwner(String token, int userId, int appointedUserId) {
+    public Response appointOwner(String token, String userId, String appointedUserId) {
         return Response.createResponse(false, "true");
     }
 
-    public Response appointManager(String token, int userId, int appointedUserId, List<Integer> permissions) {
+    public Response appointManager(String token, String userId, String appointedUserId, List<Integer> permissions) {
         return Response.createResponse(false, "true");
     }
 
-    public Response acceptOwnerAppointment(String token, int appointedUserId, int appointerid) {
+    public Response acceptOwnerAppointment(String token, String appointedUserId, String appointerid) {
         return Response.createResponse(false, "true");
     }
 
-    public Response acceptManagerAppointment(String token, int appointedUserId, int appointerid) {
+    public Response acceptManagerAppointment(String token, String appointedUserId, String appointerid) {
         return Response.createResponse(false, "true");
     }
 
-    public Response changeManagerPermissions(String token, int userId, int managerId, List<Integer> newPermissions) {
+    public Response changeManagerPermissions(String token, String userId, String managerId, List<Integer> newPermissions) {
         return Response.createResponse(false, "true");
     }
 
-    public Response closeStore(String token, int userId, int storeId) {
+    public Response closeStore(String token, String userId, int storeId) {
         return Response.createResponse(false, "true");
     }
 
-    public Response getIsOwner(String token, int actorId, int storeId, int ownerId) {
+    public Response getIsOwner(String token, String actorId, int storeId, String ownerId) {
         return Response.createResponse(false, "true");
     }
 
-    public Response getIsManager(String token, int actorId, int storeId, int managerId) {
+    public Response getIsManager(String token, String actorId, int storeId, String managerId) {
         return Response.createResponse(false, "true");
     }
 
-    public Response getIsFounder(String token, int actorId, int storeId, int founderId) {
+    public Response getIsFounder(String token, String actorId, int storeId, String founderId) {
         return Response.createResponse(false, "true");
     }
 
-    public Response getManagerPermissions(String token, int actorId, int storeId, int managerId) throws JsonProcessingException {
+    public Response getStoreOwners(String token, String actorId, int storeId) throws JsonProcessingException {
+        List<UserDTO> users = new LinkedList<>();
+        return Response.createResponse(false, objectMapper.writeValueAsString(users));
+    }
+
+    public Response getStoreManagers(String token, String actorId, int storeId) throws JsonProcessingException {
+        List<UserDTO> users = new LinkedList<>();
+        return Response.createResponse(false, objectMapper.writeValueAsString(users));
+    }
+
+    public Response getManagerPermissions(String token, String actorId, int storeId, String managerId) throws JsonProcessingException {
         List<Integer> permissions = new LinkedList<>();
         return Response.createResponse(false, objectMapper.writeValueAsString(permissions));
     }
 
-    public Response getStorePurchaseHistory(String token, int actorId, int storeId) throws JsonProcessingException {
+    public Response getStorePurchaseHistory(String token, String actorId, int storeId) throws JsonProcessingException {
         List<OrderDTO> history = new LinkedList<>();
         return Response.createResponse(false, objectMapper.writeValueAsString(history));
     }
 
-    public Response getUserPurchaseHistory(String token, int actorId, int userId) throws JsonProcessingException {
+    public Response getUserPurchaseHistory(String token, String actorId, String userId) throws JsonProcessingException {
         List<OrderDTO> history = new LinkedList<>();
         return Response.createResponse(false, objectMapper.writeValueAsString(history));
     }
