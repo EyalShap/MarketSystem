@@ -1,3 +1,5 @@
+package com.sadna.sadnamarket.domain.products;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
