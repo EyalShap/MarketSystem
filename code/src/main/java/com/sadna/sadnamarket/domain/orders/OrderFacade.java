@@ -18,13 +18,10 @@ public class OrderFacade {
         return orderRepository.getOrders(storeId);
     }
     public Map<Integer,Map<Integer,OrderDTO>> getOrdersByMember(String nameMember) {
-      //  return orderRepository.getOrders(storeId);
-        return new HashMap<>();
+        return orderRepository.getOrdersByMember(nameMember);
     }
-
     public Map<Integer,OrderDTO> getOrderByOrderId(int orderId) {
-        //  return orderRepository.getOrders(storeId);
-        return new HashMap<>();
+        return orderRepository.getOrderByOrderId(orderId);
     }
 
 }
