@@ -7,10 +7,11 @@ import java.util.Map;
 
 public class ProductFacade {
     private static ProductFacade instance;
+    private IProductRepository productRepository;
     private Map<Integer, List<Product>> products; // storeId -> list of products
-    private int nextProductId = 0;
 
     private ProductFacade() {
+        productRepository = new MemoryProductRepository();
         products = new HashMap<>();
     }
 
@@ -28,7 +29,9 @@ public class ProductFacade {
 
         checkProductAttributes(productName, productPrice, productCategory);
 
-        Product createdProduct = new Product(nextProductId, productName, productPrice, productCategory);
+        int productId = productRepository.addProduct(productName, productPrice, productCategory);
+
+        Product createdProduct = productRepository.getProduct(productId);
 
         List<Product> storeProducts = products.get(storeId);
         if (storeProducts == null) {
@@ -37,27 +40,22 @@ public class ProductFacade {
         storeProducts.add(createdProduct);
         products.put(storeId, storeProducts);
 
-        nextProductId++;
-        return createdProduct.getProductId();
+        return productId;
     }
 
     public void removeProduct(int storeId, int productId) {
         if (!isStoreExist(storeId))
             throw new IllegalArgumentException(String.format("Store Id %d does not exist.", storeId));
 
-        //List<Product> storeProducts = products.get(storeId);
-
         if (isProductExistInStore(storeId, productId)) {
-            Product productToRemove = getProduct(storeId, productId);
-            productToRemove.disableProduct();// turn off his active flag
+            productRepository.removeProduct(productId);
         } else
             throw new IllegalArgumentException(
                     String.format("Product Id %d does not exist in store Id %d.", productId, storeId));
     }
 
-
     public void updateProduct(int storeId, int productId, String newProductName,
-                              int newPrice, String newCategory) {
+            int newPrice, String newCategory) {
         if (!isStoreExist(storeId))
             throw new IllegalArgumentException(String.format("Store Id %d does not exist.", storeId));
 
@@ -67,7 +65,7 @@ public class ProductFacade {
 
         checkProductAttributes(newProductName, newPrice, newCategory);
 
-        Product productToUpdate = getProduct(storeId, productId);
+        Product productToUpdate = productRepository.getProduct(productId);
 
         if (!productToUpdate.isActiveProduct())
             throw new IllegalArgumentException(
@@ -78,17 +76,17 @@ public class ProductFacade {
         productToUpdate.setProductCategory(newCategory);
     }
 
-    private Product getProduct(int storeId, int productId) {
-        List<Product> storeProducts = products.get(storeId);
-        Product result = null;
-        for (Product product : storeProducts) {
-            if (product.getProductId() == productId) {
-                result = product;
-                break;
-            }
-        }
-        return result;
-    }
+    // private Product getProduct(int storeId, int productId) {
+    // List<Product> storeProducts = products.get(storeId);
+    // Product result = null;
+    // for (Product product : storeProducts) {
+    // if (product.getProductId() == productId) {
+    // result = product;
+    // break;
+    // }
+    // }
+    // return result;
+    // }
 
     private void checkProductAttributes(String newProductName, int newPrice, String newCategory) {
         String isValidProductName = checkProductName(newProductName);
@@ -130,32 +128,29 @@ public class ProductFacade {
     }
 
     public ProductDTO getProductDTO(int productId) {
-        Product result = getProductIfExist(productId);
-        if (result == null)
-            throw new IllegalArgumentException(String.format("A product with id %d not exist.", productId));
-        if (!result.isActiveProduct())
-            throw new IllegalArgumentException(String.format("A product with id %d is not active.", productId));
+        Product result = productRepository.getProduct(productId);
 
         return result.getProductDTO();
     }
 
-    public Product getProductIfExist(int productId) {
-        Product result = null;
+    // public Product getProductIfExist(int productId) {
+    // Product result = null;
 
-        for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-            //Integer storeId = entry.getKey();
-            if (result != null) break;
-            List<Product> storeProducts = entry.getValue();
-            for (Product product : storeProducts) {
-                if (product.getProductId() == productId) {
-                    result = product;
-                    break;
-                }
-            }
-        }
-        return result;
-    }
-    
+    // for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
+    // // Integer storeId = entry.getKey();
+    // if (result != null)
+    // break;
+    // List<Product> storeProducts = entry.getValue();
+    // for (Product product : storeProducts) {
+    // if (product.getProductId() == productId) {
+    // result = product;
+    // break;
+    // }
+    // }
+    // }
+    // return result;
+    // }
+
     // package-private for tests
     Map<Integer, List<Product>> getProducts() {
         return products;
@@ -179,29 +174,29 @@ public class ProductFacade {
         }
         return result.toString();
     }
-//
-// public static void main(String[] args) {
-// ProductFacade facade = ProductFacade.getInstance();
-// try {
-// facade.addProduct(1, "product1", 10, "cat1");
-// facade.addProduct(1, "product2", 5, "cat1");
-// facade.addProduct(2, "product3", 5, "cat2");
-//
-// System.out.println("Initial state:");
-// System.out.println(facade);
-//
-// facade.removeProduct(1, 0);
-//
-// System.out.println("After removal:");
-// System.out.println(facade);
-//
-// facade.updateProduct(1, 1, "updatedProduct2", 20, "cat3");
-//
-// System.out.println("After update:");
-// System.out.println(facade);
-// } catch (IllegalArgumentException e) {
-// System.err.println("Error: " + e.getMessage());
-// }
-// }
+    //
+    // public static void main(String[] args) {
+    // ProductFacade facade = ProductFacade.getInstance();
+    // try {
+    // facade.addProduct(1, "product1", 10, "cat1");
+    // facade.addProduct(1, "product2", 5, "cat1");
+    // facade.addProduct(2, "product3", 5, "cat2");
+    //
+    // System.out.println("Initial state:");
+    // System.out.println(facade);
+    //
+    // facade.removeProduct(1, 0);
+    //
+    // System.out.println("After removal:");
+    // System.out.println(facade);
+    //
+    // facade.updateProduct(1, 1, "updatedProduct2", 20, "cat3");
+    //
+    // System.out.println("After update:");
+    // System.out.println(facade);
+    // } catch (IllegalArgumentException e) {
+    // System.err.println("Error: " + e.getMessage());
+    // }
+    // }
 
 }
