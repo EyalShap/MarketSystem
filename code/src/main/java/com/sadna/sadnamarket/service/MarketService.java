@@ -209,13 +209,13 @@ public class MarketService {
         }
     }
 
-    public Response getStoreInfo(int storeId) {
+    public Response getStoreInfo(int userId, int storeId) {
         try {
             Set<String> fields = Set.of("storeId", "storeName");
             SimpleFilterProvider filterProvider = new SimpleFilterProvider();
             filterProvider.addFilter("filter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
 
-            StoreDTO storeDTO = storeFacade.getStoreInfo(storeId);
+            StoreDTO storeDTO = storeFacade.getStoreInfo(userId, storeId);
             String json = objectMapper.writer(filterProvider).writeValueAsString(storeDTO);
             logger.info(String.format("A user got store info of store %d.", storeId));
             return Response.createResponse(false, json);
@@ -226,9 +226,9 @@ public class MarketService {
         }
     }
 
-    public Response getProductsInfo(int storeId) {
+    public Response getProductsInfo(int userId, int storeId) {
         try {
-            Map<String, Integer> productDTOs = storeFacade.getProductsInfo(storeId);
+            Map<String, Integer> productDTOs = storeFacade.getProductsInfo(userId, storeId);
             logger.info(String.format("A user got products info of store %d.", storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
         }

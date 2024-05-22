@@ -154,8 +154,8 @@ public class StoreFacade {
     public List<MemberDTO> getOwners(int userId, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(userId))
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        //if(!isStoreActive(storeId))
+        //    throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<Integer> ownerIds = storeRepository.findStoreByID(storeId).getOwnerIds();
         List<MemberDTO> owners = new ArrayList<>();
@@ -168,8 +168,8 @@ public class StoreFacade {
     public List<MemberDTO> getManagers(int userId, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(userId))
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        //if(!isStoreActive(storeId))
+        //    throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<Integer> managerIds = storeRepository.findStoreByID(storeId).getManagerIds();
         List<MemberDTO> managers = new ArrayList<>();
@@ -182,8 +182,8 @@ public class StoreFacade {
     public List<MemberDTO> getSellers(int userId, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(userId))
             throw new IllegalArgumentException(String.format("A user with id %d is not an owner of store %d and can not request roles information.", userId, storeId));
-        if(!isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        //if(!isStoreActive(storeId))
+        //    throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<Integer> sellerIds = storeRepository.findStoreByID(storeId).getSellerIds();
         List<MemberDTO> sellers = new ArrayList<>();
@@ -269,16 +269,17 @@ public class StoreFacade {
         return res;
     }
 
-    public StoreDTO getStoreInfo(int storeId) {
-        if(!isStoreActive(storeId))
+    public StoreDTO getStoreInfo(int userId, int storeId) {
+        if(!isStoreActive(storeId) && !storeRepository.findStoreByID(storeId).isStoreOwner(userId) && !storeRepository.findStoreByID(storeId).isStoreManager(userId)) // users who are not owner of manager can't get info on a closed store
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         return storeRepository.findStoreByID(storeId).getStoreDTO();
     }
 
-    public Map<String, Integer> getProductsInfo(int storeId) throws JsonProcessingException {
-        if(!isStoreActive(storeId))
+    public Map<String, Integer> getProductsInfo(int userId, int storeId) throws JsonProcessingException {
+        if(!isStoreActive(storeId) && !storeRepository.findStoreByID(storeId).isStoreOwner(userId) && !storeRepository.findStoreByID(storeId).isStoreManager(userId)) // users who are not owner of manager can't get info on a closed store
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
 
         Map<Integer, Integer> productIdsAmounts = storeRepository.findStoreByID(storeId).getProductAmounts();
         Map<String, Integer> productDTOsAmounts = new HashMap<>();
