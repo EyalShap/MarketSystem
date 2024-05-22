@@ -2,6 +2,9 @@ package com.sadna.sadnamarket.domain.auth;
 import java.sql.Date;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,8 +18,10 @@ private String secret;
 private final long expirationTime = 1000 * 60 * 60 * 24;
  // 24 hours 
 private SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256); 
+    private static final Logger logger = LogManager.getLogger(AuthFacade.class);
 
 public String generateToken(String username) {
+     logger.info("start-generateToken. args: "+username);
      return Jwts.builder()
      .setSubject(username)
      .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -26,6 +31,7 @@ public String generateToken(String username) {
 } 
 
 public boolean validateToken(String token) {
+     logger.info("start-validateToken. args: "+token);
      try { 
         Jwts.parserBuilder()
         .setSigningKey(key)

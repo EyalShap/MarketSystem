@@ -13,13 +13,22 @@ public class Basket {
         return storeId;
     }
     public void addProduct(int productId,int amount){
-
+        if(hasProduct(productId))
+            throw new IllegalArgumentException("user already exits in cart");
+        products.put(productId, amount);
     }
-    public boolean hasProduct(int productId){
+    public void removeProduct(int productId){
+        if(!hasProduct(productId))
+            throw new IllegalArgumentException("user doesnt exits in cart");
+        products.remove(productId);
+    }
+    private boolean hasProduct(int productId){
         return products.containsKey(productId);
     }
     public void changeQuantity(int productId,int quantity) {
-        products.put(productId,quantity);
+        if(!hasProduct(productId))
+            throw new IllegalArgumentException("user doesnt exits in cart");
+        products.replace(productId,quantity);
     }
 
     public void purchase(){

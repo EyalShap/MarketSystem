@@ -3,8 +3,6 @@ package com.sadna.sadnamarket.domain.users;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-
 public class StoreOwner implements UserRole {
     private int storeId;
     private List<String> appointments;
@@ -46,15 +44,13 @@ public class StoreOwner implements UserRole {
         userRoleVisitor.visitStoreOwner(this, storeId,member,userFacade);
     }
 
-    public void addOwner(UserFacade userFacade,String senderName,String sentName){
-        if(sentName.equals(apointee)){
-            throw new IllegalAccessError("you cant apoint the one who apointed you");
-        }
-        userFacade.addRequest(senderName,sentName,"Hi, You have a request to be a Owener at: "+storeId,storeId);
+    public void sendRequest(UserFacade userFacade,String senderName,String sentName,String reqType){
+       userFacade.getMember(sentName).getRequest(senderName,storeId,reqType);
+        
     }
     @Override
-    public void addManager(UserFacade userFacade, String senderName, String sentName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addManager'");
+  
+    public String getApointee(){
+        return apointee;
     }
 }

@@ -2,8 +2,8 @@ package com.sadna.sadnamarket.domain.users;
 
 public class StoreFounder extends StoreOwner{
 
-    public StoreFounder(int storeId) {
-        super(storeId);
+    public StoreFounder(int storeId,String apointee) {
+        super(storeId,apointee);
     }
     @Override
     public boolean hasPermission(Permission permission){

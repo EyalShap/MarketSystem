@@ -9,5 +9,6 @@ public interface UserRole {
     boolean isApointedByUser(String username);
     List<String> getAppointers(); 
     public void leaveRole(UserRoleVisitor userRoleVisitor,int storeId,Member member,UserFacade userFacade);
-    
+    void sendRequest(UserFacade userFacade,String senderName,String sentName,String reqType);
+    String getApointee();
 } 

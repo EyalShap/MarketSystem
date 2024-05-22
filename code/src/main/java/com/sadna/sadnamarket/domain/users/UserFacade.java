@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
+
 
 
 public class UserFacade {
@@ -33,13 +36,14 @@ public class UserFacade {
     }
 
     public List<NotificationDTO> getNotifications(String userName){
-        List<Notification> notifes= iUserRepo.getMember(userName).getNotifications();
+        List<Notification> notifes= (ArrayList) iUserRepo.getMember(userName).getNotifications().values();
         List<NotificationDTO> notificationDTOs=new ArrayList<NotificationDTO>();
         for(Notification notif : notifes){
             notificationDTOs.add(new NotificationDTO(notif));
         }
         return notificationDTOs;
     }
+
 
     public boolean isLoggedIn(String userName){
         if(isExist(userName)){
@@ -62,10 +66,55 @@ public class UserFacade {
     public void login(String userName,String password){
         iUserRepo.getMember(userName).setLogin(true);
     }
-
-    public void addRequest(String senderName,String userName, String message,int store_id){
-        iUserRepo.getMember(userName).addRequest(this,senderName,message, store_id);
+    public void addProductToCart(String username,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getMember(username).addProductToCart(storeId, productId, amount);
     }
+    public void addProductToCart(int guestId,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getGuest(guestId).addProductToCart(storeId, productId, amount);
+    }
+    public void removeProductFromCart(String username,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getMember(username).removeProductFromCart(storeId, productId);
+    }
+    public void removeProductFromCart(int guestId,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getGuest(guestId).removeProductFromCart(storeId, productId);
+    }
+    public void changeQuantityCart(String username,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getMember(username).changeQuantityCart(storeId, productId, amount);
+    }
+    public void changeQuantityCart(int guestId,int storeId, int productId,int amount){
+        if(amount<=0)
+            throw new IllegalArgumentException("amount should be above 0");
+        iUserRepo.getGuest(guestId).changeQuantityCart(storeId, productId, amount);
+    }
+    public Member getMember(String userName){
+        return iUserRepo.getMember(userName);
+    }    
+    
+    public void addOwnerRequest(String senderName,String userName,int store_id){
+        Member sender=getMember(senderName);
+        sender.addOwnerRequest(this,userName, store_id);
+    }
+
+     public void addManagerRequest(String senderName,String userName,int store_id){
+        Member sender=getMember(senderName);
+        sender.addManagerRequest(this,userName, store_id);
+    }
+
+    public void acceptOwnerRequest(String acceptingName,int requestID){
+        Member accepting=getMember(acceptingName);
+        accepting.acceptToOwner(requestID);
+    }
+
 
     public void login(String userName,String password, int guestId){//the cart of the guest
         Member member=iUserRepo.getMember(userName);

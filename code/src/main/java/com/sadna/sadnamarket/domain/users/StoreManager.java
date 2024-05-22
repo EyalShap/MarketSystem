@@ -7,6 +7,8 @@ public class StoreManager implements UserRole {
     private int storeId;
     private List<Permission> permissions;
     private List<String> appointments;
+    
+    
 
     public StoreManager(int storeId){
         this.storeId=storeId;
@@ -43,5 +45,14 @@ public class StoreManager implements UserRole {
     @Override
     public List<String> getAppointers() {
        return appointments;
+    }
+    @Override
+    public void sendRequest(UserFacade userFacade, String senderName, String sentName,String reqType) {
+        throw new IllegalAccessError("You are not authorized to perform this action");
+    }
+   
+    @Override
+    public String getApointee() {
+        throw new IllegalAccessError("its not relvant who apointed you");
     }
 }
