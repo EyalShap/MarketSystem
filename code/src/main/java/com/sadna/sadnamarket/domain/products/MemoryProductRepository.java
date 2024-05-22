@@ -1,8 +1,10 @@
 package com.sadna.sadnamarket.domain.products;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MemoryProductRepository implements IProductRepository {
     private int nextProductId;
@@ -54,5 +56,19 @@ public class MemoryProductRepository implements IProductRepository {
     @Override
     public boolean isExistProduct(int productId) {
         return products.containsKey(productId);
+    }
+
+    @Override
+    public List<Product> filterByName(String productName) {
+        return products.values().stream()
+                .filter(product -> product.getProductName().equalsIgnoreCase(productName) && product.isActiveProduct())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Product> filterByCategory(String category) {
+        return products.values().stream()
+                .filter(product -> product.getProductCategory().equalsIgnoreCase(category) && product.isActiveProduct())
+                .collect(Collectors.toList());
     }
 }

@@ -76,6 +76,15 @@ public class ProductFacade {
         productToUpdate.setProductCategory(newCategory);
     }
 
+    public List<ProductDTO> getAllProductsByName(String productName) {
+        return ProductMapper.toProductDTOList(productRepository.filterByName(productName));
+
+    }
+
+    public List<ProductDTO> getAllProductsByCategory(String category) {
+        return ProductMapper.toProductDTOList(productRepository.filterByCategory(category));
+    }
+
     // private Product getProduct(int storeId, int productId) {
     // List<Product> storeProducts = products.get(storeId);
     // Product result = null;
