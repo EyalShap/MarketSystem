@@ -1,6 +1,6 @@
 package com.sadna.sadnamarket.domain.stores;
 
-import com.sadna.sadnamarket.domain.products.ProductDTO;
+import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
 import java.util.*;
 
@@ -106,21 +106,23 @@ public class Store {
         productAmounts.put(productId, newAmount);
     }
 
-    public int buyStoreProduct(int productId, int amount) {
-        if(!isActive)
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-        if(!productExists(productId))
-            throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
-        if(amount < 0)
-            throw new IllegalArgumentException(String.format("%d is an illegal amount of products.", amount));
+    /*public int buyStoreProduct(int productId, int amount) {
+        if(!checkItem(productId, amount))
+            throw new IllegalArgumentException(String.format("%d of product %d can not be purchased.", amount, productId));
 
-        int currAmount = productAmounts.get(productId);
-        if(amount > currAmount)
-            throw new IllegalArgumentException(String.format("You can not buy %d of product %d because there are only %d in the store.", amount, productId, currAmount));
-
-        int newAmount = currAmount - amount;
+        int newAmount = productAmounts.get(productId) - amount;
         setProductAmounts(productId, newAmount);
         return newAmount;
+    }*/
+
+    public void buyCart(List<CartItemDTO> cart) {
+        if(!checkCart(cart))
+            throw new IllegalArgumentException("This cart can not be purchased.");
+
+        for(CartItemDTO item : cart) {
+            int newAmount = productAmounts.get(item.getProductId()) - item.getQuantity();
+            setProductAmounts(item.getProductId(), newAmount);
+        }
     }
 
     public boolean productExists(int productId) {
@@ -202,6 +204,14 @@ public class Store {
             throw new IllegalArgumentException(String.format("A order with id %d already exists in store %d.", orderId, storeId));
 
         this.orderIds.add(orderId);
+    }
+
+    public boolean checkCart(List<CartItemDTO> cart) {
+        for(CartItemDTO item : cart) {
+            if(!isActive || !productExists(item.getProductId()) || item.getQuantity() > productAmounts.get(item.getProductId()))
+                return false;
+        }
+        return true;
     }
 
     @Override

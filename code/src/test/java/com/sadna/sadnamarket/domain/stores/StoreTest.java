@@ -322,7 +322,7 @@ class StoreTest {
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 
-    @Test
+    /*@Test
     void buyStoreProduct() {
         Map<Integer, Integer> expected1 = new HashMap<>();
         Map<Integer, Integer> expected2 = new HashMap<>();
@@ -381,7 +381,7 @@ class StoreTest {
 
         String expectedMessage1 = "A store with id 0 is not active.";
         assertEquals(expectedMessage1, expected1.getMessage());
-    }
+    }*/
 
     @Test
     void productExists() {

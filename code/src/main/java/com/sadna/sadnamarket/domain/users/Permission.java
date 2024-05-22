@@ -1,27 +1,24 @@
 package com.sadna.sadnamarket.domain.users;
 
 public enum Permission {
-    ADD_PRODUCTS(0),
-    DELETE_PRODUCTS(1),
-    UPDATE_PRODUCTS(2);
+    ADD_PRODUCTS(1),
+    DELETE_PRODUCTS(2),
+    UPDATE_PRODUCTS(3),
+    CLOSE_STORE(4),
+    REOPEN_STORE(5),
+    ADD_OWNER(6),
+    ADD_MANAGER(7),
+    ADD_SELLER(8),
+    ADD_BUY_POLICY(9),
+    ADD_DISCOUNT_POLICY(10);
 
-    private final int permissionNum;
+    private final int value;
 
-    Permission(int permissionNum) {
-        this.permissionNum = permissionNum;
+    Permission(int value) {
+        this.value = value;
     }
 
-    public int getPermissionNum() {
-        return permissionNum;
-    }
-
-    public static Permission getPermission(int permissionNum) {
-        for (Permission permission : Permission.values()) {
-            if (permission.getPermissionNum() == permissionNum) {
-                return permission;
-            }
-        }
-        throw new IllegalArgumentException(String.format("There is no manager permission with number %d.", permissionNum));
+    public int getValue() {
+        return value;
     }
 }
-

@@ -17,6 +17,24 @@ public class UserFacade {
         return true;
     }
 
+    public boolean isLoggedIn(String userName){
+        /*if(isExist(userName)){
+            Member member= iUserRepo.getMember(userName);
+            return member.isLoggedIn();
+        }
+        return false;*/
+        return true;
+    }
+
+    public boolean isMember(String userName){
+        /*if(isExist(userName)){
+            Member member= iUserRepo.getMember(userName);
+            return member.isLoggedIn();
+        }
+        return false;*/
+        return true;
+    }
+
     public void notify(String userName, String msg) {
         //iUserRepo.getMember(userName).addNotification(msg);
     }

@@ -8,6 +8,8 @@ import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserDTO;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 
@@ -49,16 +51,15 @@ public class StoreFacade {
         this.discountPolicyFacade = discountPolicyFacade;
     }
 
-    // returns id of newly created store
     public int createStore(String founderUserName, String storeName) {
-        if(!canCreateStore(founderUserName))
-            throw new IllegalArgumentException(String.format("User %s can not create a new store.", founderUserName));
+        if(!userFacade.isLoggedIn(founderUserName))
+            throw new IllegalArgumentException(String.format("User %s has to be logged in to create a store.", founderUserName));
 
         return storeRepository.addStore(founderUserName, storeName);
     }
     
-    public int addProductToStore( String username, int storeId, String productName, int productQuantity, int productPrice) {
-        if(!canAddProductsToStore(username, storeId))
+    public int addProductToStore(String username, int storeId, String productName, int productQuantity, int productPrice) {
+        if(!hasPermission(username, storeId, Permission.ADD_PRODUCTS))
             throw new IllegalArgumentException(String.format("user %s can not add a product to store with id %d.", username, storeId));
         if(!storeRepository.storeExists(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
@@ -71,7 +72,7 @@ public class StoreFacade {
     }
 
     public int deleteProduct( String username, int storeId, int productId) {
-        if(!canDeleteProductsFromStore(username, storeId))
+        if(!hasPermission(username, storeId, Permission.DELETE_PRODUCTS))
             throw new IllegalArgumentException(String.format("user %s can not delete a product from store with id %d.", username, storeId));
 
         storeRepository.findStoreByID(storeId).deleteProduct(productId);
@@ -80,7 +81,7 @@ public class StoreFacade {
     }
 
     public int updateProduct( String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
-        if(!canUpdateProductsInStore(username, storeId))
+        if(!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
             throw new IllegalArgumentException(String.format("user %s can not update a product in store with id %d.", username, storeId));
         if(!storeRepository.findStoreByID(storeId).productExists(productId))
             throw new IllegalArgumentException(String.format("A store with id %d does not have a product with id %d.", storeId, productId));
@@ -95,12 +96,8 @@ public class StoreFacade {
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-        if(!storeRepository.findStoreByID(storeId).isStoreOwner(currentOwnerUsername))
-            throw new IllegalArgumentException(String.format("A user %s is not an owner of store %d.", currentOwnerUsername, storeId));
-        if(storeRepository.findStoreByID(storeId).isStoreOwner(newOwnerUsername))
-            throw new IllegalArgumentException(String.format("A user %s is already an owner of store %d.", newOwnerUsername, storeId));
-        if(!userFacade.isExist(newOwnerUsername))
-            throw new IllegalArgumentException(String.format("A user %s does not exist.", newOwnerUsername));
+        if(!canAddOwnerToStore(storeId, currentOwnerUsername, newOwnerUsername))
+            throw new IllegalArgumentException(String.format("User %s can not add user %s as an owner to store %d.", currentOwnerUsername, newOwnerUsername, storeId));
 
         userFacade.sendStoreOwnerRequest(currentOwnerUsername, newOwnerUsername, storeId);
     }
@@ -110,12 +107,8 @@ public class StoreFacade {
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-        if(!storeRepository.findStoreByID(storeId).isStoreManager(currentOwnerUsername))
-            throw new IllegalArgumentException(String.format("A user %s is not an owner of store %d.", currentOwnerUsername, storeId));
-        if(storeRepository.findStoreByID(storeId).isStoreManager(newManagerUsername))
-            throw new IllegalArgumentException(String.format("A user %s is already a manager of store %d.", newManagerUsername, storeId));
-        if(!userFacade.isExist(newManagerUsername))
-            throw new IllegalArgumentException(String.format("A user %s does not exist.", newManagerUsername));
+        if(!canAddManagerToStore(storeId, currentOwnerUsername, newManagerUsername))
+            throw new IllegalArgumentException(String.format("User %s can not add user %s as a manager to store %d.", currentOwnerUsername, newManagerUsername, storeId));
 
         userFacade.sendStoreManagerRequest(currentOwnerUsername, newManagerUsername, storeId, permissions);
     }
@@ -130,7 +123,7 @@ public class StoreFacade {
 
     public boolean closeStore( String username, int storeId) {
         if(!storeRepository.findStoreByID(storeId).getFounderUsername().equals(username))
-            throw new IllegalArgumentException(String.format("A user %s can not close the store with id %d (not a founder).", username, storeId));
+            throw new IllegalArgumentException(String.format("User %s can not close the store with id %d (not a founder).", username, storeId));
 
         storeRepository.findStoreByID(storeId).closeStore();
 
@@ -290,12 +283,8 @@ public class StoreFacade {
         return productDTOsAmounts;
     }
 
-    public int buyStoreProduct(int storeId, int productId, int amount) {
-        return storeRepository.findStoreByID(storeId).buyStoreProduct(productId, amount);
-    }
-
     public String addSeller(int storeId, String adderUsername, String sellerUsername) {
-        if(!canAddSellerToStore(storeId, adderUsername))
+        if(!canAddSellerToStore(storeId, adderUsername, sellerUsername))
             throw new IllegalArgumentException(String.format("A user %s can not add sellers to store with id %d.", adderUsername, storeId));
         if(!userFacade.isExist(sellerUsername))
             throw new IllegalArgumentException(String.format("A user %s does not exist.", sellerUsername));
@@ -305,8 +294,8 @@ public class StoreFacade {
     }
 
     public int addBuyPolicy( String username, int storeId) {
-        if(!canAddBuyPolicy(storeId, username))
-            throw new IllegalArgumentException(String.format("A user %s can not add buy policy to store with id %d.", username, storeId));
+        if(!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(String.format("User %s can not add buy policy to store with id %d.", username, storeId));
 
         int newPolicyId = buyPolicyFacade.addBuyPolicy();
         storeRepository.findStoreByID(storeId).addBuyPolicy(newPolicyId);
@@ -314,8 +303,8 @@ public class StoreFacade {
     }
 
     public int addDiscountPolicy( String username, int storeId) {
-        if(!canAddDiscountPolicy(storeId, username))
-            throw new IllegalArgumentException(String.format("A user %s can not add discount policy to store with id %d.", username, storeId));
+        if(!hasPermission(username, storeId, Permission.ADD_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(String.format("User %s can not add discount policy to store with id %d.", username, storeId));
 
         int newPolicyId = buyPolicyFacade.addBuyPolicy();
         storeRepository.findStoreByID(storeId).addDiscountPolicy(newPolicyId);
@@ -327,52 +316,82 @@ public class StoreFacade {
         return orderId;
     }
 
-    public boolean canCreateStore(String username) {
-        // Dana added this proxy function for the store creation use case
+    private Map<Integer, List<CartItemDTO>> getCartByStore(List<CartItemDTO> cart) {
+        Map<Integer, List<CartItemDTO>> cartByStore = new HashMap<>();
+        for(CartItemDTO item : cart) {
+            List<CartItemDTO> storeItems = cartByStore.getOrDefault(item.getStoreId(), new ArrayList<>());
+            storeItems.add(item);
+            cartByStore.put(item.getStoreId(), storeItems);
+        }
+        return cartByStore;
+    }
+
+    public boolean checkCart(String username, List<CartItemDTO> cart) {
+        Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
+
+        for(int storeId : cartByStore.keySet()) {
+            Store store = storeRepository.findStoreByID(storeId);
+            if(!store.checkCart(cartByStore.get(storeId)))
+                return false;
+
+            for(int policyId : store.getBuyPolicyIds()) {
+                if(!buyPolicyFacade.canBuy(policyId, cartByStore.get(storeId), username))
+                    return false;
+            }
+        }
+
         return true;
     }
 
-    public boolean canAddProductsToStore(String username, int storeId) {
-        // Dana added this proxy function for the stock management use case
-        return true;
+    public void buyCart(List<CartItemDTO> cart) {
+        Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
+        for(int storeId: cartByStore.keySet()) {
+            Store store = storeRepository.findStoreByID(storeId);
+            store.buyCart(cartByStore.get(storeId));
+        }
     }
 
-    public boolean canDeleteProductsFromStore(String username, int storeId) {
-        // Dana added this proxy function for the stock management use case
-        return true;
+    public double calculatePrice(String username, List<CartItemDTO> cart) {
+        Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
+        double sum = 0;
+
+        for(int storeId: cartByStore.keySet()) {
+            Store store = storeRepository.findStoreByID(storeId);
+            sum += discountPolicyFacade.calculatePrice(store.getDiscountPolicyIds(), cartByStore.get(storeId), username);
+        }
+        return sum;
     }
 
-    public boolean canUpdateProductsInStore(String username, int storeId) {
-        // Dana added this proxy function for the stock management use case
-        return true;
+    private boolean hasPermission(String username, int storeId, Permission permission) {
+        if(!userFacade.isLoggedIn(username))
+            return false;
+
+        Store store = storeRepository.findStoreByID(storeId);
+        if(store.isStoreOwner(username))
+            return true;
+
+        if(store.isStoreManager(username))
+            return userFacade.checkPremssionToStore(username, storeId, permission);
+
+        return false;
     }
 
-
-    public UserDTO getUser(String username) {
-        // Dana added this proxy function for the info request use case
-        return new UserDTO();
+    private boolean canAddOwnerToStore(int storeId, String currOwnerUsername, String newOwnerUsername) {
+        return hasPermission(currOwnerUsername, storeId, Permission.ADD_OWNER) &&
+                userFacade.isMember(newOwnerUsername) &&
+                (!storeRepository.findStoreByID(storeId).isStoreOwner(newOwnerUsername));
     }
 
-
-
-    public boolean canAddSellerToStore(int storeId, String username) {
-        // Dana added this proxy function
-        return true;
+    private boolean canAddManagerToStore(int storeId, String currOwnerUsername, String newManagerUsername) {
+        return hasPermission(currOwnerUsername, storeId, Permission.ADD_MANAGER) &&
+                userFacade.isMember(newManagerUsername) &&
+                (!storeRepository.findStoreByID(storeId).isStoreManager(newManagerUsername));
     }
 
-    public boolean canAddBuyPolicy(int storeId, String username) {
-        // Dana added this proxy function
-        return true;
-    }
-
-    public boolean canAddDiscountPolicy(int storeId, String username) {
-        // Dana added this proxy function
-        return true;
-    }
-
-    public boolean isExist(String username) {
-        // Dana added this proxy function
-        return true;
+    private boolean canAddSellerToStore(int storeId, String currOwnerUsername, String newSellerUsername) {
+        return hasPermission(currOwnerUsername, storeId, Permission.ADD_SELLER) &&
+                userFacade.isMember(newSellerUsername) &&
+                (!storeRepository.findStoreByID(storeId).isSeller(newSellerUsername));
     }
 
 }
