@@ -1,16 +1,18 @@
 package com.sadna.sadnamarket.domain.orders;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class OrderFacade {
-    public List<OrderDTO> getOrders(int storeId) {
-        // dana added this proxy function for the get store order history use case
-        return new ArrayList<>();
+    private IOrderRepository orderRepository;
+    public OrderFacade(IOrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
     }
 
-    public OrderDTO getOrder(int orderId) {
-        // dana added this proxy function for the get store order history use case
-        return new OrderDTO();
+    public int createOrder(Map<Integer, OrderDTO> storeOrdersDTO){
+        return orderRepository.createOrder(storeOrdersDTO);
+    }
+    public List<OrderDTO> getOrders(int storeId) {
+        return orderRepository.getOrders(storeId);
     }
 }
