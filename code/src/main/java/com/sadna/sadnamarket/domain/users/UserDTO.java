@@ -1,9 +1,9 @@
 package com.sadna.sadnamarket.domain.users;
 
-public class MemberDTO {
+public class UserDTO {
     private int userId;
 
-    public MemberDTO() {
+    public UserDTO() {
     }
 
 

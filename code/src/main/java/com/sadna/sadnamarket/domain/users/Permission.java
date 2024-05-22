@@ -1,13 +1,13 @@
 package com.sadna.sadnamarket.domain.users;
 
-public enum ManagerPermission {
+public enum Permission {
     ADD_PRODUCTS(0),
     DELETE_PRODUCTS(1),
     UPDATE_PRODUCTS(2);
 
     private final int permissionNum;
 
-    ManagerPermission(int permissionNum) {
+    Permission(int permissionNum) {
         this.permissionNum = permissionNum;
     }
 
@@ -15,8 +15,8 @@ public enum ManagerPermission {
         return permissionNum;
     }
 
-    public static ManagerPermission getPermission(int permissionNum) {
-        for (ManagerPermission permission : ManagerPermission.values()) {
+    public static Permission getPermission(int permissionNum) {
+        for (Permission permission : Permission.values()) {
             if (permission.getPermissionNum() == permissionNum) {
                 return permission;
             }

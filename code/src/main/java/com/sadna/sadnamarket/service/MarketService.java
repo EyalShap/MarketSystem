@@ -11,7 +11,7 @@ import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
-import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.domain.users.UserDTO;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,10 +50,10 @@ public class MarketService {
     // ----------------------- Stores -----------------------
 
     // returns id of the created store
-    public Response createStore(int founderId, String storeName) {
+    public Response createStore(String founderUsername, String storeName) {
         try {
-            int newStoreId = storeFacade.createStore(founderId, storeName); // will throw an exception if the store already exists
-            logger.info(String.format("User %d created a store with id %d.", founderId, newStoreId));
+            int newStoreId = storeFacade.createStore(founderUsername, storeName); // will throw an exception if the store already exists
+            logger.info(String.format("User %d created a store with id %d.", founderUsername, newStoreId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
         }
         catch (Exception e) {
@@ -62,10 +62,10 @@ public class MarketService {
         }
     }
 
-    public Response addProductToStore(int userId, int storeId, String productName, int productQuantity, int productPrice) {
+    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, int productPrice) {
         try {
-            int newProductId = storeFacade.addProductToStore(userId, storeId, productName, productQuantity, productPrice);
-            logger.info(String.format("User %d added product %d to store %d.", userId, newProductId, storeId));
+            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice);
+            logger.info(String.format("User %d added product %d to store %d.", username, newProductId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
         catch (Exception e) {
@@ -74,10 +74,10 @@ public class MarketService {
         }
     }
 
-    public Response deleteProductFromStore(int userId, int storeId, int productId) {
+    public Response deleteProductFromStore(String token, String username, int storeId, int productId) {
         try {
-            int deletedProductId = storeFacade.deleteProduct(userId, storeId, productId);
-            logger.info(String.format("User %d deleted product %d from store %d.", userId, productId, storeId));
+            int deletedProductId = storeFacade.deleteProduct(username, storeId, productId);
+            logger.info(String.format("User %d deleted product %d from store %d.", username, productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(deletedProductId));
         }
         catch (Exception e) {
@@ -86,10 +86,10 @@ public class MarketService {
         }
     }
 
-    public Response updateProductInStore(int userId, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
+    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
         try {
-            int updateProductId = storeFacade.updateProduct(userId, storeId, productId, newProductName, newQuantity, newPrice);
-            logger.info(String.format("User %d updated product %d in store %d.", userId, productId, storeId));
+            int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice);
+            logger.info(String.format("User %d updated product %d in store %d.", username, productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }
         catch (Exception e) {
@@ -99,10 +99,10 @@ public class MarketService {
         }
     }
 
-    public Response closeStore(int userId, int storeId) {
+    public Response closeStore(String token, String username, int storeId) {
         try {
-            boolean storeClosed = storeFacade.closeStore(userId, storeId);
-            logger.info(String.format("User %d closed store %d.", userId, storeId));
+            boolean storeClosed = storeFacade.closeStore(username, storeId);
+            logger.info(String.format("User %d closed store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(storeClosed));
         }
         catch (Exception e) {
@@ -112,10 +112,10 @@ public class MarketService {
         }
     }
 
-    public Response getOwners(int userId, int storeId) {
+    public Response getOwners(String token, String username, int storeId) {
         try {
-            List<MemberDTO> owners = storeFacade.getOwners(userId, storeId);
-            logger.info(String.format("User %d got owners of store %d.", userId, storeId));
+            List<UserDTO> owners = storeFacade.getOwners(username, storeId);
+            logger.info(String.format("User %d got owners of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(owners));
         }
         catch (Exception e) {
@@ -125,10 +125,10 @@ public class MarketService {
         }
     }
 
-    public Response getManagers(int userId, int storeId) {
+    public Response getManagers(String token, String username, int storeId) {
         try {
-            List<MemberDTO> managers = storeFacade.getManagers(userId, storeId);
-            logger.info(String.format("User %d got managers of store %d.", userId, storeId));
+            List<UserDTO> managers = storeFacade.getManagers(username, storeId);
+            logger.info(String.format("User %d got managers of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(managers));
         }
         catch (Exception e) {
@@ -137,10 +137,10 @@ public class MarketService {
         }
     }
 
-    public Response getSellers(int userId, int storeId) {
+    public Response getSellers(String token, String username, int storeId) {
         try {
-            List<MemberDTO> sellers = storeFacade.getSellers(userId, storeId);
-            logger.info(String.format("User %d got sellers of store %d.", userId, storeId));
+            List<UserDTO> sellers = storeFacade.getSellers(username, storeId);
+            logger.info(String.format("User %d got sellers of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(sellers));
         }
         catch (Exception e) {
@@ -149,10 +149,10 @@ public class MarketService {
         }
     }
 
-    public Response sendStoreOwnerRequest(int currentOwnerId, int newOwnerId, int storeId) {
+    public Response sendStoreOwnerRequest(String currentOwnerUsername, String newOwnerUsername, int storeId) {
         try {
-            storeFacade.sendStoreOwnerRequest(currentOwnerId, newOwnerId, storeId);
-            logger.info(String.format("User %d nominated user %d as owner of store %d.", currentOwnerId, newOwnerId, storeId));
+            storeFacade.sendStoreOwnerRequest(currentOwnerUsername, newOwnerUsername, storeId);
+            logger.info(String.format("User %d nominated user %d as owner of store %d.", currentOwnerUsername, newOwnerUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -161,10 +161,10 @@ public class MarketService {
         }
     }
 
-    public Response sendStoreManagerRequest(int currentOwnerId, int newManagerId, int storeId, Set<Integer> permissions) {
+    public Response sendStoreManagerRequest(String currentOwnerUsername, String newManagerUsername, int storeId, Set<Integer> permissions) {
         try {
-            storeFacade.sendStoreManagerRequest(currentOwnerId, newManagerId, storeId, permissions);
-            logger.info(String.format("User %d nominated user %d as manager of store %d.", currentOwnerId, newManagerId, storeId));
+            storeFacade.sendStoreManagerRequest(currentOwnerUsername, newManagerUsername, storeId, permissions);
+            logger.info(String.format("User %d nominated user %d as manager of store %d.", currentOwnerUsername, newManagerUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -173,11 +173,11 @@ public class MarketService {
         }
     }
 
-    public Response acceptStoreOwnerRequest(int newOwnerId, int storeId) {
+    public Response acceptStoreOwnerRequest(String newOwnerUsername, int storeId) {
         try {
-            userFacade.acceptStoreOwnerRequest(newOwnerId, storeId);
-            logger.info(String.format("User %d accepted owner nomination in store %d.", newOwnerId, storeId));
-            return Response.createResponse(false, objectMapper.writeValueAsString(newOwnerId));
+            userFacade.acceptStoreOwnerRequest(newOwnerUsername, storeId);
+            logger.info(String.format("User %d accepted owner nomination in store %d.", newOwnerUsername, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(newOwnerUsername));
         }
         catch (Exception e) {
             logger.error("acceptStoreOwnerRequest: " + e.getMessage());
@@ -185,11 +185,11 @@ public class MarketService {
         }
     }
 
-    public Response acceptStoreManagerRequest(int newManagerId, int storeId) {
+    public Response acceptStoreManagerRequest(String newManagerUsername, int storeId) {
         try {
-            userFacade.acceptStoreManagerRequest(newManagerId, storeId);
-            logger.info(String.format("User %d accepted manager nomination in store %d.", newManagerId, storeId));
-            return Response.createResponse(false, objectMapper.writeValueAsString(newManagerId));
+            userFacade.acceptStoreManagerRequest(newManagerUsername, storeId);
+            logger.info(String.format("User %d accepted manager nomination in store %d.", newManagerUsername, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(newManagerUsername));
         }
         catch (Exception e) {
             logger.error("acceptStoreManagerRequest: " + e.getMessage());
@@ -197,10 +197,10 @@ public class MarketService {
         }
     }
 
-    public Response getStoreOrderHistory(int userId, int storeId) {
+    public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
-            String history = storeFacade.getStoreOrderHisotry(userId, storeId);
-            logger.info(String.format("User %d got order history from store %d.", userId, storeId));
+            String history = storeFacade.getStoreOrderHisotry(username, storeId);
+            logger.info(String.format("User %d got order history from store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
         }
         catch (Exception e) {
@@ -209,13 +209,13 @@ public class MarketService {
         }
     }
 
-    public Response getStoreInfo(int userId, int storeId) {
+    public Response getStoreInfo(String token, String username, int storeId) {
         try {
             Set<String> fields = Set.of("storeId", "storeName");
             SimpleFilterProvider filterProvider = new SimpleFilterProvider();
             filterProvider.addFilter("filter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
 
-            StoreDTO storeDTO = storeFacade.getStoreInfo(userId, storeId);
+            StoreDTO storeDTO = storeFacade.getStoreInfo(username, storeId);
             String json = objectMapper.writer(filterProvider).writeValueAsString(storeDTO);
             logger.info(String.format("A user got store info of store %d.", storeId));
             return Response.createResponse(false, json);
@@ -226,9 +226,9 @@ public class MarketService {
         }
     }
 
-    public Response getProductsInfo(int userId, int storeId) {
+    public Response getProductsInfo(String token, String username, int storeId) {
         try {
-            Map<String, Integer> productDTOs = storeFacade.getProductsInfo(userId, storeId);
+            Map<String, Integer> productDTOs = storeFacade.getProductsInfo(username, storeId);
             logger.info(String.format("A user got products info of store %d.", storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
         }
@@ -238,11 +238,11 @@ public class MarketService {
         }
     }
 
-    public Response addSellerToStore(int storeId, int adderId, int sellerId) {
+    public Response addSellerToStore(int storeId, String adderUsername, String sellerUsername) {
         try {
-            storeFacade.addSeller(storeId, adderId, sellerId);
-            logger.info(String.format("User %d added user %d as a seller to store %d.", adderId, sellerId, storeId));
-            return Response.createResponse(false, objectMapper.writeValueAsString(sellerId));
+            storeFacade.addSeller(storeId, adderUsername, sellerUsername);
+            logger.info(String.format("User %d added user %d as a seller to store %d.", adderUsername, sellerUsername, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(sellerUsername));
         }
         catch (Exception e) {
             logger.error("addSellerToStore: " + e.getMessage());
@@ -250,10 +250,10 @@ public class MarketService {
         }
     }
 
-    public Response addBuyPolicy(int userId, int storeId) {
+    public Response addBuyPolicy(String token, String username, int storeId) {
         try {
-            int policyId = storeFacade.addBuyPolicy(userId, storeId);
-            logger.info(String.format("User %d added buy policy with id %d to store %d.", userId, policyId, storeId));
+            int policyId = storeFacade.addBuyPolicy(username, storeId);
+            logger.info(String.format("User %d added buy policy with id %d to store %d.", username, policyId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
@@ -262,10 +262,10 @@ public class MarketService {
         }
     }
 
-    public Response addDiscountPolicy(int userId, int storeId) {
+    public Response addDiscountPolicy(String token, String username, int storeId) {
         try {
-            int policyId = storeFacade.addDiscountPolicy(userId, storeId);
-            logger.info(String.format("User %d added discount policy with id %d to store %d.", userId, policyId, storeId));
+            int policyId = storeFacade.addDiscountPolicy(username, storeId);
+            logger.info(String.format("User %d added discount policy with id %d to store %d.", username, policyId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {

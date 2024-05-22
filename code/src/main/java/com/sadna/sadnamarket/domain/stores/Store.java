@@ -9,24 +9,24 @@ public class Store {
     private boolean isActive;
     private String storeName;
     private Map<Integer, Integer> productAmounts;
-    private int founderId;
-    private List<Integer> ownerIds;
-    private List<Integer> managerIds;
-    private List<Integer> sellerIds;
+    private String founderUsername;
+    private List<String> ownerUsernames;
+    private List<String> managerUsernames;
+    private List<String> sellerUsernames;
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
     private List<Integer> orderIds;
 
-    public Store(int storeId, String storeName, int founderId) {
+    public Store(int storeId, String storeName, String founderUsername) {
         this.storeId = storeId;
         this.isActive = true;
         this.storeName = storeName;
         this.productAmounts = new HashMap<>();
-        this.founderId = founderId;
-        this.ownerIds = new ArrayList<>();
-        this.ownerIds.add(founderId);
-        this.managerIds = new ArrayList<>();
-        this.sellerIds = new ArrayList<>();
+        this.founderUsername = founderUsername;
+        this.ownerUsernames = new ArrayList<>();
+        this.ownerUsernames.add(founderUsername);
+        this.managerUsernames = new ArrayList<>();
+        this.sellerUsernames = new ArrayList<>();
         this.buyPolicyIds = new ArrayList<>();
         this.buyPolicyIds.add(0); // assuming buyPolicyId = 0 is default policy
         this.discountPolicyIds = new ArrayList<>();
@@ -41,24 +41,24 @@ public class Store {
         return this.storeName;
     }
 
-    public int getFounderId() {
-        return this.founderId;
+    public String getFounderUsername() {
+        return this.founderUsername;
     }
 
     public boolean getIsActive() {
         return this.isActive;
     }
 
-    public List<Integer> getOwnerIds() {
-        return this.ownerIds;
+    public List<String> getOwnerUsernames() {
+        return this.ownerUsernames;
     }
 
-    public List<Integer> getManagerIds() {
-        return this.managerIds;
+    public List<String> getManagerUsernames() {
+        return this.managerUsernames;
     }
 
-    public List<Integer> getSellerIds() {
-        return this.sellerIds;
+    public List<String> getSellerUsernames() {
+        return this.sellerUsernames;
     }
 
     public Map<Integer, Integer> getProductAmounts() {
@@ -127,43 +127,43 @@ public class Store {
         return productAmounts.containsKey(productId);
     }
 
-    public boolean isStoreOwner(int userId) {
-        return ownerIds.contains(userId);
+    public boolean isStoreOwner(String  username) {
+        return ownerUsernames.contains(username);
     }
 
-    public boolean isStoreManager(int userId) {
-        return managerIds.contains(userId);
+    public boolean isStoreManager(String  username) {
+        return managerUsernames.contains(username);
     }
 
-    public boolean isSeller(int userId) {
-        return sellerIds.contains(userId);
+    public boolean isSeller(String username) {
+        return sellerUsernames.contains(username);
     }
 
-    public void addStoreOwner(int newOwnerId) {
+    public void addStoreOwner(String newOwnerUsername) {
         if(!isActive)
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-        if(isStoreOwner(newOwnerId))
-            throw new IllegalArgumentException(String.format("User %d is already a owner of store %d.", newOwnerId, storeId));
+        if(isStoreOwner(newOwnerUsername))
+            throw new IllegalArgumentException(String.format("User %s is already a owner of store %d.", newOwnerUsername, storeId));
 
-        ownerIds.add(newOwnerId);
+        ownerUsernames.add(newOwnerUsername);
     }
 
-    public void addStoreManager(int newManagerId) {
+    public void addStoreManager(String newManagerUsername) {
         if(!isActive)
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-        if(isStoreManager(newManagerId))
-            throw new IllegalArgumentException(String.format("User %d is already a manager of store %d.", newManagerId, storeId));
+        if(isStoreManager(newManagerUsername))
+            throw new IllegalArgumentException(String.format("User %s is already a manager of store %d.", newManagerUsername, storeId));
 
-        managerIds.add(newManagerId);
+        managerUsernames.add(newManagerUsername);
     }
 
-    public void addSeller(int sellerId) {
+    public void addSeller(String sellerUsername) {
         if(!isActive)
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-        if(isSeller(sellerId))
-            throw new IllegalArgumentException(String.format("User %d is already a seller of store %d.", sellerId, storeId));
+        if(isSeller(sellerUsername))
+            throw new IllegalArgumentException(String.format("User %s is already a seller of store %d.", sellerUsername, storeId));
 
-        this.sellerIds.add(sellerId);
+        this.sellerUsernames.add(sellerUsername);
     }
 
     public void closeStore() {
@@ -174,7 +174,7 @@ public class Store {
     }
 
     public StoreDTO getStoreDTO() {
-        return new StoreDTO(storeId, isActive, storeName, productAmounts, founderId, ownerIds, managerIds, sellerIds, buyPolicyIds, discountPolicyIds, orderIds);
+        return new StoreDTO(storeId, isActive, storeName, productAmounts, founderUsername, ownerUsernames, managerUsernames, sellerUsernames, buyPolicyIds, discountPolicyIds, orderIds);
     }
 
     public void addBuyPolicy(int policyId) {
@@ -204,4 +204,16 @@ public class Store {
         this.orderIds.add(orderId);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Store store = (Store) o;
+        return storeId == store.storeId && isActive == store.isActive && founderUsername == store.founderUsername && Objects.equals(storeName, store.storeName) && Objects.equals(productAmounts, store.productAmounts) && Objects.equals(ownerUsernames, store.ownerUsernames) && Objects.equals(managerUsernames, store.managerUsernames) && Objects.equals(sellerUsernames, store.sellerUsernames) && Objects.equals(buyPolicyIds, store.buyPolicyIds) && Objects.equals(discountPolicyIds, store.discountPolicyIds) && Objects.equals(orderIds, store.orderIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(storeId, isActive, storeName, productAmounts, founderUsername, ownerUsernames, managerUsernames, sellerUsernames, buyPolicyIds, discountPolicyIds, orderIds);
+    }
 }

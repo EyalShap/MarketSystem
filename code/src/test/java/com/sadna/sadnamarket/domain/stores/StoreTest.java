@@ -15,8 +15,8 @@ class StoreTest {
 
     @BeforeEach
     public void setUp() {
-        store0 = new Store(0, "Store0", 0);
-        store1 = new Store(1, "Store1", 1);
+        store0 = new Store(0, "Store0", "Alice");
+        store1 = new Store(1, "Store1", "Bob");
     }
 
     @Test
@@ -32,9 +32,9 @@ class StoreTest {
     }
 
     @Test
-    void getFounderId() {
-        assertEquals(0, store0.getFounderId());
-        assertEquals(1, store1.getFounderId());
+    void getFounderUsername() {
+        assertEquals("Alice", store0.getFounderUsername());
+        assertEquals("Bob", store1.getFounderUsername());
     }
 
     @Test
@@ -52,52 +52,52 @@ class StoreTest {
     }
 
     @Test
-    void getOwnerIds() {
-        Set<Integer> expected1 = new HashSet<>();
-        Set<Integer> expected2 = new HashSet<>();
-        Set<Integer> expected3 = new HashSet<>();
-        Collections.addAll(expected1, 0);
-        Collections.addAll(expected2, 1, 0);
-        Collections.addAll(expected3, 1);
+    void getOwnerUsernames() {
+        Set<String> expected1 = new HashSet<>();
+        Set<String> expected2 = new HashSet<>();
+        Set<String> expected3 = new HashSet<>();
+        Collections.addAll(expected1, "Alice");
+        Collections.addAll(expected2, "Bob", "Alice");
+        Collections.addAll(expected3, "Bob");
 
-        assertEquals(expected1, new HashSet<>(store0.getOwnerIds()));
+        assertEquals(expected1, new HashSet<>(store0.getOwnerUsernames()));
 
-        store0.addStoreOwner(1);
-        assertEquals(expected2, new HashSet<>(store0.getOwnerIds()));
+        store0.addStoreOwner("Bob");
+        assertEquals(expected2, new HashSet<>(store0.getOwnerUsernames()));
 
-        assertEquals(expected3, new HashSet<>(store1.getOwnerIds()));
+        assertEquals(expected3, new HashSet<>(store1.getOwnerUsernames()));
     }
 
     @Test
-    void getManagerIds() {
-        Set<Integer> expected1 = new HashSet<>();
-        Set<Integer> expected2 = new HashSet<>();
-        Collections.addAll(expected2, 1, 3);
+    void getManagerUsernames() {
+        Set<String> expected1 = new HashSet<>();
+        Set<String> expected2 = new HashSet<>();
+        Collections.addAll(expected2, "Bob", "Moshe");
 
-        assertEquals(expected1, new HashSet<>(store0.getManagerIds()));
-        assertEquals(expected1, new HashSet<>(store1.getManagerIds()));
+        assertEquals(expected1, new HashSet<>(store0.getManagerUsernames()));
+        assertEquals(expected1, new HashSet<>(store1.getManagerUsernames()));
 
-        store1.addStoreManager(1);
-        store1.addStoreManager(3);
-        assertEquals(expected2, new HashSet<>(store1.getManagerIds()));
+        store1.addStoreManager("Bob");
+        store1.addStoreManager("Moshe");
+        assertEquals(expected2, new HashSet<>(store1.getManagerUsernames()));
 
-        assertEquals(expected1, new HashSet<>(store0.getManagerIds()));
+        assertEquals(expected1, new HashSet<>(store0.getManagerUsernames()));
     }
 
     @Test
-    void getSellerIds() {
-        Set<Integer> expected1 = new HashSet<>();
-        Set<Integer> expected2 = new HashSet<>();
-        Collections.addAll(expected2, 1, 3);
+    void getSellerUsernames() {
+        Set<String> expected1 = new HashSet<>();
+        Set<String> expected2 = new HashSet<>();
+        Collections.addAll(expected2, "Bob", "Moshe");
 
-        assertEquals(expected1, new HashSet<>(store0.getSellerIds()));
-        assertEquals(expected1, new HashSet<>(store1.getSellerIds()));
+        assertEquals(expected1, new HashSet<>(store0.getSellerUsernames()));
+        assertEquals(expected1, new HashSet<>(store1.getSellerUsernames()));
 
-        store1.addSeller(1);
-        store1.addSeller(3);
-        assertEquals(expected2, new HashSet<>(store1.getSellerIds()));
+        store1.addSeller("Bob");
+        store1.addSeller("Moshe");
+        assertEquals(expected2, new HashSet<>(store1.getSellerUsernames()));
 
-        assertEquals(expected1, new HashSet<>(store0.getSellerIds()));
+        assertEquals(expected1, new HashSet<>(store0.getSellerUsernames()));
     }
 
     @Test
@@ -395,54 +395,54 @@ class StoreTest {
 
     @Test
     void isStoreOwner() {
-        store0.addStoreOwner(1);
-        store0.addStoreOwner(2);
-        store1.addStoreOwner(0);
-        store1.addStoreOwner(2);
+        store0.addStoreOwner("Bob");
+        store0.addStoreOwner("Netta");
+        store1.addStoreOwner("Alice");
+        store1.addStoreOwner("Netta");
 
-        assertTrue(store0.isStoreOwner(0));
-        assertTrue(store1.isStoreOwner(0));
-        assertTrue(store0.isStoreOwner(1));
-        assertTrue(store1.isStoreOwner(1));
-        assertTrue(store0.isStoreOwner(2));
-        assertTrue(store1.isStoreOwner(2));
+        assertTrue(store0.isStoreOwner("Alice"));
+        assertTrue(store1.isStoreOwner("Alice"));
+        assertTrue(store0.isStoreOwner("Bob"));
+        assertTrue(store1.isStoreOwner("Bob"));
+        assertTrue(store0.isStoreOwner("Netta"));
+        assertTrue(store1.isStoreOwner("Netta"));
     }
 
     @Test
     void isStoreManager() {
-        store0.addStoreManager(0);
-        store0.addStoreManager(1);
-        store1.addStoreManager(0);
-        store1.addStoreManager(2);
+        store0.addStoreManager("Alice");
+        store0.addStoreManager("Bob");
+        store1.addStoreManager("Alice");
+        store1.addStoreManager("Netta");
 
-        assertTrue(store0.isStoreManager(0));
-        assertTrue(store1.isStoreManager(0));
-        assertTrue(store0.isStoreManager(1));
-        assertTrue(store1.isStoreManager(2));
+        assertTrue(store0.isStoreManager("Alice"));
+        assertTrue(store1.isStoreManager("Alice"));
+        assertTrue(store0.isStoreManager("Bob"));
+        assertTrue(store1.isStoreManager("Netta"));
     }
 
     @Test
     void isSeller() {
-        store0.addSeller(0);
-        store0.addSeller(1);
-        store1.addSeller(0);
-        store1.addSeller(2);
+        store0.addSeller("Alice");
+        store0.addSeller("Bob");
+        store1.addSeller("Alice");
+        store1.addSeller("Netta");
 
-        assertTrue(store0.isSeller(0));
-        assertTrue(store1.isSeller(0));
-        assertTrue(store0.isSeller(1));
-        assertTrue(store1.isSeller(2));
+        assertTrue(store0.isSeller("Alice"));
+        assertTrue(store1.isSeller("Alice"));
+        assertTrue(store0.isSeller("Bob"));
+        assertTrue(store1.isSeller("Netta"));
     }
 
     @Test
     void addStoreOwnerAlreadyExists() {
-        store0.addStoreOwner(1);
+        store0.addStoreOwner("Bob");
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addStoreOwner(1);
+            store0.addStoreOwner("Bob");
         });
 
-        String expectedMessage1 = "User 1 is already a owner of store 0.";
+        String expectedMessage1 = "User Bob is already a owner of store 0.";
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 
@@ -451,7 +451,7 @@ class StoreTest {
         store0.closeStore();
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addStoreOwner(1);
+            store0.addStoreOwner("Bob");
         });
 
         String expectedMessage1 = "A store with id 0 is not active.";
@@ -460,13 +460,13 @@ class StoreTest {
 
     @Test
     void addStoreManagerAlreadyExists() {
-        store0.addStoreManager(1);
+        store0.addStoreManager("Bob");
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addStoreManager(1);
+            store0.addStoreManager("Bob");
         });
 
-        String expectedMessage1 = "User 1 is already a manager of store 0.";
+        String expectedMessage1 = "User Bob is already a manager of store 0.";
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 
@@ -475,7 +475,7 @@ class StoreTest {
         store0.closeStore();
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addStoreManager(1);
+            store0.addStoreManager("Bob");
         });
 
         String expectedMessage1 = "A store with id 0 is not active.";
@@ -484,13 +484,13 @@ class StoreTest {
 
     @Test
     void addSellerAlreadyExists() {
-        store1.addSeller(1);
+        store1.addSeller("Bob");
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store1.addSeller(1);
+            store1.addSeller("Bob");
         });
 
-        String expectedMessage1 = "User 1 is already a seller of store 1.";
+        String expectedMessage1 = "User Bob is already a seller of store 1.";
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 
@@ -499,7 +499,7 @@ class StoreTest {
         store0.closeStore();
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addSeller(1);
+            store0.addSeller("Bob");
         });
 
         String expectedMessage1 = "A store with id 0 is not active.";
@@ -524,11 +524,11 @@ class StoreTest {
     void getStoreDTO() {
         Map<Integer, Integer> expectedProductAmounts = new HashMap<>();
         expectedProductAmounts.put(0, 9);
-        List<Integer> expectedOwnerIds = new ArrayList<>();
-        Collections.addAll(expectedOwnerIds, 0, 1);
-        List<Integer> expectedManagerIds = new ArrayList<>();
-        Collections.addAll(expectedManagerIds, 2);
-        List<Integer> expectedSellerIds = new ArrayList<>();
+        List<String> expectedOwnerUsernames = new ArrayList<>();
+        Collections.addAll(expectedOwnerUsernames, "Alice", "Bob");
+        List<String> expectedManagerUsernames = new ArrayList<>();
+        Collections.addAll(expectedManagerUsernames, "Netta");
+        List<String> expectedSellerUsernames = new ArrayList<>();
         List<Integer> expectedBuyPolicyIds = new ArrayList<>();
         Collections.addAll(expectedBuyPolicyIds, 0);
         List<Integer> expectedDiscountPolicyIds = new ArrayList<>();
@@ -536,11 +536,11 @@ class StoreTest {
         List<Integer> expectedOrderIds = new ArrayList<>();
         Collections.addAll(expectedOrderIds, 5, 6);
 
-        StoreDTO expected = new StoreDTO(0, true, "Store0", expectedProductAmounts, 0, expectedOwnerIds, expectedManagerIds, expectedSellerIds, expectedBuyPolicyIds, expectedDiscountPolicyIds, expectedOrderIds);
+        StoreDTO expected = new StoreDTO(0, true, "Store0", expectedProductAmounts, "Alice", expectedOwnerUsernames, expectedManagerUsernames, expectedSellerUsernames, expectedBuyPolicyIds, expectedDiscountPolicyIds, expectedOrderIds);
 
         store0.addProduct(0, 9);
-        store0.addStoreOwner(1);
-        store0.addStoreManager(2);
+        store0.addStoreOwner("Bob");
+        store0.addStoreManager("Netta");
         store0.addDiscountPolicy(0);
         store0.addDiscountPolicy(9);
         store0.addDiscountPolicy(12);

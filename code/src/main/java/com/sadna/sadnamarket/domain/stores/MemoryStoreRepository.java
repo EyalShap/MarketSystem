@@ -33,13 +33,13 @@ public class MemoryStoreRepository implements IStoreRepository{
     }
 
     @Override
-    public int addStore(int founderId, String storeName) {
+    public int addStore(String founderUsername, String storeName) {
         if(storeExists(nextStoreId))
-            throw new IllegalArgumentException(String.format("A store with the id \"%d\" already exists.", nextStoreId));
+            throw new IllegalArgumentException(String.format("A store with the id %d already exists.", nextStoreId));
         if(storeNameExists(storeName))
-            throw new IllegalArgumentException(String.format("A store with the name \"%s\" already exists.", storeName));
+            throw new IllegalArgumentException(String.format("A store with the name %s already exists.", storeName));
 
-        Store createdStore = new Store(nextStoreId, storeName, founderId);
+        Store createdStore = new Store(nextStoreId, storeName, founderUsername);
         stores.put(nextStoreId, createdStore);
         nextStoreId++;
         return nextStoreId - 1;
