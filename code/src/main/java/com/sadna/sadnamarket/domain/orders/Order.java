@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.orders;
 
+
 import java.util.Map;
 
 public class Order {
@@ -30,4 +31,5 @@ public class Order {
     public Map<Integer, String> getOrderProductsJsons() {
         return orderProductsJsons;
     }
+
 }

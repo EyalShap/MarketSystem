@@ -19,6 +19,7 @@ public class OrderDTO {
         this.productAmounts=productAmounts;
         this.orderProductsJsons=orderProductsJsons;
     }
+
     public String getStoreName() {
         // dana added this proxy function for the get store order history use case
         return "Proxy Store";
