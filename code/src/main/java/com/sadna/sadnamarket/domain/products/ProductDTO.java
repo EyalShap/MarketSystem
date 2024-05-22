@@ -1,26 +1,41 @@
 package com.sadna.sadnamarket.domain.products;
 
 public class ProductDTO {
-    private int productId;
+    final private int productId;
     private String productName;
     private int productPrice;
+    private String productCategory;
+    private boolean isActive = true;
 
-    public ProductDTO() {
-
+    public ProductDTO(int productId, String productName, int productPrice, String productCategory) {
+        this.productId = productId;
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productCategory = productCategory;
     }
 
     public int getProductId() {
-        // dana added this proxy function for the get store products use case
-        return 0;
+        return this.productId;
     }
 
     public String getProductName() {
-        // dana added this proxy function for the get store order history use case
-        return "";
+        return this.productName;
     }
 
+
     public int getProductPrice() {
-        // dana added this proxy function for the get store order history use case
-        return 0;
+        return this.productPrice;
     }
+
+
+    public String getProductCategory() {
+        return this.productCategory;
+    }
+
+
+    public boolean isActiveProduct() {
+        return this.isActive;
+    }
+
+
 }
