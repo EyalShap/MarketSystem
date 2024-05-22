@@ -4,12 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sadna.sadnamarket.api.Response;
-import com.sadna.sadnamarket.domain.orders.OrderFacade;
-import com.sadna.sadnamarket.domain.products.ProductFacade;
-import com.sadna.sadnamarket.domain.stores.IStoreRepository;
-import com.sadna.sadnamarket.domain.stores.StoreFacade;
-import com.sadna.sadnamarket.domain.stores.StoreDTO;
-import com.sadna.sadnamarket.domain.users.UserDTO;
+import com.sadna.sadnamarket.domain.stores.StoreController;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.springframework.stereotype.Service;
 
@@ -21,21 +16,21 @@ import java.util.*;
 
 @Service
 public class MarketService {
-    private UserFacade userFacade;
-    private ProductFacade productFacade;
-    private OrderFacade orderFacade;
-    private StoreFacade storeFacade;
+    private static MarketService instance;
+    private static UserFacade userController;
+    private static StoreController storeController;
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public MarketService(IStoreRepository storeRepository) {
-        this.userFacade = new UserFacade();
-        this.productFacade = new ProductFacade();
-        this.orderFacade = new OrderFacade();
-        this.storeFacade = new StoreFacade(storeRepository);
+    private MarketService() {
+        this.userController = UserFacade.getInstance();
+        this.storeController = StoreController.getInstance();
+    }
 
-        this.storeFacade.setUserFacade(userFacade);
-        this.storeFacade.setProductFacade(productFacade);
-        this.storeFacade.setOrderFacade(orderFacade);
+    public static MarketService getInstance() {
+        if (instance == null) {
+            instance = new MarketService();
+        }
+        return instance;
     }
 
     // ----------------------- Stores -----------------------

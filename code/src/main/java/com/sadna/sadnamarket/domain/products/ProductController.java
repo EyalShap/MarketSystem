@@ -1,6 +1,6 @@
 package com.sadna.sadnamarket.domain.products;
 
-import com.sadna.sadnamarket.domain.users.UserController;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 
 //this is the facade of the Products package
 //it merely exists so the folder appears on git
