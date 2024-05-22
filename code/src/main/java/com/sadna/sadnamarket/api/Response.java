@@ -16,7 +16,14 @@ public class Response {
         String errorStr = isError ? str : null;
         return new Response(dataStr, isError, errorStr);
     }
-
+    public static Response createResponse() {
+        return new Response("", false,"");
+    }
+    public static Response createResponse(int number) {
+        String dataStr = number+"";
+        String errorStr = null;
+        return new Response(dataStr, false, errorStr);
+    }
     public String getDataJson() {
         return this.dataJson;
     }

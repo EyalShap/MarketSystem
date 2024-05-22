@@ -11,7 +11,7 @@ public class AuthFacade {
     private TokenService tokenService;
     private IAuthRepository iAuthRepository;
     private UserFacade userFacade;
-    private AuthFacade(IAuthRepository iAuthRepository, UserFacade userFacade) {
+    public AuthFacade(IAuthRepository iAuthRepository, UserFacade userFacade) {
         this.iAuthRepository=iAuthRepository;
         tokenService=new TokenService();
         this.userFacade=userFacade;
@@ -42,6 +42,10 @@ public class AuthFacade {
         else 
             return jwt;
     
+    }
+
+    public void register(String username, String password){
+        iAuthRepository.add(username, password);
     }
 
 }
