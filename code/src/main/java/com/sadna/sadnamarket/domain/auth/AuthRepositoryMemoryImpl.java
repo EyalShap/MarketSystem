@@ -3,19 +3,30 @@ package com.sadna.sadnamarket.domain.auth;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class AuthRepositoryMemoryImpl implements IAuthRepository {
 
     private static HashMap<String,String> userNameAndPassword;
+    private static final Logger logger = LogManager.getLogger(AuthFacade.class);
 
     public AuthRepositoryMemoryImpl(){
         userNameAndPassword=new HashMap<>();;
     }
     @Override
     public void login(String username, String password) {
-        if(!hasMember(username))
-        throw new NoSuchElementException("user doesnt exist");
-        if(!isPasswordCorrect(username,password))
+        logger.info("start-Login. args: "+username+", "+password);
+        if(!hasMember(username)){
+            logger.error("user doesnt exist");
+            throw new NoSuchElementException("user doesnt exist");
+        }
+        if(!isPasswordCorrect(username,password)){
+            logger.error("user doesnt exist");
             throw new IllegalArgumentException("password is incorrect");
+            }
+        logger.info("end-Login.");
+
     }
     
     private boolean isPasswordCorrect(String userName,String password){
