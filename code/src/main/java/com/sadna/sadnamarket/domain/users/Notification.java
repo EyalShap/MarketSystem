@@ -9,9 +9,14 @@ public class Notification {
         this.message=msg;
         this.date=LocalDateTime.now();
     }
-    public void accept(){
+    public void acceptOwner(Member accepting){
         
     }
+
+    public void acceptManager(Member accepting){
+        
+    }
+
     public void reject(){
 
     }

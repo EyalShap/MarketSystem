@@ -10,19 +10,20 @@ public class Member extends IUser {
     private String name;
     private List<UserRole> roles;
     private HashMap<String,Integer> orders;
-    private List<Notification> notifes;
+    private HashMap<Integer,Notification> notifes;
     private static final Logger logger = LogManager.getLogger(Member.class);
-
     private boolean isLoggedIn;
+    private int notifyID;
 
     public List<UserRole> getUserRoles(){
         return roles;
     }
     public Member(String name){
         roles=new ArrayList<>();
-        notifes=new ArrayList<>();
+        notifes=new HashMap<>();
         orders=new HashMap<>();
         isLoggedIn=false;
+        notifyID=0;
         logger.info("hiiii");
         this.name=name;
         
@@ -44,18 +45,32 @@ public class Member extends IUser {
     }
 
     public void addNotification(String message){
-        notifes.add(new Notification(message));
+        notifes.put(++notifyID,new Notification(message));
     }
-    public void addRequest(UserFacade userFacade,String senderName,String sentName,int store_id){
+    public void addOwnerRequest(UserFacade userFacade,String userName,int store_id){
+        UserRole role=getRoleOfStore(store_id);
+         if(role.getApointee().equals(userName)){
+            throw new IllegalArgumentException("You disallowed appoint the one who apointed you!");
+        }
+        role.sendRequest(userFacade, name, userName,"Owner");
+    }
+
+     public void addManagerRequest(UserFacade userFacade, String userName, int store_id) {
+        UserRole role=getRoleOfStore(store_id);
+        role.sendRequest(userFacade, name, userName,"Manager");
+    }
+
+    public UserRole getRoleOfStore(int store_id){
         for(UserRole role: getUserRoles()){
             if(role.getStoreId()==store_id){
-                role.addOwner(userFacade, senderName, sentName);;
+                return role;
+            }
+            else{
+                throw new IllegalArgumentException("User has no role in this store");
             }
         }
+        throw new IllegalArgumentException("User has no role in this store");
     }
-
-
-    
 
     public void logout(){
         this.setLogin(false);
@@ -95,12 +110,23 @@ public class Member extends IUser {
         }
         return false;
     }
-    public List<Notification> getNotifications(){
+    public HashMap<Integer,Notification> getNotifications(){
         return notifes;
     }
 
     public String getName(){
         return name;
     }
+    public void getRequest(String senderName, int storeId,String reqType) {
+        notifes.put(++notifyID,new Request(senderName,"You got appointment request",storeId,reqType));
+    }
+    public void acceptToOwner(int requestID) {
+        notifes.get(requestID).acceptOwner(this);
+    }
+     public void acceptToManager(int requestID) {
+        notifes.get(requestID).acceptManager(this);
+    }
+   
+    
     
 }
