@@ -53,7 +53,7 @@ public class Product {
     }
 
     public ProductDTO getProductDTO() {
-        return new ProductDTO(productId, productName, productPrice, productCategory);
+        return ProductMapper.toProductDTO(this);
     }
 
     @Override
