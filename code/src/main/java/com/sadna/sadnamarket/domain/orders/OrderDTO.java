@@ -41,4 +41,20 @@ public class OrderDTO {
         // dana added this proxy function for the get store order history use case
         return new Date();
     }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public String getStoreNameWhenOrdered() {
+        return storeNameWhenOrdered;
+    }
+
+    public Map<Integer, Integer> getProductAmounts() {
+        return productAmounts;
+    }
+
+    public Map<Integer, String> getOrderProductsJsons() {
+        return orderProductsJsons;
+    }
 }
