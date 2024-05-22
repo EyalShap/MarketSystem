@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 public class OrderDTO {
-    private int userId;
+    // fields needed for order history
+    private int orderId;
     private String storeNameWhenOrdered;
     private Map<Integer, Integer> productAmounts;
     private Map<Integer, String> orderProductsJsons;
+    //other fields
 
-    public OrderDTO(int userId,String storeNameWhenOrdered,Map<Integer, Integer> productAmounts,Map<Integer, String> orderProductsJsons){
-        this.userId=userId;
+    public OrderDTO(int orderId,String storeNameWhenOrdered,Map<Integer, Integer> productAmounts,Map<Integer, String> orderProductsJsons){
+        this.orderId=orderId;
         this.storeNameWhenOrdered=storeNameWhenOrdered;
         this.productAmounts=productAmounts;
         this.orderProductsJsons=orderProductsJsons;
@@ -42,8 +44,8 @@ public class OrderDTO {
         return new Date();
     }
 
-    public int getUserId() {
-        return userId;
+    public int getOrderId() {
+        return orderId;
     }
 
     public String getStoreNameWhenOrdered() {

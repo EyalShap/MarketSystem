@@ -40,13 +40,13 @@ public class MemoryOrderRepository implements IOrderRepository {
     }
 
     private Order DTOToOrder( OrderDTO OrdersDTO) {
-        int userId = OrdersDTO.getUserId();
+        int orderId = OrdersDTO.getOrderId();
         String storeNameWhenOrdered = OrdersDTO.getStoreNameWhenOrdered();
         Map<Integer, Integer> copiedProductAmounts=new HashMap<>();
         copiedProductAmounts.putAll(OrdersDTO.getProductAmounts());
         Map<Integer, String> copiedProductsJsons = new HashMap<>();
         copiedProductsJsons.putAll(OrdersDTO.getOrderProductsJsons());
-        Order order = new Order(userId,storeNameWhenOrdered,copiedProductAmounts,copiedProductsJsons);
+        Order order = new Order(orderId,storeNameWhenOrdered,copiedProductAmounts,copiedProductsJsons);
         return order;
     }
 
@@ -67,7 +67,7 @@ public class MemoryOrderRepository implements IOrderRepository {
     }
 
     private OrderDTO orderToDTO(Order order){
-        int userId = order.getUserId();
+        int userId = order.getOrderId();
         String storeNameWhenOrdered = order.getStoreNameWhenOrdered();
         Map<Integer, Integer> copiedProductAmounts=new HashMap<>();
         copiedProductAmounts.putAll(order.getProductAmounts());
