@@ -12,6 +12,7 @@ import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.domain.stores.StoreController;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ public class MarketService {
     private StoreFacade storeFacade;
     private BuyPolicyFacade buyPolicyFacade;
     private DiscountPolicyFacade discountPolicyFacade;
+
     private static ObjectMapper objectMapper = new ObjectMapper();
     Logger logger = LoggerFactory.getLogger(MarketService.class);
 
@@ -45,6 +47,13 @@ public class MarketService {
         this.storeFacade.setOrderFacade(orderFacade);
         this.storeFacade.setBuyPolicyFacade(buyPolicyFacade);
         this.storeFacade.setDiscountPolicyFacade(discountPolicyFacade);
+    }
+
+    public static MarketService getInstance() {
+        if (instance == null) {
+            instance = new MarketService(new MemoryStoreRepository());
+        }
+        return instance;
     }
 
     // ----------------------- Stores -----------------------

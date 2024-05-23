@@ -6,16 +6,16 @@ import java.util.Set;
 
 
 public class UserFacade {
-    private IUserRepository iUserRepo;
+    private IUserRepository iUserRepo; 
     private static String systemManagerUserName;
 
     public UserFacade(IUserRepository userRepo) {
         this.iUserRepo=userRepo;
         systemManagerUserName=null;
     }
-
+    
     public synchronized int enterAsGuest(){
-        return iUserRepo.addGuest();
+       return iUserRepo.addGuest();
     }
 
     public synchronized void exitGuest(int guestId){
@@ -91,8 +91,8 @@ public class UserFacade {
     }
     public Member getMember(String userName){
         return iUserRepo.getMember(userName);
-    }
-
+    }    
+    
     public void addOwnerRequest(String senderName,String userName,int store_id){
         Member sender=getMember(senderName);
         sender.addOwnerRequest(this,userName, store_id);
@@ -113,7 +113,7 @@ public class UserFacade {
         member.setLogin(true);
         iUserRepo.deleteGuest(guestId);
     }
-
+    
     public int logout(String userName){//the cart of the guest
         if(!iUserRepo.hasMember(userName))
             throw new NoSuchElementException("User doesnt exist in system");
@@ -124,14 +124,14 @@ public class UserFacade {
     public void setCart(Cart cart,String userName){
         iUserRepo.getMember(userName).setCart(cart);
     }
-
+  
 
     public void register(String username,String firstName, String lastName,String emailAddress,String phoneNumber){
         Member member=new Member(username,firstName,lastName,emailAddress,phoneNumber);
         iUserRepo.store(member);
     }
 
-
+   
     public void addStoreManager(String username,int storeId){
         iUserRepo.getMember(username).addRole(new StoreManager(storeId));
     }
@@ -150,10 +150,10 @@ public class UserFacade {
         Member member=iUserRepo.getMember(name);
         List<UserRole> roles=member.getUserRoles();
         for(UserRole role : roles){
-            // role
-            if(role.getStoreId()==storeId){
-                role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
-            }
+           // role
+           if(role.getStoreId()==storeId){
+            role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
+           }
         }
     }
     public void setFirstName(String userName, String firstName) {
@@ -189,7 +189,6 @@ public class UserFacade {
         MemberDTO memberDTO=new MemberDTO(member);
         return memberDTO;
     }
-
     public List<Integer> getMemberPermissions(String userName, int storeId){
         isValid(userName);
         UserRole role=iUserRepo.getMember(userName).getRoleOfStore(storeId);
@@ -201,15 +200,6 @@ public class UserFacade {
         }
         return permissionsInRole;
 
-    }
-
-    public boolean isMember(String userName){
-        /*if(isExist(userName)){
-            Member member= iUserRepo.getMember(userName);
-            return member.isLoggedIn();
-        }
-        return false;*/
-        return true;
     }
 
     public void sendStoreOwnerRequest(String currentOwnerUsername, String newOwnerUsername, int storeId) {

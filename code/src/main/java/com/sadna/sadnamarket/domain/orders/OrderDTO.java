@@ -13,6 +13,13 @@ public class OrderDTO {
     private Map<Integer, String> orderProductsJsons;
     //other fields
 
+    public OrderDTO(int orderId,String storeNameWhenOrdered,Map<Integer, Integer> productAmounts,Map<Integer, String> orderProductsJsons){
+        this.orderId=orderId;
+        this.storeNameWhenOrdered=storeNameWhenOrdered;
+        this.productAmounts=productAmounts;
+        this.orderProductsJsons=orderProductsJsons;
+    }
+
     public String getStoreName() {
         // dana added this proxy function for the get store order history use case
         return "Proxy Store";
@@ -36,5 +43,21 @@ public class OrderDTO {
     public Date getOrderDate() {
         // dana added this proxy function for the get store order history use case
         return new Date();
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public String getStoreNameWhenOrdered() {
+        return storeNameWhenOrdered;
+    }
+
+    public Map<Integer, Integer> getProductAmounts() {
+        return productAmounts;
+    }
+
+    public Map<Integer, String> getOrderProductsJsons() {
+        return orderProductsJsons;
     }
 }
