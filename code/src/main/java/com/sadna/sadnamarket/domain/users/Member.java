@@ -120,12 +120,10 @@ public class Member extends IUser {
     public void getRequest(String senderName, int storeId,String reqType) {
         notifes.put(++notifyID,new Request(senderName,"You got appointment request",storeId,reqType));
     }
-    public void acceptToOwner(int requestID) {
-        notifes.get(requestID).acceptOwner(this);
+    public void accept(int requestID) {
+        notifes.get(requestID).accept(this);
     }
-     public void acceptToManager(int requestID) {
-        notifes.get(requestID).acceptManager(this);
-    }
+
 
    // Getter for firstName
    public String getFirstName() {

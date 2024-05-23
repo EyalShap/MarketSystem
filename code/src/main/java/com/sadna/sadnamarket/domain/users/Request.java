@@ -11,20 +11,26 @@ public class Request extends Notification{
         this.storeId=storeId;
         this.role = role;
     }
-    @Override
-    public void acceptOwner(Member accepting) {
+    private void acceptOwner(Member accepting) {
         accepting.addRole(new StoreOwner(storeId,senderName));
     }
 
-    @Override
-    public void acceptManager(Member accepting) {
+    private void acceptManager(Member accepting) {
         accepting.addRole(new StoreManager(storeId));
 
     }
+    public void accept(Member accepting) {
+        if(role.equals("Manager"))
+            acceptManager(accepting);
+        else
+            acceptOwner(accepting);
+
+    }
+
 
     @Override
     public void reject(){
-
+        
     }
     @Override
     public String toString(){

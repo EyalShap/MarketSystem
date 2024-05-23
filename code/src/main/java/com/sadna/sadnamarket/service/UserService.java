@@ -162,4 +162,16 @@ public class UserService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+    public Response acceptRequest(String acceptingName, int requestID) {
+        try {
+            userFacade.accept(acceptingName, requestID);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+
+
+
 }
