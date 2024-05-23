@@ -7,7 +7,7 @@ import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
-import com.sadna.sadnamarket.domain.users.UserDTO;
+import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -434,12 +434,12 @@ class StoreOwnerTests {
 
         try {
             resp = bridge.getStoreOwners(token, username, storeId);
-            List<UserDTO> owners = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<UserDTO>>() { });
+            List<MemberDTO> owners = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<MemberDTO>>() { });
             Assertions.assertEquals(1, owners.size());
             Assertions.assertEquals(username, owners.get(0).getUsername());
 
             resp = bridge.getStoreManagers(token, username, storeId);
-            List<UserDTO> managers = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<UserDTO>>() { });
+            List<MemberDTO> managers = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<MemberDTO>>() { });
             Assertions.assertEquals(1, managers.size());
             Assertions.assertEquals(appointeeUsername, managers.get(0).getUsername());
         }catch (Exception e){

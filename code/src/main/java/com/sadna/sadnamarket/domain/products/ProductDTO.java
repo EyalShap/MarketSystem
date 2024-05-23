@@ -1,7 +1,7 @@
 package com.sadna.sadnamarket.domain.products;
 
 public class ProductDTO {
-    private int productID;
+    final private int productID;
     private String productName;
     private double productPrice;
     private String productCategory;
@@ -42,4 +42,5 @@ public class ProductDTO {
     public void setActive(boolean active) {
         isActive = active;
     }
+
 }

@@ -8,7 +8,7 @@ import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
-import com.sadna.sadnamarket.domain.users.UserDTO;
+import com.sadna.sadnamarket.domain.users.MemberDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
@@ -215,12 +215,12 @@ public class MarketServiceTestAdapter {
     }
 
     public Response getStoreOwners(String token, String actorId, int storeId) throws JsonProcessingException {
-        List<UserDTO> users = new LinkedList<>();
+        List<MemberDTO> users = new LinkedList<>();
         return Response.createResponse(false, objectMapper.writeValueAsString(users));
     }
 
     public Response getStoreManagers(String token, String actorId, int storeId) throws JsonProcessingException {
-        List<UserDTO> users = new LinkedList<>();
+        List<MemberDTO> users = new LinkedList<>();
         return Response.createResponse(false, objectMapper.writeValueAsString(users));
     }
 
