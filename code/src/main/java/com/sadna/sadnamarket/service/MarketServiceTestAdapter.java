@@ -26,8 +26,7 @@ public class MarketServiceTestAdapter {
     //attention
     //String userId is actually username
     //i am lazy
-
-
+    
     public boolean reset(){
         //function that resets the service and repositories
         return true;
@@ -78,14 +77,14 @@ public class MarketServiceTestAdapter {
     }
 
     public Response searchProduct(String productName, double productPriceMin, double productPriceMax, String productCategory, int storeRating, int productRating) throws JsonProcessingException {
-        ProductDTO dto = new ProductDTO(0, productName, productPriceMin, productCategory, true);
+        ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory, true);
         List<ProductDTO> dtoList = new LinkedList<>();
         dtoList.add(dto);
         return Response.createResponse(false, objectMapper.writeValueAsString(dtoList));
     }
 
     public Response searchProductInStore(int storeId, String productName, double productPriceMin, double productPriceMax, String productCategory, int productRating) throws JsonProcessingException {
-        ProductDTO dto = new ProductDTO(0, productName, productPriceMin, productCategory, true);
+        ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory, true);
         List<ProductDTO> dtoList = new LinkedList<>();
         dtoList.add(dto);
         return Response.createResponse(false, objectMapper.writeValueAsString(dtoList));
@@ -101,19 +100,19 @@ public class MarketServiceTestAdapter {
 
     public Response getGuestBasket(String uuid, int storeId) throws JsonProcessingException {
         Map<Integer, Integer> productToAmount = new HashMap<>();
-        productToAmount.put(0, 1);
+        productToAmount.put(5, 1);
         return Response.createResponse(false, objectMapper.writeValueAsString(productToAmount));
     }
 
     public Response getMemberBasket(String token, String userId, int storeId) throws JsonProcessingException {
         Map<Integer, Integer> productToAmount = new HashMap<>();
-        productToAmount.put(0, 1);
+        productToAmount.put(5, 1);
         return Response.createResponse(false, objectMapper.writeValueAsString(productToAmount));
     }
 
     public Response getGuestCart(String uuid) throws JsonProcessingException {
         Map<Integer, Integer> productToAmount = new HashMap<>();
-        productToAmount.put(0, 1);
+        productToAmount.put(5, 1);
         Map<Integer, Map<Integer, Integer>> storeToBasket = new HashMap<>();
         storeToBasket.put(0, productToAmount);
         return Response.createResponse(false, objectMapper.writeValueAsString(storeToBasket));
@@ -121,10 +120,18 @@ public class MarketServiceTestAdapter {
 
     public Response getMemberCart(String token, String userId) throws JsonProcessingException {
         Map<Integer, Integer> productToAmount = new HashMap<>();
-        productToAmount.put(0, 1);
+        productToAmount.put(5, 1);
         Map<Integer, Map<Integer, Integer>> storeToBasket = new HashMap<>();
         storeToBasket.put(0, productToAmount);
         return Response.createResponse(false, objectMapper.writeValueAsString(storeToBasket));
+    }
+
+    public Response setGuestBasketProductAmount(String uuid, int storeId, int productId, int amount) throws JsonProcessingException {
+        return Response.createResponse(false, "true");
+    }
+
+    public Response setMemberBasketProductAmount(String token, String username, int storeId, int productId, int amount) throws JsonProcessingException {
+        return Response.createResponse(false, "true");
     }
 
     public Response buyCartGuest(String uuid, CreditCardDTO creditDetails, AddressDTO address) {
@@ -152,6 +159,14 @@ public class MarketServiceTestAdapter {
     }
 
     public Response editStoreProduct(String token, String userId, int storeId, int productId, ProductDTO productDetails) {
+        return Response.createResponse(false, "true");
+    }
+
+    public Response getStoreProductAmount(int storeId, int productId) {
+        return Response.createResponse(false, "1");
+    }
+
+    public Response setStoreProductAmount(String token, String username, int storeId, int productId, int amount) {
         return Response.createResponse(false, "true");
     }
 
