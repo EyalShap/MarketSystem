@@ -199,7 +199,7 @@ public class MarketService {
 
     public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
-            String history = storeFacade.getStoreOrderHisotry(username, storeId);
+            String history = storeFacade.getStoreOrderHistory(username, storeId);
             logger.info(String.format("User %d got order history from store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
         }
