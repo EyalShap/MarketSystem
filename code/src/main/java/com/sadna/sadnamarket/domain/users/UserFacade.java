@@ -73,14 +73,10 @@ public class UserFacade {
             throw new IllegalArgumentException("amount should be above 0");
         iUserRepo.getGuest(guestId).addProductToCart(storeId, productId, amount);
     }
-    public void removeProductFromCart(String username,int storeId, int productId,int amount){
-        if(amount<=0)
-            throw new IllegalArgumentException("amount should be above 0");
+    public void removeProductFromCart(String username,int storeId, int productId){
         iUserRepo.getMember(username).removeProductFromCart(storeId, productId);
     }
-    public void removeProductFromCart(int guestId,int storeId, int productId,int amount){
-        if(amount<=0)
-            throw new IllegalArgumentException("amount should be above 0");
+    public void removeProductFromCart(int guestId,int storeId, int productId){
         iUserRepo.getGuest(guestId).removeProductFromCart(storeId, productId);
     }
     public void changeQuantityCart(String username,int storeId, int productId,int amount){

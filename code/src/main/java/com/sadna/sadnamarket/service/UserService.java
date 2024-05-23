@@ -103,4 +103,63 @@ public class UserService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+    public Response addProductToCart(String username, int storeId, int productId, int amount) {
+        try {
+            if (amount <= 0)
+                throw new IllegalArgumentException("amount should be above 0");
+            userFacade.addProductToCart(username, storeId, productId, amount);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response addProductToCart(int guestId, int storeId, int productId, int amount) {
+        try {
+            if (amount <= 0)
+                throw new IllegalArgumentException("amount should be above 0");
+            userFacade.addProductToCart(guestId, storeId, productId, amount);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response removeProductFromCart(String username, int storeId, int productId) {
+        try {
+            userFacade.removeProductFromCart(username, storeId, productId);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response removeProductFromCart(int guestId, int storeId, int productId) {
+        try {
+            userFacade.removeProductFromCart(guestId, storeId, productId);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response changeQuantityCart(String username, int storeId, int productId, int amount) {
+        try {
+            if (amount <= 0)
+                throw new IllegalArgumentException("amount should be above 0");
+            userFacade.changeQuantityCart(username, storeId, productId, amount);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response changeQuantityCart(int guestId, int storeId, int productId, int amount) {
+        try {
+            userFacade.changeQuantityCart(guestId, storeId, productId, amount);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }
