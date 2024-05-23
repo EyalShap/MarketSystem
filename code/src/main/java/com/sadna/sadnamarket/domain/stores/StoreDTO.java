@@ -1,43 +1,45 @@
 package com.sadna.sadnamarket.domain.stores;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFilter;
 
 import java.util.List;
+import java.util.Map;
 
+@JsonFilter("filter")
 public class StoreDTO {
     private int storeId;
     private boolean isActive;
     private String storeName;
-    private List<Integer> productIds;
+    private Map<Integer, Integer> productAmounts;
     private int founderId;
     private List<Integer> ownerIds;
     private List<Integer> managerIds;
     private List<Integer> sellerIds;
     private List<Integer> buyPolicyIds;
     private List<Integer> discountPolicyIds;
+    private List<Integer> orderIds;
 
-    public StoreDTO(int storeId, boolean isActive, String storeName, List<Integer> productIds, int founderId, List<Integer> ownerIds, List<Integer> managerIds, List<Integer> sellerIds, List<Integer> buyPolicyIds, List<Integer> discountPolicyIds) {
+    public StoreDTO() {
+    }
+
+    public StoreDTO(int storeId, boolean isActive, String storeName, Map<Integer, Integer> productAmounts, int founderId, List<Integer> ownerIds, List<Integer> managerIds, List<Integer> sellerIds, List<Integer> buyPolicyIds, List<Integer> discountPolicyIds, List<Integer> orderIds) {
         this.storeId = storeId;
         this.isActive = isActive;
         this.storeName = storeName;
-        this.productIds = productIds;
+        this.productAmounts = productAmounts;
         this.founderId = founderId;
         this.ownerIds = ownerIds;
         this.managerIds = managerIds;
         this.sellerIds = sellerIds;
         this.buyPolicyIds = buyPolicyIds;
         this.discountPolicyIds = discountPolicyIds;
-    }
-
-    public StoreDTO(){
-
+        this.orderIds = orderIds;
     }
 
     public int getStoreId() {
         return this.storeId;
     }
 
-    @JsonProperty("isActive")
     public boolean isActive() {
         return this.isActive;
     }
@@ -46,8 +48,8 @@ public class StoreDTO {
         return this.storeName;
     }
 
-    public List<Integer> getProductIds() {
-        return this.productIds;
+    public Map<Integer, Integer> getProductAmounts() {
+        return this.productAmounts;
     }
 
     public int getFounderId() {
@@ -72,6 +74,10 @@ public class StoreDTO {
 
     public List<Integer> getDiscountPolicyIds() {
         return this.discountPolicyIds;
+    }
+
+    public List<Integer> getOrderIds() {
+        return this.orderIds;
     }
 
     public void setActive(boolean active) {

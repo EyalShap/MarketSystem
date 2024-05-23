@@ -44,6 +44,10 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, "false");
     }
 
+    public Response makeSystemManager(String username){
+        return Response.createResponse(false, "true"); //returns token
+    }
+
     public Response signUp(String uuid, String email, String username, String passwordHash){
         return Response.createResponse(false, "3424234"); //returns token
     }
@@ -66,25 +70,25 @@ public class MarketServiceTestAdapter {
 
     public Response getStoreData(String token, String userId, int storeId) throws JsonProcessingException {
         //empty token and -1 userId if guest
-        StoreDTO dto = new StoreDTO(4,true,"TestStore", new ArrayList<>(), 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        StoreDTO dto = new StoreDTO(4, true, "TestStore", new HashMap<Integer, Integer>(), 0, new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
         return Response.createResponse(false, objectMapper.writeValueAsString(dto));
     }
 
     public Response getProductData(String token, String userId, int productId) throws JsonProcessingException {
         //empty token and -1 userId if guest
-        ProductDTO dto = new ProductDTO(5, "TestProduct", 0, "product", true);
+        ProductDTO dto = new ProductDTO(5, "TestProduct", 0, "product");
         return Response.createResponse(false, objectMapper.writeValueAsString(dto));
     }
 
     public Response searchProduct(String productName, double productPriceMin, double productPriceMax, String productCategory, int storeRating, int productRating) throws JsonProcessingException {
-        ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory, true);
+        ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory);
         List<ProductDTO> dtoList = new LinkedList<>();
         dtoList.add(dto);
         return Response.createResponse(false, objectMapper.writeValueAsString(dtoList));
     }
 
     public Response searchProductInStore(int storeId, String productName, double productPriceMin, double productPriceMax, String productCategory, int productRating) throws JsonProcessingException {
-        ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory, true);
+        ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory);
         List<ProductDTO> dtoList = new LinkedList<>();
         dtoList.add(dto);
         return Response.createResponse(false, objectMapper.writeValueAsString(dtoList));
@@ -94,7 +98,7 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, "true");
     }
 
-    public Response addProductToBasketMember(int userId, int storeId, int productId, int amount){
+    public Response addProductToBasketMember(String token, String userId, int storeId, int productId, int amount){
         return Response.createResponse(false, "true");
     }
 
@@ -166,23 +170,31 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, "true");
     }
 
-    public Response appointOwner(String token, String userId, String appointedUserId) {
+    public Response appointOwner(String token, String userId, int storeId, String appointedUserId) {
         return Response.createResponse(false, "true");
     }
 
-    public Response appointManager(String token, String userId, String appointedUserId, List<Integer> permissions) {
+    public Response appointManager(String token, String userId, int storeId, String appointedUserId, List<Integer> permissions) {
         return Response.createResponse(false, "true");
     }
 
-    public Response acceptOwnerAppointment(String token, String appointedUserId, String appointerid) {
+    public Response acceptOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
         return Response.createResponse(false, "true");
     }
 
-    public Response acceptManagerAppointment(String token, String appointedUserId, String appointerid) {
+    public Response acceptManagerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
         return Response.createResponse(false, "true");
     }
 
-    public Response changeManagerPermissions(String token, String userId, String managerId, List<Integer> newPermissions) {
+    public Response rejectOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
+        return Response.createResponse(false, "true");
+    }
+
+    public Response rejectManagerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
+        return Response.createResponse(false, "true");
+    }
+
+    public Response changeManagerPermissions(String token, String userId, String managerId, int storeId, List<Integer> newPermissions) {
         return Response.createResponse(false, "true");
     }
 
@@ -214,6 +226,7 @@ public class MarketServiceTestAdapter {
 
     public Response getManagerPermissions(String token, String actorId, int storeId, String managerId) throws JsonProcessingException {
         List<Integer> permissions = new LinkedList<>();
+        permissions.add(0);
         return Response.createResponse(false, objectMapper.writeValueAsString(permissions));
     }
 

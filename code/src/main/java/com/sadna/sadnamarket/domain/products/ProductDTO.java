@@ -7,12 +7,11 @@ public class ProductDTO {
     private String productCategory;
     private boolean isActive = true;
 
-    public ProductDTO(int productID, String productName, double productPrice, String productCategory, boolean isActive) {
+    public ProductDTO(int productID, String productName, double productPrice, String productCategory) {
         this.productID = productID;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productCategory = productCategory;
-        this.isActive = isActive;
     }
 
     public ProductDTO(){
@@ -26,7 +25,7 @@ public class ProductDTO {
         return productCategory;
     }
 
-    public boolean isActive() {
+    public boolean isActiveProduct() {
         return isActive;
     }
 
