@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class StoreTest {
 
@@ -619,5 +622,93 @@ class StoreTest {
 
         String expectedMessage1 = "A store with id 0 is not active.";
         assertEquals(expectedMessage1, expected1.getMessage());
+    }
+
+    @Test
+    void buyCart() {
+        Map<Integer, Integer> expected1 = new HashMap<>();
+        Map<Integer, Integer> expected2 = new HashMap<>();
+        expected1.put(1, 100);
+        expected1.put(2, 200);
+        expected2.put(1, 18);
+        expected2.put(2, 197);
+
+        CartItemDTO cartItemDTO1 = mock(CartItemDTO.class);
+        CartItemDTO cartItemDTO2 = mock(CartItemDTO.class);
+        when(cartItemDTO1.getProductId()).thenReturn(1);
+        when(cartItemDTO2.getProductId()).thenReturn(2);
+        when(cartItemDTO1.getQuantity()).thenReturn(82);
+        when(cartItemDTO2.getQuantity()).thenReturn(3);
+        List<CartItemDTO> cart = new ArrayList<>();
+        Collections.addAll(cart, cartItemDTO1, cartItemDTO2);
+
+        store0.addProduct(1, 100);
+        store0.addProduct(2, 200);
+
+        assertEquals(expected1, store0.getProductAmounts());
+
+        store0.buyCart(cart);
+        assertEquals(expected2, store0.getProductAmounts());
+    }
+
+    @Test
+    void checkCartSuccess() {
+        CartItemDTO cartItemDTO1 = mock(CartItemDTO.class);
+        CartItemDTO cartItemDTO2 = mock(CartItemDTO.class);
+        CartItemDTO cartItemDTO3 = mock(CartItemDTO.class);
+        when(cartItemDTO1.getProductId()).thenReturn(1);
+        when(cartItemDTO2.getProductId()).thenReturn(2);
+        when(cartItemDTO3.getProductId()).thenReturn(3);
+        when(cartItemDTO1.getQuantity()).thenReturn(100);
+        when(cartItemDTO2.getQuantity()).thenReturn(200);
+        when(cartItemDTO3.getQuantity()).thenReturn(300);
+        List<CartItemDTO> cart = new ArrayList<>();
+        Collections.addAll(cart, cartItemDTO1, cartItemDTO2, cartItemDTO3);
+
+        store0.addProduct(1, 1000);
+        store0.addProduct(2, 1000);
+        store0.addProduct(3, 1000);
+
+        assertTrue(store0.checkCart(cart));
+    }
+
+    @Test
+    void checkCartStoreNotActive() {
+        CartItemDTO cartItemDTO1 = mock(CartItemDTO.class);
+        when(cartItemDTO1.getProductId()).thenReturn(1);
+        when(cartItemDTO1.getQuantity()).thenReturn(100);
+        List<CartItemDTO> cart = new ArrayList<>();
+        Collections.addAll(cart, cartItemDTO1);
+
+        store0.addProduct(1, 1000);
+        store0.closeStore();
+
+        assertFalse(store0.checkCart(cart));
+    }
+
+    @Test
+    void checkCartProductDoesNotExist() {
+        CartItemDTO cartItemDTO1 = mock(CartItemDTO.class);
+        when(cartItemDTO1.getProductId()).thenReturn(1);
+        when(cartItemDTO1.getQuantity()).thenReturn(100);
+        List<CartItemDTO> cart = new ArrayList<>();
+        Collections.addAll(cart, cartItemDTO1);
+
+        store0.addProduct(2, 1000);
+
+        assertFalse(store0.checkCart(cart));
+    }
+
+    @Test
+    void checkCartProductNotInStcok() {
+        CartItemDTO cartItemDTO1 = mock(CartItemDTO.class);
+        when(cartItemDTO1.getProductId()).thenReturn(1);
+        when(cartItemDTO1.getQuantity()).thenReturn(100);
+        List<CartItemDTO> cart = new ArrayList<>();
+        Collections.addAll(cart, cartItemDTO1);
+
+        store0.addProduct(1, 10);
+
+        assertFalse(store0.checkCart(cart));
     }
 }
