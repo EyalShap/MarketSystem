@@ -637,8 +637,8 @@ class StoreTest {
         CartItemDTO cartItemDTO2 = mock(CartItemDTO.class);
         when(cartItemDTO1.getProductId()).thenReturn(1);
         when(cartItemDTO2.getProductId()).thenReturn(2);
-        when(cartItemDTO1.getQuantity()).thenReturn(82);
-        when(cartItemDTO2.getQuantity()).thenReturn(3);
+        when(cartItemDTO1.getAmount()).thenReturn(82);
+        when(cartItemDTO2.getAmount()).thenReturn(3);
         List<CartItemDTO> cart = new ArrayList<>();
         Collections.addAll(cart, cartItemDTO1, cartItemDTO2);
 
@@ -659,9 +659,9 @@ class StoreTest {
         when(cartItemDTO1.getProductId()).thenReturn(1);
         when(cartItemDTO2.getProductId()).thenReturn(2);
         when(cartItemDTO3.getProductId()).thenReturn(3);
-        when(cartItemDTO1.getQuantity()).thenReturn(100);
-        when(cartItemDTO2.getQuantity()).thenReturn(200);
-        when(cartItemDTO3.getQuantity()).thenReturn(300);
+        when(cartItemDTO1.getAmount()).thenReturn(100);
+        when(cartItemDTO2.getAmount()).thenReturn(200);
+        when(cartItemDTO3.getAmount()).thenReturn(300);
         List<CartItemDTO> cart = new ArrayList<>();
         Collections.addAll(cart, cartItemDTO1, cartItemDTO2, cartItemDTO3);
 
@@ -676,7 +676,7 @@ class StoreTest {
     void checkCartStoreNotActive() {
         CartItemDTO cartItemDTO1 = mock(CartItemDTO.class);
         when(cartItemDTO1.getProductId()).thenReturn(1);
-        when(cartItemDTO1.getQuantity()).thenReturn(100);
+        when(cartItemDTO1.getAmount()).thenReturn(100);
         List<CartItemDTO> cart = new ArrayList<>();
         Collections.addAll(cart, cartItemDTO1);
 
@@ -690,7 +690,7 @@ class StoreTest {
     void checkCartProductDoesNotExist() {
         CartItemDTO cartItemDTO1 = mock(CartItemDTO.class);
         when(cartItemDTO1.getProductId()).thenReturn(1);
-        when(cartItemDTO1.getQuantity()).thenReturn(100);
+        when(cartItemDTO1.getAmount()).thenReturn(100);
         List<CartItemDTO> cart = new ArrayList<>();
         Collections.addAll(cart, cartItemDTO1);
 
@@ -703,7 +703,7 @@ class StoreTest {
     void checkCartProductNotInStcok() {
         CartItemDTO cartItemDTO1 = mock(CartItemDTO.class);
         when(cartItemDTO1.getProductId()).thenReturn(1);
-        when(cartItemDTO1.getQuantity()).thenReturn(100);
+        when(cartItemDTO1.getAmount()).thenReturn(100);
         List<CartItemDTO> cart = new ArrayList<>();
         Collections.addAll(cart, cartItemDTO1);
 

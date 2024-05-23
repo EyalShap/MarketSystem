@@ -133,7 +133,7 @@ public class Store {
                 throw new IllegalArgumentException("This cart can not be purchased.");
 
             for(CartItemDTO item : cart) {
-                int newAmount = productAmounts.get(item.getProductId()) - item.getQuantity();
+                int newAmount = productAmounts.get(item.getProductId()) - item.getAmount();
                 setProductAmounts(item.getProductId(), newAmount);
             }
         }
@@ -241,7 +241,7 @@ public class Store {
         synchronized (productAmounts) {
             synchronized (lock) {
                 for (CartItemDTO item : cart) {
-                    if (!isActive || !productExists(item.getProductId()) || item.getQuantity() > productAmounts.get(item.getProductId()))
+                    if (!isActive || !productExists(item.getProductId()) || item.getAmount() > productAmounts.get(item.getProductId()))
                         return false;
                 }
                 return true;

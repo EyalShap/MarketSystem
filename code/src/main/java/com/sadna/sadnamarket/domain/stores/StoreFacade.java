@@ -165,7 +165,7 @@ public class StoreFacade {
         List<String> ownerUsernames = storeRepository.findStoreByID(storeId).getOwnerUsernames();
         List<MemberDTO> owners = new ArrayList<>();
         for(String ownerUsername : ownerUsernames) {
-            owners.add(userFacade.getUser(ownerUsername));
+            owners.add(userFacade.getMemberDTO(ownerUsername));
         }
         return owners;
     }
@@ -179,7 +179,7 @@ public class StoreFacade {
         List<String> managerUsernames = storeRepository.findStoreByID(storeId).getManagerUsernames();
         List<MemberDTO> managers = new ArrayList<>();
         for(String managerUsername : managerUsernames) {
-            managers.add(userFacade.getUser(managerUsername));
+            managers.add(userFacade.getMemberDTO(managerUsername));
         }
         return managers;
     }
@@ -193,7 +193,7 @@ public class StoreFacade {
         List<String> sellerUsernames = storeRepository.findStoreByID(storeId).getSellerUsernames();
         List<MemberDTO> sellers = new ArrayList<>();
         for(String sellerUsername : sellerUsernames) {
-            sellers.add(userFacade.getUser(sellerUsername));
+            sellers.add(userFacade.getMemberDTO(sellerUsername));
         }
         return sellers;
     }
