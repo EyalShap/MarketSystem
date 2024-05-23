@@ -29,7 +29,7 @@ public class StoreOwner implements UserRole {
     }
     @Override
     public void addPermission(Permission permission) {
-        throw new IllegalStateException("store owner has all the roles");
+        throw new IllegalStateException("store owner has all the permissions");
     }
     @Override
     public boolean isApointedByUser(String username) {
