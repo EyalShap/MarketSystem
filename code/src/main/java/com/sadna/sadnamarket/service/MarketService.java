@@ -6,13 +6,17 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.orders.IOrderRepository;
+import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.IStoreRepository;
+import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
+import com.sadna.sadnamarket.domain.users.IUserRepository;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
-import com.sadna.sadnamarket.domain.stores.StoreController;
+import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +28,20 @@ import java.util.*;
 //have fun
 
 public class MarketService {
+    private static MarketService instance;
     private UserFacade userFacade;
     private ProductFacade productFacade;
     private OrderFacade orderFacade;
     private StoreFacade storeFacade;
     private BuyPolicyFacade buyPolicyFacade;
     private DiscountPolicyFacade discountPolicyFacade;
-
     private static ObjectMapper objectMapper = new ObjectMapper();
     Logger logger = LoggerFactory.getLogger(MarketService.class);
 
     public MarketService(IStoreRepository storeRepository) {
-        this.userFacade = new UserFacade();
+        this.userFacade = new UserFacade(new MemoryRepo());
         this.productFacade = new ProductFacade();
-        this.orderFacade = new OrderFacade();
+        this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(storeRepository);
         this.buyPolicyFacade = new BuyPolicyFacade();
         this.discountPolicyFacade = new DiscountPolicyFacade();
@@ -71,9 +75,9 @@ public class MarketService {
         }
     }
 
-    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, int productPrice) {
+    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, int productPrice, String category) {
         try {
-            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice);
+            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category);
             logger.info(String.format("User %d added product %d to store %d.", username, newProductId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
@@ -95,9 +99,9 @@ public class MarketService {
         }
     }
 
-    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
+    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice, String newCategory) {
         try {
-            int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice);
+            int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice, newCategory);
             logger.info(String.format("User %d updated product %d in store %d.", username, productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }

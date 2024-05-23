@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.orders.Order;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
@@ -58,7 +59,7 @@ public class StoreFacade {
         return storeRepository.addStore(founderUserName, storeName);
     }
     
-    public int addProductToStore(String username, int storeId, String productName, int productQuantity, int productPrice) {
+    public int addProductToStore(String username, int storeId, String productName, int productQuantity, int productPrice, String category) {
         if(!hasPermission(username, storeId, Permission.ADD_PRODUCTS))
             throw new IllegalArgumentException(String.format("user %s can not add a product to store with id %d.", username, storeId));
         if(!storeRepository.storeExists(storeId))
@@ -66,7 +67,7 @@ public class StoreFacade {
         if(!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-        int newProductId = productFacade.addProduct(storeId, productName, productQuantity, productPrice);
+        int newProductId = productFacade.addProduct(storeId, productName, productPrice, category);
         storeRepository.findStoreByID(storeId).addProduct(newProductId, productQuantity);
         return newProductId;
     }
@@ -83,7 +84,7 @@ public class StoreFacade {
         return productId;
     }
 
-    public int updateProduct( String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice) {
+    public int updateProduct( String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice, String newCategory) {
         if(!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
             throw new IllegalArgumentException(String.format("user %s can not update a product in store with id %d.", username, storeId));
         Store store = storeRepository.findStoreByID(storeId);
@@ -92,7 +93,7 @@ public class StoreFacade {
                 throw new IllegalArgumentException(String.format("A store with id %d does not have a product with id %d.", storeId, productId));
 
             store.setProductAmounts(productId, newQuantity);
-            productFacade.updateProduct(storeId, productId, newProductName, newQuantity, newPrice);
+            productFacade.updateProduct(storeId, productId, newProductName, newPrice, newCategory);
             return productId;
         }
     }
@@ -224,6 +225,15 @@ public class StoreFacade {
         return orderHistory;
     }*/
 
+    private OrderDTO getOrder(int storeId, int orderId) {
+        List<OrderDTO> orders = orderFacade.getOrders(storeId);
+        for(OrderDTO order : orders) {
+            if(order.getOrderId() == orderId)
+                return order;
+        }
+        throw new IllegalArgumentException(String.format("There is no order with id %d.", orderId));
+    }
+
     public String getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(username))
             throw new IllegalArgumentException(String.format("A user %s is not an owner of store %d and can not request order history.", username, storeId));
@@ -232,7 +242,7 @@ public class StoreFacade {
         int orderIndex = 1;
 
         for(int orderId : storeRepository.findStoreByID(storeId).getOrderIds()) {
-            OrderDTO order = orderFacade.getOrder(orderId);
+            OrderDTO order = getOrder(storeId, orderId);
             orderHistory += "------------------------------------------------------------\n";
             orderHistory += getOrderInfo(order, orderIndex);
             orderHistory += getProductsInfo(order);
@@ -391,19 +401,19 @@ public class StoreFacade {
 
     private boolean canAddOwnerToStore(int storeId, String currOwnerUsername, String newOwnerUsername) {
         return hasPermission(currOwnerUsername, storeId, Permission.ADD_OWNER) &&
-                userFacade.isMember(newOwnerUsername) &&
+                userFacade.isExist(newOwnerUsername) &&
                 (!storeRepository.findStoreByID(storeId).isStoreOwner(newOwnerUsername));
     }
 
     private boolean canAddManagerToStore(int storeId, String currOwnerUsername, String newManagerUsername) {
         return hasPermission(currOwnerUsername, storeId, Permission.ADD_MANAGER) &&
-                userFacade.isMember(newManagerUsername) &&
+                userFacade.isExist(newManagerUsername) &&
                 (!storeRepository.findStoreByID(storeId).isStoreManager(newManagerUsername));
     }
 
     private boolean canAddSellerToStore(int storeId, String currOwnerUsername, String newSellerUsername) {
         return hasPermission(currOwnerUsername, storeId, Permission.ADD_SELLER) &&
-                userFacade.isMember(newSellerUsername) &&
+                userFacade.isExist(newSellerUsername) &&
                 (!storeRepository.findStoreByID(storeId).isSeller(newSellerUsername));
     }
 
