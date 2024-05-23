@@ -58,9 +58,10 @@ public class AuthFacade {
 
     }
 
-    public void register(String username, String password){
+    public void register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber){
         logger.info("start-register. args: "+username+", "+password);
         iAuthRepository.add(username, password);
+        userFacade.register(username, firstName, lastName, emailAddress, phoneNumber);
         logger.info("end-register.");
 
     }

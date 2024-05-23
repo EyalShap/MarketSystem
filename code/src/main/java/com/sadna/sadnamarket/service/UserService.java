@@ -59,12 +59,47 @@ public class UserService {
         }
     }
 
-    public Response register(String username, String password){
+    public Response register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber){
         try{
-            authFacade.register(username,password);
+            authFacade.register(username,password,firstName, lastName, emailAddress, phoneNumber);
             return Response.createResponse();
 
         }catch(Exception e){
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response setFirstName(String username, String firstName) {
+        try {
+            userFacade.setFirstName(username, firstName);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response setLastName(String username, String lastName) {
+        try {
+            userFacade.setLastName(username, lastName);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response setEmailAddress(String username, String emailAddress) {
+        try {
+            userFacade.setEmailAddress(username, emailAddress);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response setPhoneNumber(String username, String phoneNumber) {
+        try {
+            userFacade.setPhoneNumber(username, phoneNumber);
+            return Response.createResponse();
+        } catch (Exception e) {
             return Response.createResponse(true, e.getMessage());
         }
     }

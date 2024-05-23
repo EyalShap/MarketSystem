@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.HashMap;
 
 public class Member extends IUser {
-    private String name;
+    private String username;
+    private String firstName;
+    private String lastName;
+    private String emailAddress;
+    private String phoneNumber;
     private List<UserRole> roles;
     private HashMap<String,Integer> orders;
     private HashMap<Integer,Notification> notifes;
@@ -18,15 +22,18 @@ public class Member extends IUser {
     public List<UserRole> getUserRoles(){
         return roles;
     }
-    public Member(String name){
+    public Member(String username,String firstName, String lastName,String emailAddress,String phoneNumber){
         roles=new ArrayList<>();
         notifes=new HashMap<>();
         orders=new HashMap<>();
         isLoggedIn=false;
         notifyID=0;
         logger.info("hiiii");
-        this.name=name;
-        
+        this.username=username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
     }
    
     @Override
@@ -52,12 +59,12 @@ public class Member extends IUser {
          if(role.getApointee().equals(userName)){
             throw new IllegalArgumentException("You disallowed appoint the one who apointed you!");
         }
-        role.sendRequest(userFacade, name, userName,"Owner");
+        role.sendRequest(userFacade, username, userName,"Owner");
     }
 
      public void addManagerRequest(UserFacade userFacade, String userName, int store_id) {
         UserRole role=getRoleOfStore(store_id);
-        role.sendRequest(userFacade, name, userName,"Manager");
+        role.sendRequest(userFacade, username, userName,"Manager");
     }
 
     public UserRole getRoleOfStore(int store_id){
@@ -94,6 +101,7 @@ public class Member extends IUser {
             }
         }
     }
+
     public boolean hasPermissionToRole(Permission permission, int storeId){
         for(UserRole role: getUserRoles()){
             if(role.getStoreId()==storeId && role.hasPermission(permission)){
@@ -106,8 +114,8 @@ public class Member extends IUser {
         return notifes;
     }
 
-    public String getName(){
-        return name;
+    public String getUsername(){
+        return username;
     }
     public void getRequest(String senderName, int storeId,String reqType) {
         notifes.put(++notifyID,new Request(senderName,"You got appointment request",storeId,reqType));
@@ -119,7 +127,45 @@ public class Member extends IUser {
         notifes.get(requestID).acceptManager(this);
     }
 
-   
+   // Getter for firstName
+   public String getFirstName() {
+    return firstName;
+}
+
+// Setter for firstName
+public void setFirstName(String firstName) {
+    this.firstName = firstName;
+}
+
+// Getter for lastName
+public String getLastName() {
+    return lastName;
+}
+
+// Setter for lastName
+public void setLastName(String lastName) {
+    this.lastName = lastName;
+}
+
+// Getter for emailAddress
+public String getEmailAddress() {
+    return emailAddress;
+}
+
+// Setter for emailAddress
+public void setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
+}
+
+// Getter for phoneNumber
+public String getPhoneNumber() {
+    return phoneNumber;
+}
+
+// Setter for phoneNumber
+public void setPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+}
     
     
 }

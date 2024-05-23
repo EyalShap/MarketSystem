@@ -38,7 +38,7 @@ public class MemoryRepo implements IUserRepository {
 
     @Override
     public void store(Member member) {
-        members.put(member.getName(),member);
+        members.put(member.getUsername(),member);
     }
 
     public int addGuest(){

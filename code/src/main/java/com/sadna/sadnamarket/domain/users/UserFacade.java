@@ -3,9 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.sadna.sadnamarket.domain.products.ProductFacade;
-import com.sadna.sadnamarket.domain.stores.StoreFacade;
-
 
 
 public class UserFacade {
@@ -117,6 +114,7 @@ public class UserFacade {
 
 
     public void login(String userName,String password, int guestId){//the cart of the guest
+        isValid(userName);
         Member member=iUserRepo.getMember(userName);
         if(member.getCart().isEmpty()){
             member.setCart(iUserRepo.getGuest(guestId).getCart());
@@ -124,8 +122,6 @@ public class UserFacade {
         member.setLogin(true);
         iUserRepo.deleteGuest(guestId);
     }
-    
-
     
     public int logout(String userName){//the cart of the guest
         if(!iUserRepo.hasMember(userName))
@@ -139,8 +135,8 @@ public class UserFacade {
     }
   
 
-    public void register(String userName, String Password){
-        Member member=new Member(userName);
+    public void register(String username,String firstName, String lastName,String emailAddress,String phoneNumber){
+        Member member=new Member(username,firstName,lastName,emailAddress,phoneNumber);
         iUserRepo.store(member);
     }
 
@@ -168,6 +164,51 @@ public class UserFacade {
             role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
            }
         }
+    }
+    public void setFirstName(String userName, String firstName) {
+        isValid(firstName);
+        Member member = iUserRepo.getMember(userName);
+        member.setFirstName(firstName);
+    }
+
+    public void setLastName(String userName, String lastName) {
+        isValid(lastName);
+        Member member = iUserRepo.getMember(userName);
+        member.setLastName(lastName);
+    }
+
+    public void setEmailAddress(String userName, String emailAddress) {
+        isValid(emailAddress);
+        Member member = iUserRepo.getMember(userName);
+        member.setEmailAddress(emailAddress);
+    }
+
+    public void setPhoneNumber(String userName, String phoneNumber) {
+        isValid(phoneNumber);
+        Member member = iUserRepo.getMember(userName);
+        member.setPhoneNumber(phoneNumber);
+    }
+    private void isValid(String detail){
+        if(detail==null||detail.trim().equals(""))
+            throw new IllegalArgumentException("please enter valid string");
+    }
+    public MemberDTO getMemberDTO(String userName){
+        isValid(userName);
+        Member member=iUserRepo.getMember(userName);
+        MemberDTO memberDTO=new MemberDTO(member);
+        return memberDTO;
+    }
+    public List<Integer> getMemberPermissions(String userName, int storeId){
+        isValid(userName);
+        UserRole role=iUserRepo.getMember(userName).getRoleOfStore(storeId);
+        List<Integer> permissionsInRole=new ArrayList<>();
+        for(Permission permission: Permission.values()){
+            if (role.hasPermission(permission))
+                permissionsInRole.add(permission.getValue());
+
+        }
+        return permissionsInRole;
+
     }
 
 }
