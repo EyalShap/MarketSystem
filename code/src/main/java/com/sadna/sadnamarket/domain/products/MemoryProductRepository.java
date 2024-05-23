@@ -6,9 +6,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class MemoryProductRepository implements IProductRepository {
     private int nextProductId;
     private Map<Integer, Product> products;
+    private static final Logger logger = LogManager.getLogger(MemoryProductRepository.class);
 
     public MemoryProductRepository() {
         this.nextProductId = 0;
@@ -23,15 +27,16 @@ public class MemoryProductRepository implements IProductRepository {
 
         products.put(nextProductId, createdProduct);
         nextProductId++;
-
+        logger.info("product " + createdProduct + " succesfully added");
         return nextProductId - 1;
     }
 
     @Override
     public Product getProduct(int productId) {
-        if (!isExistProduct(productId))
+        if (!isExistProduct(productId)) {
+            logger.error(String.format("Product Id %d does not exist.", productId));
             throw new IllegalArgumentException(String.format("Product Id %d does not exist.", productId));
-
+        }
         return products.get(productId);
     }
 
@@ -42,15 +47,18 @@ public class MemoryProductRepository implements IProductRepository {
 
     @Override
     public void removeProduct(int productId) {
-        if (!isExistProduct(productId))
+        if (!isExistProduct(productId)) {
+            logger.error(String.format("Product Id %d does not exist.", productId));
             throw new IllegalArgumentException(String.format("Product Id %d does not exist.", productId));
+        }
 
         Product product = getProduct(productId);
-        if (!product.isActiveProduct())
+        if (!product.isActiveProduct()) {
+            logger.error(String.format("Product Id %d was already removed.", productId));
             throw new IllegalArgumentException(String.format("Product Id %d was already removed.", productId));
-
+        }
         product.disableProduct();
-
+        logger.error(String.format("Product Id %d was succesully removed.", productId));
     }
 
     @Override
