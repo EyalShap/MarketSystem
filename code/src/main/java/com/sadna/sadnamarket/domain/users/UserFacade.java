@@ -1,6 +1,5 @@
 package com.sadna.sadnamarket.domain.users;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class UserFacade {
@@ -39,8 +38,8 @@ public class UserFacade {
         //iUserRepo.getMember(userName).addNotification(msg);
     }
 
-    public UserDTO getUser(String username) {
-        return new UserDTO();
+    public MemberDTO getUser(String username) {
+        return new MemberDTO();
     }
 
     public void sendStoreOwnerRequest(String currentOwnerUsername, String newOwnerUsername, int storeId) {

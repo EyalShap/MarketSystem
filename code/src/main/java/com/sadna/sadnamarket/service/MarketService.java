@@ -11,7 +11,7 @@ import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
-import com.sadna.sadnamarket.domain.users.UserDTO;
+import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +114,7 @@ public class MarketService {
 
     public Response getOwners(String token, String username, int storeId) {
         try {
-            List<UserDTO> owners = storeFacade.getOwners(username, storeId);
+            List<MemberDTO> owners = storeFacade.getOwners(username, storeId);
             logger.info(String.format("User %d got owners of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(owners));
         }
@@ -127,7 +127,7 @@ public class MarketService {
 
     public Response getManagers(String token, String username, int storeId) {
         try {
-            List<UserDTO> managers = storeFacade.getManagers(username, storeId);
+            List<MemberDTO> managers = storeFacade.getManagers(username, storeId);
             logger.info(String.format("User %d got managers of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(managers));
         }
@@ -139,7 +139,7 @@ public class MarketService {
 
     public Response getSellers(String token, String username, int storeId) {
         try {
-            List<UserDTO> sellers = storeFacade.getSellers(username, storeId);
+            List<MemberDTO> sellers = storeFacade.getSellers(username, storeId);
             logger.info(String.format("User %d got sellers of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(sellers));
         }

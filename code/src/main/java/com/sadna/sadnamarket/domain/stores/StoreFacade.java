@@ -10,7 +10,7 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
-import com.sadna.sadnamarket.domain.users.UserDTO;
+import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 
 import java.util.*;
@@ -156,42 +156,42 @@ public class StoreFacade {
         return storeRepository.findStoreByID(storeId).getIsActive();
     }
 
-    public List<UserDTO> getOwners(String username, int storeId) {
+    public List<MemberDTO> getOwners(String username, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(username))
             throw new IllegalArgumentException(String.format("A user %s is not an owner of store %d and can not request roles information.", username, storeId));
         //if(!isStoreActive(storeId))
         //    throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<String> ownerUsernames = storeRepository.findStoreByID(storeId).getOwnerUsernames();
-        List<UserDTO> owners = new ArrayList<>();
+        List<MemberDTO> owners = new ArrayList<>();
         for(String ownerUsername : ownerUsernames) {
             owners.add(userFacade.getUser(ownerUsername));
         }
         return owners;
     }
 
-    public List<UserDTO> getManagers(String username, int storeId) {
+    public List<MemberDTO> getManagers(String username, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(username))
             throw new IllegalArgumentException(String.format("A user %s is not an owner of store %d and can not request roles information.", username, storeId));
         //if(!isStoreActive(storeId))
         //    throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<String> managerUsernames = storeRepository.findStoreByID(storeId).getManagerUsernames();
-        List<UserDTO> managers = new ArrayList<>();
+        List<MemberDTO> managers = new ArrayList<>();
         for(String managerUsername : managerUsernames) {
             managers.add(userFacade.getUser(managerUsername));
         }
         return managers;
     }
 
-    public List<UserDTO> getSellers(String username, int storeId) {
+    public List<MemberDTO> getSellers(String username, int storeId) {
         if(!storeRepository.findStoreByID(storeId).isStoreOwner(username))
             throw new IllegalArgumentException(String.format("A user %s is not an owner of store %d and can not request roles information.", username, storeId));
         //if(!isStoreActive(storeId))
         //    throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
         List<String> sellerUsernames = storeRepository.findStoreByID(storeId).getSellerUsernames();
-        List<UserDTO> sellers = new ArrayList<>();
+        List<MemberDTO> sellers = new ArrayList<>();
         for(String sellerUsername : sellerUsernames) {
             sellers.add(userFacade.getUser(sellerUsername));
         }
