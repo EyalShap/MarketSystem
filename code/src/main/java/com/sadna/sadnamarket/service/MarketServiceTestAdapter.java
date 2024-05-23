@@ -26,7 +26,7 @@ public class MarketServiceTestAdapter {
     //attention
     //String userId is actually username
     //i am lazy
-    
+
     public boolean reset(){
         //function that resets the service and repositories
         return true;
@@ -140,10 +140,6 @@ public class MarketServiceTestAdapter {
 
     public Response buyCartMember(String token, String userId, CreditCardDTO creditDetails) {
         return Response.createResponse(false, "4"); //returns orderId
-    }
-
-    public Response logout(String token, int userId) {
-        return Response.createResponse(false, "true");
     }
 
     public Response openStore(String token, String userId, String storeName) {
