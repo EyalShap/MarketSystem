@@ -98,14 +98,9 @@ public class UserFacade {
         sender.addOwnerRequest(this,userName, store_id);
     }
 
-     public void addManagerRequest(String senderName,String userName,int store_id){
-        Member sender=getMember(senderName);
-        sender.addManagerRequest(this,userName, store_id);
-    }
-
-    public void acceptOwnerRequest(String acceptingName,int requestID){
+    public void accept(String acceptingName,int requestID){
         Member accepting=getMember(acceptingName);
-        accepting.acceptToOwner(requestID);
+        accepting.accept(requestID);
     }
 
 
