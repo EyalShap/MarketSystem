@@ -2,13 +2,14 @@ package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Store {
     private int storeId;
     private boolean isActive;
-    private String storeName;
+    private StoreInfo storeInfo;
     private Map<Integer, Integer> productAmounts;
     private String founderUsername;
     private List<String> ownerUsernames;
@@ -19,10 +20,10 @@ public class Store {
     private List<Integer> orderIds;
     private final Object lock = new Object();
 
-    public Store(int storeId, String storeName, String founderUsername) {
+    public Store(int storeId, String founderUsername, StoreInfo storeInfo) {
         this.storeId = storeId;
         this.isActive = true;
-        this.storeName = storeName;
+        this.storeInfo = storeInfo;
         this.productAmounts = new ConcurrentHashMap<>();
         this.founderUsername = founderUsername;
         this.ownerUsernames = Collections.synchronizedList(new ArrayList<>());
@@ -39,8 +40,8 @@ public class Store {
         return this.storeId;
     }
 
-    public String getStoreName() {
-        return this.storeName;
+    public StoreInfo getStoreInfo() {
+        return storeInfo;
     }
 
     public String getFounderUsername() {
@@ -198,7 +199,7 @@ public class Store {
     }
 
     public StoreDTO getStoreDTO() {
-        return new StoreDTO(storeId, isActive, storeName, productAmounts, founderUsername, ownerUsernames, managerUsernames, sellerUsernames, buyPolicyIds, discountPolicyIds, orderIds);
+        return new StoreDTO(this);
     }
 
     public void addBuyPolicy(int policyId) {
@@ -254,11 +255,24 @@ public class Store {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Store store = (Store) o;
-        return storeId == store.storeId && isActive == store.isActive && founderUsername == store.founderUsername && Objects.equals(storeName, store.storeName) && Objects.equals(productAmounts, store.productAmounts) && Objects.equals(ownerUsernames, store.ownerUsernames) && Objects.equals(managerUsernames, store.managerUsernames) && Objects.equals(sellerUsernames, store.sellerUsernames) && Objects.equals(buyPolicyIds, store.buyPolicyIds) && Objects.equals(discountPolicyIds, store.discountPolicyIds) && Objects.equals(orderIds, store.orderIds);
+        StoreInfo info = store.getStoreInfo();
+        if(!info.equals(storeInfo))
+            return false;
+
+        return storeId == store.storeId &&
+                isActive == store.isActive &&
+                Objects.equals(productAmounts, store.productAmounts) &&
+                Objects.equals(founderUsername, store.founderUsername) &&
+                Objects.equals(ownerUsernames, store.ownerUsernames) &&
+                Objects.equals(managerUsernames, store.managerUsernames) &&
+                Objects.equals(sellerUsernames, store.sellerUsernames) &&
+                Objects.equals(buyPolicyIds, store.buyPolicyIds) &&
+                Objects.equals(discountPolicyIds, store.discountPolicyIds) &&
+                Objects.equals(orderIds, store.orderIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storeId, isActive, storeName, productAmounts, founderUsername, ownerUsernames, managerUsernames, sellerUsernames, buyPolicyIds, discountPolicyIds, orderIds);
+        return Objects.hash(storeId, isActive, storeInfo, productAmounts, founderUsername, ownerUsernames, managerUsernames, sellerUsernames, buyPolicyIds, discountPolicyIds, orderIds, lock);
     }
 }
