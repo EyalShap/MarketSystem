@@ -296,16 +296,21 @@ public class StoreFacade {
     }
 
     public synchronized StoreDTO getStoreInfo(String username, int storeId) {
-        if(!isStoreActive(storeId) && !storeRepository.findStoreByID(storeId).isStoreOwner(username) && !storeRepository.findStoreByID(storeId).isStoreManager(username)) // users who are not owner of manager can't get info on a closed store
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!isStoreActive(storeId)) {
+            if(!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !storeRepository.findStoreByID(storeId).isStoreManager(username))
+                throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        }
 
         return storeRepository.findStoreByID(storeId).getStoreDTO();
     }
 
     public synchronized List<ProductDTO> getProductsInfo(String username, int storeId, String category, double price, double minProductRank) throws JsonProcessingException {
         Store store = storeRepository.findStoreByID(storeId);
-        if(!isStoreActive(storeId) && !store.isStoreOwner(username) && !store.isStoreManager(username)) // users who are not owner of manager can't get info on a closed store
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if(!isStoreActive(storeId)) {
+            if(!store.isStoreOwner(username) && !store.isStoreManager(username)) {
+                throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+            }
+        }
 
         List<Integer> storeProductIds = new ArrayList<>(store.getProductAmounts().keySet());
         List<ProductDTO> filteredProducts = productFacade.getFilteredProducts(storeProductIds, category, price, minProductRank, -1);

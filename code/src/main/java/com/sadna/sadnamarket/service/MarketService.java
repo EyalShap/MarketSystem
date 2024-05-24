@@ -41,7 +41,6 @@ public class MarketService {
     Logger logger = LoggerFactory.getLogger(MarketService.class);
 
     public MarketService(IStoreRepository storeRepository) {
-        
         this.productFacade = new ProductFacade();
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(storeRepository);
@@ -66,10 +65,16 @@ public class MarketService {
 
     // ----------------------- Stores -----------------------
 
-    // returns id of the created store
-    public Response createStore(String token, String founderUsername, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+    private void checkToken(String token, String username) {
+        if(!authFacade.login(token).equals(username)) {
+            logger.error(String.format("failed to verify token for user %s", username));
+            throw new IllegalArgumentException(String.format("Token is not valid for user %s.", username));
+        }
+    }
 
+    public Response createStore(String token, String founderUsername, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         try {
+            checkToken(token, founderUsername);
             int newStoreId = storeFacade.createStore(founderUsername, storeName, rank, address, email, phoneNumber, openingHours, closingHours); // will throw an exception if the store already exists
             logger.info(String.format("User %s created a store with id %d.", founderUsername, newStoreId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
@@ -82,6 +87,7 @@ public class MarketService {
 
     public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, int productPrice, String category) {
         try {
+            checkToken(token, username);
             int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category);
             logger.info(String.format("User %s added product %d to store %d.", username, newProductId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
@@ -94,6 +100,7 @@ public class MarketService {
 
     public Response deleteProductFromStore(String token, String username, int storeId, int productId) {
         try {
+            checkToken(token, username);
             int deletedProductId = storeFacade.deleteProduct(username, storeId, productId);
             logger.info(String.format("User %s deleted product %d from store %d.", username, productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(deletedProductId));
@@ -106,6 +113,7 @@ public class MarketService {
 
     public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice, String newCategory) {
         try {
+            checkToken(token, username);
             int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice, newCategory);
             logger.info(String.format("User %s updated product %d in store %d.", username, productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
@@ -119,6 +127,7 @@ public class MarketService {
 
     public Response closeStore(String token, String username, int storeId) {
         try {
+            checkToken(token, username);
             boolean storeClosed = storeFacade.closeStore(username, storeId);
             logger.info(String.format("User %s closed store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(storeClosed));
@@ -132,6 +141,7 @@ public class MarketService {
 
     public Response getOwners(String token, String username, int storeId) {
         try {
+            checkToken(token, username);
             List<MemberDTO> owners = storeFacade.getOwners(username, storeId);
             logger.info(String.format("User %s got owners of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(owners));
@@ -145,6 +155,7 @@ public class MarketService {
 
     public Response getManagers(String token, String username, int storeId) {
         try {
+            checkToken(token, username);
             List<MemberDTO> managers = storeFacade.getManagers(username, storeId);
             logger.info(String.format("User %s got managers of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(managers));
@@ -157,6 +168,7 @@ public class MarketService {
 
     public Response getSellers(String token, String username, int storeId) {
         try {
+            checkToken(token, username);
             List<MemberDTO> sellers = storeFacade.getSellers(username, storeId);
             logger.info(String.format("User %s got sellers of store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(sellers));
@@ -167,8 +179,9 @@ public class MarketService {
         }
     }
 
-    public Response sendStoreOwnerRequest(String currentOwnerUsername, String newOwnerUsername, int storeId) {
+    public Response sendStoreOwnerRequest(String token, String currentOwnerUsername, String newOwnerUsername, int storeId) {
         try {
+            checkToken(token, currentOwnerUsername);
             storeFacade.sendStoreOwnerRequest(currentOwnerUsername, newOwnerUsername, storeId);
             logger.info(String.format("User %s nominated User %s as owner of store %d.", currentOwnerUsername, newOwnerUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
@@ -179,8 +192,9 @@ public class MarketService {
         }
     }
 
-    public Response sendStoreManagerRequest(String currentOwnerUsername, String newManagerUsername, int storeId) {
+    public Response sendStoreManagerRequest(String token, String currentOwnerUsername, String newManagerUsername, int storeId) {
         try {
+            checkToken(token, currentOwnerUsername);
             storeFacade.sendStoreManagerRequest(currentOwnerUsername, newManagerUsername, storeId);
             logger.info(String.format("User %s nominated User %s as manager of store %d.", currentOwnerUsername, newManagerUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
@@ -191,8 +205,9 @@ public class MarketService {
         }
     }
 
-    public Response acceptRequest(String newUsername, int storeId) {
+    public Response acceptRequest(String token, String newUsername, int storeId) {
         try {
+            checkToken(token, newUsername);
             userFacade.accept(newUsername, storeId);
             logger.info(String.format("User %s accepted nomination in store %d.", newUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newUsername));
@@ -205,6 +220,7 @@ public class MarketService {
 
     public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
+            checkToken(token, username);
             String history = storeFacade.getStoreOrderHistory(username, storeId);
             logger.info(String.format("User %s got order history from store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
@@ -217,6 +233,8 @@ public class MarketService {
 
     public Response getStoreInfo(String token, String username, int storeId) {
         try {
+            if(username != null)
+                checkToken(token, username);
             Set<String> fields = Set.of("storeId", "storeName");
             SimpleFilterProvider filterProvider = new SimpleFilterProvider();
             filterProvider.addFilter("filter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
@@ -234,6 +252,9 @@ public class MarketService {
 
     public Response getStoreProductsInfo(String token, String username, int storeId, String category, double price, double minProductRank) {
         try {
+            if(username != null)
+                checkToken(token, username);
+
             List<ProductDTO> productDTOs = storeFacade.getProductsInfo(username, storeId, category, price, minProductRank);
             logger.info(String.format("A user got products info of store %d.", storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
@@ -244,8 +265,9 @@ public class MarketService {
         }
     }
 
-    public Response addSellerToStore(int storeId, String adderUsername, String sellerUsername) {
+    public Response addSellerToStore(String token, int storeId, String adderUsername, String sellerUsername) {
         try {
+            checkToken(token, adderUsername);
             storeFacade.addSeller(storeId, adderUsername, sellerUsername);
             logger.info(String.format("User %s added User %s as a seller to store %d.", adderUsername, sellerUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(sellerUsername));
@@ -258,6 +280,7 @@ public class MarketService {
 
     public Response addBuyPolicy(String token, String username, int storeId) {
         try {
+            checkToken(token, username);
             int policyId = storeFacade.addBuyPolicy(username, storeId);
             logger.info(String.format("User %s added buy policy with id %d to store %d.", username, policyId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
@@ -270,6 +293,7 @@ public class MarketService {
 
     public Response addDiscountPolicy(String token, String username, int storeId) {
         try {
+            checkToken(token, username);
             int policyId = storeFacade.addDiscountPolicy(username, storeId);
             logger.info(String.format("User %s added discount policy with id %d to store %d.", username, policyId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
@@ -280,8 +304,9 @@ public class MarketService {
         }
     }
 
-    public Response addManagerPermission(String currentOwnerUsername, String newManagerUsername, int storeId, Permission permission) {
+    public Response addManagerPermission(String token, String currentOwnerUsername, String newManagerUsername, int storeId, Permission permission) {
         try {
+            checkToken(token, currentOwnerUsername);
             storeFacade.addManagerPermission(currentOwnerUsername, newManagerUsername, storeId, permission);
             logger.info(String.format("User %s added permission to user %s in store %d", currentOwnerUsername, newManagerUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newManagerUsername));
