@@ -1,7 +1,7 @@
 package com.sadna.sadnamarket.domain.products;
 
 public class ProductDTO {
-    final private int productID;
+    private int productID;
     private String productName;
     private double productPrice;
     private String productCategory;

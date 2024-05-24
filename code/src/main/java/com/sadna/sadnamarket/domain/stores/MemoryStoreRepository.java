@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,14 +39,14 @@ public class MemoryStoreRepository implements IStoreRepository{
     }
 
     @Override
-    public int addStore(String founderUsername, String storeName) {
+    public int addStore(String founderUsername, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         synchronized (stores) {
             if(storeExists(nextStoreId))
                 throw new IllegalArgumentException(String.format("A store with the id %d already exists.", nextStoreId));
             if(storeNameExists(storeName))
                 throw new IllegalArgumentException(String.format("A store with the name %s already exists.", storeName));
 
-            Store createdStore = new Store(nextStoreId, storeName, founderUsername);
+            Store createdStore = new Store(nextStoreId, founderUsername, new StoreInfo(storeName, rank, address, email, phoneNumber, openingHours, closingHours));
             stores.put(nextStoreId, createdStore);
             nextStoreId++;
             return nextStoreId - 1;
@@ -59,7 +60,7 @@ public class MemoryStoreRepository implements IStoreRepository{
     private boolean storeNameExists(String storeName) {
         synchronized (stores) {
             for(Store store : stores.values()) {
-                if(store.getStoreName().equals(storeName)) {
+                if(store.getStoreInfo().getStoreName().equals(storeName)) {
                     return true;
                 }
             }

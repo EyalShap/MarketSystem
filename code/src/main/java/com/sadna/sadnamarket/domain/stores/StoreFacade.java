@@ -14,6 +14,7 @@ import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 
+import java.time.LocalTime;
 import java.util.*;
 
 public class StoreFacade {
@@ -52,11 +53,11 @@ public class StoreFacade {
         this.discountPolicyFacade = discountPolicyFacade;
     }
 
-    public int createStore(String founderUserName, String storeName) {
+    public int createStore(String founderUserName, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         if(!userFacade.isLoggedIn(founderUserName))
             throw new IllegalArgumentException(String.format("User %s has to be logged in to create a store.", founderUserName));
 
-        return storeRepository.addStore(founderUserName, storeName);
+        return storeRepository.addStore(founderUserName, storeName, rank, address, email, phoneNumber, openingHours, closingHours);
     }
     
     public int addProductToStore(String username, int storeId, String productName, int productQuantity, int productPrice, String category) {
@@ -108,11 +109,11 @@ public class StoreFacade {
             if(!isStoreActive(storeId))
                 throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-            userFacade.sendStoreOwnerRequest(currentOwnerUsername, newOwnerUsername, storeId);
+            userFacade.addOwnerRequest(currentOwnerUsername, newOwnerUsername, storeId);
         }
     }
 
-    public void sendStoreManagerRequest(String currentOwnerUsername, String newManagerUsername, int storeId, Set<Integer> permissions) {
+    public void sendStoreManagerRequest(String currentOwnerUsername, String newManagerUsername, int storeId) {
         if(!canAddManagerToStore(storeId, currentOwnerUsername, newManagerUsername))
             throw new IllegalArgumentException(String.format("User %s can not add user %s as a manager to store %d.", currentOwnerUsername, newManagerUsername, storeId));
 
@@ -122,7 +123,7 @@ public class StoreFacade {
             if (!isStoreActive(storeId))
                 throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-            userFacade.sendStoreManagerRequest(currentOwnerUsername, newManagerUsername, storeId, permissions);
+            userFacade.addManagerRequest(currentOwnerUsername, newManagerUsername, storeId);
         }
     }
 
@@ -134,13 +135,27 @@ public class StoreFacade {
         storeRepository.findStoreByID(storeId).addStoreManager(newManagerUsername);
     }
 
+    public void addManagerPermission(String currentOwnerUsername, String newManagerUsername, int storeId, Permission permission) {
+        if(!canAddManagerToStore(storeId, currentOwnerUsername, newManagerUsername))
+            throw new IllegalArgumentException(String.format("User %s can not add user %s as a manager to store %d.", currentOwnerUsername, newManagerUsername, storeId));
+
+        synchronized (storeRepository) {
+            if (!storeRepository.storeExists(storeId))
+                throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+            if (!isStoreActive(storeId))
+                throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+
+            userFacade.addPremssionToStore(newManagerUsername, storeId, permission);
+        }
+    }
+
     public boolean closeStore(String username, int storeId) {
         if(!storeRepository.findStoreByID(storeId).getFounderUsername().equals(username))
             throw new IllegalArgumentException(String.format("User %s can not close the store with id %d (not a founder).", username, storeId));
 
         storeRepository.findStoreByID(storeId).closeStore();
 
-        String msg = String.format("The store \"%s\" was closed.", storeRepository.findStoreByID(storeId).getStoreName());
+        String msg = String.format("The store \"%s\" was closed.", storeRepository.findStoreByID(storeId).getStoreInfo().getStoreName());
         List<String> ownerUsernames = storeRepository.findStoreByID(storeId).getOwnerUsernames();
         List<String> managerUsernames = storeRepository.findStoreByID(storeId).getManagerUsernames();
         for(String ownerUsername : ownerUsernames) {
@@ -287,17 +302,14 @@ public class StoreFacade {
         return storeRepository.findStoreByID(storeId).getStoreDTO();
     }
 
-    public synchronized Map<String, Integer> getProductsInfo(String username, int storeId) throws JsonProcessingException {
-        if(!isStoreActive(storeId) && !storeRepository.findStoreByID(storeId).isStoreOwner(username) && !storeRepository.findStoreByID(storeId).isStoreManager(username)) // users who are not owner of manager can't get info on a closed store
+    public synchronized List<ProductDTO> getProductsInfo(String username, int storeId, String category, double price, double minProductRank) throws JsonProcessingException {
+        Store store = storeRepository.findStoreByID(storeId);
+        if(!isStoreActive(storeId) && !store.isStoreOwner(username) && !store.isStoreManager(username)) // users who are not owner of manager can't get info on a closed store
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-        Map<Integer, Integer> productIdsAmounts = storeRepository.findStoreByID(storeId).getProductAmounts();
-        Map<String, Integer> productDTOsAmounts = new HashMap<>();
-        for(int productId : productIdsAmounts.keySet()) {
-            int amount = productIdsAmounts.get(productId);
-            productDTOsAmounts.put(objectMapper.writeValueAsString(productFacade.getProductDTO(productId)), amount);
-        }
-        return productDTOsAmounts;
+        List<Integer> storeProductIds = new ArrayList<>(store.getProductAmounts().keySet());
+        List<ProductDTO> filteredProducts = productFacade.getFilteredProducts(storeProductIds, category, price, minProductRank, -1);
+        return filteredProducts;
     }
 
     public String addSeller(int storeId, String adderUsername, String sellerUsername) {
@@ -362,7 +374,7 @@ public class StoreFacade {
         return true;
     }
 
-    public synchronized double buyCart(String username, List<CartItemDTO> cart) {
+    public synchronized void buyCart(String username, List<CartItemDTO> cart) {
         if(!checkCart(username, cart))
             throw new IllegalArgumentException(String.format("User %s is unable to buy this cart.", username));
 
@@ -371,7 +383,6 @@ public class StoreFacade {
             Store store = storeRepository.findStoreByID(storeId);
             store.buyCart(cartByStore.get(storeId));
         }
-        return calculatePrice(username, cart);
     }
 
     private synchronized double calculatePrice(String username, List<CartItemDTO> cart) {
@@ -415,6 +426,10 @@ public class StoreFacade {
         return hasPermission(currOwnerUsername, storeId, Permission.ADD_SELLER) &&
                 userFacade.isExist(newSellerUsername) &&
                 (!storeRepository.findStoreByID(storeId).isSeller(newSellerUsername));
+    }
+
+    public StoreInfo getStoreInfo(int storeId) {
+        return storeRepository.findStoreByID(storeId).getStoreInfo();
     }
 
 }

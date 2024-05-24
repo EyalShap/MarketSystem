@@ -70,7 +70,7 @@ public class MarketServiceTestAdapter {
 
     public Response getStoreData(String token, String userId, int storeId) throws JsonProcessingException {
         //empty token and -1 userId if guest
-        StoreDTO dto = new StoreDTO(4, true, "TestStore", new HashMap<Integer, Integer>(), 0, new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
+        StoreDTO dto = new StoreDTO(4, true, "TestStore", 4, "Lehavim", "stam@gmail.com", "0542106532", null, null, new HashMap<Integer, Integer>(),"Founder", new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
         return Response.createResponse(false, objectMapper.writeValueAsString(dto));
     }
 

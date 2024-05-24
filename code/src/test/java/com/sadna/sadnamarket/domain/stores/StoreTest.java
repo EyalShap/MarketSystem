@@ -18,20 +18,16 @@ class StoreTest {
 
     @BeforeEach
     public void setUp() {
-        store0 = new Store(0, "Store0", "Alice");
-        store1 = new Store(1, "Store1", "Bob");
+        StoreInfo storeInfo0 = new StoreInfo("Store0", 5, "Lehavim", "store0@gmail.com", "0546310765", null, null);
+        StoreInfo storeInfo1 = new StoreInfo("Store1", 4, "Tel Aviv", "store1@gmail.com", "0546310764", null, null);
+        store0 = new Store(0, "Alice", storeInfo0);
+        store1 = new Store(1, "Bob", storeInfo1);
     }
 
     @Test
     void getStoreId() {
         assertEquals(0, store0.getStoreId());
         assertEquals(1, store1.getStoreId());
-    }
-
-    @Test
-    void getStoreName() {
-        assertEquals("Store0", store0.getStoreName());
-        assertEquals("Store1", store1.getStoreName());
     }
 
     @Test
@@ -522,37 +518,6 @@ class StoreTest {
         assertFalse(store0.getIsActive());
         assertFalse(store1.getIsActive());
     }
-
-    @Test
-    void getStoreDTO() {
-        Map<Integer, Integer> expectedProductAmounts = new HashMap<>();
-        expectedProductAmounts.put(0, 9);
-        List<String> expectedOwnerUsernames = new ArrayList<>();
-        Collections.addAll(expectedOwnerUsernames, "Alice", "Bob");
-        List<String> expectedManagerUsernames = new ArrayList<>();
-        Collections.addAll(expectedManagerUsernames, "Netta");
-        List<String> expectedSellerUsernames = new ArrayList<>();
-        List<Integer> expectedBuyPolicyIds = new ArrayList<>();
-        Collections.addAll(expectedBuyPolicyIds, 0);
-        List<Integer> expectedDiscountPolicyIds = new ArrayList<>();
-        Collections.addAll(expectedDiscountPolicyIds, 0, 9, 12);
-        List<Integer> expectedOrderIds = new ArrayList<>();
-        Collections.addAll(expectedOrderIds, 5, 6);
-
-        StoreDTO expected = new StoreDTO(0, true, "Store0", expectedProductAmounts, "Alice", expectedOwnerUsernames, expectedManagerUsernames, expectedSellerUsernames, expectedBuyPolicyIds, expectedDiscountPolicyIds, expectedOrderIds);
-
-        store0.addProduct(0, 9);
-        store0.addStoreOwner("Bob");
-        store0.addStoreManager("Netta");
-        store0.addDiscountPolicy(0);
-        store0.addDiscountPolicy(9);
-        store0.addDiscountPolicy(12);
-        store0.addOrderId(5);
-        store0.addOrderId(6);
-
-        assertEquals(expected, store0.getStoreDTO());
-    }
-
 
     @Test
     void addBuyPolicyAlreadyExist() {

@@ -15,8 +15,8 @@ public class SadnaMarketApplication {
 		IStoreRepository repo = new MemoryStoreRepository();
 		SpringApplication.run(SadnaMarketApplication.class, args);
 		MarketService service = new MarketService(repo);
-		System.out.println(service.createStore("Alice", "hi").getDataJson());
-		System.out.println(service.createStore("Alice", "hi").getDataJson());
+		//System.out.println(service.createStore("Alice", "hi").getDataJson());
+		//System.out.println(service.createStore("Alice", "hi").getDataJson());
 
 	}
 
