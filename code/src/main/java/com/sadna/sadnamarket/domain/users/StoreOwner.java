@@ -53,4 +53,9 @@ public class StoreOwner implements UserRole {
     public String getApointee(){
         return apointee;
     }
+    @Override
+    public void removePermission(Permission permission) {
+        // TODO Auto-generated method stub
+        
+    }
 }

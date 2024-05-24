@@ -40,15 +40,15 @@ public class UserService {
             return Response.createResponse(true, e.getMessage());
         }
     }
-    public Response exitGuest(int guestId){
-        try{
-            userFacade.exitGuest(guestId);
-            return Response.createResponse();
+        public Response exitGuest(int guestId){
+            try{
+                userFacade.exitGuest(guestId);
+                return Response.createResponse();
 
-        }catch(Exception e){
-            return Response.createResponse(true, e.getMessage());
+            }catch(Exception e){
+                return Response.createResponse(true, e.getMessage());
+            }
         }
-    }
     public Response enterAsGuest(){
         try{
             int guestId=userFacade.enterAsGuest();
@@ -171,6 +171,16 @@ public class UserService {
        
         }
     }
+    public Response setSystemAdminstor(String username) {
+        try {
+            userFacade.setSystemManagerUserName(username);;
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+
 
 
 

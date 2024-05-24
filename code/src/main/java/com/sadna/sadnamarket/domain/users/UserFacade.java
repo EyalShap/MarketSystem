@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.sadna.sadnamarket.domain.orders.OrderDTO;
+
 
 
 public class UserFacade {
@@ -200,6 +202,16 @@ public class UserFacade {
         }
         return permissionsInRole;
 
+    }
+
+    public List<OrderDTO> getUserOrders(String username){
+        return null;
+    }
+    public void finishShop(String username){
+
+    }
+    public void purchaseCart(String username){
+        
     }
 
 }
