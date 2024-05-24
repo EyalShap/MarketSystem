@@ -85,6 +85,8 @@ public class Member extends IUser {
     }
 
     public void logout(){
+        if(isLoggedIn)
+            throw new IllegalStateException("user is'nt login");
         this.setLogin(false);
     }
    

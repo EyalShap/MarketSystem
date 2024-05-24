@@ -34,10 +34,7 @@ public class Request extends Notification{
     public String getRole(){
         return role;
     }
-    @Override
-    public void reject(){
-        
-    }
+
     @Override
     public String toString(){
         return super.toString()+" from store "+storeId+" from user: "+senderName +"as" +role;
