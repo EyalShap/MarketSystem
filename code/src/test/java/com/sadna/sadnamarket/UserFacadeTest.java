@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.*;
 import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
+import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.users.Member;
 import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
@@ -22,6 +23,8 @@ public class UserFacadeTest {
     private MemoryRepo iUserRepo;
 
     private UserFacade userFacade;
+
+    private AuthFacade authFacade;
 
     @Before
     public void setUp() {
@@ -45,7 +48,7 @@ public class UserFacadeTest {
 
     @Test
     public void testNotify() {
-        userFacade.register("yosi","12");
+        userFacade.register("yosi","sami","hatuka","sami@gmail.com","0501118121");
         userFacade.notify("yosi", "yagever");
         List<NotificationDTO> ans= userFacade.getNotifications("yosi");
         assertEquals(1, ans.size());
@@ -56,7 +59,7 @@ public class UserFacadeTest {
     @Test
     public void testLogin() {
         
-        userFacade.register("sami", "12");
+        userFacade.register("yosi","sami","hatuka","sami@gmail.com","0501118121");
         userFacade.login("sami","12");
         assertTrue(userFacade.isLoggedIn("sami"));
     }
