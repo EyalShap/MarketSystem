@@ -55,7 +55,6 @@ public class StoreOwner implements UserRole {
     }
     @Override
     public void removePermission(Permission permission) {
-        // TODO Auto-generated method stub
-        
+        throw new IllegalStateException("can't remove permissions from a store owner"); 
     }
 }
