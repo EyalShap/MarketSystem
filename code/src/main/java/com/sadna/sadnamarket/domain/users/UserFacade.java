@@ -237,6 +237,10 @@ public class UserFacade {
     }
 
     public HashMap<Integer,OrderDTO> getUserOrders(String username){
+        List<Integer> orders=getMember(username).getOrdersHistory();
+        for (Integer orderId : orders) {
+           //getOrderById(orderId);
+        }
         return null;
     }
     public void viewCart(String username){
@@ -245,7 +249,7 @@ public class UserFacade {
     }
     public void purchaseCart(String username){
         // call check validation from store
-        // getPrice after discount
+        // getPrice before and after discount
         // proxy payment
         // update quantities
         // create new order 

@@ -13,7 +13,7 @@ public class Member extends IUser {
     private String emailAddress;
     private String phoneNumber;
     private List<UserRole> roles;
-    private HashMap<String,Integer> orders;
+    private List<Integer> orders;
     private HashMap<Integer,Notification> notifes;
     private static final Logger logger = LogManager.getLogger(Member.class);
     private boolean isLoggedIn;
@@ -25,7 +25,7 @@ public class Member extends IUser {
     public Member(String username,String firstName, String lastName,String emailAddress,String phoneNumber){
         roles=new ArrayList<>();
         notifes=new HashMap<>();
-        orders=new HashMap<>();
+        orders=new ArrayList<>();
         isLoggedIn=false;
         notifyID=0;
         logger.info("hiiii");
@@ -180,6 +180,10 @@ public String getPhoneNumber() {
 // Setter for phoneNumber
 public void setPhoneNumber(String phoneNumber) {
     this.phoneNumber = phoneNumber;
+}
+
+public List<Integer> getOrdersHistory(){
+    return orders;
 }
     
     
