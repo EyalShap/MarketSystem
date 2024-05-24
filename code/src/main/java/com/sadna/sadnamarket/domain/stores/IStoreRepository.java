@@ -6,6 +6,6 @@ public interface IStoreRepository {
     public Store findStoreByID(int storeId);
     public Set<Integer> getAllStoreIds();
     public void deleteStore(int storeId);
-    public int addStore(int founderId, String storeName);
+    public int addStore(String founderUsername, String storeName);
     public boolean storeExists(int storeId);
 }
