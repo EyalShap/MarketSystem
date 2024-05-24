@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.mockito.*;
 import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
+import com.sadna.sadnamarket.domain.auth.AuthFacade;
+import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.users.Member;
 import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
@@ -20,14 +22,19 @@ import com.sadna.sadnamarket.domain.users.UserFacade;
 public class UserFacadeTest {
 
     private MemoryRepo iUserRepo;
+    private AuthRepositoryMemoryImpl iAuthRepo;
 
     private UserFacade userFacade;
+
+    private AuthFacade authFacade;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         this.iUserRepo=new MemoryRepo();
+        this.iAuthRepo=new AuthRepositoryMemoryImpl();
         this.userFacade=new UserFacade(iUserRepo);
+        this.authFacade=new AuthFacade(iAuthRepo,userFacade);
     }
 
     @Test
@@ -45,7 +52,7 @@ public class UserFacadeTest {
 
     @Test
     public void testNotify() {
-        userFacade.register("yosi","12");
+        userFacade.register("yosi","sami","hatuka","sami@gmail.com","0501118121");
         userFacade.notify("yosi", "yagever");
         List<NotificationDTO> ans= userFacade.getNotifications("yosi");
         assertEquals(1, ans.size());
@@ -56,17 +63,17 @@ public class UserFacadeTest {
     @Test
     public void testLogin() {
         
-        userFacade.register("sami", "12");
-        userFacade.login("sami","12");
-        assertTrue(userFacade.isLoggedIn("sami"));
+        authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121");
+        authFacade.login("yosi","12");
+        assertTrue(userFacade.isLoggedIn("yosi"));
     }
 
     @Test
     public void testLogout() {
-        userFacade.register("sami", "12");
-        userFacade.login("sami","12");
-        userFacade.logout("sami");
-        assertFalse(userFacade.isLoggedIn("sami"));
+        authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121");
+        authFacade.login("yosi","12");
+        userFacade.logout("yosi");
+        assertFalse(userFacade.isLoggedIn("yosi"));
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -76,14 +83,15 @@ public class UserFacadeTest {
 
     @Test
     public void testRegister() {
-        userFacade.register("newUser", "password");
-        assertDoesNotThrow(()-> iUserRepo.getMember("newUser"));
+        authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121");
+        assertDoesNotThrow(()-> iUserRepo.getMember("yosi"));
     }
 
     @Test
     public void testAddStoreManager() {
-        userFacade.register("newUser", "password");
-
+        
+        authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121");
+        
 
     }
 
