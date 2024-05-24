@@ -2,7 +2,9 @@ package com.sadna.sadnamarket.domain.users;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
+
+import com.sadna.sadnamarket.domain.orders.OrderDTO;
+
 
 
 public class UserFacade {
@@ -33,7 +35,7 @@ public class UserFacade {
     }
 
     public List<NotificationDTO> getNotifications(String userName){
-        List<Notification> notifes= (ArrayList) iUserRepo.getMember(userName).getNotifications().values();
+        List<Notification> notifes = new ArrayList<>(iUserRepo.getMember(userName).getNotifications().values());
         List<NotificationDTO> notificationDTOs=new ArrayList<NotificationDTO>();
         for(Notification notif : notifes){
             notificationDTOs.add(new NotificationDTO(notif));
@@ -145,13 +147,29 @@ public class UserFacade {
         Member member=iUserRepo.getMember(userName);
         member.addPermissionToRole(permission, storeId);
     }
+    public void removePremssionFromStore(String userName, int storeId,Permission permission){
+        Member member=iUserRepo.getMember(userName);
+        member.removePermissionFromRole(permission, storeId);
+    }
 
-    public void removeRole(String name,int storeId){
+    public void leaveRole(String name,int storeId){
         Member member=iUserRepo.getMember(name);
         List<UserRole> roles=member.getUserRoles();
         for(UserRole role : roles){
            // role
            if(role.getStoreId()==storeId){
+            role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
+           }
+        }
+    }
+    public void removeRoleFromMember(String username,String remover,int storeId){
+        Member member=iUserRepo.getMember(username);
+        List<UserRole> roles=member.getUserRoles();
+        for(UserRole role : roles){
+           // role
+           if(role.getStoreId()==storeId){
+            if(!role.getApointee().equals(remover))
+                throw new IllegalStateException("you can only remove your apointees");
             role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
            }
         }
@@ -202,21 +220,14 @@ public class UserFacade {
 
     }
 
-    public void sendStoreOwnerRequest(String currentOwnerUsername, String newOwnerUsername, int storeId) {
-        // Dana added this proxy function for the add store owner use case
-        // Assuming this function checks if currentOwnerId can assign newOwnerId as owner to storeId
+    public List<OrderDTO> getUserOrders(String username){
+        return null;
     }
+    public void viewCart(String username){
 
-    public void sendStoreManagerRequest(String currentOwnerUsername, String newManagerUsername, int storeId, Set<Integer> permissions) {
-        // Dana added this proxy function for the add store manager use case
-        // Assuming this function checks if currentOwnerId can assign newManagerId as manager to storeId
-        //Set<Permission> convertedPermissions = convertPermissions(permissions);
     }
-
-    public void acceptStoreOwnerRequest(String newOwnerUsername, int storeId) {
+    public void purchaseCart(String username){
 
     }
 
-    public void acceptStoreManagerRequest(String newManagerUsername, int storeId) {
-    }
 }

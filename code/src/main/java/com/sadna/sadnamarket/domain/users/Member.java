@@ -72,11 +72,16 @@ public class Member extends IUser {
             if(role.getStoreId()==store_id){
                 return role;
             }
-            else{
-                throw new IllegalArgumentException("User has no role in this store");
-            }
         }
         throw new IllegalArgumentException("User has no role in this store");
+    }
+    private boolean hasRoleInStore(int store_id){
+        for(UserRole role: getUserRoles()){
+            if(role.getStoreId()==store_id){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void logout(){
@@ -110,6 +115,13 @@ public class Member extends IUser {
         }
         return false;
     }
+    public void removePermissionFromRole(Permission permission, int storeId){
+        for(UserRole role: getUserRoles()){
+            if(role.getStoreId()==storeId){
+                role.removePermission(permission);
+            }
+        }
+    }
     public HashMap<Integer,Notification> getNotifications(){
         return notifes;
     }
@@ -118,6 +130,8 @@ public class Member extends IUser {
         return username;
     }
     public void getRequest(String senderName, int storeId,String reqType) {
+        if(hasRoleInStore(storeId))
+            throw new IllegalStateException("member already has role in store");
         notifes.put(++notifyID,new Request(senderName,"You got appointment request",storeId,reqType));
     }
     public void accept(int requestID) {

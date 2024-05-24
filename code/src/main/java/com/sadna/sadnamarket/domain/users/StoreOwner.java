@@ -53,4 +53,8 @@ public class StoreOwner implements UserRole {
     public String getApointee(){
         return apointee;
     }
+    @Override
+    public void removePermission(Permission permission) {
+        throw new IllegalStateException("can't remove permissions from a store owner"); 
+    }
 }
