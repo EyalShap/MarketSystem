@@ -79,4 +79,8 @@ public class StoreDTO {
     public List<Integer> getOrderIds() {
         return this.orderIds;
     }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 }
