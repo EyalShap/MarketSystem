@@ -1,19 +1,24 @@
 package com.sadna.sadnamarket.domain.users;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
+import com.sadna.sadnamarket.domain.stores.IStoreRepository;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
 
 
 
 public class UserFacade {
     private IUserRepository iUserRepo; 
     private static String systemManagerUserName;
+    private static StoreFacade storeFacade;
 
-    public UserFacade(IUserRepository userRepo) {
+    public UserFacade(IUserRepository userRepo, IStoreRepository iStoreRepository) {
         this.iUserRepo=userRepo;
         systemManagerUserName=null;
+        storeFacade=new StoreFacade(iStoreRepository);
     }
     
     public synchronized int enterAsGuest(){
@@ -99,10 +104,21 @@ public class UserFacade {
         Member sender=getMember(senderName);
         sender.addOwnerRequest(this,userName, store_id);
     }
+    public void addManagerRequest(String senderName,String userName,int store_id){
+        Member sender=getMember(senderName);
+        sender.addManagerRequest(this,userName, store_id);
+    }
 
     public void accept(String acceptingName,int requestID){
         Member accepting=getMember(acceptingName);
+        Request request=accepting.getRequest(requestID);
+        int storeId=request.getStoreId();
         accepting.accept(requestID);
+        String role=request.getRole();
+        if(role.equals("manager"))
+            storeFacade.addStoreManager(acceptingName, storeId);
+        else
+            storeFacade.addStoreOwner(acceptingName,storeId);
     }
 
 
@@ -220,14 +236,19 @@ public class UserFacade {
 
     }
 
-    public List<OrderDTO> getUserOrders(String username){
+    public HashMap<Integer,OrderDTO> getUserOrders(String username){
         return null;
     }
     public void viewCart(String username){
-
+        // call check validation from store
+        // getPrice before and after discount
     }
     public void purchaseCart(String username){
-
+        // call check validation from store
+        // getPrice after discount
+        // proxy payment
+        // update quantities
+        // create new order 
     }
 
 }

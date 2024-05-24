@@ -39,12 +39,13 @@ public class MarketService {
     Logger logger = LoggerFactory.getLogger(MarketService.class);
 
     public MarketService(IStoreRepository storeRepository) {
-        this.userFacade = new UserFacade(new MemoryRepo());
+        
         this.productFacade = new ProductFacade();
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(storeRepository);
         this.buyPolicyFacade = new BuyPolicyFacade();
         this.discountPolicyFacade = new DiscountPolicyFacade();
+        this.userFacade = new UserFacade(new MemoryRepo(),storeRepository);
 
         this.storeFacade.setUserFacade(userFacade);
         this.storeFacade.setProductFacade(productFacade);
@@ -188,7 +189,7 @@ public class MarketService {
 
     public Response acceptStoreOwnerRequest(String newOwnerUsername, int storeId) {
         try {
-            userFacade.acceptStoreOwnerRequest(newOwnerUsername, storeId);
+            userFacade.accept(newOwnerUsername, storeId);
             logger.info(String.format("User %d accepted owner nomination in store %d.", newOwnerUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newOwnerUsername));
         }
@@ -200,7 +201,7 @@ public class MarketService {
 
     public Response acceptStoreManagerRequest(String newManagerUsername, int storeId) {
         try {
-            userFacade.acceptStoreManagerRequest(newManagerUsername, storeId);
+            userFacade.accept(newManagerUsername, storeId);
             logger.info(String.format("User %d accepted manager nomination in store %d.", newManagerUsername, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newManagerUsername));
         }

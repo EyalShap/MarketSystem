@@ -137,6 +137,9 @@ public class Member extends IUser {
     public void accept(int requestID) {
         notifes.get(requestID).accept(this);
     }
+    public Request getRequest(int request_id){
+        return (Request) notifes.get(request_id);
+    }
 
 
    // Getter for firstName
