@@ -35,7 +35,7 @@ public class UserFacade {
     }
 
     public List<NotificationDTO> getNotifications(String userName){
-        List<Notification> notifes= (ArrayList) iUserRepo.getMember(userName).getNotifications().values();
+        List<Notification> notifes = new ArrayList<>(iUserRepo.getMember(userName).getNotifications().values());
         List<NotificationDTO> notificationDTOs=new ArrayList<NotificationDTO>();
         for(Notification notif : notifes){
             notificationDTOs.add(new NotificationDTO(notif));
@@ -147,6 +147,10 @@ public class UserFacade {
         Member member=iUserRepo.getMember(userName);
         member.addPermissionToRole(permission, storeId);
     }
+    public void removePremssionFromStore(String userName, int storeId,Permission permission){
+        Member member=iUserRepo.getMember(userName);
+        member.removePermissionFromRole(permission, storeId);
+    }
 
     public void removeRole(String name,int storeId){
         Member member=iUserRepo.getMember(name);
@@ -211,7 +215,7 @@ public class UserFacade {
 
     }
     public void purchaseCart(String username){
-        
+
     }
 
 }

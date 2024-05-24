@@ -110,6 +110,13 @@ public class Member extends IUser {
         }
         return false;
     }
+    public void removePermissionFromRole(Permission permission, int storeId){
+        for(UserRole role: getUserRoles()){
+            if(role.getStoreId()==storeId){
+                role.removePermission(permission);
+            }
+        }
+    }
     public HashMap<Integer,Notification> getNotifications(){
         return notifes;
     }
