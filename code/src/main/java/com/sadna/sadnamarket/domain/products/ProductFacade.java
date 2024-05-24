@@ -10,7 +10,7 @@ public class ProductFacade {
     private IProductRepository productRepository;
     private Map<Integer, List<Product>> products; // storeId -> list of products
 
-    private ProductFacade() {
+    public ProductFacade() {
         productRepository = new MemoryProductRepository();
         products = new HashMap<>();
     }

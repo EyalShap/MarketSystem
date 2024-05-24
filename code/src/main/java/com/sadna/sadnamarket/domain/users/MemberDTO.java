@@ -63,3 +63,4 @@ public class MemberDTO {
         this.phoneNumber = phoneNumber;
     }
 }
+

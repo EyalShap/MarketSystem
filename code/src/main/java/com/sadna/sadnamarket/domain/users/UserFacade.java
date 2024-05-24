@@ -2,7 +2,7 @@ package com.sadna.sadnamarket.domain.users;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
+import java.util.Set;
 
 
 public class UserFacade {
@@ -202,4 +202,21 @@ public class UserFacade {
 
     }
 
+    public void sendStoreOwnerRequest(String currentOwnerUsername, String newOwnerUsername, int storeId) {
+        // Dana added this proxy function for the add store owner use case
+        // Assuming this function checks if currentOwnerId can assign newOwnerId as owner to storeId
+    }
+
+    public void sendStoreManagerRequest(String currentOwnerUsername, String newManagerUsername, int storeId, Set<Integer> permissions) {
+        // Dana added this proxy function for the add store manager use case
+        // Assuming this function checks if currentOwnerId can assign newManagerId as manager to storeId
+        //Set<Permission> convertedPermissions = convertPermissions(permissions);
+    }
+
+    public void acceptStoreOwnerRequest(String newOwnerUsername, int storeId) {
+
+    }
+
+    public void acceptStoreManagerRequest(String newManagerUsername, int storeId) {
+    }
 }
