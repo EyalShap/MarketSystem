@@ -10,11 +10,8 @@ public class Notification {
         this.date=LocalDateTime.now();
     }
   public void accept(Member member){
-
+    
   }
-    public void reject(){
-
-    }
     @Override
     public String toString(){
         return "got message: "+ message+ " on: "+date.toString();
