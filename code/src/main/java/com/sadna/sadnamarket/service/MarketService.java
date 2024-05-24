@@ -47,7 +47,7 @@ public class MarketService {
         this.storeFacade = new StoreFacade(storeRepository);
         this.buyPolicyFacade = new BuyPolicyFacade();
         this.discountPolicyFacade = new DiscountPolicyFacade();
-        this.userFacade = new UserFacade(new MemoryRepo(),storeRepository);
+        this.userFacade = new UserFacade(new MemoryRepo(),storeFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
 
         this.storeFacade.setUserFacade(userFacade);

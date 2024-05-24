@@ -19,10 +19,10 @@ public class UserFacade {
     private static StoreFacade storeFacade;
     private static final Logger logger = LogManager.getLogger(UserFacade.class);
 
-    public UserFacade(IUserRepository userRepo, IStoreRepository iStoreRepository) {
+    public UserFacade(IUserRepository userRepo, StoreFacade storeFacade) {
         this.iUserRepo=userRepo;
         systemManagerUserName=null;
-        storeFacade=new StoreFacade(iStoreRepository);
+        this.storeFacade=storeFacade;
     }
     
     public synchronized int enterAsGuest(){
@@ -71,7 +71,7 @@ public class UserFacade {
         return false;
     }
 
-    private boolean isExist(String userName){
+    public boolean isExist(String userName){
         logger.info("check if member exist {}",userName);
         return iUserRepo.hasMember(userName);
     }
@@ -163,7 +163,7 @@ public class UserFacade {
         int storeId=request.getStoreId();
         accepting.accept(requestID);
         String role=request.getRole();
-        if(role.equals("manager"))
+        if(role.equals("Manager"))
             storeFacade.addStoreManager(acceptingName, storeId);
         else
             storeFacade.addStoreOwner(acceptingName,storeId);
@@ -319,6 +319,12 @@ public class UserFacade {
         }
         logger.info("got permissions for {} in {}",userName,storeId);
         return permissionsInRole;
+
+    }
+    public List<String> getMemberRoles(String userName){
+        logger.info("get user roles for {}",userName);
+        Member member=iUserRepo.getMember(userName);
+        return member.getUserRolesString();
 
     }
 

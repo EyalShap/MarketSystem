@@ -7,7 +7,9 @@ import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.auth.IAuthRepository;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
+import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.IUserRepository;
 import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.UserFacade;
@@ -18,10 +20,13 @@ public class UserService {
     private AuthFacade authFacade;
     private UserFacade userFacade;
     private IUserRepository iUserRepository;
-    public UserService(){
+    private StoreFacade storeFacade;
+
+    public UserService(IStoreRepository storeRepository){
         iAuthRepository=new AuthRepositoryMemoryImpl();
         iUserRepository=new MemoryRepo();
-        userFacade=new UserFacade(iUserRepository,new MemoryStoreRepository());
+        this.storeFacade = new StoreFacade(storeRepository);
+        userFacade=new UserFacade(iUserRepository,storeFacade);
         authFacade=new AuthFacade(iAuthRepository,userFacade);
     }
 

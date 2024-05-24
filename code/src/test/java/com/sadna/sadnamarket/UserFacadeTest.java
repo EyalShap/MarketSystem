@@ -1,5 +1,9 @@
 package com.sadna.sadnamarket;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -15,6 +19,9 @@ import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.stores.IStoreRepository;
+import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.Member;
 import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
@@ -27,13 +34,19 @@ public class UserFacadeTest {
     private UserFacade userFacade;
 
     private AuthFacade authFacade;
+    @Mock
+    private StoreFacade storeFacade;
+    @Mock
+    private IStoreRepository iStoreRepository ;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         this.iUserRepo=new MemoryRepo();
         this.iAuthRepo=new AuthRepositoryMemoryImpl();
-        this.userFacade=new UserFacade(iUserRepo);
+        iStoreRepository = mock(IStoreRepository.class);
+        storeFacade= mock(StoreFacade.class);
+        this.userFacade=new UserFacade(iUserRepo, storeFacade);
         this.authFacade=new AuthFacade(iAuthRepo,userFacade);
     }
 
@@ -86,13 +99,42 @@ public class UserFacadeTest {
         authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121");
         assertDoesNotThrow(()-> iUserRepo.getMember("yosi"));
     }
+    @Test
+    public void testRegisterWithSameUsername() {
+        authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121");
+        assertThrows(IllegalArgumentException.class,()->  authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121"));
+    }
+
 
     @Test
-    public void testAddStoreManager() {
-        
+    public void testAddStoreManager() {    
         authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121");
-        
-
+        authFacade.register("johni","12","sami","hatuka","sami@gmail.com","0501118121");
+        when(storeFacade.createStore(anyString(), anyString(), anyDouble(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID 
+        authFacade.login("yosi","12");
+        int storeId=storeFacade.createStore("yosi", null, 0, null, null, null, null, null);
+        userFacade.addStoreFounder("yosi" ,storeId);
+        userFacade.addManagerRequest("yosi","johni",storeId);
+        assertTrue(userFacade.getNotifications("johni").size()>0);
+        authFacade.login("johni","12");
+        doNothing().when(storeFacade).addStoreManager(anyString(), anyInt());
+        assertDoesNotThrow(()->userFacade.accept("johni", 1));
+        assertTrue(userFacade.getMemberRoles("johni").size()>0);
+    }
+    @Test
+    public void testAddStoreOwner() {    
+        authFacade.register("yosi","12","sami","hatuka","sami@gmail.com","0501118121");
+        authFacade.register("johni","12","sami","hatuka","sami@gmail.com","0501118121");
+        when(storeFacade.createStore(anyString(), anyString(), anyDouble(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID 
+        authFacade.login("yosi","12");
+        int storeId=storeFacade.createStore("yosi", null, 0, null, null, null, null, null);
+        userFacade.addStoreFounder("yosi" ,storeId);
+        userFacade.addOwnerRequest("yosi","johni",storeId);
+        assertTrue(userFacade.getNotifications("johni").size()>0);
+        authFacade.login("johni","12");
+        doNothing().when(storeFacade).addStoreOwner(anyString(), anyInt());;
+        assertDoesNotThrow(()->userFacade.accept("johni", 1));
+        assertTrue(userFacade.getMemberRoles("johni").size()>0);
     }
 
     // @Test
