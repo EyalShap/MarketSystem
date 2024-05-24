@@ -152,12 +152,24 @@ public class UserFacade {
         member.removePermissionFromRole(permission, storeId);
     }
 
-    public void removeRole(String name,int storeId){
+    public void leaveRole(String name,int storeId){
         Member member=iUserRepo.getMember(name);
         List<UserRole> roles=member.getUserRoles();
         for(UserRole role : roles){
            // role
            if(role.getStoreId()==storeId){
+            role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
+           }
+        }
+    }
+    public void removeRoleFromMember(String username,String remover,int storeId){
+        Member member=iUserRepo.getMember(username);
+        List<UserRole> roles=member.getUserRoles();
+        for(UserRole role : roles){
+           // role
+           if(role.getStoreId()==storeId){
+            if(!role.getApointee().equals(remover))
+                throw new IllegalStateException("you can only remove your apointees");
             role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
            }
         }
@@ -211,7 +223,7 @@ public class UserFacade {
     public List<OrderDTO> getUserOrders(String username){
         return null;
     }
-    public void finishShop(String username){
+    public void viewCart(String username){
 
     }
     public void purchaseCart(String username){

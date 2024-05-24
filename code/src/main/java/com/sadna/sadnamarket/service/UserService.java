@@ -1,9 +1,12 @@
 package com.sadna.sadnamarket.service;
 
+import java.util.List;
+
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.auth.IAuthRepository;
+import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.users.IUserRepository;
 import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.UserFacade;
@@ -180,6 +183,44 @@ public class UserService {
        
         }
     }
+    public Response leaveRole(String username,int storeId) {
+        try {
+            userFacade.leaveRole(username,storeId);;
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response getOrderHistory(String username) {
+        try {
+            List<OrderDTO> orders=userFacade.getUserOrders(username);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response viewCart(String username) {
+        try {
+            userFacade.viewCart(username);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response purchaseCart(String username) {
+        try {
+            userFacade.purchaseCart(username);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+
+
 
 
 

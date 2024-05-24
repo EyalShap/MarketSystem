@@ -9,7 +9,7 @@ public class UserRoleVisitor {
 
   public void visitStoreOwner(StoreOwner role, int storeId,Member member,UserFacade userFacade) {
     for (String username : role.getAppointers()) {
-        userFacade.removeRole(username,storeId);
+        userFacade.leaveRole(username,storeId);
     }
   }
   public void visitStoreFounder(StoreFounder role, int storeId,Member member) {
