@@ -194,7 +194,7 @@ public class UserService {
     }
     public Response getOrderHistory(String username) {
         try {
-            List<OrderDTO> orders=userFacade.getUserOrders(username);
+            //List<OrderDTO> orders=userFacade.getUserOrders(username);
             return Response.createResponse();
         } catch (Exception e) { 
             return Response.createResponse(true, e.getMessage());

@@ -27,7 +27,13 @@ public class Request extends Notification{
 
     }
 
+    public int getStoreId(){
+        return storeId;
+    }
 
+    public String getRole(){
+        return role;
+    }
     @Override
     public void reject(){
         
