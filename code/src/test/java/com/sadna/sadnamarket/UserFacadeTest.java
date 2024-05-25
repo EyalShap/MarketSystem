@@ -20,6 +20,8 @@ import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.orders.IOrderRepository;
+import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.Permission;
@@ -35,8 +37,10 @@ public class UserFacadeTest {
     private AuthFacade authFacade;
     @Mock
     private StoreFacade storeFacade;
+  
     @Mock
-    private IStoreRepository iStoreRepository ;
+    private OrderFacade orderFacade;
+
 
     private String testUsername1="idanasis";
     private String testUsername2="shavirmor";
@@ -50,9 +54,9 @@ public class UserFacadeTest {
         MockitoAnnotations.openMocks(this);
         this.iUserRepo=new MemoryRepo();
         this.iAuthRepo=new AuthRepositoryMemoryImpl();
-        iStoreRepository = mock(IStoreRepository.class);
         storeFacade= mock(StoreFacade.class);
-        this.userFacade=new UserFacade(iUserRepo, storeFacade);
+        orderFacade=mock(OrderFacade.class);
+        this.userFacade=new UserFacade(iUserRepo, storeFacade,orderFacade);
         this.authFacade=new AuthFacade(iAuthRepo,userFacade);
         authFacade.register(testUsername1,testPassword,"Idan","Idan","idan@gmail.com","0501118121");
         authFacade.login(testUsername1,testPassword);
