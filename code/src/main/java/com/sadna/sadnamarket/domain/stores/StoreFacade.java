@@ -57,7 +57,9 @@ public class StoreFacade {
         if(!userFacade.isLoggedIn(founderUserName))
             throw new IllegalArgumentException(String.format("User %s has to be logged in to create a store.", founderUserName));
 
-        return storeRepository.addStore(founderUserName, storeName, address, email, phoneNumber, openingHours, closingHours);
+        int storeId = storeRepository.addStore(founderUserName, storeName, address, email, phoneNumber, openingHours, closingHours);
+        userFacade.addStoreFounder(founderUserName, storeId);
+        return storeId;
     }
     
     public int addProductToStore(String username, int storeId, String productName, int productQuantity, int productPrice, String category) {
@@ -153,10 +155,10 @@ public class StoreFacade {
             toAdd.removeAll(currPermissions);
 
             for(Permission p : toRemove) {
-                userFacade.removePremssionFromStore(newManagerUsername, storeId, p);
+                userFacade.removePremssionFromStore(currentOwnerUsername, newManagerUsername, storeId, p);
             }
             for(Permission p : toAdd) {
-                userFacade.addPremssionToStore(newManagerUsername, storeId, p);
+                userFacade.addPremssionToStore(currentOwnerUsername, newManagerUsername, storeId, p);
             }
         }
     }
