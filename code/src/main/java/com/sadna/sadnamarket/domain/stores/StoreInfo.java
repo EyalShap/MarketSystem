@@ -4,6 +4,8 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StoreInfo {
     private String storeName;
@@ -14,9 +16,10 @@ public class StoreInfo {
     private LocalTime[] openingHours;
     private LocalTime[] closingHours;
 
-    public StoreInfo(String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+    public StoreInfo(String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+        verify(storeName, address, email, phoneNumber, openingHours, closingHours);
         this.storeName = storeName;
-        this.rank = rank;
+        this.rank = 3;
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -24,10 +27,36 @@ public class StoreInfo {
         this.closingHours = closingHours;
     }
 
+    private void verify(String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+        if(storeName == null || storeName.trim().equals(""))
+            throw new IllegalArgumentException(String.format("%s is not a valid store name.", storeName));
+        if(address == null || address.trim().equals(""))
+            throw new IllegalArgumentException(String.format("%s is not a valid address.", address));
+        if(email == null || email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"))
+            throw new IllegalArgumentException(String.format("%s is not a valid email address.", email));
+        if(phoneNumber == null || phoneNumber.matches("^\\d{9}$"))
+            throw new IllegalArgumentException(String.format("%s is not a valid phone number.", phoneNumber));
+        if(!(openingHours == null && closingHours == null)) {
+            if(openingHours.length != 7 || closingHours.length != 7)
+                throw new IllegalArgumentException("Opening or closing hours are not valid");
+
+            for(int i = 0; i < openingHours.length; i++) {
+                if(openingHours[i] == null ^ closingHours[i] == null) {
+                    throw new IllegalArgumentException("Opening or closing hours are not valid");
+                }
+                if(openingHours[i] != null) {
+                    if(openingHours[i].isAfter(closingHours[i])) {
+                        throw new IllegalArgumentException("Opening or closing hours are not valid");
+                    }
+                }
+            }
+        }
+    }
 
     public String getStoreName() {
         return storeName;
     }
+
     public void setStoreName(String storeName) {
         this.storeName = storeName;
     }
