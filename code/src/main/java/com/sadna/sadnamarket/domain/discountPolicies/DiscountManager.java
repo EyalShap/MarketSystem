@@ -18,7 +18,7 @@ public class DiscountManager {
         discounts.add(discountPolicy);
     }
 
-    // for know that function dosent do anything special
+    // for now that function dosent do anything special
     public List<ProductDataPrice> giveDiscount(List<CartItemDTO> cart, ProductFacade productFacade) {
         List<ProductDataPrice> listProductDataPrice = new ArrayList<>();
         for (CartItemDTO cartItemDTO : cart) {

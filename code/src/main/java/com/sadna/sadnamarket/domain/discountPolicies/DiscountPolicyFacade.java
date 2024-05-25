@@ -1,12 +1,8 @@
 package com.sadna.sadnamarket.domain.discountPolicies;
 
-import com.sadna.sadnamarket.api.Response;
-import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +25,15 @@ public class DiscountPolicyFacade {
         return instance;
     }
 
+    // for now that function dosent do anything special
     public boolean addDiscountPolicy(int storeId, String args) {
         DiscountPolicy dp;
         if (mapper.get(storeId) == null) {
             mapper.put(storeId, new DiscountManager());
         }
         try {
-            dp = new DiscountPolicy(args);
+            // create new DiscountPolicy
+            dp = null;
         } catch (Exception e) {
             return false;
         }

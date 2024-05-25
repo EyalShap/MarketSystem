@@ -120,7 +120,7 @@ public class Store {
 
     public void buyCart(List<CartItemDTO> cart) {
         synchronized (productAmounts) {
-            if (!checkCart(cart))
+            if (!checkCart(cart).equals(""))
                 throw new IllegalArgumentException("This cart can not be purchased.");
 
             for (CartItemDTO item : cart) {
@@ -210,15 +210,20 @@ public class Store {
         }
     }
 
-    public boolean checkCart(List<CartItemDTO> cart) {
+    public String checkCart(List<CartItemDTO> cart) {
+        String error = "";
         synchronized (productAmounts) {
             synchronized (lock) {
+                if (!isActive)
+                    error = error + String.format("Store %d is closed.", storeId);
                 for (CartItemDTO item : cart) {
-                    if (!isActive || !productExists(item.getProductId())
-                            || item.getAmount() > productAmounts.get(item.getProductId()))
-                        return false;
+                    if (!productExists(item.getProductId()))
+                        error = String.format("Product %d does not exist in store %d.", item.getProductId(), storeId);
+                    if (item.getAmount() > productAmounts.get(item.getProductId()))
+                        error = String.format("You can not buy %d of product %d - there are only %d in stock.",
+                                item.getAmount(), item.getProductId(), productAmounts.get(item.getProductId()));
                 }
-                return true;
+                return error;
             }
         }
     }
