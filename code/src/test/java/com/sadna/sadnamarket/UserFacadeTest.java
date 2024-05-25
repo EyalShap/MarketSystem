@@ -20,6 +20,8 @@ import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.orders.IOrderRepository;
+import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.Permission;
@@ -35,8 +37,10 @@ public class UserFacadeTest {
     private AuthFacade authFacade;
     @Mock
     private StoreFacade storeFacade;
+  
     @Mock
-    private IStoreRepository iStoreRepository ;
+    private OrderFacade orderFacade;
+
 
     private String testUsername1="idanasis";
     private String testUsername2="shavirmor";
@@ -50,9 +54,9 @@ public class UserFacadeTest {
         MockitoAnnotations.openMocks(this);
         this.iUserRepo=new MemoryRepo();
         this.iAuthRepo=new AuthRepositoryMemoryImpl();
-        iStoreRepository = mock(IStoreRepository.class);
         storeFacade= mock(StoreFacade.class);
-        this.userFacade=new UserFacade(iUserRepo, storeFacade);
+        orderFacade=mock(OrderFacade.class);
+        this.userFacade=new UserFacade(iUserRepo, storeFacade,orderFacade);
         this.authFacade=new AuthFacade(iAuthRepo,userFacade);
         authFacade.register(testUsername1,testPassword,"Idan","Idan","idan@gmail.com","0501118121");
         authFacade.login(testUsername1,testPassword);
@@ -60,10 +64,10 @@ public class UserFacadeTest {
         authFacade.login(testUsername2, testPassword);
         authFacade.register(testUsername3,testPassword,"Nir","Mor","nir@gmail.com","05033303030");
         authFacade.login(testUsername3, testPassword);
-        when(storeFacade.createStore(anyString(), anyString(), anyDouble(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID 
-        testStoreId=storeFacade.createStore(testUsername1, null, 0, null, null, null, null, null);
-        when(storeFacade.createStore(anyString(), anyString(), anyDouble(), anyString(), anyString(), anyString(), any(), any())).thenReturn(2); // Return a predefined store ID 
-        testStoreId2=storeFacade.createStore(testUsername1, null, 0, null, null, null, null, null);
+        when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID 
+        testStoreId=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
+        when(storeFacade.createStore(anyString(), anyString(),  anyString(), anyString(), anyString(), any(), any())).thenReturn(2); // Return a predefined store ID 
+        testStoreId2=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
         doNothing().when(storeFacade).addStoreOwner(anyString(), anyInt());
 
     }
@@ -139,8 +143,8 @@ public class UserFacadeTest {
     }
     @Test
     public void testAddStoreOwnerFailWhichIsntRelatedToStore() {    
-        when(storeFacade.createStore(anyString(), anyString(), anyDouble(), anyString(), anyString(), anyString(), any(), any())).thenReturn(3);
-        int testStoreId3=storeFacade.createStore(testUsername1, null, 0, null, null, null, null, null);
+        when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any())).thenReturn(3);
+        int testStoreId3=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
         assertThrows(IllegalArgumentException.class,()->userFacade.addOwnerRequest(testUsername1,testUsername2,testStoreId3));
         assertTrue(userFacade.getNotifications(testUsername2).size()==0);
     }
