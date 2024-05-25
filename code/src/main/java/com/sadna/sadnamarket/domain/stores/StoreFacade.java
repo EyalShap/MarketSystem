@@ -421,7 +421,7 @@ public class StoreFacade {
         return cartByStore;
     }
 
-    private void checkCart(String username, List<CartItemDTO> cart) {
+    public void checkCart(String username, List<CartItemDTO> cart) {
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         String error = "";
         for (int storeId : cartByStore.keySet()) {
