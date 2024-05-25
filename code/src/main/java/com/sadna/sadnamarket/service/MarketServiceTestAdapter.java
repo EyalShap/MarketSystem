@@ -70,8 +70,10 @@ public class MarketServiceTestAdapter {
 
     public Response getStoreData(String token, String userId, int storeId) throws JsonProcessingException {
         //empty token and -1 userId if guest
-        StoreDTO dto = new StoreDTO(4, true, "TestStore", 4, "Lehavim", "stam@gmail.com", "0542106532", null, null, new HashMap<Integer, Integer>(),"Founder", new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
-        return Response.createResponse(false, objectMapper.writeValueAsString(dto));
+        /*StoreDTO dto = new StoreDTO(4, true, "TestStore", 4, "Lehavim", "stam@gmail.com", "0542106532", null, null, new HashMap<Integer, Integer>(),"Founder", new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>(), new LinkedList<>());
+        return Response.createResponse(false, objectMapper.writeValueAsString(dto));*/
+
+        return real.getStoreInfo(token, userId, storeId);
     }
 
     public Response getProductData(String token, String userId, int productId) throws JsonProcessingException {
@@ -88,10 +90,12 @@ public class MarketServiceTestAdapter {
     }
 
     public Response searchProductInStore(int storeId, String productName, double productPriceMin, double productPriceMax, String productCategory, int productRating) throws JsonProcessingException {
-        ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory);
+        /*ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory);
         List<ProductDTO> dtoList = new LinkedList<>();
         dtoList.add(dto);
-        return Response.createResponse(false, objectMapper.writeValueAsString(dtoList));
+        return Response.createResponse(false, objectMapper.writeValueAsString(dtoList));*/
+
+        return real.getStoreProductsInfo(null, null, storeId, productCategory, productPriceMax, productRating);
     }
 
     public Response addProductToBasketGuest(String uuid, int storeId, int productId, int amount){
@@ -147,43 +151,53 @@ public class MarketServiceTestAdapter {
     }
 
     public Response openStore(String token, String userId, String storeName) {
-        return Response.createResponse(false, "4"); //returns store id
+        //return Response.createResponse(false, "4"); //returns store id
+        return real.createStore(token, userId, storeName, "Beer Sheva", "coolio@gmail.com", "0546102344", null, null);
     }
 
     public Response addProductToStore(String token, String userId, int storeId, ProductDTO productDetails) {
-        return Response.createResponse(false, "5"); //returns product id
+        //return Response.createResponse(false, "5"); //returns product id
+        return real.addProductToStore(token, userId, storeId, productDetails.getProductName(), 100, (int)productDetails.getProductPrice(), productDetails.getProductCategory());
     }
 
     public Response removeProductFromStore(String token, String userId, int storeId, int productId) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.deleteProductFromStore(token, userId, storeId, productId);
     }
 
     public Response editStoreProduct(String token, String userId, int storeId, int productId, ProductDTO productDetails) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.updateProductInStore(token, userId, storeId, productId, productDetails.getProductName(), 200, (int)productDetails.getProductPrice(), productDetails.getProductCategory());
     }
 
     public Response getStoreProductAmount(int storeId, int productId) {
-        return Response.createResponse(false, "1");
+        //return Response.createResponse(false, "1");
+        return real.getStoreProductAmount(null, null, storeId, productId);
     }
 
     public Response setStoreProductAmount(String token, String username, int storeId, int productId, int amount) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.updateProductInStore(token, username, storeId, productId, null, amount, -1, null);
     }
 
     public Response appointOwner(String token, String userId, int storeId, String appointedUserId) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.sendStoreOwnerRequest(token, userId, appointedUserId, storeId);
     }
 
     public Response appointManager(String token, String userId, int storeId, String appointedUserId, List<Integer> permissions) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.sendStoreManagerRequest(token, userId, appointedUserId, storeId);
     }
 
     public Response acceptOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.acceptRequest(token, appointedUserId, storeId);
     }
 
     public Response acceptManagerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.acceptRequest(token, appointedUserId, storeId);
     }
 
     public Response rejectOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
@@ -195,11 +209,13 @@ public class MarketServiceTestAdapter {
     }
 
     public Response changeManagerPermissions(String token, String userId, String managerId, int storeId, List<Integer> newPermissions) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.changeManagerPermission(token, userId, managerId, storeId, new HashSet(newPermissions));
     }
 
     public Response closeStore(String token, String userId, int storeId) {
-        return Response.createResponse(false, "true");
+        //return Response.createResponse(false, "true");
+        return real.closeStore(token, userId, storeId);
     }
 
     public Response getIsOwner(String token, String actorId, int storeId, String ownerId) {
@@ -215,13 +231,15 @@ public class MarketServiceTestAdapter {
     }
 
     public Response getStoreOwners(String token, String actorId, int storeId) throws JsonProcessingException {
-        List<MemberDTO> users = new LinkedList<>();
-        return Response.createResponse(false, objectMapper.writeValueAsString(users));
+        //List<MemberDTO> users = new LinkedList<>();
+        //return Response.createResponse(false, objectMapper.writeValueAsString(users));
+        return real.getOwners(token, actorId, storeId);
     }
 
     public Response getStoreManagers(String token, String actorId, int storeId) throws JsonProcessingException {
-        List<MemberDTO> users = new LinkedList<>();
-        return Response.createResponse(false, objectMapper.writeValueAsString(users));
+        //List<MemberDTO> users = new LinkedList<>();
+        //return Response.createResponse(false, objectMapper.writeValueAsString(users));
+        return real.getManagers(token, actorId, storeId);
     }
 
     public Response getManagerPermissions(String token, String actorId, int storeId, String managerId) throws JsonProcessingException {
@@ -231,8 +249,9 @@ public class MarketServiceTestAdapter {
     }
 
     public Response getStorePurchaseHistory(String token, String actorId, int storeId) throws JsonProcessingException {
-        List<OrderDTO> history = new LinkedList<>();
-        return Response.createResponse(false, objectMapper.writeValueAsString(history));
+        //List<OrderDTO> history = new LinkedList<>();
+        //return Response.createResponse(false, objectMapper.writeValueAsString(history));
+        return real.getStoreOrderHistory(token, actorId, storeId);
     }
 
     public Response getUserPurchaseHistory(String token, String actorId, String userId) throws JsonProcessingException {
