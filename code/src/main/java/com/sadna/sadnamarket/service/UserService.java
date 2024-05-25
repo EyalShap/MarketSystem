@@ -1,13 +1,11 @@
 package com.sadna.sadnamarket.service;
 
-import java.util.List;
-
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.auth.IAuthRepository;
-import com.sadna.sadnamarket.domain.orders.OrderDTO;
-import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
+import com.sadna.sadnamarket.domain.stores.IStoreRepository;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.IUserRepository;
 import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.UserFacade;
@@ -18,10 +16,13 @@ public class UserService {
     private AuthFacade authFacade;
     private UserFacade userFacade;
     private IUserRepository iUserRepository;
-    public UserService(){
+    private StoreFacade storeFacade;
+
+    public UserService(IStoreRepository storeRepository){
         iAuthRepository=new AuthRepositoryMemoryImpl();
         iUserRepository=new MemoryRepo();
-        userFacade=new UserFacade(iUserRepository,new MemoryStoreRepository());
+        this.storeFacade = new StoreFacade(storeRepository);
+        userFacade=new UserFacade(iUserRepository,storeFacade);
         authFacade=new AuthFacade(iAuthRepository,userFacade);
     }
 
@@ -214,6 +215,24 @@ public class UserService {
     public Response purchaseCart(String username) {
         try {
             userFacade.purchaseCart(username);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response viewCart(int guestId) {
+        try {
+            userFacade.viewCart(guestId);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response purchaseCart(int guestId) {
+        try {
+            userFacade.purchaseCart(guestId);
             return Response.createResponse();
         } catch (Exception e) { 
             return Response.createResponse(true, e.getMessage());
