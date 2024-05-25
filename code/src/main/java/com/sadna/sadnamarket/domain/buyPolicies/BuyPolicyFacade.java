@@ -1,5 +1,9 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountManager;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicy;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
 import java.util.Collections;
@@ -10,25 +14,38 @@ import java.util.List;
 import java.util.Map;
 
 public class BuyPolicyFacade {
-    Map<Integer, BuyPolicy> mapper;
+    private Map<Integer, BuyPolicyManager> mapper;
+    private static BuyPolicyFacade instance;
 
     public BuyPolicyFacade() {
-        mapper = new HashMap<Integer, BuyPolicy>();
-        List<BuyType> buyTypes = new ArrayList<>();
-        buyTypes.add(BuyType.immidiatePurchase);
-        mapper.put(0, new DefaultBuyPolicy(buyTypes));
+        mapper = new HashMap<Integer, BuyPolicyManager>();
     }
 
-    public int addBuyPolicy(List<BuyType> buyTypes, BuyPolicyType buypolicyType, List<String> args) {
-        int newID = Collections.max(mapper.keySet()) + 1;
-        if (buypolicyType.equals(BuyPolicyType.Default)) {
-            mapper.put(newID, new DefaultBuyPolicy(buyTypes));
+    public static BuyPolicyFacade getInstance() {
+        if (instance == null) {
+            instance = new BuyPolicyFacade();
         }
-        return newID;
+        return instance;
     }
 
-    public boolean canBuy(int policyId, List<CartItemDTO> cart, String username) {
-        BuyPolicy buypolicy = mapper.get(policyId);
-        return buypolicy.canBuy(cart, username);
+    public boolean addBuyPolicy(int storeId, String args) {
+        BuyPolicy bp;
+        if (mapper.get(storeId) == null) {
+            mapper.put(storeId, new BuyPolicyManager());
+        }
+        try {
+            // create new DiscountPolicy
+            dp = null;
+        } catch (Exception e) {
+            return false;
+        }
+        BuyPolicyManager buyPolicyManager = mapper.get(storeId);
+        buyPolicyManager.addDiscountPolicy(bp);
+        return true;
+    }
+
+    public boolean canBuy(int storeId, List<CartItemDTO> cart, String username) {
+        BuyPolicyManager buyPolicyManager = mapper.get(storeId);
+        return buyPolicyManager.canBuy(cart, username);
     }
 }

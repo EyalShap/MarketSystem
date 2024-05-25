@@ -63,7 +63,7 @@ public class StoreFacade {
                     String.format("User %s has to be logged in to create a store.", founderUserName));
 
         return storeRepository.addStore(founderUserName, storeName, rank, address, email, phoneNumber, openingHours,
-                closingHours, );
+                closingHours);
     }
 
     public int addProductToStore(String username, int storeId, String productName, int productQuantity,
@@ -365,7 +365,7 @@ public class StoreFacade {
         return sellerUsername;
     }
 
-    public void addBuyPolicy(String username, int storeId, List<String> args) {
+    public void addBuyPolicy(String username, int storeId, String args) {
         if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(
                     String.format("User %s can not add buy policy to store with id %d.", username, storeId));
@@ -405,10 +405,8 @@ public class StoreFacade {
             synchronized (store) {
                 if (!store.checkCart(cartByStore.get(storeId)))
                     return false;
-
-                for (int policyId : store.getBuyPolicyIds()) {
-                    if (!buyPolicyFacade.canBuy(policyId, cartByStore.get(storeId), username))
-                        return false;
+                if (!buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username)) {
+                    return false;
                 }
             }
         }
@@ -433,9 +431,8 @@ public class StoreFacade {
         Map<Integer, List<ProductDataPrice>> mapPrice = new HashMap<>();
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
-            Store store = storeRepository.findStoreByID(storeId);
-            mapPrice.entrySet(storeId, discountPolicyFacade.calculatePrice(store.getDiscountPolicyIds(),
-                    cartByStore.get(storeId), username));
+            mapPrice.put(storeId, discountPolicyFacade.calculatePrice(storeId,
+                    cartByStore.get(storeId)));
         }
         return mapPrice;
     }
