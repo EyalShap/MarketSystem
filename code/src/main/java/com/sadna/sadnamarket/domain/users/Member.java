@@ -19,9 +19,7 @@ public class Member extends IUser {
     private boolean isLoggedIn;
     private int notifyID;
 
-    public List<UserRole> getUserRoles(){
-        return roles;
-    }
+   
     public Member(String username,String firstName, String lastName,String emailAddress,String phoneNumber){
         roles=new ArrayList<>();
         notifes=new HashMap<>();
@@ -85,7 +83,7 @@ public class Member extends IUser {
     }
 
     public void logout(){
-        if(isLoggedIn)
+        if(!isLoggedIn)
             throw new IllegalStateException("user is'nt login");
         this.setLogin(false);
     }
@@ -187,6 +185,16 @@ public void setPhoneNumber(String phoneNumber) {
 public List<Integer> getOrdersHistory(){
     return orders;
 }
+public List<String> getUserRolesString(){
+    List<String> rolesString=new ArrayList<>();
+    for (UserRole role : roles) {
+     rolesString.add(role.toString());
+    }
+    return rolesString;
+ }
+ public List<UserRole> getUserRoles(){
+    return roles;
+ }
     
     
 }
