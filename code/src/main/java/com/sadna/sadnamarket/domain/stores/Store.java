@@ -215,12 +215,12 @@ public class Store {
         synchronized (productAmounts) {
             synchronized (lock) {
                 if (!isActive)
-                    error = error + String.format("Store %d is closed.", storeId);
+                    error = error + String.format("Store %d is closed.\n", storeId);
                 for (CartItemDTO item : cart) {
                     if (!productExists(item.getProductId()))
-                        error = String.format("Product %d does not exist in store %d.", item.getProductId(), storeId);
+                        error = String.format("Product %d does not exist in store %d.\n", item.getProductId(), storeId);
                     if (item.getAmount() > productAmounts.get(item.getProductId()))
-                        error = String.format("You can not buy %d of product %d - there are only %d in stock.",
+                        error = String.format("You can not buy %d of product %d - there are only %d in stock.\n",
                                 item.getAmount(), item.getProductId(), productAmounts.get(item.getProductId()));
                 }
                 return error;

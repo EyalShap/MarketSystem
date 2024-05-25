@@ -427,9 +427,13 @@ public class StoreFacade {
         for (int storeId : cartByStore.keySet()) {
             Store store = storeRepository.findStoreByID(storeId);
             synchronized (store) {
-                error = error + store.checkCart(cartByStore.get(storeId));
-
-                error = error + buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username) + "\n";
+                String newError1 = store.checkCart(cartByStore.get(storeId));
+                if (!newError1.equals("")) {
+                    error = error + newError1 + "\n";
+                }
+                String newError2 = buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username);
+                if (!newError2.equals(""))
+                    error = error + newError2 + "\n\n";
             }
         }
 
