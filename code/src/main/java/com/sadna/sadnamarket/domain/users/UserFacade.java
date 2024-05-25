@@ -2,13 +2,14 @@ package com.sadna.sadnamarket.domain.users;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
-import com.sadna.sadnamarket.domain.stores.IStoreRepository;
+import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 
 
@@ -17,12 +18,16 @@ public class UserFacade {
     private IUserRepository iUserRepo; 
     private static String systemManagerUserName;
     private static StoreFacade storeFacade;
+    private static OrderFacade orderFacade;
     private static final Logger logger = LogManager.getLogger(UserFacade.class);
 
-    public UserFacade(IUserRepository userRepo, IStoreRepository iStoreRepository) {
+    public UserFacade(IUserRepository userRepo, StoreFacade storeFacadeInstance,OrderFacade orderFacadeInsance) {
+        logger.info("initilize user fascade");
         this.iUserRepo=userRepo;
         systemManagerUserName=null;
-        storeFacade=new StoreFacade(iStoreRepository);
+        storeFacade=storeFacadeInstance;
+        orderFacade=orderFacadeInsance;
+        logger.info("finish initilize user fascade");
     }
     
     public synchronized int enterAsGuest(){
@@ -33,6 +38,7 @@ public class UserFacade {
     public synchronized void exitGuest(int guestId){
         logger.info("remove guest {}",guestId);
         iUserRepo.deleteGuest(guestId);
+        logger.info("removed guest {}",guestId);
     }
 
     public boolean checkPremssionToStore(String userName, int storeId,Permission permission){
@@ -163,12 +169,13 @@ public class UserFacade {
         int storeId=request.getStoreId();
         accepting.accept(requestID);
         String role=request.getRole();
-        if(role.equals("manager"))
+        String apointer=request.getSender();
+        iUserRepo.getMember(apointer).addApointer(acceptingName, storeId);
+        if(role.equals("Manager"))
             storeFacade.addStoreManager(acceptingName, storeId);
         else
             storeFacade.addStoreOwner(acceptingName,storeId);
         logger.info("{} accepted request id: {}",acceptingName,requestID);
-
     }
 
 
@@ -195,7 +202,6 @@ public class UserFacade {
     }
     public void setCart(Cart cart,String userName){
         logger.info("{} set cart ",userName);
-
         iUserRepo.getMember(userName).setCart(cart);
         logger.info("{} done set cart ",userName);
     }
@@ -227,24 +233,31 @@ public class UserFacade {
         iUserRepo.getMember(username).addRole(new StoreFounder(storeId,username));
         logger.info("done add Store founder to {} in {} ",username,storeId);
     }
-    public void addPremssionToStore(String userName, int storeId,Permission permission){
+    public void addPremssionToStore(String giverUserName,String userName, int storeId,Permission permission){
+        logger.info("{} get permission to store {} to {}",userName,storeId,permission);
+        if(!iUserRepo.getMember(giverUserName).getRoleOfStore(storeId).getAppointers().contains(userName))
+            throw new IllegalStateException("you can add permissions only to your appointers");
         Member member=iUserRepo.getMember(userName);
         member.addPermissionToRole(permission, storeId);
+        logger.info("{} got permission to store {} to {}",userName,storeId,permission);
+
     }
-    public void removePremssionFromStore(String userName, int storeId,Permission permission){
+    public void removePremssionFromStore(String removerUsername,String userName, int storeId,Permission permission){
+        logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
+        if(!iUserRepo.getMember(removerUsername).getRoleOfStore(storeId).getAppointers().contains(userName))
+            throw new IllegalStateException("you can add permissions only to your appointers");
         Member member=iUserRepo.getMember(userName);
         member.removePermissionFromRole(permission, storeId);
+        logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
     }
 
-    public void leaveRole(String name,int storeId){
-        Member member=iUserRepo.getMember(name);
-        List<UserRole> roles=member.getUserRoles();
-        for(UserRole role : roles){
-           // role
-           if(role.getStoreId()==storeId){
-            role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
-           }
-        }
+    public void leaveRole(String username,int storeId){
+        logger.info("{} try leave role in store {}",username,storeId);
+        Member member=iUserRepo.getMember(username);
+        UserRole role=member.getRoleOfStore(storeId);
+        role.leaveRole(new UserRoleVisitor(), storeId, member, this);
+        member.removeRole(role);
+        logger.info("{} try left role in store {}",username,storeId);
     }
     public void removeRoleFromMember(String username,String remover,int storeId){
         Member member=iUserRepo.getMember(username);
@@ -321,15 +334,36 @@ public class UserFacade {
         return permissionsInRole;
 
     }
+    public List<String> getMemberRoles(String userName){
+        logger.info("get user roles for {}",userName);
+        Member member=iUserRepo.getMember(userName);
+        List<String> userRoles=member.getUserRolesString();
+        logger.info("got user roles for {}: {}",userName, userRoles);
+        return userRoles;
 
-    public HashMap<Integer,OrderDTO> getUserOrders(String username){
-        List<Integer> orders=getMember(username).getOrdersHistory();
-        for (Integer orderId : orders) {
-           //getOrderById(orderId);
+    }
+
+    public List<String> getUserOrders(String username){
+        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List <String> ordersString=new ArrayList<>();
+        for (Integer orderId : ordersIds) {
+            Map<Integer,OrderDTO> orders=orderFacade.getOrderByOrderId(orderId);
+            for (Integer store_id : orders.keySet()) {
+                Map<Integer,String> ordersProducts=orders.get(store_id).getOrderProductsJsons();
+                for (Integer product_id : ordersProducts.keySet()) {
+                    ordersString.add(ordersProducts.get(product_id));
+                }
+            }
         }
-        return null;
+        return ordersString;
     }
     public void viewCart(String username){
+        List<CartItemDTO> items=iUserRepo.getUserCart(username);
+        // call check validation from store
+        // getPrice before and after discount
+    }
+    public void viewCart(int guestId){
+        List<CartItemDTO> items=iUserRepo.getUserCart(guestId);
         // call check validation from store
         // getPrice before and after discount
     }
@@ -339,6 +373,19 @@ public class UserFacade {
         // proxy payment
         // update quantities
         // create new order 
+    }
+    public void purchaseCart(int guestId){
+        // call check validation from store
+        // getPrice before and after discount
+        // proxy payment
+        // update quantities
+        // create new order 
+    }
+
+    //only for tests
+    public List<CartItemDTO> getCartItems(int guest_id){
+        logger.info("get guest cart");
+        return iUserRepo.getUserCart(guest_id);
     }
 
 }

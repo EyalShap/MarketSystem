@@ -55,4 +55,9 @@ public class StoreManager implements UserRole {
     public String getApointee() {
         throw new IllegalAccessError("its not relvant who apointed you");
     }
+    @Override
+    public void addAppointers(String apointee) {
+        // TODO Auto-generated method stub
+        throw new IllegalStateException("manager doesnt has apointees");
+    }
 }

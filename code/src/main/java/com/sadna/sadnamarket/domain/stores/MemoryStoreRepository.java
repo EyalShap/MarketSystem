@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MemoryStoreRepository implements IStoreRepository{
+public class MemoryStoreRepository implements IStoreRepository {
     private int nextStoreId;
     private Map<Integer, Store> stores;
 
@@ -19,7 +19,7 @@ public class MemoryStoreRepository implements IStoreRepository{
     @Override
     public Store findStoreByID(int storeId) {
         synchronized (stores) {
-            if(!stores.containsKey(storeId))
+            if (!stores.containsKey(storeId))
                 throw new IllegalArgumentException(String.format("There is no store with id %d.", storeId));
 
             return stores.get(storeId);
@@ -39,14 +39,16 @@ public class MemoryStoreRepository implements IStoreRepository{
     }
 
     @Override
-    public int addStore(String founderUsername, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+    public int addStore(String founderUsername, String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         synchronized (stores) {
-            if(storeExists(nextStoreId))
-                throw new IllegalArgumentException(String.format("A store with the id %d already exists.", nextStoreId));
-            if(storeNameExists(storeName))
-                throw new IllegalArgumentException(String.format("A store with the name %s already exists.", storeName));
+            if (storeExists(nextStoreId))
+                throw new IllegalArgumentException(
+                        String.format("A store with the id %d already exists.", nextStoreId));
+            if (storeNameExists(storeName))
+                throw new IllegalArgumentException(
+                        String.format("A store with the name %s already exists.", storeName));
 
-            Store createdStore = new Store(nextStoreId, founderUsername, new StoreInfo(storeName, rank, address, email, phoneNumber, openingHours, closingHours));
+            Store createdStore = new Store(nextStoreId, founderUsername, new StoreInfo(storeName, address, email, phoneNumber, openingHours, closingHours));
             stores.put(nextStoreId, createdStore);
             nextStoreId++;
             return nextStoreId - 1;
@@ -59,8 +61,8 @@ public class MemoryStoreRepository implements IStoreRepository{
 
     private boolean storeNameExists(String storeName) {
         synchronized (stores) {
-            for(Store store : stores.values()) {
-                if(store.getStoreInfo().getStoreName().equals(storeName)) {
+            for (Store store : stores.values()) {
+                if (store.getStoreInfo().getStoreName().equals(storeName)) {
                     return true;
                 }
             }
