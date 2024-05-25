@@ -72,10 +72,10 @@ public class MarketService {
         }
     }
 
-    public Response createStore(String token, String founderUsername, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+    public Response createStore(String token, String founderUsername, String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         try {
             checkToken(token, founderUsername);
-            int newStoreId = storeFacade.createStore(founderUsername, storeName, rank, address, email, phoneNumber, openingHours, closingHours); // will throw an exception if the store already exists
+            int newStoreId = storeFacade.createStore(founderUsername, storeName, address, email, phoneNumber, openingHours, closingHours); // will throw an exception if the store already exists
             logger.info(String.format("User %s created a store with id %d.", founderUsername, newStoreId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
         }
@@ -255,9 +255,24 @@ public class MarketService {
             if(username != null)
                 checkToken(token, username);
 
-            List<ProductDTO> productDTOs = storeFacade.getProductsInfo(username, storeId, category, price, minProductRank);
+            Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfo(username, storeId, category, price, minProductRank);
             logger.info(String.format("A user got products info of store %d.", storeId));
-            return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
+            return Response.createResponse(false, objectMapper.writeValueAsString(productDTOsAmounts));
+        }
+        catch (Exception e) {
+            logger.error("getProductsInfo: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getStoreProductAmount(String token, String username, int storeId, int productId) {
+        try {
+            if(username != null)
+                checkToken(token, username);
+
+            int amount = storeFacade.getProductAmount(username, storeId, productId);
+            logger.info(String.format("A user got product %d amount in store %d.", productId, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(amount));
         }
         catch (Exception e) {
             logger.error("getProductsInfo: " + e.getMessage());
@@ -304,7 +319,7 @@ public class MarketService {
         }
     }
 
-    public Response addManagerPermission(String token, String currentOwnerUsername, String newManagerUsername, int storeId, Permission permission) {
+    public Response changeManagerPermission(String token, String currentOwnerUsername, String newManagerUsername, int storeId, Set<Permission> permission) {
         try {
             checkToken(token, currentOwnerUsername);
             storeFacade.addManagerPermission(currentOwnerUsername, newManagerUsername, storeId, permission);
@@ -316,4 +331,5 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
 }

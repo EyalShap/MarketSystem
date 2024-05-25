@@ -18,8 +18,8 @@ class StoreTest {
 
     @BeforeEach
     public void setUp() {
-        StoreInfo storeInfo0 = new StoreInfo("Store0", 5, "Lehavim", "store0@gmail.com", "0546310765", null, null);
-        StoreInfo storeInfo1 = new StoreInfo("Store1", 4, "Tel Aviv", "store1@gmail.com", "0546310764", null, null);
+        StoreInfo storeInfo0 = new StoreInfo("Store0", "Lehavim", "store0@gmail.com", "0546310765", null, null);
+        StoreInfo storeInfo1 = new StoreInfo("Store1",  "Tel Aviv", "store1@gmail.com", "0546310764", null, null);
         store0 = new Store(0, "Alice", storeInfo0);
         store1 = new Store(1, "Bob", storeInfo1);
     }

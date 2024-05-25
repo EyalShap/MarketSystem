@@ -39,8 +39,7 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
-    public int addStore(String founderUsername, String storeName, double rank, String address, String email,
-            String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+    public int addStore(String founderUsername, String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         synchronized (stores) {
             if (storeExists(nextStoreId))
                 throw new IllegalArgumentException(
@@ -49,8 +48,7 @@ public class MemoryStoreRepository implements IStoreRepository {
                 throw new IllegalArgumentException(
                         String.format("A store with the name %s already exists.", storeName));
 
-            Store createdStore = new Store(nextStoreId, founderUsername,
-                    new StoreInfo(storeName, rank, address, email, phoneNumber, openingHours, closingHours));
+            Store createdStore = new Store(nextStoreId, founderUsername, new StoreInfo(storeName, address, email, phoneNumber, openingHours, closingHours));
             stores.put(nextStoreId, createdStore);
             nextStoreId++;
             return nextStoreId - 1;
