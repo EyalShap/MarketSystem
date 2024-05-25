@@ -56,7 +56,7 @@ public class AuthFacade {
         if(!tokenService.validateToken(jwt))
             throw new IllegalArgumentException("jwt isnt valid");
         else 
-            return jwt;
+            return tokenService.extractUsername(jwt);
 
     }
 
