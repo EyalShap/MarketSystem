@@ -9,6 +9,7 @@ public interface UserRole {
     void removePermission(Permission permission);
     boolean isApointedByUser(String username);
     List<String> getAppointers(); 
+    void addAppointers(String apointee); 
     public void leaveRole(UserRoleVisitor userRoleVisitor,int storeId,Member member,UserFacade userFacade);
     void sendRequest(UserFacade userFacade,String senderName,String sentName,String reqType);
     String getApointee();

@@ -20,7 +20,7 @@ public class UserRoleVisitor {
     logger.info("finished visit Store owner");
   }
   public void visitStoreFounder(StoreFounder role, int storeId,Member member) {
-    logger.error("visit Store founder");
+    logger.error("try remove role from Store founder");
     throw new IllegalStateException("owner cant leave the job");
   }
 
