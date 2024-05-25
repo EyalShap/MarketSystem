@@ -222,6 +222,7 @@ public class Store {
                     if (item.getAmount() > productAmounts.get(item.getProductId()))
                         error = String.format("You can not buy %d of product %d - there are only %d in stock.\n",
                                 item.getAmount(), item.getProductId(), productAmounts.get(item.getProductId()));
+
                 }
                 return error;
             }

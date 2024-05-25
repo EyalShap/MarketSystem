@@ -1,12 +1,8 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -422,6 +418,7 @@ public class StoreFacade {
     }
 
     public void checkCart(String username, List<CartItemDTO> cart) {
+
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         String error = "";
         for (int storeId : cartByStore.keySet()) {
@@ -440,10 +437,12 @@ public class StoreFacade {
         if (!error.equals("")) {
             throw new Error(error);
         }
+
     }
 
     public synchronized void buyCart(String username, List<CartItemDTO> cart) {
         checkCart(username, cart);
+
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
             Store store = storeRepository.findStoreByID(storeId);

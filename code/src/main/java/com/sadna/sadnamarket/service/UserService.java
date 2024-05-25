@@ -1,9 +1,15 @@
 package com.sadna.sadnamarket.service;
 
+import java.util.List;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.auth.IAuthRepository;
+import com.sadna.sadnamarket.domain.orders.IOrderRepository;
+import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
+import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.IUserRepository;
@@ -17,12 +23,17 @@ public class UserService {
     private UserFacade userFacade;
     private IUserRepository iUserRepository;
     private StoreFacade storeFacade;
+    private IOrderRepository iOrderRepository;
+    private OrderFacade orderFacade;
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     public UserService(IStoreRepository storeRepository){
         iAuthRepository=new AuthRepositoryMemoryImpl();
         iUserRepository=new MemoryRepo();
         this.storeFacade = new StoreFacade(storeRepository);
-        userFacade=new UserFacade(iUserRepository,storeFacade);
+        this.iOrderRepository=new MemoryOrderRepository();
+        this.orderFacade=new OrderFacade(iOrderRepository);
+        userFacade=new UserFacade(iUserRepository,storeFacade,orderFacade);
         authFacade=new AuthFacade(iAuthRepository,userFacade);
     }
 
@@ -196,8 +207,8 @@ public class UserService {
     }
     public Response getOrderHistory(String username) {
         try {
-            //List<OrderDTO> orders=userFacade.getUserOrders(username);
-            return Response.createResponse();
+            List<String> orders=userFacade.getUserOrders(username);
+            return Response.createResponse(false,objectMapper.writeValueAsString(orders));
         } catch (Exception e) { 
             return Response.createResponse(true, e.getMessage());
        
