@@ -1,10 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -282,14 +279,7 @@ public class StoreFacade {
      * }
      */
 
-    private OrderDTO getOrder(int storeId, int orderId) {
-        List<OrderDTO> orders = orderFacade.getOrders(storeId);
-        for (OrderDTO order : orders) {
-            if (order.getOrderId() == orderId)
-                return order;
-        }
-        throw new IllegalArgumentException(String.format("There is no order with id %d.", orderId));
-    }
+
 
     public String getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
         if (!storeRepository.findStoreByID(storeId).isStoreOwner(username))
@@ -300,7 +290,7 @@ public class StoreFacade {
         int orderIndex = 1;
 
         for (int orderId : storeRepository.findStoreByID(storeId).getOrderIds()) {
-            OrderDTO order = getOrder(storeId, orderId);
+            OrderDTO order = orderFacade.getOrderByOrderId(orderId).get(storeId);
             orderHistory += "------------------------------------------------------------\n";
             orderHistory += getOrderInfo(order, orderIndex);
             orderHistory += getProductsInfo(order);
@@ -419,26 +409,21 @@ public class StoreFacade {
         return cartByStore;
     }
 
-    private boolean checkCart(String username, List<CartItemDTO> cart) {
+    private void checkCart(String username, List<CartItemDTO> cart) {
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
 
         for (int storeId : cartByStore.keySet()) {
             Store store = storeRepository.findStoreByID(storeId);
             synchronized (store) {
-                if (!store.checkCart(cartByStore.get(storeId)))
-                    return false;
-                if (!buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username)) {
-                    return false;
-                }
+                store.checkCart(cartByStore.get(storeId));
+                buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username);
             }
         }
 
-        return true;
     }
 
     public synchronized void buyCart(String username, List<CartItemDTO> cart) {
-        if (!checkCart(username, cart))
-            throw new IllegalArgumentException(String.format("User %s is unable to buy this cart.", username));
+        checkCart(username, cart);
 
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
