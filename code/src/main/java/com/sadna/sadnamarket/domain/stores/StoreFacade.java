@@ -1,10 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -419,26 +416,21 @@ public class StoreFacade {
         return cartByStore;
     }
 
-    private boolean checkCart(String username, List<CartItemDTO> cart) {
+    private void checkCart(String username, List<CartItemDTO> cart) {
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
 
         for (int storeId : cartByStore.keySet()) {
             Store store = storeRepository.findStoreByID(storeId);
             synchronized (store) {
-                if (!store.checkCart(cartByStore.get(storeId)))
-                    return false;
-                if (!buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username)) {
-                    return false;
-                }
+                store.checkCart(cartByStore.get(storeId));
+                buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username);
             }
         }
 
-        return true;
     }
 
     public synchronized void buyCart(String username, List<CartItemDTO> cart) {
-        if (!checkCart(username, cart))
-            throw new IllegalArgumentException(String.format("User %s is unable to buy this cart.", username));
+        checkCart(username, cart);
 
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
