@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class OrderDTO {
     private String memberName;
-    // private int orderId;
+    //private int orderId;
     private String storeNameWhenOrdered;
     private Map<Integer, Integer> productAmounts;
     private Map<Integer, String> orderProductsJsons;
@@ -49,8 +49,8 @@ public class OrderDTO {
     }
 
     //public int getOrderId() {
-//        return orderId;
-//    }
+      //  return orderId;
+    //}
 
     public String getStoreNameWhenOrdered() {
         return storeNameWhenOrdered;

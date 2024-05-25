@@ -214,8 +214,12 @@ public class Store {
         synchronized (productAmounts) {
             synchronized (lock) {
                 for (CartItemDTO item : cart) {
-                    if (!isActive || !productExists(item.getProductId())
-                            || item.getAmount() > productAmounts.get(item.getProductId()))
+                    if (!isActive)
+                        throw new IllegalArgumentException(String.format("Store %d is closed.", storeId));
+                    if(!productExists(item.getProductId()))
+                        throw new IllegalArgumentException(String.format("Product %d does not exist in store %d.", item.getProductId(), storeId));
+                    if(item.getAmount() > productAmounts.get(item.getProductId()))
+                        throw new IllegalArgumentException(String.format("You can not buy %d of product %d - there are only %d in stock.", item.getAmount(), item.getProductId(), productAmounts.get(item.getProductId())));
                         return false;
                 }
                 return true;
