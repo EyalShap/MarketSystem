@@ -5,30 +5,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.PaymentInterface;
+import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.domain.supply.SupplyInterface;
+import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
-class StoreOwnerTests {
+class ConcurrencyTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     MarketServiceTestAdapter bridge;
 
-    String username;
-    String token;
+    String ownerUsername;
+    String ownerToken;
     int storeId;
     String maliciousUsername;
     String maliciousToken;
@@ -36,12 +40,12 @@ class StoreOwnerTests {
     @BeforeEach
     void clean(){
         bridge.reset();
-        username = "StoreOwnerMan";
+        ownerUsername = "StoreOwnerMan";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "storeowner@store.com", username, "imaginaryPassowrd");
-        token = resp.getDataJson();
-        resp = bridge.openStore(token, username, "Store's Store");
+        resp = bridge.signUp(uuid, "storeowner@store.com", ownerUsername, "imaginaryPassowrd");
+        ownerToken = resp.getDataJson();
+        resp = bridge.openStore(ownerToken, ownerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
@@ -51,511 +55,144 @@ class StoreOwnerTests {
     }
 
     @Test
-    void addProductTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
-        Assertions.assertFalse(resp.getError());
-        String productIdString = resp.getDataJson();
-        Assertions.assertDoesNotThrow(() -> Integer.parseInt(productIdString));
-        int productId = Integer.parseInt(productIdString);
-        try {
-            resp = bridge.getProductData(token, username, productId);
-            Assertions.assertFalse(resp.getError());
-        }catch (Exception e){
+    void twoBuyLastProductTest(){
+        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
+        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
+        PaymentService.getInstance().setController(paymentMock);
+        SupplyService.getInstance().setController(supplyMock);
+        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
+        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
+        Mockito.when(paymentMock.pay(Mockito.anyDouble(),Mockito.any(), Mockito.any())).thenReturn(true);
 
-        }
-    }
-
-    @Test
-    void addProductBadInfoTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "", -100.0,"cat"));
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void addProductNoPermissionTest(){
-        Response resp = bridge.addProductToStore(maliciousToken, maliciousUsername, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void editProductTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
+        Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
+                new ProductDTO(-1, "TestProduct", 100.3, "Product"));
         int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, null, 200.0,null));
-        Assertions.assertFalse(resp.getError());
-        try {
-            resp = bridge.getProductData(token, username, productId);
-            Assertions.assertFalse(resp.getError());
-            ProductDTO productDTO = objectMapper.readValue(resp.getDataJson(), ProductDTO.class);
-            Assertions.assertEquals(200.0,productDTO.getProductPrice());
-            resp = bridge.setStoreProductAmount(token, username, storeId, productId, 1);
-            Assertions.assertFalse(resp.getError());
-            resp = bridge.getStoreProductAmount(storeId, productId);
-            Assertions.assertEquals("1", resp.getDataJson());
-        }catch (Exception e){
-        }
-    }
-
-    @Test
-    void editProductBadInfoTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, null, -200.0,null));
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void editProductDoesntExistTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.editStoreProduct(token, username, storeId, Integer.MAX_VALUE, new ProductDTO(-1, null, -200.0,null));
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void editProductWrongStoreTest(){
-        Response resp = bridge.openStore(token, username, "New Store");
-        int newStoreId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.addProductToStore(token, username, newStoreId, new ProductDTO(-1, "product", 100.0,"cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, null, 200.0,null));
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void editProductNoPermissionTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.editStoreProduct(maliciousToken, maliciousUsername, storeId, productId, new ProductDTO(-1, null, 200.0,null));
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void removeProductTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.removeProductFromStore(token, username, storeId, productId);
-        Assertions.assertFalse(resp.getError());
-        try {
-            resp = bridge.getProductData(token, username, productId);
-            Assertions.assertTrue(resp.getError());
-        }catch (Exception e){
-        }
-    }
-    @Test
-    void removeProductDoesntExistTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.removeProductFromStore(token, username, storeId, Integer.MAX_VALUE);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void removeProductWrongStoreTest(){
-        Response resp = bridge.openStore(token, username, "New Store");
-        int newStoreId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.addProductToStore(token, username, newStoreId, new ProductDTO(-1, "product", 100.0,"cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.removeProductFromStore(token, username, storeId, productId);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void removeProductNoPermissionTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.removeProductFromStore(maliciousToken, maliciousUsername, storeId, productId);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointOwnerTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.logout(apointeeToken);
-
-        resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
-        Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("true", resp.getDataJson());
-
-        resp = bridge.login(appointeeUsername, "password");
-        apointeeToken = resp.getDataJson();
-        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
-        Assertions.assertFalse(resp.getError());
-
-        resp = bridge.getIsOwner(token, username, storeId, appointeeUsername);
-        Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("true", resp.getDataJson());
-    }
-
-    @Test
-    void appointOwnerRejectTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.logout(apointeeToken);
-
-        resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
-        Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("true", resp.getDataJson());
-
-        resp = bridge.login(appointeeUsername, "password");
-        apointeeToken = resp.getDataJson();
-        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
-        Assertions.assertFalse(resp.getError());
-
-        resp = bridge.getIsOwner(token, username, storeId, appointeeUsername);
-        Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("false", resp.getDataJson());
-    }
-
-    @Test
-    void appointOwnerAlreadyOwnerTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.appointOwner(token, username, storeId, appointeeUsername);
-        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
-
-        resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointOwnerDoesntExistTest(){
-        Response resp = bridge.appointOwner(token, username, storeId, "Eric");
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointOwnerNoPermissionTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        resp = bridge.appointOwner(maliciousToken, maliciousUsername, storeId, appointeeUsername);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointOwnerOriginalOwnerDoesntExistTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        resp = bridge.appointOwner("token that isn't real", "username that nobody has", storeId, appointeeUsername);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointManagerTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.logout(apointeeToken);
-
-        resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("true", resp.getDataJson());
-
-        resp = bridge.login(appointeeUsername, "password");
-        apointeeToken = resp.getDataJson();
-        resp = bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
-        Assertions.assertFalse(resp.getError());
-
-        resp = bridge.getIsManager(token, username, storeId, appointeeUsername);
-        Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("true", resp.getDataJson());
-    }
-
-    @Test
-    void appointManagerRejectTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.logout(apointeeToken);
-
-        resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("true", resp.getDataJson());
-
-        resp = bridge.login(appointeeUsername, "password");
-        apointeeToken = resp.getDataJson();
-        resp = bridge.rejectManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
-        Assertions.assertFalse(resp.getError());
-
-        resp = bridge.getIsManager(token, username, storeId, appointeeUsername);
-        Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("false", resp.getDataJson());
-    }
-
-    @Test
-    void appointManagerAlreadyManagerTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
-
-        resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointManagerAlreadyOwnerTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.appointOwner(token, username, storeId, appointeeUsername);
-        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
-
-        resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointManagerDoesntExistTest(){
-        Response resp = bridge.appointManager(token, username, storeId, "Eric", new LinkedList<>());
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointManagerNoPermissionTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        resp = bridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername, new LinkedList<>());
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void appointManagerOwnerDoesntExistTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        resp = bridge.appointManager("token that isn't real", "username that nobody has", storeId, appointeeUsername, new LinkedList<>());
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void changeManagerPermissionsTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
-        List<Integer> newPerms = new LinkedList<>();
-        newPerms.add(0);
-        resp = bridge.changeManagerPermissions(token, username, appointeeUsername, storeId, newPerms);
-        Assertions.assertFalse(resp.getError());
-        try {
-            resp = bridge.getManagerPermissions(token, username, storeId, appointeeUsername);
-            List<Integer> perms = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<Integer>>() { });
-            Assertions.assertEquals(1, perms.size());
-            Assertions.assertEquals(0, perms.get(0));
-        }catch (Exception e){
-
-        }
-    }
-
-    @Test
-    void changeManagerPermissionsNotOwnerTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
-        List<Integer> newPerms = new LinkedList<>();
-        newPerms.add(0);
-        resp = bridge.changeManagerPermissions(maliciousToken, maliciousUsername, appointeeUsername, storeId, newPerms);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void changeManagerPermissionsNotManagerTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        List<Integer> newPerms = new LinkedList<>();
-        newPerms.add(0);
-        resp = bridge.changeManagerPermissions(token, username, appointeeUsername, storeId, newPerms);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void closeStoreTest(){
-        Response resp = bridge.closeStore(token, username, storeId);
-        Assertions.assertFalse(resp.getError());
-    }
-
-    @Test
-    void closeStoreDoesntExistTest(){
-        Response resp = bridge.closeStore(token, username, Integer.MAX_VALUE);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void closeStoreNotOwnerTest(){
-        Response resp = bridge.closeStore(maliciousToken, maliciousUsername, storeId);
-        Assertions.assertTrue(resp.getError());
-    }
-
-    @Test
-    void getStoreRoleTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
-
-        try {
-            resp = bridge.getStoreOwners(token, username, storeId);
-            List<MemberDTO> owners = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<MemberDTO>>() { });
-            Assertions.assertEquals(1, owners.size());
-            Assertions.assertEquals(username, owners.get(0).getUsername());
-
-            resp = bridge.getStoreManagers(token, username, storeId);
-            List<MemberDTO> managers = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<MemberDTO>>() { });
-            Assertions.assertEquals(1, managers.size());
-            Assertions.assertEquals(appointeeUsername, managers.get(0).getUsername());
-        }catch (Exception e){
-
-        }
-    }
-
-    @Test
-    void getStoreRoleDoesntExistTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
-
-        try {
-            resp = bridge.getStoreOwners(token, username, Integer.MAX_VALUE);
-            Assertions.assertTrue(resp.getError());
-
-            resp = bridge.getStoreManagers(token, username, Integer.MAX_VALUE);
-            Assertions.assertTrue(resp.getError());
-        }catch (Exception e){
-
-        }
-    }
-
-    @Test
-    void getStoreRoleNotOwnerTest(){
-        String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
-        String apointeeToken = resp.getDataJson();
-        bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
-
-        try {
-            resp = bridge.getStoreOwners(maliciousToken, maliciousUsername, Integer.MAX_VALUE);
-            Assertions.assertTrue(resp.getError());
-
-            resp = bridge.getStoreManagers(maliciousToken, maliciousUsername, Integer.MAX_VALUE);
-            Assertions.assertTrue(resp.getError());
-        }catch (Exception e){
-
-        }
-    }
-
-    @Test
-    void seeStoreOrderHistoryTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreProductAmount(token, username, storeId, productId, 10);
+        bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 1);
         resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
-        bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
-                new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                        "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
-        try {
-            resp = bridge.getStorePurchaseHistory(token, username, storeId);
-            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() { });
-            Assertions.assertEquals(1, history.size());
-        }catch (Exception e){
-
-        }
-    }
-
-    @Test
-    void seeStoreOrderHistoryNeverPurchaseTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreProductAmount(token, username, storeId, productId, 10);
-        try {
-            resp = bridge.getStorePurchaseHistory(token, username, storeId);
-            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() { });
-            Assertions.assertEquals(0, history.size());
-        }catch (Exception e){
-
-        }
-    }
-
-    @Test
-    void seeStoreOrderHistoryNoOwnerTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
-        int productId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreProductAmount(token, username, storeId, productId, 10);
+        String uuid1 = resp.getDataJson();
         resp = bridge.guestEnterSystem();
-        String uuid = resp.getDataJson();
-        bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
-        bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
-                new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                        "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
-        try {
-            resp = bridge.getStorePurchaseHistory(maliciousToken, maliciousUsername, storeId);
-            Assertions.assertTrue(resp.getError());
+        String uuid2 = resp.getDataJson();
+        try{
+            bridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
+            bridge.addProductToBasketGuest(uuid2, storeId, productId, 1);
+            Thread t1 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bridge.buyCartGuest(uuid1, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
+                            new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
+                                    "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                }
+            });
+            Thread t2 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bridge.buyCartGuest(uuid2, new CreditCardDTO("4580458045804580", "852", new Date(1930297600), "213958804"),
+                            new AddressDTO("Israel", "Kfar Shmaryahu", "Jabotinsky 39", "Apartment 13", "1234567", "Bob Bobby",
+                                    "+97255-123-4569", "bobbobby@gmail.com", "213958804"));
+                }
+            });
+            t1.run();
+            t2.run();
+            t1.join();
+            t2.join();
+            Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "0");
         }catch (Exception e){
 
         }
     }
 
     @Test
-    void seeStoreOrderHistoryDoesntExistTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
+    void costumerBuyRemovedProductTest(){
+        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
+        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
+        PaymentService.getInstance().setController(paymentMock);
+        SupplyService.getInstance().setController(supplyMock);
+        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
+        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
+        Mockito.when(paymentMock.pay(Mockito.anyDouble(),Mockito.any(), Mockito.any())).thenReturn(true);
+
+        Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
+                new ProductDTO(-1, "TestProduct", 100.3, "Product"));
         int productId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreProductAmount(token, username, storeId, productId, 10);
+        bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 5);
         resp = bridge.guestEnterSystem();
+        String uuid1 = resp.getDataJson();
+        final int[] succeeded = new int[1];
+        succeeded[0] = 0;
+        try{
+            Thread t1 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
+                    Response resp = bridge.buyCartGuest(uuid1, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
+                            new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
+                                    "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                    if(!resp.getError()){
+                        succeeded[0]++;
+                    }
+                }
+            });
+            Thread t2 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Response resp = bridge.removeProductFromStore(ownerToken, ownerUsername,storeId,productId);
+                    if(!resp.getError()){
+                        succeeded[0]++;
+                    }
+                }
+            });
+            t1.run();
+            t2.run();
+            t1.join();
+            t2.join();
+            Assertions.assertNotEquals(2, succeeded[0]);
+        }catch (Exception e){
+
+        }
+    }
+
+    @Test
+    void twoAppointManagerSameUser(){
+        //make mallory an owner so we have 2 owners to make this test
+        bridge.appointOwner(ownerToken, ownerUsername, storeId, maliciousUsername);
+        bridge.acceptOwnerAppointment(maliciousToken, maliciousUsername, storeId, ownerUsername);
+
+        String appointeeUsername = "Eric";
+        Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
-        bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
-                new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                        "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
-        try {
-            resp = bridge.getStorePurchaseHistory("nopety nope nope", "doesnt exist", storeId);
-            Assertions.assertTrue(resp.getError());
+        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        String apointeeToken = resp.getDataJson();
+
+        try{
+            final int[] succeeded = new int[1];
+            succeeded[0] = 0;
+            Thread t1 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Response resp = bridge.appointManager(ownerToken, ownerUsername, storeId, appointeeUsername, new LinkedList<>());
+                    if(!resp.getError()){
+                        succeeded[0]++;
+                    }
+                }
+            });
+            Thread t2 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Response resp = bridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername, new LinkedList<>());
+                    if(!resp.getError()){
+                        succeeded[0]++;
+                    }
+                }
+            });
+            t1.run();
+            t2.run();
+            t1.join();
+            t2.join();
+            Assertions.assertNotEquals(2, succeeded[0]);
+            bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, ""); //it is my understanding that "appointerUsername" field isn't actually used
+            Assertions.assertEquals("true", bridge.getIsManager(ownerToken, ownerUsername, storeId, appointeeUsername).getDataJson());
         }catch (Exception e){
 
         }

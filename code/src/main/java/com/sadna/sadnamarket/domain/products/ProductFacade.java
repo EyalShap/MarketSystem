@@ -1,9 +1,6 @@
 package com.sadna.sadnamarket.domain.products;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProductFacade {
     private static ProductFacade instance;
@@ -182,6 +179,10 @@ public class ProductFacade {
             }
         }
         return result.toString();
+    }
+    public List<ProductDTO> getFilteredProducts(List<Integer> storeProductIds, String category,
+                                                double price, double minProductRank, int variableThatDanaSetToMinusOne){
+        return new LinkedList<>();
     }
     //
     // public static void main(String[] args) {

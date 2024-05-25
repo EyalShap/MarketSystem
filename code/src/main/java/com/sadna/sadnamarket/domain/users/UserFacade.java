@@ -71,7 +71,7 @@ public class UserFacade {
         return false;
     }
 
-    private boolean isExist(String userName){
+    public boolean isExist(String userName){
         logger.info("check if member exist {}",userName);
         return iUserRepo.hasMember(userName);
     }

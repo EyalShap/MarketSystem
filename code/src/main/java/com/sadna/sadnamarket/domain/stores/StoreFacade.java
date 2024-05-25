@@ -436,5 +436,4 @@ public class StoreFacade {
     public StoreInfo getStoreInfo(int storeId) {
         return storeRepository.findStoreByID(storeId).getStoreInfo();
     }
-
 }
