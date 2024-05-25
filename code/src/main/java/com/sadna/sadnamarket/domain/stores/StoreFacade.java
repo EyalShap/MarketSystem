@@ -279,14 +279,7 @@ public class StoreFacade {
      * }
      */
 
-    private OrderDTO getOrder(int storeId, int orderId) {
-        List<OrderDTO> orders = orderFacade.getOrders(storeId);
-        for (OrderDTO order : orders) {
-            if (order.getOrderId() == orderId)
-                return order;
-        }
-        throw new IllegalArgumentException(String.format("There is no order with id %d.", orderId));
-    }
+
 
     public String getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
         if (!storeRepository.findStoreByID(storeId).isStoreOwner(username))
@@ -297,7 +290,7 @@ public class StoreFacade {
         int orderIndex = 1;
 
         for (int orderId : storeRepository.findStoreByID(storeId).getOrderIds()) {
-            OrderDTO order = getOrder(storeId, orderId);
+            OrderDTO order = orderFacade.getOrderByOrderId(orderId).get(storeId);
             orderHistory += "------------------------------------------------------------\n";
             orderHistory += getOrderInfo(order, orderIndex);
             orderHistory += getProductsInfo(order);
