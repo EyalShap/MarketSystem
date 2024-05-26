@@ -264,6 +264,13 @@ public class UserFacade {
         logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
     }
 
+    public List<Permission> getManagerPermissions(String actorUsername,String userName, int storeId){
+        logger.info("{} got permissions of {} in store {}",actorUsername, userName, storeId);
+        Member member=iUserRepo.getMember(userName);
+        logger.info("{} got permissions of {} in store {}",actorUsername, userName, storeId);
+        return member.getPermissions(storeId);
+    }
+
     public void leaveRole(String username,int storeId){
         logger.info("{} try leave role in store {}",username,storeId);
         Member member=iUserRepo.getMember(username);
@@ -390,6 +397,7 @@ public class UserFacade {
             }
         }
         return sum;
+
     }
 
     public UserOrderDTO viewCart(String username){

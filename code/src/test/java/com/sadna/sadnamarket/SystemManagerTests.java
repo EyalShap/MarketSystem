@@ -8,6 +8,7 @@ import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,7 @@ class SystemManagerTests {
         String storeOwnerToken = resp.getDataJson();
         resp = bridge.openStore(storeOwnerToken, storeOwnerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
+        bridge.setStoreBankAccount(storeOwnerToken, storeOwnerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         buyerUsername = "Billy";
@@ -52,6 +54,8 @@ class SystemManagerTests {
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(storeOwnerToken, storeOwnerUsername, storeId, productId, 10);
         bridge.addProductToBasketMember(buyerToken, buyerUsername, storeId, productId, 5);
+        bridge.memberSetAddress(buyerToken, buyerUsername, new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
+        "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
         bridge.buyCartMember(buyerToken, buyerUsername, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"));
 
         resp = bridge.guestEnterSystem();

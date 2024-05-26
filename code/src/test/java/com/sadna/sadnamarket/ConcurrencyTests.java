@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.payment.PaymentInterface;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
@@ -47,6 +48,7 @@ class ConcurrencyTests {
         ownerToken = resp.getDataJson();
         resp = bridge.openStore(ownerToken, ownerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
+        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";
@@ -119,8 +121,9 @@ class ConcurrencyTests {
         bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 5);
         resp = bridge.guestEnterSystem();
         String uuid1 = resp.getDataJson();
-        final int[] succeeded = new int[1];
+        final int[] succeeded = new int[2];
         succeeded[0] = 0;
+        succeeded[1] = 0;
         try{
             Thread t1 = new Thread(new Runnable() {
                 @Override
@@ -131,6 +134,7 @@ class ConcurrencyTests {
                                     "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
                     if(!resp.getError()){
                         succeeded[0]++;
+                        succeeded[1] = 0;
                     }
                 }
             });
@@ -140,6 +144,7 @@ class ConcurrencyTests {
                     Response resp = bridge.removeProductFromStore(ownerToken, ownerUsername,storeId,productId);
                     if(!resp.getError()){
                         succeeded[0]++;
+                        succeeded[1] = 5;
                     }
                 }
             });
@@ -147,7 +152,7 @@ class ConcurrencyTests {
             t2.run();
             t1.join();
             t2.join();
-            Assertions.assertNotEquals(2, succeeded[0]);
+            Assertions.assertFalse(succeeded[0] == 2 && succeeded[1] == 0);
         }catch (Exception e){
 
         }

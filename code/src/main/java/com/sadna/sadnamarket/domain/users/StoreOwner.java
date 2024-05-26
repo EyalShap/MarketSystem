@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class StoreOwner implements UserRole {
@@ -87,6 +88,11 @@ public class StoreOwner implements UserRole {
     public void removePermission(Permission permission) {
         logger.error("Exception in removePermission: can't remove permissions from a store owner");
         throw new IllegalStateException("can't remove permissions from a store owner");
+    }
+
+    @Override
+    public List<Permission> getPermissions() {
+        return new LinkedList<>();
     }
 
     @Override
