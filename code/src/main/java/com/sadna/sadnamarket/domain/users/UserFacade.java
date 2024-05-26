@@ -501,7 +501,7 @@ public class UserFacade {
             }
             Map<Integer,List<ProductDataPrice>> productAmounts=new HashMap<>();
             productAmounts.put(storeId, productList);
-            int orderId=orderFacade.createOrder(productAmounts,null);
+            int orderId=orderFacade.createOrder(productAmounts,username);
             iUserRepo.getMember(username).addOrder(orderId);
         }
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
