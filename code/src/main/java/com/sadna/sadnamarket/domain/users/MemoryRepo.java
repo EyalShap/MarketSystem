@@ -106,7 +106,7 @@ public class MemoryRepo implements IUserRepository {
     }
 
     @Override
-    public List<CartItemDTO> getUserCart(int guestID) {
+    public List<CartItemDTO> getGuestCart(int guestID) {
         logger.info("getting guest cart for {}",guestID);
         List<CartItemDTO> cartItemDTOs=getGuest(guestID).getCartItems();
         logger.info("got guest cart for {}: {}",guestID,cartItemDTOs);

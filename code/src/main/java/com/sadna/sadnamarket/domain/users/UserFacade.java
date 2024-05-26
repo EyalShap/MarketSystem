@@ -8,9 +8,15 @@ import java.util.NoSuchElementException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
+import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
+import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.domain.supply.OrderDetailsDTO;
+import com.sadna.sadnamarket.domain.supply.SupplyService;
 
 
 
@@ -59,7 +65,7 @@ public class UserFacade {
         List<Notification> notifes = new ArrayList<>(iUserRepo.getMember(username).getNotifications().values());
         List<NotificationDTO> notificationDTOs=new ArrayList<NotificationDTO>();
         for(Notification notif : notifes){
-            notificationDTOs.add(new NotificationDTO(notif));
+            notificationDTOs.add(notif.toDTO());
         }
         logger.info("got notifications for {}",username);
         return notificationDTOs;
@@ -178,6 +184,13 @@ public class UserFacade {
         logger.info("{} accepted request id: {}",acceptingName,requestID);
     }
 
+    public void reject(String rejectingName,int requestID){
+        logger.info("{} reject request id: {}",rejectingName,requestID);
+        Member rejecting=getMember(rejectingName);
+        rejecting.accept(requestID);
+        logger.info("{} rejected request id: {}",rejectingName,requestID);
+
+    }
 
     public void login(String userName,String password, int guestId){//the cart of the guest
         logger.info("{} login from guest {}",userName,guestId);
@@ -357,35 +370,103 @@ public class UserFacade {
         }
         return ordersString;
     }
-    public void viewCart(String username){
+
+    private double calculateFinalPrice(String username,List<CartItemDTO> items){
+        double sum=0;
+        Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);
+        for(List<ProductDataPrice> price: storeApriceData.values()){
+            for(ProductDataPrice prod: price){
+                sum=+prod.getNewPrice();
+            }
+        }
+        return sum;
+    }
+    private double calculateOldPrice(String username,List<CartItemDTO> items){
+        double sum=0;
+        Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);
+        for(List<ProductDataPrice> price: storeApriceData.values()){
+            for(ProductDataPrice prod: price){
+                sum=+prod.getOldPrice();
+            }
+        }
+        return sum;
+    }
+
+    public UserOrderDTO viewCart(String username){
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
-        // call check validation from store
-        // getPrice before and after discount
+        storeFacade.checkCart(username, items);
+        Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);
+        List<ProductDataPrice> allProudctsData=new ArrayList<ProductDataPrice>();
+        for(List<ProductDataPrice> price: storeApriceData.values()){
+            for(ProductDataPrice prod: price){
+                allProudctsData.add(prod);
+            }
+        }
+        return new UserOrderDTO(allProudctsData,calculateOldPrice(username, items),calculateFinalPrice(username, items));
+        
     }
-    public void viewCart(int guestId){
-        List<CartItemDTO> items=iUserRepo.getUserCart(guestId);
-        // call check validation from store
-        // getPrice before and after discount
+    public UserOrderDTO viewCart(int guestId){
+        List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
+        storeFacade.checkCart(null, items);
+        Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(null, items);
+        List<ProductDataPrice> allProudctsData=new ArrayList<ProductDataPrice>();
+        for(List<ProductDataPrice> price: storeApriceData.values()){
+            for(ProductDataPrice prod: price){
+                allProudctsData.add(prod);
+            }
+        }
+        return new UserOrderDTO(allProudctsData,calculateOldPrice(null, items),calculateFinalPrice(null, items));
+
+        
     }
-    public void purchaseCart(String username){
-        // call check validation from store
-        // getPrice before and after discount
+    public void purchaseCart(String username,CreditCardDTO creditCard,String country, String city, String addressLine1, String addressLine2, String zipCode, String ordererName, String contactPhone, String contactEmail){
+        List<CartItemDTO> items=iUserRepo.getUserCart(username);
+        storeFacade.checkCart(username, items);
         // proxy payment
+        PaymentService payment = PaymentService.getInstance();
+        payment.checkCardValid(creditCard);
         // update quantities
+        storeFacade.buyCart(username, items);
         // create new order 
+        Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(username, items);
+        //orderFacade.createOrder(storeBag);
+        SupplyService supply=SupplyService.getInstance();
+        UserOrderDTO order= viewCart(username);
+        List<ProductDataPrice> productList= order.getProductsData();
+        Map<Integer,Integer> productAmount=new HashMap<>();
+        for(ProductDataPrice product:productList){
+            productAmount.put(product.getId(),product.getAmount());
+        }
+        supply.makeOrder(new OrderDetailsDTO(productAmount), new AddressDTO( country,  city,  addressLine1,  addressLine2,  zipCode,  username,  contactPhone,  contactEmail));
+        
     }
-    public void purchaseCart(int guestId){
-        // call check validation from store
-        // getPrice before and after discount
-        // proxy payment
+
+
+    public void purchaseCart(int guestId,CreditCardDTO creditCard,String country, String city, String addressLine1, String addressLine2, String zipCode, String ordererName, String contactPhone, String contactEmail,String name){
+        List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
+        storeFacade.checkCart(null, items);
+         PaymentService payment = PaymentService.getInstance();
+        payment.checkCardValid(creditCard);
         // update quantities
+        storeFacade.buyCart(null, items);
         // create new order 
+        Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(null, items);
+        //orderFacade.createOrder(storeBag);
+        SupplyService supply=SupplyService.getInstance();
+        UserOrderDTO order= viewCart(guestId);
+        List<ProductDataPrice> productList= order.getProductsData();
+        Map<Integer,Integer> productAmount=new HashMap<>();
+        for(ProductDataPrice product:productList){
+            productAmount.put(product.getId(),product.getAmount());
+        }
+        supply.makeOrder(new OrderDetailsDTO(productAmount), new AddressDTO( country,  city,  addressLine1,  addressLine2,  zipCode,  name,  contactPhone,  contactEmail));
+        
     }
 
     //only for tests
     public List<CartItemDTO> getCartItems(int guest_id){
         logger.info("get guest cart");
-        return iUserRepo.getUserCart(guest_id);
+        return iUserRepo.getGuestCart(guest_id);
     }
 
 }
