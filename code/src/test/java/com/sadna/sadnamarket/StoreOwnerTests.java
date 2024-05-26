@@ -185,7 +185,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, 1);
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsOwner(token, username, storeId, appointeeUsername);
@@ -224,7 +224,7 @@ class StoreOwnerTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointOwner(token, username, storeId, appointeeUsername);
-        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, 1);
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
@@ -271,7 +271,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        resp = bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsManager(token, username, storeId, appointeeUsername);
@@ -310,7 +310,7 @@ class StoreOwnerTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertTrue(resp.getError());
@@ -324,7 +324,7 @@ class StoreOwnerTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointOwner(token, username, storeId, appointeeUsername);
-        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, 1);
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertTrue(resp.getError());
@@ -364,16 +364,16 @@ class StoreOwnerTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
         List<Integer> newPerms = new LinkedList<>();
-        newPerms.add(0);
+        newPerms.add(1);
         resp = bridge.changeManagerPermissions(token, username, appointeeUsername, storeId, newPerms);
         Assertions.assertFalse(resp.getError());
         try {
             resp = bridge.getManagerPermissions(token, username, storeId, appointeeUsername);
             List<Integer> perms = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<Integer>>() { });
             Assertions.assertEquals(1, perms.size());
-            Assertions.assertEquals(0, perms.get(0));
+            Assertions.assertEquals(1, perms.get(0));
         }catch (Exception e){
 
         }
@@ -387,9 +387,9 @@ class StoreOwnerTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
         List<Integer> newPerms = new LinkedList<>();
-        newPerms.add(0);
+        newPerms.add(1);
         resp = bridge.changeManagerPermissions(maliciousToken, maliciousUsername, appointeeUsername, storeId, newPerms);
         Assertions.assertTrue(resp.getError());
     }
@@ -401,7 +401,7 @@ class StoreOwnerTests {
         String uuid = resp.getDataJson();
         bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         List<Integer> newPerms = new LinkedList<>();
-        newPerms.add(0);
+        newPerms.add(1);
         resp = bridge.changeManagerPermissions(token, username, appointeeUsername, storeId, newPerms);
         Assertions.assertTrue(resp.getError());
     }
@@ -432,7 +432,7 @@ class StoreOwnerTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
 
         try {
             resp = bridge.getStoreOwners(token, username, storeId);
@@ -457,7 +457,7 @@ class StoreOwnerTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
 
         try {
             resp = bridge.getStoreOwners(token, username, Integer.MAX_VALUE);
@@ -478,7 +478,7 @@ class StoreOwnerTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
 
         try {
             resp = bridge.getStoreOwners(maliciousToken, maliciousUsername, Integer.MAX_VALUE);

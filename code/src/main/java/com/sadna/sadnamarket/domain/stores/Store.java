@@ -144,6 +144,10 @@ public class Store {
         return productAmounts.containsKey(productId);
     }
 
+    public boolean hasProductInAmount(int productId, int amount) {
+        return productAmounts.containsKey(productId) && amount <= productAmounts.get(productId);
+    }
+
     public boolean isStoreOwner(String username) {
         return ownerUsernames.contains(username);
     }

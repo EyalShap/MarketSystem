@@ -162,7 +162,7 @@ class ConcurrencyTests {
     void twoAppointManagerSameUser(){
         //make mallory an owner so we have 2 owners to make this test
         bridge.appointOwner(ownerToken, ownerUsername, storeId, maliciousUsername);
-        bridge.acceptOwnerAppointment(maliciousToken, maliciousUsername, storeId, ownerUsername);
+        bridge.acceptOwnerAppointment(maliciousToken, maliciousUsername, storeId, 1);
 
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
@@ -196,7 +196,7 @@ class ConcurrencyTests {
             t1.join();
             t2.join();
             Assertions.assertNotEquals(2, succeeded[0]);
-            bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, ""); //it is my understanding that "appointerUsername" field isn't actually used
+            bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1); //it is my understanding that "appointerUsername" field isn't actually used
             Assertions.assertEquals("true", bridge.getIsManager(ownerToken, ownerUsername, storeId, appointeeUsername).getDataJson());
         }catch (Exception e){
 
