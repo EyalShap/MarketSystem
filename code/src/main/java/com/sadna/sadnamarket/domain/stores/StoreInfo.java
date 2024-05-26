@@ -32,7 +32,7 @@ public class StoreInfo {
             throw new IllegalArgumentException(String.format("%s is not a valid store name.", storeName));
         if(address == null || address.trim().equals(""))
             throw new IllegalArgumentException(String.format("%s is not a valid address.", address));
-        if(email == null || email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"))
+        if(email == null || !email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"))
             throw new IllegalArgumentException(String.format("%s is not a valid email address.", email));
         if(phoneNumber == null || phoneNumber.matches("^\\d{9}$"))
             throw new IllegalArgumentException(String.format("%s is not a valid phone number.", phoneNumber));

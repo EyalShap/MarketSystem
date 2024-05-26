@@ -65,6 +65,10 @@ public class MarketService {
         return instance;
     }
 
+    public static MarketService getNewInstance() {
+        return new MarketService(new MemoryStoreRepository());
+    }
+
     // ----------------------- Stores -----------------------
 
     private void checkToken(String token, String username) {
@@ -346,6 +350,23 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    public Response getManagerPermissions(String token, String currentOwnerUsername, String managerUsername, int storeId) {
+        try {
+            checkToken(token, currentOwnerUsername);
+            if(!storeFacade.getIsManager(currentOwnerUsername, storeId, managerUsername)){
+                logger.error("getManagerPermissions: User " + managerUsername + " isn't a manager");
+                return Response.createResponse(true, "User isn't a manager");
+            }
+            logger.info(String.format("User %s got permission of user %s in store %d", currentOwnerUsername, managerUsername, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(userFacade.getManagerPermissions(currentOwnerUsername, managerUsername, storeId)));
+        }
+        catch (Exception e) {
+            logger.error("getManagerPermissions: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response login(String username, String password){
         try{
             String token= authFacade.login(username, password);
@@ -392,6 +413,27 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    public Response memberExists(String username){
+        try{
+            boolean res = userFacade.isExist(username);
+            return Response.createResponse(false, String.valueOf(res));
+
+        }catch(Exception e){
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response authenticate(String token, String username){
+        try{
+            checkToken(token, username);
+            return Response.createResponse(false, "true");
+
+        }catch(Exception e){
+            return Response.createResponse(false, "false");
+        }
+    }
+
     public Response setFirstName(String username, String firstName) {
         try {
             userFacade.setFirstName(username, firstName);
@@ -522,6 +564,17 @@ public class MarketService {
        
         }
     }
+
+    public Response getOrderDTOHistory(String username) {
+        try {
+            List<OrderDTO> orders=userFacade.getUserOrderDTOs(username);
+            return Response.createResponse(false,objectMapper.writeValueAsString(orders));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+
+        }
+    }
+
     public Response viewCart(String username) {
         try {
             userFacade.viewCart(username);
@@ -558,7 +611,21 @@ public class MarketService {
        
         }
     }
+    public Response getIsOwner(String token, String username, int storeId, String ownerUsername) {
+        checkToken(token, username);
+        try {
+            return Response.createResponse(false, String.valueOf(storeFacade.getIsOwner(username, storeId, ownerUsername)));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 
-
-
+    public Response getIsManager(String token, String username, int storeId, String managerUsername) {
+        checkToken(token, username);
+        try {
+            return Response.createResponse(false, String.valueOf(storeFacade.getIsOwner(username, storeId, managerUsername)));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 
@@ -154,6 +155,18 @@ public class Member extends IUser {
         }
         logger.info("Exiting hasPermissionToRole with result=false");
         return false;
+    }
+
+    public List<Permission> getPermissions(int storeId) {
+        logger.info("Entering getPermissions with storeId={}", storeId);
+        List<Permission> permissions = new LinkedList<>();
+        for (UserRole role : getUserRoles()) {
+            if (role.getStoreId() == storeId) {
+                permissions.addAll(role.getPermissions());
+            }
+        }
+        logger.info("Exiting getPermissions");
+        return permissions;
     }
 
     public void removePermissionFromRole(Permission permission, int storeId) {

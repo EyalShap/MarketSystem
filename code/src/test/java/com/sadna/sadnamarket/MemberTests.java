@@ -45,21 +45,21 @@ class MemberTests {
     }
     @Test
     void memberLogoutTest() {
-        Response resp = bridge.logout(token);
+        Response resp = bridge.logout(username);
         Assertions.assertFalse(resp.getError());
         Assertions.assertEquals("true", resp.getDataJson());
     }
 
     @Test
     void memberLogoutDoesntExistTest() {
-        Response resp = bridge.logout("token that isn't very real");
+        Response resp = bridge.logout("username that isn't very real");
         Assertions.assertTrue(resp.getError());
     }
 
     @Test
     void memberLogoutTwiceTest() {
-        bridge.logout(token);
-        Response resp = bridge.logout(token);
+        bridge.logout(username);
+        Response resp = bridge.logout(username);
         Assertions.assertTrue(resp.getError());
     }
 

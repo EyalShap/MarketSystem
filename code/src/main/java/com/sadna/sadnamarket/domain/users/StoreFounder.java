@@ -3,6 +3,9 @@ package com.sadna.sadnamarket.domain.users;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class StoreFounder extends StoreOwner {
     private static final Logger logger = LogManager.getLogger(StoreFounder.class);
 
@@ -24,6 +27,11 @@ public class StoreFounder extends StoreOwner {
         logger.info("Entering leaveRole with userRoleVisitor={}, storeId={}, member={}, and userFacade={}", userRoleVisitor, storeId, member, userFacade);
         userRoleVisitor.visitStoreFounder(this, this.getStoreId(), member);
         logger.info("Exiting leaveRole");
+    }
+
+    @Override
+    public List<Permission> getPermissions() {
+        return new LinkedList<>();
     }
 
     @Override
