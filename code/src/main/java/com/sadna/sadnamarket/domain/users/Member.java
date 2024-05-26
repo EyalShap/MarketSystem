@@ -122,6 +122,11 @@ public class Member extends IUser {
         roles.add(role);
         logger.info("Exiting addRole");
     }
+    public void addOrder(int orderId) {
+        logger.info("Entering order id with order id={}", orderId);
+        orders.add(orderId);
+        logger.info("Exiting enter order");
+    }
 
     public void removeRole(UserRole role) {
         logger.info("Entering removeRole with role={}", role);

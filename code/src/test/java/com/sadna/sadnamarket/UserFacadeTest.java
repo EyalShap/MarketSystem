@@ -66,6 +66,7 @@ public class UserFacadeTest {
         when(storeFacade.createStore(anyString(), anyString(),  anyString(), anyString(), anyString(), any(), any())).thenReturn(2); // Return a predefined store ID 
         testStoreId2=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
         doNothing().when(storeFacade).addStoreOwner(anyString(), anyInt());
+        when(storeFacade.hasProductInStock(anyInt(), anyInt(), anyInt())).thenReturn(true);
 
     }
 

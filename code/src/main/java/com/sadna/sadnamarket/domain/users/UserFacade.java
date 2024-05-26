@@ -391,6 +391,7 @@ public class UserFacade {
     }
 
     public List<OrderDTO> getUserOrderDTOs(String username){
+        logger.info("get orders for {}",username);
         List<Integer> ordersIds=getMember(username).getOrdersHistory();
         List <OrderDTO> orders =new ArrayList<>();
         for (Integer orderId : ordersIds) {
@@ -399,11 +400,13 @@ public class UserFacade {
                 orders.add(ordersMap.get(store_id));
             }
         }
+        logger.info("finished get orders for {}",username);
         return orders;
     }
 
 
     private double calculateFinalPrice(String username,List<CartItemDTO> items){
+        logger.info("calculate final price for user {} with items {}",username,items);
         double sum=0;
         Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);
         for(List<ProductDataPrice> price: storeApriceData.values()){
@@ -411,9 +414,11 @@ public class UserFacade {
                 sum=+prod.getNewPrice();
             }
         }
+        logger.info("finished calculate final price for user {} with items {} and got {}",username,items, sum);
         return sum;
     }
     private double calculateOldPrice(String username,List<CartItemDTO> items){
+        logger.info("calculate old price for user {} with items {}",username,items);
         double sum=0;
         Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);
         for(List<ProductDataPrice> price: storeApriceData.values()){
@@ -421,11 +426,13 @@ public class UserFacade {
                 sum=+prod.getOldPrice();
             }
         }
+        logger.info("finished calculate old price for user {} with items {} and got {}",username,items, sum);
         return sum;
 
     }
 
     public UserOrderDTO viewCart(String username) throws Exception {
+        logger.info("view cart for user {}",username);
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         storeFacade.checkCart(username, items);
         Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);
@@ -435,6 +442,7 @@ public class UserFacade {
                 allProudctsData.add(prod);
             }
         }
+        logger.info("finished view cart for user {}",username);
         return new UserOrderDTO(allProudctsData,calculateOldPrice(username, items),calculateFinalPrice(username, items));
         
     }
@@ -453,6 +461,7 @@ public class UserFacade {
         
     }
     public void purchaseCart(String username,CreditCardDTO creditCard,AddressDTO addressDTO) throws Exception {
+        logger.info("purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         if(creditCard.getDigitsOnTheBack().isEmpty() || creditCard.getCreditCardNumber().isEmpty() || creditCard.getOwnerId().isEmpty()){
             throw new IllegalArgumentException("Missing card details");
@@ -470,7 +479,6 @@ public class UserFacade {
         storeFacade.buyCart(username, items);
         // create new order 
         Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(username, items);
-        //orderFacade.createOrder(storeBag);
         SupplyService supply=SupplyService.getInstance();
         UserOrderDTO order= viewCart(username);
         List<ProductDataPrice> productList= order.getProductsData();
@@ -491,11 +499,17 @@ public class UserFacade {
                 supply.cancelOrder(supplyString);
                 throw new IllegalStateException("Payment could not be completed for store " + storeId);
             }
+            Map<Integer,List<ProductDataPrice>> productAmounts=new HashMap<>();
+            productAmounts.put(storeId, productList);
+            int orderId=orderFacade.createOrder(productAmounts,null);
+            iUserRepo.getMember(username).addOrder(orderId);
         }
+        logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
     }
 
 
     public void purchaseCart(int guestId,CreditCardDTO creditCard,AddressDTO addressDTO) throws Exception {
+        logger.info("purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
         List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
         if(creditCard.getDigitsOnTheBack().isEmpty() || creditCard.getCreditCardNumber().isEmpty() || creditCard.getOwnerId().isEmpty()){
             throw new IllegalArgumentException("Missing card details");
@@ -510,7 +524,6 @@ public class UserFacade {
         storeFacade.buyCart(null, items);
         // create new order 
         Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(null, items);
-        //orderFacade.createOrder(storeBag);
         SupplyService supply=SupplyService.getInstance();
         UserOrderDTO order= viewCart(guestId);
         List<ProductDataPrice> productList= order.getProductsData();
@@ -531,7 +544,23 @@ public class UserFacade {
                 supply.cancelOrder(supplyString);
                 throw new IllegalStateException("Payment could not be completed for store " + storeId);
             }
+            Map<Integer,List<ProductDataPrice>> productAmounts=new HashMap<>();
+            productAmounts.put(storeId, productList);
+            orderFacade.createOrder(productAmounts,null);
         }
+        logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
+    }
+
+    public List<OrderDTO> getAllOrders(String username){
+        logger.info("get all orders for {}",username);
+        if(!isExist(username))
+            throw new NoSuchElementException("User doesnt exist in system");
+        if(!iUserRepo.getMember(username).isLoggedIn())
+            throw new IllegalStateException("User is not logged in");
+        if(!username.equals(systemManagerUserName))
+            throw new IllegalStateException("Only system manager can view all orders");
+        logger.info("got all orders for {}",username);
+        return orderFacade.getAllOrders();
     }
 
     //only for tests
