@@ -102,7 +102,7 @@ public class MarketServiceTestAdapter {
         dtoList.add(dto);
         return Response.createResponse(false, objectMapper.writeValueAsString(dtoList));*/
 
-        return real.getStoreProductsInfo(null, null, storeId, productCategory, productPriceMax, productRating);
+        return real.getStoreProductsInfo(null, null, storeId, null, productCategory, productPriceMax, productRating);
     }
 
     public Response addProductToBasketGuest(String uuid, int storeId, int productId, int amount){

@@ -68,7 +68,7 @@ public class StoreFacade {
     }
 
     public int addProductToStore(String username, int storeId, String productName, int productQuantity,
-            int productPrice, String category) {
+            int productPrice, String category, double rank) {
         if (!hasPermission(username, storeId, Permission.ADD_PRODUCTS))
             throw new IllegalArgumentException(
                     String.format("user %s can not add a product to store with id %d.", username, storeId));
@@ -77,7 +77,7 @@ public class StoreFacade {
         if (!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-        int newProductId = productFacade.addProduct(storeId, productName, productPrice, category);
+        int newProductId = productFacade.addProduct(storeId, productName, productPrice, category, rank);
         storeRepository.findStoreByID(storeId).addProduct(newProductId, productQuantity);
         return newProductId;
     }
@@ -96,7 +96,7 @@ public class StoreFacade {
     }
 
     public int updateProduct(String username, int storeId, int productId, String newProductName, int newQuantity,
-            int newPrice, String newCategory) {
+            int newPrice, String newCategory, double newRank) {
         if (!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
             throw new IllegalArgumentException(
                     String.format("user %s can not update a product in store with id %d.", username, storeId));
@@ -107,7 +107,7 @@ public class StoreFacade {
                         String.format("A store with id %d does not have a product with id %d.", storeId, productId));
 
             store.setProductAmounts(productId, newQuantity);
-            productFacade.updateProduct(storeId, productId, newProductName, newPrice, newCategory);
+            productFacade.updateProduct(storeId, productId, newProductName, newPrice, newCategory, newRank);
             return productId;
         }
     }
@@ -333,7 +333,7 @@ public class StoreFacade {
         return storeRepository.findStoreByID(storeId).getStoreDTO();
     }
 
-    public synchronized Map<ProductDTO, Integer> getProductsInfo(String username, int storeId, String category,
+    public synchronized Map<ProductDTO, Integer> getProductsInfo(String username, int storeId, String productName, String category,
             double price, double minProductRank) throws JsonProcessingException {
         Store store = storeRepository.findStoreByID(storeId);
         if (!isStoreActive(storeId)) {
@@ -343,8 +343,7 @@ public class StoreFacade {
         }
 
         List<Integer> storeProductIds = new ArrayList<>(store.getProductAmounts().keySet());
-        List<ProductDTO> filteredProducts = productFacade.getFilteredProducts(storeProductIds, category, price,
-                minProductRank, -1);
+        List<ProductDTO> filteredProducts = productFacade.getFilteredProducts(storeProductIds, productName, price, category, minProductRank);
         Map<ProductDTO, Integer> res = new HashMap<>();
         for (ProductDTO product : filteredProducts)
             res.put(product, store.getProductAmounts().get(product.getProductID()));

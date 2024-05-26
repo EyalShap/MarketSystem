@@ -95,10 +95,10 @@ public class MarketService {
         }
     }
 
-    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, int productPrice, String category) {
+    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, int productPrice, String category, double rank) {
         try {
             checkToken(token, username);
-            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category);
+            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category, rank);
             logger.info(String.format("User %s added product %d to store %d.", username, newProductId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
@@ -134,10 +134,10 @@ public class MarketService {
         }
     }
 
-    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice, String newCategory) {
+    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice, String newCategory, double newRank) {
         try {
             checkToken(token, username);
-            int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice, newCategory);
+            int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice, newCategory, newRank);
             logger.info(String.format("User %s updated product %d in store %d.", username, productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }
@@ -273,12 +273,12 @@ public class MarketService {
         }
     }
 
-    public Response getStoreProductsInfo(String token, String username, int storeId, String category, double price, double minProductRank) {
+    public Response getStoreProductsInfo(String token, String username, int storeId, String productName, String category, double price, double minProductRank) {
         try {
             if(username != null)
                 checkToken(token, username);
 
-            Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfo(username, storeId, category, price, minProductRank);
+            Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfo(username, storeId, productName, category, price, minProductRank);
             logger.info(String.format("A user got products info of store %d.", storeId));
             if(productDTOsAmounts.isEmpty()){
                 logger.error("getProductsInfo: No products found");
