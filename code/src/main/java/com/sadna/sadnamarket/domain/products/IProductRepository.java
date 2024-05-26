@@ -9,13 +9,18 @@ public interface IProductRepository {
 
     public Set<Integer> getAllProductIds();
 
+    public List<Product> getAllProducts();
+
+    List<Product> getProducts(List<Integer> productIds);
+
     public void removeProduct(int productId);
 
-    public int addProduct(String productName, int productPrice, String productCategory);
+    public int addProduct(String productName, double productPrice, String productCategory, double productRank);
 
-    public boolean isExistProduct(int produtId);
+    public boolean isExistProduct(int productId);
 
     public List<Product> filterByName(String productName);
 
     public List<Product> filterByCategory(String category);
+
 }
