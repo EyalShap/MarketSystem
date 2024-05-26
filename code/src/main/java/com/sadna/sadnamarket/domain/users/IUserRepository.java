@@ -11,5 +11,5 @@ public interface IUserRepository {
     void deleteGuest(int guestID);
     Guest getGuest(int guestID);
     List<CartItemDTO> getUserCart(String username);
-    List<CartItemDTO> getUserCart(int guestID);
+    List<CartItemDTO> getGuestCart(int guestID);
 }

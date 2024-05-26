@@ -59,7 +59,7 @@ public class Member extends IUser {
 
     public void addNotification(String message) {
         logger.info("Entering addNotification with message={}", message);
-        notifes.put(++notifyID, new Notification(message));
+        notifes.put(++notifyID, new Notification(message,notifyID));
         logger.info("Exiting addNotification");
     }
 
@@ -186,7 +186,7 @@ public class Member extends IUser {
             logger.error("Exception in getRequest: member already has role in store");
             throw new IllegalStateException("member already has role in store");
         }
-        notifes.put(++notifyID, new Request(senderName, "You got appointment request", storeId, reqType));
+        notifes.put(++notifyID, new Request(senderName, "You got appointment request", storeId, reqType,notifyID));
         logger.info("Exiting getRequest");
     }
 
@@ -196,6 +196,8 @@ public class Member extends IUser {
         notifes.remove(requestID);
         logger.info("Exiting accept");
     }
+
+
 
     public Request getRequest(int request_id) {
         logger.info("Entering getRequest with request_id={}", request_id);

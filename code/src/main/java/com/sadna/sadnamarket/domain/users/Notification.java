@@ -6,13 +6,15 @@ import org.apache.logging.log4j.Logger;
 import java.time.LocalDateTime;
 
 public class Notification {
+    private int id;
     private String message;
     private LocalDateTime date;
     private static final Logger logger = LogManager.getLogger(Notification.class);
 
-    public Notification(String msg) {
+    public Notification(String msg,int id) {
         logger.info("Entering Notification constructor with msg={}", msg);
         this.message = msg;
+        this.id=id;
         this.date = LocalDateTime.now();
         logger.info("Exiting Notification constructor");
     }
@@ -22,6 +24,8 @@ public class Notification {
         // No specific implementation for accept in Notification
         logger.info("Exiting accept");
     }
+
+
 
     @Override
     public String toString() {
@@ -42,4 +46,13 @@ public class Notification {
         logger.info("Exiting getDate with result={}", date);
         return date;
     }
+
+    public NotificationDTO toDTO(){
+        return new NotificationDTO(this);
+    }
+
+    public int getId() {
+        return id;
+    }
+
 }
