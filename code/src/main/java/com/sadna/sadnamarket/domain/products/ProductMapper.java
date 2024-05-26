@@ -10,7 +10,8 @@ public class ProductMapper {
                 product.getProductId(),
                 product.getProductName(),
                 product.getProductPrice(),
-                product.getProductCategory());
+                product.getProductCategory(),
+                product.getProductRank());
     }
 
     public static List<ProductDTO> toProductDTOList(List<Product> products) {
