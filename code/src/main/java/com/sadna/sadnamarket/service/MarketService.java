@@ -777,4 +777,22 @@ public class MarketService {
         }
     }
 
+    public Response getFilteredProducts(String token, String username, String productName, double minProductPrice,
+            double maxProductPrice,
+            String productCategory,
+            double minProductRank) {
+        try {
+            if (username != null)
+                checkToken(token, username);
+
+            List<ProductDTO> productDTOs = productFacade.getAllFilteredProducts(productName, minProductPrice,
+                    maxProductPrice, productCategory, minProductRank);
+            logger.info(String.format("User %s got all market products filtered", username));
+            return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
+        } catch (Exception e) {
+            logger.error("getFilteredProducts: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
 }
