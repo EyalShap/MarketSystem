@@ -1,9 +1,6 @@
 package com.sadna.sadnamarket.domain.products;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 public class MemoryProductRepository implements IProductRepository {
     private int nextProductId;
     private Map<Integer, Product> products;
+
     private static final Logger logger = LogManager.getLogger(MemoryProductRepository.class);
 
     public MemoryProductRepository() {
@@ -20,10 +18,10 @@ public class MemoryProductRepository implements IProductRepository {
     }
 
     @Override
-    public int addProduct(String productName, int productPrice,
-            String productCategory) {
+    public int addProduct(String productName, double productPrice,
+                          String productCategory, double productRank) {
         Product createdProduct = new Product(nextProductId, productName, productPrice,
-                productCategory);
+                productCategory, productRank);
 
         products.put(nextProductId, createdProduct);
         nextProductId++;
@@ -43,6 +41,23 @@ public class MemoryProductRepository implements IProductRepository {
     @Override
     public Set<Integer> getAllProductIds() {
         return products.keySet();
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        return new ArrayList<>(products.values());
+    }
+
+    @Override
+    public List<Product> getProducts(List<Integer> productIds) {
+        List<Product> foundProducts = new ArrayList<>();
+        for (int productId : productIds) {
+            if (isExistProduct(productId))
+                foundProducts.add(products.get(productId));
+            else
+                logger.error(String.format("Product Id %d does not exist.", productId));
+        }
+        return foundProducts;
     }
 
     @Override

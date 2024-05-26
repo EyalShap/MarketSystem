@@ -5,15 +5,17 @@ import java.text.MessageFormat;
 public class Product {
     final private int productId;
     private String productName;
-    private int productPrice;
+    private double productPrice;
     private String productCategory;
+    private double productRank;
     private boolean isActive = true;
 
-    public Product(int productId, String productName, int productPrice, String productCategory) {
+    public Product(int productId, String productName, double productPrice, String productCategory, double productRank) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productCategory = productCategory;
+        this.productRank = productRank;
     }
 
     public int getProductId() {
@@ -28,11 +30,11 @@ public class Product {
         this.productName = productName;
     }
 
-    public int getProductPrice() {
+    public double getProductPrice() {
         return this.productPrice;
     }
 
-    public void setProductPrice(int productPrice) {
+    public void setProductPrice(double productPrice) {
         this.productPrice = productPrice;
     }
 
@@ -42,6 +44,14 @@ public class Product {
 
     public void setProductCategory(String productCategory) {
         this.productCategory = productCategory;
+    }
+
+    public double getProductRank() {
+        return this.productRank;
+    }
+
+    public void setProductRank(double productRank) {
+        this.productRank = productRank;
     }
 
     public boolean isActiveProduct() {
@@ -59,8 +69,10 @@ public class Product {
     @Override
     public String toString() {
         return MessageFormat.format(
-                "Product'{'productId={0}, productName=''{1}'', productPrice={2}, productCategory=''{3}'', isActive={4}'}'",
+                "Product'{'productId={0}, productName=''{1}'', productPrice={2}, productCategory=''{3}'', productRank={4}, isActive={5}'}'",
                 productId,
-                productName, productPrice, productCategory, isActive);
+                productName, productPrice, productCategory, productRank, isActive);
     }
+
+
 }

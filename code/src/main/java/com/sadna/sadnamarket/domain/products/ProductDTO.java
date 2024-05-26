@@ -5,38 +5,43 @@ public class ProductDTO {
     private String productName;
     private double productPrice;
     private String productCategory;
+    private double productRank;
     private boolean isActive = true;
 
-    public ProductDTO(int productID, String productName, double productPrice, String productCategory) {
+    public ProductDTO(int productID, String productName, double productPrice, String productCategory,
+            double productRank) {
         this.productID = productID;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productCategory = productCategory;
+        this.productRank = productRank;
     }
 
-    public ProductDTO(){
+    public ProductDTO() {
     }
 
     public int getProductID() {
         return productID;
     }
 
-    public String getProductCategory() {
-        return productCategory;
-    }
-
-    public boolean isActiveProduct() {
-        return isActive;
-    }
-
     public String getProductName() {
-        // dana added this proxy function for the get store order history use case
         return this.productName;
     }
 
     public double getProductPrice() {
-        // dana added this proxy function for the get store order history use case
         return this.productPrice;
+    }
+
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public double getProductRank() {
+        return this.productRank;
+    }
+
+    public boolean isActiveProduct() {
+        return isActive;
     }
 
     public void setActiveProduct(boolean active) {
