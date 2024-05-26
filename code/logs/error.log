@@ -1,2 +1,3 @@
-2024-05-21 16:52:29 ERROR c.s.s.service.MarketService - createStore: A store with the name "hi" already exists.
-2024-05-21 17:02:41 ERROR c.s.s.service.MarketService - createStore: A store with the name "hi" already exists.
+2024-05-26 17:06:29 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-05-26 17:06:29 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-05-26 17:06:29 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
