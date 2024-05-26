@@ -2,12 +2,14 @@ package com.sadna.sadnamarket.domain.users;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
+import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 
 
@@ -16,13 +18,15 @@ public class UserFacade {
     private IUserRepository iUserRepo; 
     private static String systemManagerUserName;
     private static StoreFacade storeFacade;
+    private static OrderFacade orderFacade;
     private static final Logger logger = LogManager.getLogger(UserFacade.class);
 
-    public UserFacade(IUserRepository userRepo, StoreFacade storeFacadeInstance) {
+    public UserFacade(IUserRepository userRepo, StoreFacade storeFacadeInstance,OrderFacade orderFacadeInsance) {
         logger.info("initilize user fascade");
         this.iUserRepo=userRepo;
         systemManagerUserName=null;
         storeFacade=storeFacadeInstance;
+        orderFacade=orderFacadeInsance;
         logger.info("finish initilize user fascade");
     }
     
@@ -339,12 +343,19 @@ public class UserFacade {
 
     }
 
-    public HashMap<Integer,OrderDTO> getUserOrders(String username){
-        List<Integer> orders=getMember(username).getOrdersHistory();
-        for (Integer orderId : orders) {
-           //getOrderById(orderId);
+    public List<String> getUserOrders(String username){
+        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List <String> ordersString=new ArrayList<>();
+        for (Integer orderId : ordersIds) {
+            Map<Integer,OrderDTO> orders=orderFacade.getOrderByOrderId(orderId);
+            for (Integer store_id : orders.keySet()) {
+                Map<Integer,String> ordersProducts=orders.get(store_id).getOrderProductsJsons();
+                for (Integer product_id : ordersProducts.keySet()) {
+                    ordersString.add(ordersProducts.get(product_id));
+                }
+            }
         }
-        return null;
+        return ordersString;
     }
     public void viewCart(String username){
         List<CartItemDTO> items=iUserRepo.getUserCart(username);

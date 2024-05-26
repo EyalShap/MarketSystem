@@ -16,6 +16,7 @@ public class Response {
         String errorStr = isError ? str : null;
         return new Response(dataStr, isError, errorStr);
     }
+    
     public static Response createResponse() {
         return new Response("", false,"");
     }

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@JsonFilter("filter")
 public class StoreDTO {
     private int storeId;
     private boolean isActive;

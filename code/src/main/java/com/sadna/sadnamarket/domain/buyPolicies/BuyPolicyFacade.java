@@ -28,6 +28,7 @@ public class BuyPolicyFacade {
         return instance;
     }
 
+    // for now that function dosent do anything special
     public boolean addBuyPolicy(int storeId, String args) {
         BuyPolicy bp;
         if (mapper.get(storeId) == null) {
@@ -35,16 +36,16 @@ public class BuyPolicyFacade {
         }
         try {
             // create new DiscountPolicy
-            dp = null;
+            bp = null;
         } catch (Exception e) {
             return false;
         }
         BuyPolicyManager buyPolicyManager = mapper.get(storeId);
-        buyPolicyManager.addDiscountPolicy(bp);
+        buyPolicyManager.addBuyPolicy(bp);
         return true;
     }
 
-    public boolean canBuy(int storeId, List<CartItemDTO> cart, String username) {
+    public String canBuy(int storeId, List<CartItemDTO> cart, String username) {
         BuyPolicyManager buyPolicyManager = mapper.get(storeId);
         return buyPolicyManager.canBuy(cart, username);
     }

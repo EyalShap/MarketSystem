@@ -14,8 +14,8 @@ public abstract class DiscountPolicy {
     String category;
     List<Integer> productsId;
 
+    // for now that function dosent do anything special
     public DiscountPolicy(String args) {
-        id = id;
     }
 
     // Getter for id

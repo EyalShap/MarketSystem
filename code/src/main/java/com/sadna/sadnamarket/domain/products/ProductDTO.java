@@ -39,7 +39,7 @@ public class ProductDTO {
         return this.productPrice;
     }
 
-    public void setActive(boolean active) {
+    public void setActiveProduct(boolean active) {
         isActive = active;
     }
 
