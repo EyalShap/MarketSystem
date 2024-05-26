@@ -414,6 +414,7 @@ public class UserFacade {
             }
         }
         return sum;
+
     }
 
     public UserOrderDTO viewCart(String username){
