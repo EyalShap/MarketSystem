@@ -285,28 +285,18 @@ public class StoreFacade {
      * }
      */
 
-    public String getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
+    public List<OrderDTO> getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
         if (!storeRepository.findStoreByID(storeId).isStoreOwner(username))
             throw new IllegalArgumentException(String.format(
                     "A user %s is not an owner of store %d and can not request order history.", username, storeId));
 
-        String orderHistory = String.format("Order History of store %d:\n", storeId);
-        int orderIndex = 1;
-
+        List<OrderDTO> orderDTOS = new LinkedList<>();
         for (int orderId : storeRepository.findStoreByID(storeId).getOrderIds()) {
             OrderDTO order = orderFacade.getOrderByOrderId(orderId).get(storeId);
-            orderHistory += "------------------------------------------------------------\n";
-            orderHistory += getOrderInfo(order, orderIndex);
-            orderHistory += getProductsInfo(order);
-            orderHistory += "------------------------------------------------------------\n\n";
-            orderIndex++;
+            orderDTOS.add(order);
         }
 
-        if (orderIndex == 1) {
-            orderHistory += "There are no orders.\n";
-        }
-
-        return orderHistory;
+        return orderDTOS;
     }
 
     private String getOrderInfo(OrderDTO orderDTO, int orderIndex) {
@@ -497,5 +487,4 @@ public class StoreFacade {
     public StoreInfo getStoreInfo(int storeId) {
         return storeRepository.findStoreByID(storeId).getStoreInfo();
     }
-
 }

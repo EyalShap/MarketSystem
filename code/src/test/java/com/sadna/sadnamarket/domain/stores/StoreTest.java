@@ -120,45 +120,6 @@ class StoreTest {
     }
 
     @Test
-    void getBuyPolicyIds() {
-        Set<Integer> expected1 = new HashSet<>();
-        Set<Integer> expected2 = new HashSet<>();
-        Set<Integer> expected3 = new HashSet<>();
-        Collections.addAll(expected1, 0);
-        Collections.addAll(expected2, 0, 1, 2);
-        Collections.addAll(expected3, 0, 2);
-
-        assertEquals(expected1, new HashSet<>(store0.getBuyPolicyIds()));
-        assertEquals(expected1, new HashSet<>(store1.getBuyPolicyIds()));
-
-        store0.addBuyPolicy(1);
-        store0.addBuyPolicy(2);
-        assertEquals(expected2, new HashSet<>(store0.getBuyPolicyIds()));
-
-        store1.addBuyPolicy(2);
-        assertEquals(expected3, new HashSet<>(store1.getBuyPolicyIds()));
-    }
-
-    @Test
-    void getDiscountPolicyIds() {
-        Set<Integer> expected1 = new HashSet<>();
-        Set<Integer> expected2 = new HashSet<>();
-        Set<Integer> expected3 = new HashSet<>();
-        Collections.addAll(expected2, 0, 1);
-        Collections.addAll(expected3, 2);
-
-        assertEquals(expected1, new HashSet<>(store0.getDiscountPolicyIds()));
-        assertEquals(expected1, new HashSet<>(store1.getDiscountPolicyIds()));
-
-        store0.addDiscountPolicy(0);
-        store0.addDiscountPolicy(1);
-        assertEquals(expected2, new HashSet<>(store0.getDiscountPolicyIds()));
-
-        store1.addDiscountPolicy(2);
-        assertEquals(expected3, new HashSet<>(store1.getDiscountPolicyIds()));
-    }
-
-    @Test
     void getOrderIds() {
         Set<Integer> expected1 = new HashSet<>();
         Set<Integer> expected2 = new HashSet<>();
@@ -517,52 +478,6 @@ class StoreTest {
         store1.closeStore();
         assertFalse(store0.getIsActive());
         assertFalse(store1.getIsActive());
-    }
-
-    @Test
-    void addBuyPolicyAlreadyExist() {
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store1.addBuyPolicy(0);
-        });
-
-        String expectedMessage1 = "A buy policy with id 0 already exists in store 1.";
-        assertEquals(expectedMessage1, expected1.getMessage());
-    }
-
-    @Test
-    void addBuyPolicyStoreNotActive() {
-        store0.closeStore();
-
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addBuyPolicy(1);
-        });
-
-        String expectedMessage1 = "A store with id 0 is not active.";
-        assertEquals(expectedMessage1, expected1.getMessage());
-    }
-
-    @Test
-    void addDiscountPolicyAlreadyExist() {
-        store1.addDiscountPolicy(0);
-
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store1.addDiscountPolicy(0);
-        });
-
-        String expectedMessage1 = "A discount policy with id 0 already exists in store 1.";
-        assertEquals(expectedMessage1, expected1.getMessage());
-    }
-
-    @Test
-    void addDiscountPolicyStoreNotActive() {
-        store0.closeStore();
-
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addDiscountPolicy(1);
-        });
-
-        String expectedMessage1 = "A store with id 0 is not active.";
-        assertEquals(expectedMessage1, expected1.getMessage());
     }
 
     @Test
