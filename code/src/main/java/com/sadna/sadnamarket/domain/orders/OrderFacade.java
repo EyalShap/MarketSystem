@@ -23,13 +23,13 @@ public class OrderFacade {
         Map<Integer, OrderDTO>ordersStore = new HashMap<>();
         for (Map.Entry<Integer, List<ProductDataPrice>> bag : storeBag.entrySet()) {
             String storeName = storeFacade.getStoreInfo(bag.getKey()).getStoreName();
-            OrderDTO orderDTO=ProductDataPriceToOrderDTO(bag.getValue(),storeName,memberName);
+            OrderDTO orderDTO=productDataPriceToOrderDTO(bag.getValue(),storeName,memberName);
             ordersStore.put(bag.getKey(),orderDTO);
         }
         return orderRepository.createOrder(ordersStore);
     }
 
-    private static OrderDTO ProductDataPriceToOrderDTO(List<ProductDataPrice> storeBag,String storeName,String memberName) {
+    private OrderDTO productDataPriceToOrderDTO(List<ProductDataPrice> storeBag,String storeName,String memberName) {
         Map<Integer, Integer> productAmounts=new HashMap<>();
         Map<Integer, String> orderProductsJsons= new HashMap<>();
         for (ProductDataPrice product:storeBag) {
@@ -54,8 +54,6 @@ public class OrderFacade {
         return orderRepository.getAllOrders();
     }
 
-    public static void main(String[] args) {
 
-    }
 
 }
