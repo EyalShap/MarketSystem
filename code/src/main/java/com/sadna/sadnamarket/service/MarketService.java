@@ -8,7 +8,6 @@ import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
-import com.sadna.sadnamarket.domain.orders.IOrderRepository;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
@@ -19,6 +18,7 @@ import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
+import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.users.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -598,9 +598,9 @@ public class MarketService {
        
         }
     }
-    public Response purchaseCart(String username) {
+    public Response purchaseCart(String username,CreditCardDTO creditCard, String country, String city, String addressLine1, String addressLine2, String zipCode, String ordererName, String contactPhone, String contactEmail, String name) {
         try {
-            userFacade.purchaseCart(username);
+            userFacade.purchaseCart(username,creditCard,country,city,addressLine1,addressLine2,zipCode,ordererName,contactPhone,contactEmail);
             return Response.createResponse();
         } catch (Exception e) { 
             return Response.createResponse(true, e.getMessage());
@@ -616,9 +616,9 @@ public class MarketService {
        
         }
     }
-    public Response purchaseCart(int guestId) {
+    public Response purchaseCart(int guestId,CreditCardDTO creditCard, String country, String city, String addressLine1, String addressLine2, String zipCode, String ordererName, String contactPhone, String contactEmail, String name) {
         try {
-            userFacade.purchaseCart(guestId);
+            userFacade.purchaseCart(guestId,creditCard,country,city,addressLine1,addressLine2,zipCode,ordererName,contactPhone,contactEmail,name);
             return Response.createResponse();
         } catch (Exception e) { 
             return Response.createResponse(true, e.getMessage());

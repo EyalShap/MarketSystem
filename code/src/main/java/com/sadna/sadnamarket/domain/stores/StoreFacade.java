@@ -486,7 +486,7 @@ public class StoreFacade {
 
     // return a map from store id to a List that coontain object thats stores : id,
     // amount, original price and new price
-    private synchronized Map<Integer, List<ProductDataPrice>> calculatePrice(String username, List<CartItemDTO> cart) {
+    public synchronized Map<Integer, List<ProductDataPrice>> calculatePrice(String username, List<CartItemDTO> cart) {
         Map<Integer, List<ProductDataPrice>> mapPrice = new HashMap<>();
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {

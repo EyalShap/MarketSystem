@@ -9,8 +9,8 @@ public class Request extends Notification {
     private String role;
     private static final Logger logger = LogManager.getLogger(Request.class);
 
-    public Request(String senderName, String msg, int storeId, String role) {
-        super(msg);
+    public Request(String senderName, String msg, int storeId, String role,int id) {
+        super(msg,id);
         logger.info("Entering Request constructor with senderName={}, msg={}, storeId={}, role={}", senderName, msg, storeId, role);
         this.senderName = senderName;
         this.storeId = storeId;

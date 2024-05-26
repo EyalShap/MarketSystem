@@ -23,9 +23,6 @@ public class AuthFacade {
         this.iAuthRepository=iAuthRepository;
         tokenService=new TokenService();
         this.userFacade=userFacade;
-        logger.info("hiiii");
-
-
     }
     
     public String login(String username, String password) {

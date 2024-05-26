@@ -4,15 +4,19 @@ import java.time.LocalDateTime;
 
 public class NotificationDTO {
     private String message;
+    private int id;
     private LocalDateTime date;
 
-    public NotificationDTO() {
-        // Default constructor for serialization/deserialization
+    public NotificationDTO(String message,LocalDateTime date,int id) {
+        this.message=message;
+        this.date=date;
+        this.id=id;
     }
 
     public NotificationDTO(Notification notific) {
         this.message = notific.getMessage();
         this.date = notific.getDate();
+        this.id=notific.getId();
     }
 
     public String getMessage() {
@@ -22,6 +26,8 @@ public class NotificationDTO {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    
 
     public LocalDateTime getDate() {
         return date;
