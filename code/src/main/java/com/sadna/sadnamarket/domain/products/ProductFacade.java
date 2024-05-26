@@ -130,6 +130,60 @@ public class ProductFacade {
         return ProductMapper.toProductDTOList(storeProducts);
     }
 
+    public List<ProductDTO> getAllFilteredProducts(String productName,
+            double minProductPrice, double maxProductPrice, String productCategory,
+            double minProductRank) {
+
+        List<Product> products = productRepository.getAllProducts();
+
+        if (productName != null)
+            if (isValidProductName(productName))
+                products = products.stream()
+                        .filter(product -> product.getProductName().equals(productName))
+                        .collect(Collectors.toList());
+            else
+                throw new IllegalArgumentException("product name cannot be null or empty. ");
+
+        if (productCategory != null)
+            if (isValidProductName(productCategory))
+                products = products.stream()
+                        .filter(product -> product.getProductCategory().equals(
+                                productCategory))
+                        .collect(Collectors.toList());
+            else
+                throw new IllegalArgumentException("product category cannot be null or empty. ");
+
+        if (minProductPrice != -1 && maxProductPrice != -1)
+            if (minProductPrice > maxProductPrice)
+                throw new IllegalArgumentException("the minimum price must be above the maximum.");
+
+        if (minProductPrice != -1)
+            if (isValidProductPrice(minProductPrice))
+                products = products.stream()
+                        .filter(product -> product.getProductPrice() >= minProductPrice)
+                        .collect(Collectors.toList());
+            else
+                throw new IllegalArgumentException("min product price cannot be negative.");
+
+        if (maxProductPrice != -1)
+            if (isValidProductPrice(maxProductPrice))
+                products = products.stream()
+                        .filter(product -> product.getProductPrice() <= maxProductPrice)
+                        .collect(Collectors.toList());
+            else
+                throw new IllegalArgumentException("max product price cannot be negative.");
+
+        if (minProductRank != -1)
+            if (isValidProductPrice(minProductRank))
+                products = products.stream()
+                        .filter(product -> product.getProductRank() >= minProductRank)
+                        .collect(Collectors.toList());
+            else
+                throw new IllegalArgumentException("Product rank have to be between 0 and 5. ");
+
+        return ProductMapper.toProductDTOList(products);
+    }
+
     public List<ProductDTO> getAllProducts() {
         return ProductMapper.toProductDTOList(productRepository.getAllProducts());
     }
