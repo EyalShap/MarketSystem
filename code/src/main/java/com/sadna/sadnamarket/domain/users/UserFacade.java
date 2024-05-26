@@ -104,6 +104,10 @@ public class UserFacade {
     public void login(String userName,String password){
         logger.info("{} tries to login",userName);
         isValid(userName);
+        if(iUserRepo.getMember(userName).isLoggedIn()){
+            logger.error("user {} already logged in",userName);
+            throw new IllegalStateException("user already logged in");
+        }
         iUserRepo.getMember(userName).setLogin(true);
         logger.info("{} done login",userName);
     }
