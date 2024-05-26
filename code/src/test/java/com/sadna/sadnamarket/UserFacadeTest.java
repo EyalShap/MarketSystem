@@ -1,4 +1,4 @@
-/*package com.sadna.sadnamarket;
+package com.sadna.sadnamarket;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -273,4 +273,4 @@ public class UserFacadeTest {
         List<CartItemDTO> items=userFacade.getMember(testUsername2).getCartItems();
         assertEquals(2, items.size());
     }
-}*/
+}
