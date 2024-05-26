@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.products;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProductFacade {
     private static ProductFacade instance;
@@ -19,14 +20,17 @@ public class ProductFacade {
         return instance;
     }
 
-    public int addProduct(int storeId, String productName, int productPrice, String productCategory) {
+    public int addProduct(int storeId, String productName, double productPrice, String productCategory,
+            double productRank) {
         if (storeId < 0) {
             throw new IllegalArgumentException(String.format("Store Id %d is invalid.", storeId));
         }
 
-        checkProductAttributes(productName, productPrice, productCategory);
+        checkProductAttributes(productName, productPrice, productCategory, productRank);
 
-        int productId = productRepository.addProduct(productName, productPrice, productCategory);
+        // other checks ??
+        // already created in this store ?
+        int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank);
 
         Product createdProduct = productRepository.getProduct(productId);
 
@@ -52,7 +56,7 @@ public class ProductFacade {
     }
 
     public void updateProduct(int storeId, int productId, String newProductName,
-            int newPrice, String newCategory) {
+            double newPrice, String newCategory, double newRank) {
         if (!isStoreExist(storeId))
             throw new IllegalArgumentException(String.format("Store Id %d does not exist.", storeId));
 
@@ -60,10 +64,12 @@ public class ProductFacade {
             throw new IllegalArgumentException(
                     String.format("Product Id %d does not exist in store Id %d.", productId, storeId));
 
-        checkProductAttributes(newProductName, newPrice, newCategory);
+        checkProductAttributes(newProductName, newPrice, newCategory, newRank);
 
         Product productToUpdate = productRepository.getProduct(productId);
 
+        // other checks ??
+        // merge products with same properties ?
         if (!productToUpdate.isActiveProduct())
             throw new IllegalArgumentException(
                     String.format("Product Id %d was deleted from store Id %d.", productId, storeId));
@@ -71,56 +77,104 @@ public class ProductFacade {
         productToUpdate.setProductName(newProductName);
         productToUpdate.setProductPrice(newPrice);
         productToUpdate.setProductCategory(newCategory);
+        productToUpdate.setProductRank(newRank);
+    }
+
+    public List<ProductDTO> getFilteredProducts(List<Integer> storeProductIds, String productName,
+            double maxProductPrice, String productCategory,
+            double minProductRank) {
+
+        List<Product> storeProducts = productRepository.getProducts(storeProductIds);
+
+        if (productName != null && isValidProductName(productName)) {
+            storeProducts = storeProducts.stream()
+                    .filter(product -> product.getProductCategory().equals(productName))
+                    .collect(Collectors.toList());
+        }
+
+        if (productCategory != null && isValidProductCategory(productCategory)) {
+            storeProducts = storeProducts.stream()
+                    .filter(product -> product.getProductCategory().equals(productCategory))
+                    .collect(Collectors.toList());
+        }
+
+        // if (minProductPrice != null && isValidProductPrice(minProductPrice)) {
+        // storeProducts = storeProducts.stream()
+        // .filter(product -> product.getProductPrice() >= minProductPrice)
+        // .collect(Collectors.toList());
+        // }
+
+        if (maxProductPrice != -1 && isValidProductPrice(maxProductPrice)) {
+            storeProducts = storeProducts.stream()
+                    .filter(product -> product.getProductPrice() <= maxProductPrice)
+                    .collect(Collectors.toList());
+        }
+
+        if (minProductRank != -1 && isValidProductRank(minProductRank)) {
+            storeProducts = storeProducts.stream()
+                    .filter(product -> product.getProductPrice() >= minProductRank)
+                    .collect(Collectors.toList());
+        }
+
+        // if (maxProductRank != null && isValidProductRank(maxProductRank)) {
+        // storeProducts = storeProducts.stream()
+        // .filter(product -> product.getProductRank() <= maxProductRank)
+        // .collect(Collectors.toList());
+        // }
+
+        return ProductMapper.toProductDTOList(storeProducts);
+    }
+
+    public List<ProductDTO> getAllProducts() {
+        return ProductMapper.toProductDTOList(productRepository.getAllProducts());
     }
 
     public List<ProductDTO> getAllProductsByName(String productName) {
         return ProductMapper.toProductDTOList(productRepository.filterByName(productName));
-
     }
 
     public List<ProductDTO> getAllProductsByCategory(String category) {
         return ProductMapper.toProductDTOList(productRepository.filterByCategory(category));
     }
 
-    // private Product getProduct(int storeId, int productId) {
-    // List<Product> storeProducts = products.get(storeId);
-    // Product result = null;
-    // for (Product product : storeProducts) {
-    // if (product.getProductId() == productId) {
-    // result = product;
-    // break;
-    // }
-    // }
-    // return result;
-    // }
+    private boolean isValidProductName(String name) {
+        return name != null && !name.trim().isEmpty();
+    }
 
-    private void checkProductAttributes(String newProductName, int newPrice, String newCategory) {
-        String isValidProductName = checkProductName(newProductName);
-        String isValidProductPrice = checkProductPrice(newPrice);
-        String isValidProductCategory = checkProductCategory(newCategory);
+    private boolean isValidProductRank(double productRank) {
+        return productRank >= 0 && productRank <= 5;
+    }
 
-        boolean isAllValid = isValidProductName.isEmpty() && isValidProductPrice.isEmpty()
-                && isValidProductCategory.isEmpty();
+    private boolean isValidProductPrice(double productPrice) {
+        return productPrice >= 0;
+    }
+
+    private boolean isValidProductCategory(String category) {
+        return category != null && !category.trim().isEmpty();
+    }
+
+    private void checkProductAttributes(String newProductName, double newPrice, String newCategory, double newRank) {
+        boolean isValidProductName = isValidProductName(newProductName);
+        boolean isValidProductPrice = isValidProductPrice(newPrice);
+        boolean isValidProductCategory = isValidProductCategory(newCategory);
+        boolean isValidProductRank = isValidProductRank(newRank);
+
+        boolean isAllValid = isValidProductName && isValidProductPrice && isValidProductCategory && isValidProductRank;
 
         if (!isAllValid) {
-            StringBuilder result = new StringBuilder("Product can be updated because: ");
-            result.append(isValidProductName).append(isValidProductPrice).append(isValidProductCategory);
+            StringBuilder result = new StringBuilder("Product information's are wrong: ");
+
+            if (!isValidProductName)
+                result.append("Product name cannot be null or empty. ");
+            if (!isValidProductPrice)
+                result.append("Product price cannot be negative. ");
+            if (!isValidProductCategory)
+                result.append("Product category cannot be null or empty. ");
+            if (!isValidProductRank)
+                result.append("Product rank have to be between 0 and 5. ");
+
             throw new IllegalArgumentException(String.valueOf(result));
         }
-    }
-
-    private String checkProductName(String productName) {
-        return (productName == null || productName.trim().isEmpty()) ? "Product name cannot be null or empty. " : "";
-    }
-
-    private String checkProductPrice(Integer productPrice) {
-        return productPrice < 0 ? "Product price cannot be negative. " : "";
-    }
-
-    private String checkProductCategory(String productCategory) {
-        return (productCategory == null || productCategory.trim().isEmpty())
-                ? "Product category cannot be null or empty. "
-                : "";
     }
 
     private boolean isStoreExist(int storeId) {
@@ -139,34 +193,6 @@ public class ProductFacade {
         return result.getProductDTO();
     }
 
-    // public Product getProductIfExist(int productId) {
-    // Product result = null;
-
-    // for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-    // // Integer storeId = entry.getKey();
-    // if (result != null)
-    // break;
-    // List<Product> storeProducts = entry.getValue();
-    // for (Product product : storeProducts) {
-    // if (product.getProductId() == productId) {
-    // result = product;
-    // break;
-    // }
-    // }
-    // }
-    // return result;
-    // }
-
-    // package-private for tests
-    Map<Integer, List<Product>> getProducts() {
-        return products;
-    }
-
-    // package-private for tests
-    void resetProducts() {
-        products = new HashMap<>();
-    }
-
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -180,33 +206,17 @@ public class ProductFacade {
         }
         return result.toString();
     }
-    public List<ProductDTO> getFilteredProducts(List<Integer> storeProductIds, String category,
-                                                double price, double minProductRank, int variableThatDanaSetToMinusOne){
-        return new LinkedList<>();
+
+    // package-private for tests
+    Map<Integer, List<Product>> getProducts() {
+        return products;
     }
-    //
-    // public static void main(String[] args) {
-    // ProductFacade facade = ProductFacade.getInstance();
-    // try {
-    // facade.addProduct(1, "product1", 10, "cat1");
-    // facade.addProduct(1, "product2", 5, "cat1");
-    // facade.addProduct(2, "product3", 5, "cat2");
-    //
-    // System.out.println("Initial state:");
-    // System.out.println(facade);
-    //
-    // facade.removeProduct(1, 0);
-    //
-    // System.out.println("After removal:");
-    // System.out.println(facade);
-    //
-    // facade.updateProduct(1, 1, "updatedProduct2", 20, "cat3");
-    //
-    // System.out.println("After update:");
-    // System.out.println(facade);
-    // } catch (IllegalArgumentException e) {
-    // System.err.println("Error: " + e.getMessage());
-    // }
+
+    // package-private for tests
+    void resetProducts() {
+        products = new HashMap<>();
+    }
+
     // }
 
 }
