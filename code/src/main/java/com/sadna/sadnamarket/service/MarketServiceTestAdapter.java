@@ -96,10 +96,7 @@ public class MarketServiceTestAdapter {
 
     public Response searchProduct(String productName, double productPriceMin, double productPriceMax,
             String productCategory, int storeRating, int productRating) throws JsonProcessingException {
-        ProductDTO dto = new ProductDTO(5, productName, productPriceMin, productCategory, productRating);
-        List<ProductDTO> dtoList = new LinkedList<>();
-        dtoList.add(dto);
-        return Response.createResponse(false, objectMapper.writeValueAsString(dtoList)); // THIS ONE IS MISSING
+        return real.getFilteredProducts("", null, productName, productPriceMin, productPriceMax, productCategory, productRating);
     }
 
     public Response searchProductInStore(int storeId, String productName, double productPriceMin,
@@ -158,7 +155,7 @@ public class MarketServiceTestAdapter {
     public Response addProductToStore(String token, String userId, int storeId, ProductDTO productDetails) {
         // return Response.createResponse(false, "5"); //returns product id
         return real.addProductToStore(token, userId, storeId, productDetails.getProductName(), 100,
-                (int) productDetails.getProductPrice(), productDetails.getProductCategory());
+                productDetails.getProductPrice(), productDetails.getProductCategory(), 3);
     }
 
     public Response removeProductFromStore(String token, String userId, int storeId, int productId) {
@@ -170,7 +167,7 @@ public class MarketServiceTestAdapter {
             ProductDTO productDetails) {
         // return Response.createResponse(false, "true");
         return real.updateProductInStore(token, userId, storeId, productId, productDetails.getProductName(), 200,
-                (int) productDetails.getProductPrice(), productDetails.getProductCategory());
+                productDetails.getProductPrice(), productDetails.getProductCategory(), 3);
     }
 
     public Response getStoreProductAmount(int storeId, int productId) {
@@ -180,7 +177,7 @@ public class MarketServiceTestAdapter {
 
     public Response setStoreProductAmount(String token, String username, int storeId, int productId, int amount) {
         // return Response.createResponse(false, "true");
-        return real.updateProductInStore(token, username, storeId, productId, null, amount, -1, null);
+        return real.updateProductAmountInStore(token, username, storeId, productId, amount);
     }
 
     public Response appointOwner(String token, String userId, int storeId, String appointedUserId) {
@@ -277,7 +274,7 @@ public class MarketServiceTestAdapter {
     }
 
     public Response getUserPurchaseHistory(String token, String actorId, String userId) throws JsonProcessingException {
-        return real.getOrderDTOHistory(actorId);
+        return real.getOrderDTOHistory(userId);
     }
 
     public Response memberSetAddress(String token, String username, AddressDTO addressDTO) {

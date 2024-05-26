@@ -26,7 +26,11 @@ public class OrderFacade {
             OrderDTO orderDTO=productDataPriceToOrderDTO(bag.getValue(),storeName,memberName);
             ordersStore.put(bag.getKey(),orderDTO);
         }
-        return orderRepository.createOrder(ordersStore);
+        int orderId = orderRepository.createOrder(ordersStore);
+        for (Map.Entry<Integer, List<ProductDataPrice>> bag : storeBag.entrySet()) {
+            storeFacade.addOrderId(bag.getKey(), orderId);
+        }
+        return orderId;
     }
 
     private OrderDTO productDataPriceToOrderDTO(List<ProductDataPrice> storeBag,String storeName,String memberName) {

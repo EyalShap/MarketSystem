@@ -519,7 +519,9 @@ public class UserFacade {
         }
         storeFacade.checkCart(null, items);
          PaymentService payment = PaymentService.getInstance();
-        payment.checkCardValid(creditCard);
+        if(!payment.checkCardValid(creditCard)){
+            throw new IllegalArgumentException("Credit card invalid");
+        }
         // update quantities
         storeFacade.buyCart(null, items);
         // create new order 

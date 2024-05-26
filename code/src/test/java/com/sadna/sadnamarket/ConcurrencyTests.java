@@ -96,11 +96,6 @@ class ConcurrencyTests {
                             new AddressDTO("Israel", "Kfar Shmaryahu", "Jabotinsky 39", "Apartment 13", "1234567",
                                     "Bob Bobby",
                                     "+97255-123-4569", "bobbobby@gmail.com"));
-                    bridge.buyCartGuest(uuid2,
-                            new CreditCardDTO("4580458045804580", "852", new Date(1930297600), "213958804"),
-                            new AddressDTO("Israel", "Kfar Shmaryahu", "Jabotinsky 39", "Apartment 13", "1234567",
-                                    "Bob Bobby",
-                                    "+97255-123-4569", "bobbobby@gmail.com", "213958804"));
                 }
             });
             t1.run();
@@ -108,6 +103,43 @@ class ConcurrencyTests {
             t1.join();
             t2.join();
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "0");
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Test
+    void twoUsersRegisterSameName() {
+        Response resp = bridge.guestEnterSystem();
+        final String uuid1 = resp.getDataJson();
+        resp = bridge.guestEnterSystem();
+        final String uuid2 = resp.getDataJson();
+        int[] success = new int[1];
+        success[0] = 0;
+        try {
+            Thread t1 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Response resp = bridge.signUp(uuid1, "john@john.gmail.com", "JohnnyTest", "password");
+                    if(!resp.getError()){
+                        success[0]++;
+                    }
+                }
+            });
+            Thread t2 = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Response resp = bridge.signUp(uuid2, "john@john.gmail.com", "JohnnyTest", "password");
+                    if(!resp.getError()){
+                        success[0]++;
+                    }
+                }
+            });
+            t1.run();
+            t2.run();
+            t1.join();
+            t2.join();
+            Assertions.assertEquals(1, success[0]);
         } catch (Exception e) {
 
         }

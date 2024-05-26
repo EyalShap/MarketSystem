@@ -51,7 +51,7 @@ public class MarketService {
         this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
         this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
-
+        this.orderFacade.setStoreFacade(storeFacade);
         this.storeFacade.setUserFacade(userFacade);
         this.storeFacade.setProductFacade(productFacade);
         this.storeFacade.setOrderFacade(orderFacade);
@@ -95,7 +95,7 @@ public class MarketService {
         }
     }
 
-    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, int productPrice, String category, double rank) {
+    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, double productPrice, String category, double rank) {
         try {
             checkToken(token, username);
             int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category, rank);
@@ -134,11 +134,25 @@ public class MarketService {
         }
     }
 
-    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, int newPrice, String newCategory, double newRank) {
+    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, double newPrice, String newCategory, double newRank) {
         try {
             checkToken(token, username);
             int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice, newCategory, newRank);
             logger.info(String.format("User %s updated product %d in store %d.", username, productId, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
+        }
+        catch (Exception e) {
+            logger.error("updateProductInStore: " + e.getMessage());
+
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response updateProductAmountInStore(String token, String username, int storeId, int productId, int newQuantity) {
+        try {
+            checkToken(token, username);
+            int updateProductId = storeFacade.updateProductAmount(username, storeId, productId, newQuantity);
+            logger.info(String.format("User %s updated product amount %d in store %d.", username, productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }
         catch (Exception e) {
@@ -295,12 +309,16 @@ public class MarketService {
                 checkToken(token, username);
 
             Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfo(username, storeId, productName, category, price, minProductRank);
+            Map<String, Integer> jsonMap = new HashMap<>();
+            for(ProductDTO productDTO : productDTOsAmounts.keySet()){
+                jsonMap.put(objectMapper.writeValueAsString(productDTO),productDTOsAmounts.get(productDTO));
+            }
             logger.info(String.format("A user got products info of store %d.", storeId));
             if(productDTOsAmounts.isEmpty()){
                 logger.error("getProductsInfo: No products found");
                 return Response.createResponse(true, "No products found");
             }
-            return Response.createResponse(false, objectMapper.writeValueAsString(productDTOsAmounts));
+            return Response.createResponse(false, objectMapper.writeValueAsString(jsonMap));
         }
         catch (Exception e) {
             logger.error("getProductsInfo: " + e.getMessage());
@@ -788,6 +806,9 @@ public class MarketService {
             List<ProductDTO> productDTOs = productFacade.getAllFilteredProducts(productName, minProductPrice,
                     maxProductPrice, productCategory, minProductRank);
             logger.info(String.format("User %s got all market products filtered", username));
+            if(productDTOs.isEmpty()){
+                return Response.createResponse(true, "No results for products were found");
+            }
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
         } catch (Exception e) {
             logger.error("getFilteredProducts: " + e.getMessage());
