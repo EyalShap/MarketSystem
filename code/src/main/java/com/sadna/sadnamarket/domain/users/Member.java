@@ -38,7 +38,7 @@ public class Member extends IUser {
     }
 
     @Override
-    public boolean isLoggedIn() {
+    public synchronized boolean isLoggedIn() {
         logger.info("Entering isLoggedIn");
         boolean result = isLoggedIn;
         logger.info("Exiting isLoggedIn with result={}", result);
@@ -106,7 +106,7 @@ public class Member extends IUser {
         return false;
     }
 
-    public void logout() {
+    public synchronized void logout() {
         logger.info("Entering logout");
         if (!isLoggedIn) {
             logger.error("Exception in logout: user isn't logged in");
@@ -117,13 +117,18 @@ public class Member extends IUser {
     }
 
     
-    public void addRole(UserRole role) {
+    public synchronized void addRole(UserRole role) {
         logger.info("Entering addRole with role={}", role);
         roles.add(role);
         logger.info("Exiting addRole");
     }
+    public synchronized void addOrder(int orderId) {
+        logger.info("Entering order id with order id={}", orderId);
+        orders.add(orderId);
+        logger.info("Exiting enter order");
+    }
 
-    public void removeRole(UserRole role) {
+    public synchronized void removeRole(UserRole role) {
         logger.info("Entering removeRole with role={}", role);
         roles.remove(role);
         logger.info("Exiting removeRole");
