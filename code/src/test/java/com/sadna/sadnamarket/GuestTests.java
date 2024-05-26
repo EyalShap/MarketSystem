@@ -732,7 +732,7 @@ class GuestTests {
         uuid = resp.getDataJson();
         try{
             bridge.addProductToBasketGuest(uuid, storeId, productId, 1);
-            resp = bridge.buyCartGuest(uuid, new CreditCardDTO("1234234534564567", "103", new Date(), "123456789"),
+            resp = bridge.buyCartGuest(uuid, new CreditCardDTO("", "103", new Date(), "123456789"),
                     new AddressDTO("Israel", "Petah Tikvah", "Benyamin 12", "Apartment 12", "5", "Jim Jimmy",
                             "+97254-989-4939", "jimjimmy@gmail"));
             Assertions.assertTrue(resp.getError());

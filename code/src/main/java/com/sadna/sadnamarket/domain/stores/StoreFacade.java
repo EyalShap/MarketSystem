@@ -424,7 +424,7 @@ public class StoreFacade {
         return cartByStore;
     }
 
-    public void checkCart(String username, List<CartItemDTO> cart) {
+    public void checkCart(String username, List<CartItemDTO> cart) throws Exception {
 
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         String error = "";
@@ -442,7 +442,7 @@ public class StoreFacade {
         }
 
         if (!error.equals("")) {
-            throw new Error(error);
+            throw new Exception(error);
         }
 
     }
@@ -474,7 +474,7 @@ public class StoreFacade {
         return store.isStoreManager(infoUsername);
     }
 
-    public synchronized void buyCart(String username, List<CartItemDTO> cart) {
+    public synchronized void buyCart(String username, List<CartItemDTO> cart) throws Exception {
         checkCart(username, cart);
 
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);

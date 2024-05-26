@@ -14,14 +14,14 @@ public class DiscountPolicyFacade {
     private ProductFacade productFacade;
     private static DiscountPolicyFacade instance;
 
-    public DiscountPolicyFacade() {
+    public DiscountPolicyFacade(ProductFacade productFacade) {
         mapper = new HashMap<Integer, DiscountManager>();
-        productFacade = ProductFacade.getInstance();
+        this.productFacade = productFacade;
     }
 
     public static DiscountPolicyFacade getInstance() {
         if (instance == null) {
-            instance = new DiscountPolicyFacade();
+            instance = new DiscountPolicyFacade(new ProductFacade());
         }
         return instance;
     }

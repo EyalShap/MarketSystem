@@ -48,7 +48,7 @@ public class MarketService {
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(storeRepository);
         this.buyPolicyFacade = new BuyPolicyFacade();
-        this.discountPolicyFacade = new DiscountPolicyFacade();
+        this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
         this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
 
@@ -67,7 +67,8 @@ public class MarketService {
     }
 
     public static MarketService getNewInstance() {
-        return new MarketService(new MemoryStoreRepository());
+        instance =new MarketService(new MemoryStoreRepository());
+        return instance;
     }
 
     // ----------------------- Stores -----------------------
