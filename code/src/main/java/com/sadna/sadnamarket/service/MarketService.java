@@ -273,6 +273,22 @@ public class MarketService {
         }
     }
 
+    public Response getProductInfo(String token, String username, int productId) {
+        try {
+            if(username != null)
+                checkToken(token, username);
+
+            ProductDTO productDTO = storeFacade.getProductInfo(username, productId);
+            String json = objectMapper.writeValueAsString(productDTO);
+            logger.info(String.format("A user got product info of product %d.", productId));
+            return Response.createResponse(false, json);
+        }
+        catch (Exception e) {
+            logger.error("getStoreInfo: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response getStoreProductsInfo(String token, String username, int storeId, String category, double price, double minProductRank) {
         try {
             if(username != null)

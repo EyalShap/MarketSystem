@@ -325,12 +325,33 @@ public class StoreFacade {
 
     public synchronized StoreDTO getStoreInfo(String username, int storeId) {
         if (!isStoreActive(storeId)) {
-            if (!storeRepository.findStoreByID(storeId).isStoreOwner(username)
-                    && !storeRepository.findStoreByID(storeId).isStoreManager(username))
+            if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.getSystemManagerUserName().equals(username))
                 throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
         }
 
         return storeRepository.findStoreByID(storeId).getStoreDTO();
+    }
+
+    public synchronized ProductDTO getProductInfo(String username, int productId) {
+        int storeId = getStoreOfProduct(productId);
+        if(storeId < 0){
+            throw new IllegalArgumentException(String.format("The product with id %d doesn't exist.", productId));
+        }
+        if (!isStoreActive(storeId)) {
+            if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.getSystemManagerUserName().equals(username))
+                throw new IllegalArgumentException(String.format("The store of product with id %d is not active.", productId));
+        }
+
+        return productFacade.getProductDTO(productId);
+    }
+
+    private int getStoreOfProduct(int produceId){
+        for(int storeId : storeRepository.getAllStoreIds()){
+            if(hasProductInStock(storeId, produceId, 0)){
+                return storeId;
+            }
+        }
+        return -1;
     }
 
     public synchronized Map<ProductDTO, Integer> getProductsInfo(String username, int storeId, String category,
