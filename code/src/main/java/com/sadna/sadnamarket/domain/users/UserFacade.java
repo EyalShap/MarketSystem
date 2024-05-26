@@ -104,6 +104,10 @@ public class UserFacade {
     public void login(String userName,String password){
         logger.info("{} tries to login",userName);
         isValid(userName);
+        if(iUserRepo.getMember(userName).isLoggedIn()){
+            logger.error("user {} already logged in",userName);
+            throw new IllegalStateException("user already logged in");
+        }
         iUserRepo.getMember(userName).setLogin(true);
         logger.info("{} done login",userName);
     }
@@ -377,6 +381,19 @@ public class UserFacade {
         }
         return ordersString;
     }
+
+    public List<OrderDTO> getUserOrderDTOs(String username){
+        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List <OrderDTO> orders =new ArrayList<>();
+        for (Integer orderId : ordersIds) {
+            Map<Integer,OrderDTO> ordersMap =orderFacade.getOrderByOrderId(orderId);
+            for (Integer store_id : ordersMap.keySet()) {
+                orders.add(ordersMap.get(store_id));
+            }
+        }
+        return orders;
+    }
+
 
     private double calculateFinalPrice(String username,List<CartItemDTO> items){
         double sum=0;
