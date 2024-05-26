@@ -5,7 +5,6 @@ import java.util.Map;
 
 public class Order {
     private String memberName;
-    //private int orderId;
     private String storeNameWhenOrdered;
     private Map<Integer, Integer> productAmounts;
     private Map<Integer, String> orderProductsJsons;
@@ -17,10 +16,6 @@ public class Order {
         this.productAmounts=productAmounts;
         this.orderProductsJsons=orderProductsJsons;
     }
-
-    //public int getOrderId() {
-//        return orderId;
-//    }
 
     public String getMemberName() {
         return memberName;

@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.discountPolicies;
 
+import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
@@ -13,14 +14,14 @@ public class DiscountPolicyFacade {
     private ProductFacade productFacade;
     private static DiscountPolicyFacade instance;
 
-    public DiscountPolicyFacade() {
+    public DiscountPolicyFacade(ProductFacade productFacade) {
         mapper = new HashMap<Integer, DiscountManager>();
-        productFacade = ProductFacade.getInstance();
+        this.productFacade = productFacade;
     }
 
     public static DiscountPolicyFacade getInstance() {
         if (instance == null) {
-            instance = new DiscountPolicyFacade();
+            instance = new DiscountPolicyFacade(new ProductFacade());
         }
         return instance;
     }
@@ -44,6 +45,10 @@ public class DiscountPolicyFacade {
 
     public List<ProductDataPrice> calculatePrice(int storeId, List<CartItemDTO> cart) {
         DiscountManager discountManager = mapper.get(storeId);
-        return discountManager.giveDiscount(cart, productFacade);
+        Map<Integer, ProductDTO> productDTOMap = new HashMap<>();
+        for(CartItemDTO cartItemDTO : cart){
+            productDTOMap.put(cartItemDTO.getProductId(), productFacade.getProductDTO(cartItemDTO.getProductId()));
+        }
+        return discountManager.giveDiscount(cart, productDTOMap);
     }
 }

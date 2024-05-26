@@ -6,12 +6,7 @@ import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
-import java.util.Collections;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BuyPolicyFacade {
     private Map<Integer, BuyPolicyManager> mapper;
@@ -31,12 +26,12 @@ public class BuyPolicyFacade {
     // for now that function dosent do anything special
     public boolean addBuyPolicy(int storeId, String args) {
         BuyPolicy bp;
-        if (mapper.get(storeId) == null) {
+        if (!mapper.containsKey(storeId)) {
             mapper.put(storeId, new BuyPolicyManager());
         }
         try {
             // create new DiscountPolicy
-            bp = null;
+            bp = new DefaultBuyPolicy(new LinkedList<>(), "");
         } catch (Exception e) {
             return false;
         }
