@@ -260,6 +260,10 @@ public class MarketServiceTestAdapter {
         return Response.createResponse(false, objectMapper.writeValueAsString(history));
     }
 
+    public Response memberSetAddress(String token, String username, AddressDTO addressDTO) {
+        return Response.createResponse(false, "true");
+    }
+
     public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
         return real.setStoreBankAccount(token, username, storeId, bankAccount);
     }

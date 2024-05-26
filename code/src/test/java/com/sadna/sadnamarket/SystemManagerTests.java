@@ -54,6 +54,8 @@ class SystemManagerTests {
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(storeOwnerToken, storeOwnerUsername, storeId, productId, 10);
         bridge.addProductToBasketMember(buyerToken, buyerUsername, storeId, productId, 5);
+        bridge.memberSetAddress(buyerToken, buyerUsername, new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
+        "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
         bridge.buyCartMember(buyerToken, buyerUsername, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"));
 
         resp = bridge.guestEnterSystem();
