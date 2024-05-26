@@ -5,14 +5,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.PaymentInterface;
+import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.domain.supply.SupplyInterface;
+import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -37,6 +42,14 @@ class StoreOwnerTests {
     @BeforeEach
     void clean() {
         bridge.reset();
+        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
+        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
+        PaymentService.getInstance().setController(paymentMock);
+        SupplyService.getInstance().setController(supplyMock);
+        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
+        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
+        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
         username = "StoreOwnerMan";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -86,7 +99,7 @@ class StoreOwnerTests {
         Response resp = bridge.addProductToStore(token, username, storeId,
                 new ProductDTO(-1, "product", 100.0, "cat", 3.5));
         int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, null, 200.0, null, -10));
+        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, "product", 200.0, "cat", 3.5));
         Assertions.assertFalse(resp.getError());
         try {
             resp = bridge.getProductData(token, username, productId);

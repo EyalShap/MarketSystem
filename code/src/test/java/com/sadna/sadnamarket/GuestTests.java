@@ -235,7 +235,7 @@ class GuestTests {
         int productId = Integer.parseInt(resp.getDataJson());
         Assertions.assertDoesNotThrow(() -> bridge.getProductData("", "", productId));
         try {
-            resp = bridge.getProductData("", "", productId);
+            resp = bridge.getProductData("", null, productId);
             Assertions.assertFalse(resp.getError());
             String json = resp.getDataJson();
             Assertions.assertDoesNotThrow(() -> objectMapper.readValue(json, ProductDTO.class));
@@ -419,14 +419,15 @@ class GuestTests {
             Assertions.assertFalse(resp.getError());
             String json = resp.getDataJson();
             Assertions.assertDoesNotThrow(
-                    () -> objectMapper.readValue(json, new TypeReference<Map<ProductDTO, Integer>>() {
+                    () -> objectMapper.readValue(json, new TypeReference<Map<String, Integer>>() {
                     }));
-            Map<ProductDTO, Integer> results = objectMapper.readValue(json,
-                    new TypeReference<Map<ProductDTO, Integer>>() {
+            Map<String, Integer> results = objectMapper.readValue(json,
+                    new TypeReference<Map<String, Integer>>() {
                     });
             Assertions.assertEquals(1, results.keySet().size());
-            Assertions.assertEquals(productId, results.keySet().iterator().next().getProductID());
-            Assertions.assertEquals("TestProduct", results.keySet().iterator().next().getProductName());
+            ProductDTO productDTO = objectMapper.readValue(results.keySet().iterator().next(), ProductDTO.class);
+            Assertions.assertEquals(productId, productDTO.getProductID());
+            Assertions.assertEquals("TestProduct", productDTO.getProductName());
         } catch (Exception e) {
 
         }
@@ -454,13 +455,16 @@ class GuestTests {
             resp = bridge.searchProductInStore(storeId, null, 100, 105, "Product", -1);
             Assertions.assertFalse(resp.getError());
             String json = resp.getDataJson();
-            Assertions.assertDoesNotThrow(() -> objectMapper.readValue(json, new TypeReference<List<ProductDTO>>() {
-            }));
-            List<ProductDTO> results = objectMapper.readValue(json, new TypeReference<List<ProductDTO>>() {
-            });
-            Assertions.assertEquals(1, results.size());
-            Assertions.assertEquals(productId, results.get(0).getProductID());
-            Assertions.assertEquals("Product", results.get(0).getProductCategory());
+            Assertions.assertDoesNotThrow(
+                    () -> objectMapper.readValue(json, new TypeReference<Map<String, Integer>>() {
+                    }));
+            Map<String, Integer> results = objectMapper.readValue(json,
+                    new TypeReference<Map<String, Integer>>() {
+                    });
+            Assertions.assertEquals(1, results.keySet().size());
+            ProductDTO productDTO = objectMapper.readValue(results.keySet().iterator().next(), ProductDTO.class);
+            Assertions.assertEquals(productId, productDTO.getProductID());
+            Assertions.assertEquals("Product", productDTO.getProductCategory());
         } catch (Exception e) {
 
         }
@@ -485,7 +489,7 @@ class GuestTests {
         bridge.addProductToStore(ownerToken, ownerUsername, storeId2,
                 new ProductDTO(-1, "TestProduct", 500.5, "Product", 3.5));
         try {
-            resp = bridge.searchProductInStore(storeId, "TestProduct", 500, 505, "Product", -1);
+            resp = bridge.searchProductInStore(storeId, "TestProduct", 50, 50, "Product", -1);
             Assertions.assertTrue(resp.getError());
         } catch (Exception e) {
 

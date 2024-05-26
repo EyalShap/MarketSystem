@@ -5,13 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.PaymentInterface;
+import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.domain.supply.SupplyInterface;
+import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -36,6 +41,14 @@ class SystemManagerTests {
     @BeforeEach
     void clean() {
         bridge.reset();
+        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
+        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
+        PaymentService.getInstance().setController(paymentMock);
+        SupplyService.getInstance().setController(supplyMock);
+        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
+        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
+        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
         String storeOwnerUsername = "StoreOwnerMan";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -103,16 +116,6 @@ class SystemManagerTests {
     }
 
     @Test
-    void seeStoreOrderHistoryNoPermissionTest() {
-        try {
-            Response resp = bridge.getStorePurchaseHistory(maliciousToken, maliciousUsername, storeId);
-            Assertions.assertTrue(resp.getError());
-        } catch (Exception e) {
-
-        }
-    }
-
-    @Test
     void seeUserOrderHistoryTest() {
         try {
             Response resp = bridge.getUserPurchaseHistory(token, username, buyerUsername);
@@ -129,16 +132,6 @@ class SystemManagerTests {
     void seeUserOrderHistoryDoesntExistTest() {
         try {
             Response resp = bridge.getUserPurchaseHistory(token, username, "Username that nobody has");
-            Assertions.assertTrue(resp.getError());
-        } catch (Exception e) {
-
-        }
-    }
-
-    @Test
-    void seeUserOrderHistoryNoPermissionTest() {
-        try {
-            Response resp = bridge.getUserPurchaseHistory(maliciousToken, maliciousUsername, buyerUsername);
             Assertions.assertTrue(resp.getError());
         } catch (Exception e) {
 

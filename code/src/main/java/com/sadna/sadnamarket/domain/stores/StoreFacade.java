@@ -68,7 +68,7 @@ public class StoreFacade {
     }
 
     public int addProductToStore(String username, int storeId, String productName, int productQuantity,
-            int productPrice, String category, double rank) {
+            double productPrice, String category, double rank) {
         if (!hasPermission(username, storeId, Permission.ADD_PRODUCTS))
             throw new IllegalArgumentException(
                     String.format("user %s can not add a product to store with id %d.", username, storeId));
@@ -96,7 +96,7 @@ public class StoreFacade {
     }
 
     public int updateProduct(String username, int storeId, int productId, String newProductName, int newQuantity,
-            int newPrice, String newCategory, double newRank) {
+            double newPrice, String newCategory, double newRank) {
         if (!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
             throw new IllegalArgumentException(
                     String.format("user %s can not update a product in store with id %d.", username, storeId));
@@ -108,6 +108,21 @@ public class StoreFacade {
 
             store.setProductAmounts(productId, newQuantity);
             productFacade.updateProduct(storeId, productId, newProductName, newPrice, newCategory, newRank);
+            return productId;
+        }
+    }
+
+    public int updateProductAmount(String username, int storeId, int productId, int newQuantity) {
+        if (!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
+            throw new IllegalArgumentException(
+                    String.format("user %s can not update a product in store with id %d.", username, storeId));
+        Store store = storeRepository.findStoreByID(storeId);
+        synchronized (store) {
+            if (!store.productExists(productId))
+                throw new IllegalArgumentException(
+                        String.format("A store with id %d does not have a product with id %d.", storeId, productId));
+
+            store.setProductAmounts(productId, newQuantity);
             return productId;
         }
     }
@@ -287,7 +302,7 @@ public class StoreFacade {
      */
 
     public List<OrderDTO> getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
-        if (!storeRepository.findStoreByID(storeId).isStoreOwner(username))
+        if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.getSystemManagerUserName().equals(username))
             throw new IllegalArgumentException(String.format(
                     "A user %s is not an owner of store %d and can not request order history.", username, storeId));
 
