@@ -268,6 +268,13 @@ public class UserFacade {
         logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
     }
 
+    public List<Permission> getManagerPermissions(String actorUsername,String userName, int storeId){
+        logger.info("{} got permissions of {} in store {}",actorUsername, userName, storeId);
+        Member member=iUserRepo.getMember(userName);
+        logger.info("{} got permissions of {} in store {}",actorUsername, userName, storeId);
+        return member.getPermissions(storeId);
+    }
+
     public void leaveRole(String username,int storeId){
         logger.info("{} try leave role in store {}",username,storeId);
         Member member=iUserRepo.getMember(username);
@@ -374,6 +381,19 @@ public class UserFacade {
         }
         return ordersString;
     }
+
+    public List<OrderDTO> getUserOrderDTOs(String username){
+        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List <OrderDTO> orders =new ArrayList<>();
+        for (Integer orderId : ordersIds) {
+            Map<Integer,OrderDTO> ordersMap =orderFacade.getOrderByOrderId(orderId);
+            for (Integer store_id : ordersMap.keySet()) {
+                orders.add(ordersMap.get(store_id));
+            }
+        }
+        return orders;
+    }
+
 
     private double calculateFinalPrice(String username,List<CartItemDTO> items){
         double sum=0;

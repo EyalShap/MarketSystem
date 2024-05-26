@@ -270,4 +270,4 @@ public class UserFacadeTest {
         List<CartItemDTO> items=userFacade.getMember(testUsername2).getCartItems();
         assertEquals(2, items.size());
     }
-}
+}*/

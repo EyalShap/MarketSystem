@@ -177,7 +177,7 @@ class StoreOwnerTests {
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
-        bridge.logout(apointeeToken);
+        bridge.logout(appointeeUsername);
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
         Assertions.assertFalse(resp.getError());
@@ -200,7 +200,7 @@ class StoreOwnerTests {
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
-        bridge.logout(apointeeToken);
+        bridge.logout(appointeeUsername);
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
         Assertions.assertFalse(resp.getError());
@@ -263,7 +263,7 @@ class StoreOwnerTests {
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
-        bridge.logout(apointeeToken);
+        bridge.logout(appointeeUsername);
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertFalse(resp.getError());
@@ -286,7 +286,7 @@ class StoreOwnerTests {
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
-        bridge.logout(apointeeToken);
+        bridge.logout(appointeeUsername);
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertFalse(resp.getError());

@@ -18,7 +18,7 @@ public class Response {
     }
     
     public static Response createResponse() {
-        return new Response("", false,"");
+        return new Response("true", false,"");
     }
     public static Response createResponse(int number) {
         String dataStr = number+"";

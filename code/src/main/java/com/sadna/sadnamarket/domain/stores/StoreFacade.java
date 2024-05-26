@@ -447,6 +447,25 @@ public class StoreFacade {
 
     }
 
+    public boolean getIsOwner(String actorUsername, int storeId, String infoUsername){
+        if (!storeRepository.storeExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        Store store = storeRepository.findStoreByID(storeId);
+        if (!store.isStoreOwner(actorUsername))
+            throw new IllegalArgumentException(String.format("User %s cannot set bank account of store %d.",
+                    actorUsername, storeId));
+        return store.isStoreOwner(infoUsername);
+    }
+    public boolean getIsManager(String actorUsername, int storeId, String infoUsername){
+        if (!storeRepository.storeExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        Store store = storeRepository.findStoreByID(storeId);
+        if (!store.isStoreOwner(actorUsername))
+            throw new IllegalArgumentException(String.format("User %s cannot set bank account of store %d.",
+                    actorUsername, storeId));
+        return store.isStoreManager(infoUsername);
+    }
+
     public synchronized void buyCart(String username, List<CartItemDTO> cart) {
         checkCart(username, cart);
 
