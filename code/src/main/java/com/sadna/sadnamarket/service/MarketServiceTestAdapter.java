@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
@@ -257,5 +258,13 @@ public class MarketServiceTestAdapter {
     public Response getUserPurchaseHistory(String token, String actorId, String userId) throws JsonProcessingException {
         List<OrderDTO> history = new LinkedList<>();
         return Response.createResponse(false, objectMapper.writeValueAsString(history));
+    }
+
+    public Response memberSetAddress(String token, String username, AddressDTO addressDTO) {
+        return Response.createResponse(false, "true");
+    }
+
+    public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
+        return real.setStoreBankAccount(token, username, storeId, bankAccount);
     }
 }

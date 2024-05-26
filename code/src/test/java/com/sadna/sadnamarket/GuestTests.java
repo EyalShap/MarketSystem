@@ -8,6 +8,7 @@ import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.payment.PaymentInterface;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
@@ -685,6 +686,7 @@ class GuestTests {
         String ownerToken = resp.getDataJson();
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
+        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product"));
         int productId = Integer.parseInt(resp.getDataJson());
@@ -721,6 +723,7 @@ class GuestTests {
         String ownerToken = resp.getDataJson();
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
+        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product"));
         int productId = Integer.parseInt(resp.getDataJson());
@@ -756,6 +759,7 @@ class GuestTests {
         String ownerToken = resp.getDataJson();
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
+        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product"));
         int productId = Integer.parseInt(resp.getDataJson());
@@ -792,6 +796,7 @@ class GuestTests {
         String ownerToken = resp.getDataJson();
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
+        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product"));
         int productId = Integer.parseInt(resp.getDataJson());
@@ -827,6 +832,7 @@ class GuestTests {
         String ownerToken = resp.getDataJson();
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         int storeId = Integer.parseInt(resp.getDataJson());
+        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product"));
         int productId = Integer.parseInt(resp.getDataJson());

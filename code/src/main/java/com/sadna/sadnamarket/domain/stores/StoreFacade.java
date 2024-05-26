@@ -17,6 +17,7 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 
 public class StoreFacade {
     private UserFacade userFacade;
@@ -348,6 +349,22 @@ public class StoreFacade {
         for (ProductDTO product : filteredProducts)
             res.put(product, store.getProductAmounts().get(product.getProductID()));
         return res;
+    }
+
+    public synchronized void setStoreBankAccount(String ownerUsername, int storeId, BankAccountDTO bankAccount) {
+        if (!storeRepository.storeExists(storeId))
+                throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        Store store = storeRepository.findStoreByID(storeId);
+        if (!store.isStoreOwner(ownerUsername))
+            throw new IllegalArgumentException(String.format("User %s cannot set bank account of store %d.",
+                    ownerUsername, storeId));
+        
+        store.setBankAccount(bankAccount);
+    }
+
+    public synchronized BankAccountDTO getStoreBankAccount(int storeId) throws JsonProcessingException {
+        Store store = storeRepository.findStoreByID(storeId);
+        return store.getBankAccount();
     }
 
     public synchronized int getProductAmount(String username, int storeId, int productId)
