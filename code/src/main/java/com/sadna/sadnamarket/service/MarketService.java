@@ -10,6 +10,7 @@ import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.orders.IOrderRepository;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
+import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
@@ -221,7 +222,7 @@ public class MarketService {
     public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
             checkToken(token, username);
-            String history = storeFacade.getStoreOrderHistory(username, storeId);
+            List<OrderDTO> history = storeFacade.getStoreOrderHistory(username, storeId);
             logger.info(String.format("User %s got order history from store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
         }
@@ -293,12 +294,12 @@ public class MarketService {
         }
     }
 
-    public Response addBuyPolicy(String token, String username, int storeId) {
+    public Response addBuyPolicy(String token, String username, int storeId, String args) {
         try {
             checkToken(token, username);
-            int policyId = storeFacade.addBuyPolicy(username, storeId);
-            logger.info(String.format("User %s added buy policy with id %d to store %d.", username, policyId, storeId));
-            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
+            storeFacade.addBuyPolicy(username, storeId, args);
+            logger.info(String.format("User %s added buy policy to store %d.", username, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
             logger.error("addBuyPolicy: " + e.getMessage());
@@ -306,12 +307,12 @@ public class MarketService {
         }
     }
 
-    public Response addDiscountPolicy(String token, String username, int storeId) {
+    public Response addDiscountPolicy(String token, String username, int storeId, String args) {
         try {
             checkToken(token, username);
-            int policyId = storeFacade.addDiscountPolicy(username, storeId);
-            logger.info(String.format("User %s added discount policy with id %d to store %d.", username, policyId, storeId));
-            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
+            storeFacade.addDiscountPolicy(username, storeId, args);
+            logger.info(String.format("User %s added discount policy to store %d.", username, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
             logger.error("addDiscountPolicy: " + e.getMessage());
