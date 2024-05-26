@@ -273,6 +273,22 @@ public class MarketService {
         }
     }
 
+    public Response getProductInfo(String token, String username, int productId) {
+        try {
+            if(username != null)
+                checkToken(token, username);
+
+            ProductDTO productDTO = storeFacade.getProductInfo(username, productId);
+            String json = objectMapper.writeValueAsString(productDTO);
+            logger.info(String.format("A user got product info of product %d.", productId));
+            return Response.createResponse(false, json);
+        }
+        catch (Exception e) {
+            logger.error("getStoreInfo: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response getStoreProductsInfo(String token, String username, int storeId, String category, double price, double minProductRank) {
         try {
             if(username != null)
@@ -377,83 +393,107 @@ public class MarketService {
 
     public Response login(String username, String password){
         try{
+            logger.info("user {} tries to login", username);
             String token= authFacade.login(username, password);
+            logger.info("user {} logged in", username);
             return Response.createResponse(false, token);
 
         }catch(Exception e){
+            logger.error("error in login: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
     public Response logout(String username){
         try{
+            logger.info(username, username);
             userFacade.logout(username);
+            logger.info(username);
             return Response.createResponse();
 
         }catch(Exception e){
+            logger.error("error in logout: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
         public Response exitGuest(int guestId){
             try{
+                logger.info("guest {} tries to exit", guestId);
                 userFacade.exitGuest(guestId);
+                logger.info("guest {} exited", guestId);
                 return Response.createResponse();
 
             }catch(Exception e){
+                logger.error("error in exitGuest: "+e.getMessage());
                 return Response.createResponse(true, e.getMessage());
             }
         }
     public Response enterAsGuest(){
         try{
+            logger.info("guest tries to enter");
             int guestId=userFacade.enterAsGuest();
+            logger.info("guest entered with id {}", guestId);
             return Response.createResponse(guestId);
-
         }catch(Exception e){
+            logger.error("error in enterAsGuest: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber){
         try{
+            logger.info("user {} tries to register", username);
             authFacade.register(username,password,firstName, lastName, emailAddress, phoneNumber);
+            logger.info("user {} registered", username);
             return Response.createResponse();
 
         }catch(Exception e){
+            logger.error("error in register: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response memberExists(String username){
         try{
+            logger.info("user {} tries to check if exists", username);
             boolean res = userFacade.isExist(username);
+            logger.info("user {} exists: {}", username, res);
             return Response.createResponse(false, String.valueOf(res));
-
         }catch(Exception e){
+            logger.error("error in memberExists: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response authenticate(String token, String username){
         try{
+            logger.info("user {} tries to authenticate", username);
             checkToken(token, username);
+            logger.info("user {} authenticated", username);
             return Response.createResponse(false, "true");
 
         }catch(Exception e){
+            logger.error("error in authenticate: "+e.getMessage());
             return Response.createResponse(false, "false");
         }
     }
 
     public Response setFirstName(String username, String firstName) {
         try {
+            logger.info("user {} tries to set first name= {}", username,firstName);
             userFacade.setFirstName(username, firstName);
+            logger.info("user {} set first name {}", username,firstName);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("error in setFirstName: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response setLastName(String username, String lastName) {
         try {
+            logger.info("user {} tries to set last name= {}", username,lastName);
             userFacade.setLastName(username, lastName);
+            logger.info("user {} set last name= {}", username,lastName);
             return Response.createResponse();
         } catch (Exception e) {
             return Response.createResponse(true, e.getMessage());
@@ -462,173 +502,249 @@ public class MarketService {
 
     public Response setEmailAddress(String username, String emailAddress) {
         try {
+            logger.info("user {} tries to set email address= {}", username,emailAddress);
             userFacade.setEmailAddress(username, emailAddress);
+            logger.info("user {} set email address= {}", username,emailAddress);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("error in setEmailAddress: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response setPhoneNumber(String username, String phoneNumber) {
+        logger.info("Setting phoneNumber for username: {}", username);
         try {
             userFacade.setPhoneNumber(username, phoneNumber);
+            logger.info("Set phoneNumber successful for username: {}", username);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("Set phoneNumber failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
+
     public Response addProductToCart(String username, int storeId, int productId, int amount) {
+        logger.info("Adding product to cart for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
         try {
-            if (amount <= 0)
+            if (amount <= 0) {
+                logger.error("Amount should be above 0 for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
                 throw new IllegalArgumentException("amount should be above 0");
+            }
             userFacade.addProductToCart(username, storeId, productId, amount);
+            logger.info("Add product to cart successful for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("Add product to cart failed for username: {}, storeId: {}, productId: {}, amount: {}. Error: {}", username, storeId, productId, amount, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response addProductToCart(int guestId, int storeId, int productId, int amount) {
+        logger.info("Adding product to cart for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
         try {
-            if (amount <= 0)
+            if (amount <= 0) {
+                logger.error("Amount should be above 0 for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
                 throw new IllegalArgumentException("amount should be above 0");
+            }
             userFacade.addProductToCart(guestId, storeId, productId, amount);
+            logger.info("Add product to cart successful for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("Add product to cart failed for guestId: {}, storeId: {}, productId: {}, amount: {}. Error: {}", guestId, storeId, productId, amount, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response removeProductFromCart(String username, int storeId, int productId) {
+        logger.info("Removing product from cart for username: {}, storeId: {}, productId: {}", username, storeId, productId);
         try {
             userFacade.removeProductFromCart(username, storeId, productId);
+            logger.info("Remove product from cart successful for username: {}, storeId: {}, productId: {}", username, storeId, productId);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("Remove product from cart failed for username: {}, storeId: {}, productId: {}. Error: {}", username, storeId, productId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response removeProductFromCart(int guestId, int storeId, int productId) {
+        logger.info("Removing product from cart for guestId: {}, storeId: {}, productId: {}", guestId, storeId, productId);
         try {
             userFacade.removeProductFromCart(guestId, storeId, productId);
+            logger.info("Remove product from cart successful for guestId: {}, storeId: {}, productId: {}", guestId, storeId, productId);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("Remove product from cart failed for guestId: {}, storeId: {}, productId: {}. Error: {}", guestId, storeId, productId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response changeQuantityCart(String username, int storeId, int productId, int amount) {
+        logger.info("Changing quantity in cart for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
         try {
-            if (amount <= 0)
+            if (amount <= 0) {
+                logger.error("Amount should be above 0 for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
                 throw new IllegalArgumentException("amount should be above 0");
+            }
             userFacade.changeQuantityCart(username, storeId, productId, amount);
+            logger.info("Change quantity in cart successful for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
             return Response.createResponse();
         } catch (Exception e) {
-            return Response.createResponse(true, e.getMessage());
-        }
-    }
-
-    public Response getUserCart(int guestId) {
-        try {
-            List<CartItemDTO> items = userFacade.getCartItems(guestId);
-            return Response.createResponse(false, objectMapper.writeValueAsString(items));
-        } catch (Exception e) {
+            logger.error("Change quantity in cart failed for username: {}, storeId: {}, productId: {}, amount: {}. Error: {}", username, storeId, productId, amount, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response changeQuantityCart(int guestId, int storeId, int productId, int amount) {
+        logger.info("Changing quantity in cart for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
         try {
+            if (amount <= 0) {
+                logger.error("Amount should be above 0 for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
+                throw new IllegalArgumentException("amount should be above 0");
+            }
             userFacade.changeQuantityCart(guestId, storeId, productId, amount);
+            logger.info("Change quantity in cart successful for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("Change quantity in cart failed for guestId: {}, storeId: {}, productId: {}, amount: {}. Error: {}", guestId, storeId, productId, amount, e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getUserCart(int guestId) {
+        logger.info("Getting user cart for guestId: {}", guestId);
+        try {
+            List<CartItemDTO> items = userFacade.getCartItems(guestId);
+            logger.info("Get user cart successful for guestId: {}", guestId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(items));
+        } catch (Exception e) {
+            logger.error("Get user cart failed for guestId: {}. Error: {}", guestId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response acceptRequest(String acceptingName, int requestID) {
+        logger.info("Accepting request for acceptingName: {}, requestID: {}", acceptingName, requestID);
         try {
             userFacade.accept(acceptingName, requestID);
+            logger.info("Accept request successful for acceptingName: {}, requestID: {}", acceptingName, requestID);
             return Response.createResponse();
         } catch (Exception e) {
+            logger.error("Accept request failed for acceptingName: {}, requestID: {}. Error: {}", acceptingName, requestID, e.getMessage());
             return Response.createResponse(true, e.getMessage());
-       
         }
     }
+
     public Response setSystemAdminstor(String username) {
+        logger.info("Setting system administrator for username: {}", username);
         try {
-            userFacade.setSystemManagerUserName(username);;
+            userFacade.setSystemManagerUserName(username);
+            logger.info("Set system administrator successful for username: {}", username);
             return Response.createResponse();
-        } catch (Exception e) { 
+        } catch (Exception e) {
+            logger.error("Set system administrator failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
-       
         }
     }
-    public Response leaveRole(String username,int storeId) {
+
+    public Response leaveRole(String username, int storeId) {
+        logger.info("Leaving role for username: {}, storeId: {}", username, storeId);
         try {
-            userFacade.leaveRole(username,storeId);;
+            userFacade.leaveRole(username, storeId);
+            logger.info("Leave role successful for username: {}, storeId: {}", username, storeId);
             return Response.createResponse();
-        } catch (Exception e) { 
+        } catch (Exception e) {
+            logger.error("Leave role failed for username: {}, storeId: {}. Error: {}", username, storeId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
-       
         }
     }
+
     public Response getOrderHistory(String username) {
+        logger.info("Getting order history for username: {}", username);
         try {
-            List<String> orders=userFacade.getUserOrders(username);
-            return Response.createResponse(false,objectMapper.writeValueAsString(orders));
-        } catch (Exception e) { 
+            List<String> orders = userFacade.getUserOrders(username);
+            logger.info("Get order history successful for username: {}", username);
+            return Response.createResponse(false, objectMapper.writeValueAsString(orders));
+        } catch (Exception e) {
+            logger.error("Get order history failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
-       
         }
     }
 
     public Response getOrderDTOHistory(String username) {
+        logger.info("Getting order DTO history for username: {}", username);
         try {
-            List<OrderDTO> orders=userFacade.getUserOrderDTOs(username);
-            return Response.createResponse(false,objectMapper.writeValueAsString(orders));
+            List<OrderDTO> orders = userFacade.getUserOrderDTOs(username);
+            logger.info("Get order DTO history successful for username: {}", username);
+            return Response.createResponse(false, objectMapper.writeValueAsString(orders));
         } catch (Exception e) {
+            logger.error("Get order DTO history failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
+        }
+    }
 
+    public Response getAllOrderDTOHistory(String username) {
+        logger.info("Getting all order DTO history for username: {}", username);
+        try {
+            List<OrderDTO> orders = userFacade.getAllOrders(username);
+            logger.info("Get all order DTO history successful for username: {}", username);
+            return Response.createResponse(false, objectMapper.writeValueAsString(orders));
+        } catch (Exception e) {
+            logger.error("Get all order DTO history failed for username: {}. Error: {}", username, e.getMessage());
+            return Response.createResponse(true, e.getMessage());
         }
     }
 
     public Response viewCart(String username) {
+        logger.info("Viewing cart for username: {}", username);
         try {
             userFacade.viewCart(username);
+            logger.info("View cart successful for username: {}", username);
             return Response.createResponse();
-        } catch (Exception e) { 
+        } catch (Exception e) {
+            logger.error("View cart failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
-       
         }
     }
-    public Response purchaseCart(String username,CreditCardDTO creditCard, AddressDTO addressDTO) {
+
+    public Response purchaseCart(String username, CreditCardDTO creditCard, AddressDTO addressDTO) {
+        logger.info("Purchasing cart for username: {}, creditCard: {}, addressDTO: {}", username, creditCard, addressDTO);
         try {
-            userFacade.purchaseCart(username,creditCard,addressDTO);
+            userFacade.purchaseCart(username, creditCard, addressDTO);
+            logger.info("Purchase cart successful for username: {}", username);
             return Response.createResponse();
-        } catch (Exception e) { 
+        } catch (Exception e) {
+            logger.error("Purchase cart failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
-       
         }
     }
+
     public Response viewCart(int guestId) {
+        logger.info("Viewing cart for guestId: {}", guestId);
         try {
             userFacade.viewCart(guestId);
+            logger.info("View cart successful for guestId: {}", guestId);
             return Response.createResponse();
-        } catch (Exception e) { 
+        } catch (Exception e) {
+            logger.error("View cart failed for guestId: {}. Error: {}", guestId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
-       
         }
     }
+
     public Response purchaseCart(int guestId, CreditCardDTO creditCard, AddressDTO addressDTO) {
+        logger.info("Purchasing cart for guestId: {}, creditCard: {}, addressDTO: {}", guestId, creditCard, addressDTO);
         try {
-            userFacade.purchaseCart(guestId,creditCard,addressDTO);
+            userFacade.purchaseCart(guestId, creditCard, addressDTO);
+            logger.info("Purchase cart successful for guestId: {}", guestId);
             return Response.createResponse();
-        } catch (Exception e) { 
+        } catch (Exception e) {
+            logger.error("Purchase cart failed for guestId: {}. Error: {}", guestId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
-       
         }
     }
+    
+
     public Response getIsOwner(String token, String username, int storeId, String ownerUsername) {
         checkToken(token, username);
         try {

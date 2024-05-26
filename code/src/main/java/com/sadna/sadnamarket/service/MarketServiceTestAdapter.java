@@ -90,9 +90,8 @@ public class MarketServiceTestAdapter {
     }
 
     public Response getProductData(String token, String userId, int productId) throws JsonProcessingException {
-        // empty token and -1 userId if guest //THIS ONE IS MISSING
-        ProductDTO dto = new ProductDTO(5, "TestProduct", 0, "product", 0);
-        return Response.createResponse(false, objectMapper.writeValueAsString(dto)); // THIS ONE IS MISSING
+        //empty token and -1 userId if guest //THIS ONE IS MISSING
+        return real.getProductInfo(token, userId, productId);
     }
 
     public Response searchProduct(String productName, double productPriceMin, double productPriceMax,
