@@ -18,6 +18,7 @@ import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.users.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class MarketService {
         this.storeFacade = new StoreFacade(storeRepository);
         this.buyPolicyFacade = new BuyPolicyFacade();
         this.discountPolicyFacade = new DiscountPolicyFacade();
-        this.userFacade = new UserFacade(new MemoryRepo(),storeFacade);
+        this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
 
         this.storeFacade.setUserFacade(userFacade);
@@ -62,6 +63,10 @@ public class MarketService {
             instance = new MarketService(new MemoryStoreRepository());
         }
         return instance;
+    }
+
+    public static MarketService getNewInstance() {
+        return new MarketService(new MemoryStoreRepository());
     }
 
     // ----------------------- Stores -----------------------
@@ -92,6 +97,19 @@ public class MarketService {
             int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category);
             logger.info(String.format("User %s added product %d to store %d.", username, newProductId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
+        }
+        catch (Exception e) {
+            logger.error("addProductToStore: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
+        try {
+            checkToken(token, username);
+            storeFacade.setStoreBankAccount(username, storeId, bankAccount);
+            logger.info(String.format("User %s changed store %d bank account.", username, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
             logger.error("addProductToStore: " + e.getMessage());
@@ -333,4 +351,281 @@ public class MarketService {
         }
     }
 
+    public Response getManagerPermissions(String token, String currentOwnerUsername, String managerUsername, int storeId) {
+        try {
+            checkToken(token, currentOwnerUsername);
+            if(!storeFacade.getIsManager(currentOwnerUsername, storeId, managerUsername)){
+                logger.error("getManagerPermissions: User " + managerUsername + " isn't a manager");
+                return Response.createResponse(true, "User isn't a manager");
+            }
+            logger.info(String.format("User %s got permission of user %s in store %d", currentOwnerUsername, managerUsername, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(userFacade.getManagerPermissions(currentOwnerUsername, managerUsername, storeId)));
+        }
+        catch (Exception e) {
+            logger.error("getManagerPermissions: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response login(String username, String password){
+        try{
+            String token= authFacade.login(username, password);
+            return Response.createResponse(false, token);
+
+        }catch(Exception e){
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response logout(String username){
+        try{
+            userFacade.logout(username);
+            return Response.createResponse();
+
+        }catch(Exception e){
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+        public Response exitGuest(int guestId){
+            try{
+                userFacade.exitGuest(guestId);
+                return Response.createResponse();
+
+            }catch(Exception e){
+                return Response.createResponse(true, e.getMessage());
+            }
+        }
+    public Response enterAsGuest(){
+        try{
+            int guestId=userFacade.enterAsGuest();
+            return Response.createResponse(guestId);
+
+        }catch(Exception e){
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber){
+        try{
+            authFacade.register(username,password,firstName, lastName, emailAddress, phoneNumber);
+            return Response.createResponse();
+
+        }catch(Exception e){
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response memberExists(String username){
+        try{
+            boolean res = userFacade.isExist(username);
+            return Response.createResponse(false, String.valueOf(res));
+
+        }catch(Exception e){
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response authenticate(String token, String username){
+        try{
+            checkToken(token, username);
+            return Response.createResponse(false, "true");
+
+        }catch(Exception e){
+            return Response.createResponse(false, "false");
+        }
+    }
+
+    public Response setFirstName(String username, String firstName) {
+        try {
+            userFacade.setFirstName(username, firstName);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response setLastName(String username, String lastName) {
+        try {
+            userFacade.setLastName(username, lastName);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response setEmailAddress(String username, String emailAddress) {
+        try {
+            userFacade.setEmailAddress(username, emailAddress);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response setPhoneNumber(String username, String phoneNumber) {
+        try {
+            userFacade.setPhoneNumber(username, phoneNumber);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response addProductToCart(String username, int storeId, int productId, int amount) {
+        try {
+            if (amount <= 0)
+                throw new IllegalArgumentException("amount should be above 0");
+            userFacade.addProductToCart(username, storeId, productId, amount);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response addProductToCart(int guestId, int storeId, int productId, int amount) {
+        try {
+            if (amount <= 0)
+                throw new IllegalArgumentException("amount should be above 0");
+            userFacade.addProductToCart(guestId, storeId, productId, amount);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response removeProductFromCart(String username, int storeId, int productId) {
+        try {
+            userFacade.removeProductFromCart(username, storeId, productId);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response removeProductFromCart(int guestId, int storeId, int productId) {
+        try {
+            userFacade.removeProductFromCart(guestId, storeId, productId);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response changeQuantityCart(String username, int storeId, int productId, int amount) {
+        try {
+            if (amount <= 0)
+                throw new IllegalArgumentException("amount should be above 0");
+            userFacade.changeQuantityCart(username, storeId, productId, amount);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response changeQuantityCart(int guestId, int storeId, int productId, int amount) {
+        try {
+            userFacade.changeQuantityCart(guestId, storeId, productId, amount);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response acceptRequest(String acceptingName, int requestID) {
+        try {
+            userFacade.accept(acceptingName, requestID);
+            return Response.createResponse();
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response setSystemAdminstor(String username) {
+        try {
+            userFacade.setSystemManagerUserName(username);;
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response leaveRole(String username,int storeId) {
+        try {
+            userFacade.leaveRole(username,storeId);;
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response getOrderHistory(String username) {
+        try {
+            List<String> orders=userFacade.getUserOrders(username);
+            return Response.createResponse(false,objectMapper.writeValueAsString(orders));
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+
+    public Response getOrderDTOHistory(String username) {
+        try {
+            List<OrderDTO> orders=userFacade.getUserOrderDTOs(username);
+            return Response.createResponse(false,objectMapper.writeValueAsString(orders));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+
+        }
+    }
+
+    public Response viewCart(String username) {
+        try {
+            userFacade.viewCart(username);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response purchaseCart(String username) {
+        try {
+            userFacade.purchaseCart(username);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response viewCart(int guestId) {
+        try {
+            userFacade.viewCart(guestId);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response purchaseCart(int guestId) {
+        try {
+            userFacade.purchaseCart(guestId);
+            return Response.createResponse();
+        } catch (Exception e) { 
+            return Response.createResponse(true, e.getMessage());
+       
+        }
+    }
+    public Response getIsOwner(String token, String username, int storeId, String ownerUsername) {
+        checkToken(token, username);
+        try {
+            return Response.createResponse(false, String.valueOf(storeFacade.getIsOwner(username, storeId, ownerUsername)));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getIsManager(String token, String username, int storeId, String managerUsername) {
+        checkToken(token, username);
+        try {
+            return Response.createResponse(false, String.valueOf(storeFacade.getIsOwner(username, storeId, managerUsername)));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }

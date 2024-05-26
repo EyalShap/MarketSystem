@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.users;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class StoreManager implements UserRole {
@@ -49,6 +50,11 @@ public class StoreManager implements UserRole {
     @Override
     public void sendRequest(UserFacade userFacade, String senderName, String sentName,String reqType) {
         throw new IllegalAccessError("You are not authorized to perform this action");
+    }
+
+    @Override
+    public List<Permission> getPermissions() {
+        return permissions;
     }
    
     @Override

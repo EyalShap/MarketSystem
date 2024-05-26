@@ -7,6 +7,7 @@ public interface UserRole {
     boolean hasPermission(Permission permission);
     void addPermission(Permission permission);
     void removePermission(Permission permission);
+    List<Permission> getPermissions();
     boolean isApointedByUser(String username);
     List<String> getAppointers(); 
     void addAppointers(String apointee); 
