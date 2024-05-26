@@ -642,4 +642,19 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    public Response getAllProducts(String token, String username) {
+        try {
+            if (username != null)
+                checkToken(token, username);
+
+            List<ProductDTO> productDTOs = productFacade.getAllProducts();
+            logger.info(String.format("User %s got all market products", username));
+            return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
+        } catch (Exception e) {
+            logger.error("getAllProducts: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
 }
