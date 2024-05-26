@@ -501,7 +501,7 @@ class StoreOwnerTests {
         bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
         bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                 new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                        "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                        "+97254-989-4939", "jimjimmy@gmail.com"));
         try {
             resp = bridge.getStorePurchaseHistory(token, username, storeId);
             List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() { });
@@ -535,7 +535,7 @@ class StoreOwnerTests {
         bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
         bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                 new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                        "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                        "+97254-989-4939", "jimjimmy@gmail.com"));
         try {
             resp = bridge.getStorePurchaseHistory(maliciousToken, maliciousUsername, storeId);
             Assertions.assertTrue(resp.getError());
@@ -554,7 +554,7 @@ class StoreOwnerTests {
         bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
         bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                 new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                        "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                        "+97254-989-4939", "jimjimmy@gmail.com"));
         try {
             resp = bridge.getStorePurchaseHistory("nopety nope nope", "doesnt exist", storeId);
             Assertions.assertTrue(resp.getError());

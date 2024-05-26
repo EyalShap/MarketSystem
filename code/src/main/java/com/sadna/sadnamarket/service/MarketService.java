@@ -19,6 +19,7 @@ import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.users.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class MarketService {
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(storeRepository);
         this.buyPolicyFacade = new BuyPolicyFacade();
-        this.discountPolicyFacade = new DiscountPolicyFacade();
+        this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
         this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
 
@@ -66,7 +67,8 @@ public class MarketService {
     }
 
     public static MarketService getNewInstance() {
-        return new MarketService(new MemoryStoreRepository());
+        instance =new MarketService(new MemoryStoreRepository());
+        return instance;
     }
 
     // ----------------------- Stores -----------------------
@@ -82,6 +84,8 @@ public class MarketService {
         try {
             checkToken(token, founderUsername);
             int newStoreId = storeFacade.createStore(founderUsername, storeName, address, email, phoneNumber, openingHours, closingHours); // will throw an exception if the store already exists
+            addBuyPolicy(token, founderUsername, newStoreId,"");
+            addDiscountPolicy(token, founderUsername, newStoreId,"");
             logger.info(String.format("User %s created a store with id %d.", founderUsername, newStoreId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
         }
@@ -598,9 +602,9 @@ public class MarketService {
        
         }
     }
-    public Response purchaseCart(String username,CreditCardDTO creditCard, String country, String city, String addressLine1, String addressLine2, String zipCode, String ordererName, String contactPhone, String contactEmail, String name) {
+    public Response purchaseCart(String username,CreditCardDTO creditCard, AddressDTO addressDTO) {
         try {
-            userFacade.purchaseCart(username,creditCard,country,city,addressLine1,addressLine2,zipCode,ordererName,contactPhone,contactEmail);
+            userFacade.purchaseCart(username,creditCard,addressDTO);
             return Response.createResponse();
         } catch (Exception e) { 
             return Response.createResponse(true, e.getMessage());
@@ -616,9 +620,9 @@ public class MarketService {
        
         }
     }
-    public Response purchaseCart(int guestId,CreditCardDTO creditCard, String country, String city, String addressLine1, String addressLine2, String zipCode, String ordererName, String contactPhone, String contactEmail, String name) {
+    public Response purchaseCart(int guestId, CreditCardDTO creditCard, AddressDTO addressDTO) {
         try {
-            userFacade.purchaseCart(guestId,creditCard,country,city,addressLine1,addressLine2,zipCode,ordererName,contactPhone,contactEmail,name);
+            userFacade.purchaseCart(guestId,creditCard,addressDTO);
             return Response.createResponse();
         } catch (Exception e) { 
             return Response.createResponse(true, e.getMessage());

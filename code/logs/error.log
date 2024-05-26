@@ -1,2 +1,232 @@
 2024-05-21 16:52:29 ERROR c.s.s.service.MarketService - createStore: A store with the name "hi" already exists.
 2024-05-21 17:02:41 ERROR c.s.s.service.MarketService - createStore: A store with the name "hi" already exists.
+2024-05-26 19:57:03 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:04 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:06 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 19:57:07 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:07 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:07 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 19:57:08 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:08 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-05-26 19:57:08 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-05-26 19:57:09 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:09 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-05-26 19:57:09 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-05-26 19:57:10 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 19:57:10 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 19:57:11 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-05-26 19:57:11 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:11 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-05-26 19:57:11 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:13 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 19:57:13 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:13 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:14 ERROR c.s.s.domain.auth.AuthFacade - user doesnt exist
+2024-05-26 19:57:14 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:57:14 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:58:25 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:58:25 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:58:28 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 19:58:28 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:58:29 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:58:29 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 19:58:29 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 19:58:30 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-05-26 19:58:30 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-05-26 19:58:30 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:01:03 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:04:29 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:04:59 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:06:11 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:08:48 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:09:53 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:13:47 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:15:49 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:21:21 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:22:29 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:23:54 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:24:21 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:26:32 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:27:03 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:31:57 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:31:58 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:31:59 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:32:00 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:00 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:32:00 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:00 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 20:32:01 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:01 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:32:01 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-05-26 20:32:01 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-05-26 20:32:02 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:02 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:32:02 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-05-26 20:32:02 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-05-26 20:32:02 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:32:03 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:32:03 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-05-26 20:32:03 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:03 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-05-26 20:32:04 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:05 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 20:32:05 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:05 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:05 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:32:06 ERROR c.s.s.domain.auth.AuthFacade - user doesnt exist
+2024-05-26 20:32:06 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:32:06 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:37:22 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:37:22 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:39:26 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:40:00 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:40:44 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:41:30 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:43:29 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:45:38 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:46:27 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:46:27 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:47:47 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:47:47 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:49:34 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:50:29 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 does not exist.
+2024-05-26 20:53:55 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:22 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:23 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:24 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:54:24 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:25 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:25 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 20:54:25 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:26 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-05-26 20:54:26 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-05-26 20:54:26 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:27 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-05-26 20:54:27 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-05-26 20:54:27 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:54:27 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:54:28 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-05-26 20:54:28 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:28 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-05-26 20:54:28 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:29 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 20:54:30 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:30 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:30 ERROR c.s.s.domain.auth.AuthFacade - user doesnt exist
+2024-05-26 20:54:31 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:54:31 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:55:58 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:55:58 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:55:59 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:56:00 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:00 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:01 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 20:56:01 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:02 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-05-26 20:56:02 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-05-26 20:56:02 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:03 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-05-26 20:56:03 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-05-26 20:56:03 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:56:04 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 20:56:04 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-05-26 20:56:04 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:04 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-05-26 20:56:05 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:06 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 20:56:06 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:06 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:06 ERROR c.s.s.domain.auth.AuthFacade - user doesnt exist
+2024-05-26 20:56:07 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 20:56:07 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:26 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:26 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:27 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 21:01:28 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:28 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:28 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 21:01:29 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:29 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-05-26 21:01:29 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-05-26 21:01:30 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:30 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-05-26 21:01:30 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-05-26 21:01:30 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 21:01:31 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 21:01:31 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-05-26 21:01:32 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:32 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-05-26 21:01:32 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:33 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 21:01:33 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:33 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:34 ERROR c.s.s.domain.auth.AuthFacade - user doesnt exist
+2024-05-26 21:01:34 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:01:34 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:46 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:46 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:47 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 21:02:48 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:48 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:49 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 21:02:49 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:49 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-05-26 21:02:50 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-05-26 21:02:50 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:50 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-05-26 21:02:50 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-05-26 21:02:51 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 21:02:51 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-05-26 21:02:52 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-05-26 21:02:52 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:52 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-05-26 21:02:52 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:53 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-05-26 21:02:53 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:54 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:54 ERROR c.s.s.domain.auth.AuthFacade - user doesnt exist
+2024-05-26 21:02:55 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:02:55 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:03:16 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Eric does not exist
+2024-05-26 21:03:16 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: User with username Eric does not exist
+2024-05-26 21:03:17 ERROR c.s.s.service.MarketService - closeStore: There is no store with id 2147483647.
+2024-05-26 21:03:18 ERROR c.s.s.service.MarketService - getOwners: There is no store with id 2147483647.
+2024-05-26 21:03:18 ERROR c.s.s.service.MarketService - getManagers: There is no store with id 2147483647.
+2024-05-26 21:03:18 ERROR c.s.s.service.MarketService - deleteProductFromStore: user Mallory can not delete a product from store with id 0.
+2024-05-26 21:03:19 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: jwt isnt valid
+2024-05-26 21:03:19 ERROR c.s.s.service.MarketService - addProductToStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. 
+2024-05-26 21:03:20 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:03:20 ERROR c.s.s.service.MarketService - getStoreOrderHistory: A user Mallory is not an owner of store 0 and can not request order history.
+2024-05-26 21:03:21 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: jwt isnt valid
+2024-05-26 21:03:21 ERROR c.s.s.service.MarketService - closeStore: User Mallory can not close the store with id 0 (not a founder).
+2024-05-26 21:03:23 ERROR c.s.sadnamarket.domain.users.Member - Exception in getRequest: member already has role in store
+2024-05-26 21:03:23 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: member already has role in store
+2024-05-26 21:03:23 ERROR c.s.s.service.MarketService - getOwners: There is no store with id 2147483647.
+2024-05-26 21:03:23 ERROR c.s.s.service.MarketService - getManagers: There is no store with id 2147483647.
+2024-05-26 21:03:24 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: User StoreOwnerMan can not add user Eric as an owner to store 0.
+2024-05-26 21:03:25 ERROR c.s.s.service.MarketService - addManagerPermission: User StoreOwnerMan can not add user Eric as a manager to store 0.
+2024-05-26 21:03:26 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User StoreOwnerMan can not add user Eric as a manager to store 0.
+2024-05-26 21:03:26 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:03:27 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:03:28 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product category cannot be null or empty. 
+2024-05-26 21:03:28 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:03:28 ERROR c.s.s.service.MarketService - getStoreOrderHistory: jwt isnt valid
+2024-05-26 21:03:29 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User Mallory can not add user Eric as a manager to store 0.
+2024-05-26 21:03:29 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-05-26 21:03:31 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: User Mallory can not add user Eric as an owner to store 0.
+2024-05-26 21:03:31 ERROR c.s.s.service.MarketService - updateProductInStore: A store with id 0 does not have a product with id 2147483647.
+2024-05-26 21:03:32 ERROR c.s.s.service.MarketService - deleteProductFromStore: A product with id 2147483647 does not exist.
+2024-05-26 21:03:32 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Eric does not exist
+2024-05-26 21:03:32 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User with username Eric does not exist
+2024-05-26 21:03:34 ERROR c.s.s.service.MarketService - updateProductInStore: A store with id 0 does not have a product with id 0.
+2024-05-26 21:03:35 ERROR c.s.s.service.MarketService - addManagerPermission: User Mallory can not add user Eric as a manager to store 0.
+2024-05-26 21:03:36 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:03:37 ERROR c.s.s.service.MarketService - deleteProductFromStore: A product with id 0 does not exist.
+2024-05-26 21:03:39 ERROR c.s.s.service.MarketService - updateProductInStore: user Mallory can not update a product in store with id 0.
+2024-05-26 21:03:39 ERROR c.s.s.service.MarketService - addProductToStore: user Mallory can not add a product to store with id 0.
+2024-05-26 21:04:00 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:04:02 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:04:02 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-05-26 21:05:15 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:05:16 ERROR c.s.s.service.MarketService - updateProductInStore: Product can be updated because: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-05-26 21:05:16 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.

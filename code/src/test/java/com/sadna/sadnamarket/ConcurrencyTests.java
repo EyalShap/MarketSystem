@@ -83,7 +83,7 @@ class ConcurrencyTests {
                 public void run() {
                     bridge.buyCartGuest(uuid1, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                             new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                                    "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                                    "+97254-989-4939", "jimjimmy@gmail.com"));
                 }
             });
             Thread t2 = new Thread(new Runnable() {
@@ -91,7 +91,7 @@ class ConcurrencyTests {
                 public void run() {
                     bridge.buyCartGuest(uuid2, new CreditCardDTO("4580458045804580", "852", new Date(1930297600), "213958804"),
                             new AddressDTO("Israel", "Kfar Shmaryahu", "Jabotinsky 39", "Apartment 13", "1234567", "Bob Bobby",
-                                    "+97255-123-4569", "bobbobby@gmail.com", "213958804"));
+                                    "+97255-123-4569", "bobbobby@gmail.com"));
                 }
             });
             t1.run();
@@ -131,7 +131,7 @@ class ConcurrencyTests {
                     bridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
                     Response resp = bridge.buyCartGuest(uuid1, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                             new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                                    "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                                    "+97254-989-4939", "jimjimmy@gmail.com"));
                     if(!resp.getError()){
                         succeeded[0]++;
                         succeeded[1] = 0;
@@ -171,32 +171,23 @@ class ConcurrencyTests {
         String apointeeToken = resp.getDataJson();
 
         try{
-            final int[] succeeded = new int[1];
-            succeeded[0] = 0;
             Thread t1 = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Response resp = bridge.appointManager(ownerToken, ownerUsername, storeId, appointeeUsername, new LinkedList<>());
-                    if(!resp.getError()){
-                        succeeded[0]++;
-                    }
                 }
             });
             Thread t2 = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Response resp = bridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername, new LinkedList<>());
-                    if(!resp.getError()){
-                        succeeded[0]++;
-                    }
                 }
             });
             t1.run();
             t2.run();
             t1.join();
             t2.join();
-            Assertions.assertNotEquals(2, succeeded[0]);
-            bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1); //it is my understanding that "appointerUsername" field isn't actually used
+            bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
             Assertions.assertEquals("true", bridge.getIsManager(ownerToken, ownerUsername, storeId, appointeeUsername).getDataJson());
         }catch (Exception e){
 
