@@ -1,0 +1,62 @@
+2024-05-21 16:52:28 INFO  c.s.s.SadnaMarketApplication - Starting SadnaMarketApplication using Java 22.0.1 with PID 14852 (C:\Users\danaf\OneDrive\שולחן העבודה\uni\שנה ג\סמסטר ב\סדנא\code\MarketSystem\code\target\classes started by danaf in C:\Users\danaf\OneDrive\שולחן העבודה\uni\שנה ג\סמסטר ב\סדנא\code\MarketSystem\code)
+2024-05-21 16:52:28 INFO  c.s.s.SadnaMarketApplication - No active profile set, falling back to 1 default profile: "default"
+2024-05-21 16:52:29 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2024-05-21 16:52:29 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2024-05-21 16:52:29 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2024-05-21 16:52:29 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2024-05-21 16:52:29 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-05-21 16:52:29 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1315 ms
+2024-05-21 16:52:29 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2024-05-21 16:52:29 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2024-05-21 16:52:29 INFO  c.s.s.SadnaMarketApplication - Started SadnaMarketApplication in 2.702 seconds (process running for 3.129)
+2024-05-21 16:52:29 INFO  c.s.s.service.MarketService - Log test
+2024-05-21 16:52:29 ERROR c.s.s.service.MarketService - createStore: A store with the name "hi" already exists.
+2024-05-21 17:02:39 INFO  c.s.s.SadnaMarketApplication - Starting SadnaMarketApplication using Java 22.0.1 with PID 6964 (C:\Users\danaf\OneDrive\שולחן העבודה\uni\שנה ג\סמסטר ב\סדנא\code\MarketSystem\code\target\classes started by danaf in C:\Users\danaf\OneDrive\שולחן העבודה\uni\שנה ג\סמסטר ב\סדנא\code\MarketSystem\code)
+2024-05-21 17:02:39 INFO  c.s.s.SadnaMarketApplication - No active profile set, falling back to 1 default profile: "default"
+2024-05-21 17:02:40 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2024-05-21 17:02:40 INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2024-05-21 17:02:40 INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2024-05-21 17:02:40 INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2024-05-21 17:02:40 INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-05-21 17:02:40 INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1260 ms
+2024-05-21 17:02:41 INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2024-05-21 17:02:41 INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2024-05-21 17:02:41 INFO  c.s.s.SadnaMarketApplication - Started SadnaMarketApplication in 2.54 seconds (process running for 3.018)
+2024-05-21 17:02:41 INFO  c.s.s.service.MarketService - User 0 created a store with id 0.
+2024-05-21 17:02:41 ERROR c.s.s.service.MarketService - createStore: A store with the name "hi" already exists.
+2024-05-24 22:59:53 INFO  com.sadna.sadnamarket.GuestTests - Starting GuestTests using Java 18.0.2 with PID 24860 (started by eyalm in C:\Users\eyalm\Documents\Sadna\code)
+2024-05-24 22:59:53 INFO  com.sadna.sadnamarket.GuestTests - No active profile set, falling back to 1 default profile: "default"
+2024-05-24 23:00:00 INFO  c.s.s.domain.auth.AuthFacade - hiiii
+2024-05-24 23:00:03 WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 1e5a12e7-deda-4b1c-8b7d-c93363f70df8
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2024-05-24 23:00:03 INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-05-24 23:00:03 INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7bbdb220, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6d001fbe, org.springframework.security.web.context.SecurityContextHolderFilter@4b85edeb, org.springframework.security.web.header.HeaderWriterFilter@709d86a2, org.springframework.web.filter.CorsFilter@d120d7c, org.springframework.security.web.csrf.CsrfFilter@3a88f6fb, org.springframework.security.web.authentication.logout.LogoutFilter@1a4083f6, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@5e51ec2e, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@c318864, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@5ee77baf, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@36e409e0, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@59933644, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@67e6eb52, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@485deee1, org.springframework.security.web.access.ExceptionTranslationFilter@6326c5ec, org.springframework.security.web.access.intercept.AuthorizationFilter@3d3930fe]
+2024-05-24 23:00:04 INFO  com.sadna.sadnamarket.GuestTests - Started GuestTests in 12.385 seconds (process running for 18.898)
+2024-05-24 23:01:58 INFO  com.sadna.sadnamarket.GuestTests - Starting GuestTests using Java 18.0.2 with PID 33940 (started by eyalm in C:\Users\eyalm\Documents\Sadna\code)
+2024-05-24 23:01:58 INFO  com.sadna.sadnamarket.GuestTests - No active profile set, falling back to 1 default profile: "default"
+2024-05-24 23:02:02 INFO  c.s.s.domain.auth.AuthFacade - hiiii
+2024-05-24 23:02:04 WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: f99e7b03-b088-407e-abab-e05a24ec52bb
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2024-05-24 23:02:04 INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-05-24 23:02:04 INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@79604abe, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6b126187, org.springframework.security.web.context.SecurityContextHolderFilter@78128dd0, org.springframework.security.web.header.HeaderWriterFilter@77ab5214, org.springframework.web.filter.CorsFilter@2b6262bc, org.springframework.security.web.csrf.CsrfFilter@4beae1e3, org.springframework.security.web.authentication.logout.LogoutFilter@1214d23c, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@165d1d54, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@657b3b, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@5cffec7, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@20864cd1, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@28dd81ad, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@300a38e7, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7e81617a, org.springframework.security.web.access.ExceptionTranslationFilter@62108cd3, org.springframework.security.web.access.intercept.AuthorizationFilter@59a2d756]
+2024-05-24 23:02:04 INFO  com.sadna.sadnamarket.GuestTests - Started GuestTests in 7.145 seconds (process running for 16.069)
+2024-05-24 23:04:04 INFO  com.sadna.sadnamarket.GuestTests - Starting GuestTests using Java 18.0.2 with PID 34036 (started by eyalm in C:\Users\eyalm\Documents\Sadna\code)
+2024-05-24 23:04:04 INFO  com.sadna.sadnamarket.GuestTests - No active profile set, falling back to 1 default profile: "default"
+2024-05-24 23:04:08 INFO  c.s.s.domain.auth.AuthFacade - hiiii
+2024-05-24 23:04:10 WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 50c20aef-3955-4c2d-b560-df72a3c5c4f0
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2024-05-24 23:04:11 INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-05-24 23:04:11 INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@1f42366, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@46c662f2, org.springframework.security.web.context.SecurityContextHolderFilter@1d1c37d5, org.springframework.security.web.header.HeaderWriterFilter@165d1d54, org.springframework.web.filter.CorsFilter@4afdfc0f, org.springframework.security.web.csrf.CsrfFilter@5ee77baf, org.springframework.security.web.authentication.logout.LogoutFilter@5a48d186, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@249b54af, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@5c839677, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@10b67f54, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@4dd1548e, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@218df7d6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@295b07e0, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@30798137, org.springframework.security.web.access.ExceptionTranslationFilter@5d08976a, org.springframework.security.web.access.intercept.AuthorizationFilter@72324965]
+2024-05-24 23:04:11 INFO  com.sadna.sadnamarket.GuestTests - Started GuestTests in 7.828 seconds (process running for 11.111)
