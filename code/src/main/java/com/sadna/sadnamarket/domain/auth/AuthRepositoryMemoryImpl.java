@@ -34,7 +34,7 @@ public class AuthRepositoryMemoryImpl implements IAuthRepository {
         return verifyPassword(password,userNameAndPassword.get(userName));
     }
     
-    private boolean hasMember(String username){
+    private synchronized boolean hasMember(String username){
         if(userNameAndPassword.containsKey(username))
             return true;
         return false;

@@ -27,7 +27,6 @@ public class NotificationDTO {
         this.message = message;
     }
 
-    
 
     public LocalDateTime getDate() {
         return date;
@@ -35,6 +34,9 @@ public class NotificationDTO {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+    public int getId() {
+        return id;
     }
 
     @Override
