@@ -12,6 +12,7 @@ import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
+import com.sadna.sadnamarket.service.MarketService;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,18 +30,18 @@ class MemberTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    MarketServiceTestAdapter bridge;
+    MarketService bridge;
 
     String username;
     String token;
 
     @BeforeEach
     void clean(){
-        bridge.reset();
+        //bridge.reset();
         username = "TestMember";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "membertest@member.com", username, "imaginaryPassowrd");
+        resp = bridge.register(username, "imaginaryPassowrd","test","user","membertest@member.com",  "0500303033");
         token = resp.getDataJson();
     }
     @Test

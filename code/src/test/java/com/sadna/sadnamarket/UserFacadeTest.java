@@ -1,6 +1,5 @@
-/*package com.sadna.sadnamarket;
+package com.sadna.sadnamarket;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -20,9 +19,7 @@ import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
-import com.sadna.sadnamarket.domain.orders.IOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
-import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;

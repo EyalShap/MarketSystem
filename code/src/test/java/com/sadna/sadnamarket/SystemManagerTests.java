@@ -7,6 +7,7 @@ import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.service.MarketService;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,7 @@ class SystemManagerTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    MarketServiceTestAdapter bridge;
+    MarketService bridge;
 
     String buyerUsername;
     String username;
@@ -36,37 +37,37 @@ class SystemManagerTests {
     void clean(){
         bridge.reset();
         String storeOwnerUsername = "StoreOwnerMan";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "storeowner@store.com", storeOwnerUsername, "imaginaryPassowrd");
+        resp = bridge.register(storeOwnerUsername, "imaginaryPassowrd","Ross","Geller", "storeowner@store.com","05003030330" );
         String storeOwnerToken = resp.getDataJson();
         resp = bridge.openStore(storeOwnerToken, storeOwnerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.guestEnterSystem();
+        resp = bridge.enterAsGuest();
         uuid = resp.getDataJson();
         buyerUsername = "Billy";
-        resp = bridge.signUp(uuid, "bill@buyer.com", buyerUsername, "imaginaryPassowrd");
+        resp = bridge.register(buyerUsername, "imaginaryPassowrd","Chandler", "Bing", "bill@buyer.com", "0500030303");
         String buyerToken = resp.getDataJson();
 
         resp = bridge.addProductToStore(storeOwnerToken, storeOwnerUsername, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(storeOwnerToken, storeOwnerUsername, storeId, productId, 10);
-        bridge.addProductToBasketMember(buyerToken, buyerUsername, storeId, productId, 5);
+        bridge.addProductToCart(buyerUsername, storeId, productId, 5);
         bridge.buyCartMember(buyerToken, buyerUsername, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"));
 
-        resp = bridge.guestEnterSystem();
+        resp = bridge.enterAsGuest();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";
-        resp = bridge.signUp(uuid, "mal@mal.com", maliciousUsername, "stolenPasswordBecauseImEvil");
+        resp = bridge.register(maliciousUsername, "stolenPasswordBecauseImEvil",uuid, "mal@mal.com", );
         maliciousToken = resp.getDataJson();
 
-        resp = bridge.guestEnterSystem();
+        resp = bridge.enterAsGuest();
         uuid = resp.getDataJson();
         username = "IAmAboutToBeGivenGreatPowers";
-        resp = bridge.signUp(uuid, "paul@sadna.com", username, "noOneCanSeeMyPassword");
+        resp = bridge.register(username, "noOneCanSeeMyPassword","Joei", "Tribiani", "paul@sadna.com","0505050550" );
         token = resp.getDataJson();
 
-        bridge.makeSystemManager(username);
+        bridge.setSystemAdminstor(username);
     }
 
     @Test
@@ -105,7 +106,7 @@ class SystemManagerTests {
     @Test
     void seeUserOrderHistoryTest(){
         try {
-            Response resp = bridge.getUserPurchaseHistory(token, username, buyerUsername);
+            Response resp = bridge.getOrderHistory(token, username, buyerUsername);
             Assertions.assertFalse(resp.getError());
             List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() { });
             Assertions.assertEquals(1, history.size());

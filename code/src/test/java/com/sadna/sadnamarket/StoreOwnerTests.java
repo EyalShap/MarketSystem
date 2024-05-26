@@ -8,6 +8,7 @@ import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.service.MarketService;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,7 @@ class StoreOwnerTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    MarketServiceTestAdapter bridge;
+    MarketService bridge;
 
     String username;
     String token;
@@ -35,24 +36,24 @@ class StoreOwnerTests {
 
     @BeforeEach
     void clean(){
-        bridge.reset();
+        //bridge.reset();
         username = "StoreOwnerMan";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "storeowner@store.com", username, "imaginaryPassowrd");
+        resp = bridge.register(username,"imaginaryPassowrd","store","owner", "storeowner@store.com", "050-46464643");
         token = resp.getDataJson();
-        resp = bridge.openStore(token, username, "Store's Store");
+        //resp = bridge.openStore(token, username, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.guestEnterSystem();
+        resp = bridge.enterAsGuest();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";
-        resp = bridge.signUp(uuid, "mal@mal.com", maliciousUsername, "stolenPasswordBecauseImEvil");
+        resp = bridge.register(maliciousUsername, "stolenPasswordBecauseImEvil","Mali","cious" ,"mal@mal.com", "050-003003033");
         maliciousToken = resp.getDataJson();
     }
 
     @Test
     void addProductTest(){
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "product", 100.0,"cat"));
+        Response resp = bridge.addProductToStore(token, username, storeId, -1, 5, 100.0,"cat");
         Assertions.assertFalse(resp.getError());
         String productIdString = resp.getDataJson();
         Assertions.assertDoesNotThrow(() -> Integer.parseInt(productIdString));
@@ -171,9 +172,9 @@ class StoreOwnerTests {
     @Test
     void appointOwnerTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.logout(apointeeToken);
 
@@ -183,7 +184,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        resp = bridge.acceptRequest(apointeeToken, 1);
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsOwner(token, username, storeId, appointeeUsername);
@@ -194,9 +195,9 @@ class StoreOwnerTests {
     @Test
     void appointOwnerRejectTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.logout(apointeeToken);
 
@@ -217,12 +218,12 @@ class StoreOwnerTests {
     @Test
     void appointOwnerAlreadyOwnerTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.appointOwner(token, username, storeId, appointeeUsername);
-        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptRequest(apointeeToken, 1);
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
@@ -237,9 +238,9 @@ class StoreOwnerTests {
     @Test
     void appointOwnerNoPermissionTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         resp = bridge.appointOwner(maliciousToken, maliciousUsername, storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
     }
@@ -247,9 +248,9 @@ class StoreOwnerTests {
     @Test
     void appointOwnerOriginalOwnerDoesntExistTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        bridge.register(uuid, "eric@excited.com", appointeeUsername, "password");
         resp = bridge.appointOwner("token that isn't real", "username that nobody has", storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
     }
@@ -257,9 +258,9 @@ class StoreOwnerTests {
     @Test
     void appointManagerTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.logout(apointeeToken);
 
@@ -269,7 +270,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        resp = bridge.acceptRequest(appointeeUsername, 1);
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsManager(token, username, storeId, appointeeUsername);
@@ -280,9 +281,9 @@ class StoreOwnerTests {
     @Test
     void appointManagerRejectTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.logout(apointeeToken);
 
@@ -303,12 +304,12 @@ class StoreOwnerTests {
     @Test
     void appointManagerAlreadyManagerTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptRequest(appointeeUsername, 1);
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertTrue(resp.getError());
@@ -317,12 +318,12 @@ class StoreOwnerTests {
     @Test
     void appointManagerAlreadyOwnerTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.appointOwner(token, username, storeId, appointeeUsername);
-        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptRequest(username,1);
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertTrue(resp.getError());
@@ -337,9 +338,9 @@ class StoreOwnerTests {
     @Test
     void appointManagerNoPermissionTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         resp = bridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername, new LinkedList<>());
         Assertions.assertTrue(resp.getError());
     }
@@ -347,9 +348,9 @@ class StoreOwnerTests {
     @Test
     void appointManagerOwnerDoesntExistTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         resp = bridge.appointManager("token that isn't real", "username that nobody has", storeId, appointeeUsername, new LinkedList<>());
         Assertions.assertTrue(resp.getError());
     }
@@ -357,12 +358,12 @@ class StoreOwnerTests {
     @Test
     void changeManagerPermissionsTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptRequest(username,1);
         List<Integer> newPerms = new LinkedList<>();
         newPerms.add(0);
         resp = bridge.changeManagerPermissions(token, username, appointeeUsername, storeId, newPerms);
@@ -380,12 +381,12 @@ class StoreOwnerTests {
     @Test
     void changeManagerPermissionsNotOwnerTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptRequest(username,1);
         List<Integer> newPerms = new LinkedList<>();
         newPerms.add(0);
         resp = bridge.changeManagerPermissions(maliciousToken, maliciousUsername, appointeeUsername, storeId, newPerms);
@@ -395,9 +396,9 @@ class StoreOwnerTests {
     @Test
     void changeManagerPermissionsNotManagerTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         List<Integer> newPerms = new LinkedList<>();
         newPerms.add(0);
         resp = bridge.changeManagerPermissions(token, username, appointeeUsername, storeId, newPerms);
@@ -425,12 +426,12 @@ class StoreOwnerTests {
     @Test
     void getStoreRoleTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptRequest(username,1);
 
         try {
             resp = bridge.getStoreOwners(token, username, storeId);
@@ -450,12 +451,12 @@ class StoreOwnerTests {
     @Test
     void getStoreRoleDoesntExistTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptRequest(appointeeUsername, 1);
 
         try {
             resp = bridge.getStoreOwners(token, username, Integer.MAX_VALUE);
@@ -471,12 +472,12 @@ class StoreOwnerTests {
     @Test
     void getStoreRoleNotOwnerTest(){
         String appointeeUsername = "Eric";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
+        resp = bridge.register(appointeeUsername,"ajhajahaah","eric","Forman", "eric@excited.com", "050-003003033");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        bridge.acceptRequest(username,1);
 
         try {
             resp = bridge.getStoreOwners(maliciousToken, maliciousUsername, Integer.MAX_VALUE);
@@ -494,7 +495,7 @@ class StoreOwnerTests {
         Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(token, username, storeId, productId, 10);
-        resp = bridge.guestEnterSystem();
+        resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
         bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
         bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
@@ -528,7 +529,7 @@ class StoreOwnerTests {
         Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(token, username, storeId, productId, 10);
-        resp = bridge.guestEnterSystem();
+        resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
         bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
         bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
@@ -547,7 +548,7 @@ class StoreOwnerTests {
         Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(token, username, storeId, productId, 10);
-        resp = bridge.guestEnterSystem();
+        resp = bridge.enterAsGuest();
         String uuid = resp.getDataJson();
         bridge.addProductToBasketGuest(uuid, storeId, productId, 5);
         bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
