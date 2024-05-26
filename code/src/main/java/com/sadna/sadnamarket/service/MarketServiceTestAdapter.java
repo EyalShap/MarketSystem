@@ -130,11 +130,11 @@ public class MarketServiceTestAdapter {
     }
 
     public Response buyCartGuest(String uuid, CreditCardDTO creditDetails, AddressDTO address) {
-        return Response.createResponse(false, "4"); //returns orderId //THIS ONE IS MISSING
+        return real.purchaseCart(Integer.parseInt(uuid), creditDetails, address);
     }
 
-    public Response buyCartMember(String token, String userId, CreditCardDTO creditDetails) {
-        return Response.createResponse(false, "4"); //returns orderId //THIS ONE IS MISSING
+    public Response buyCartMember(String token, String userId, CreditCardDTO creditDetails, AddressDTO address) {
+        return real.purchaseCart(userId, creditDetails, address);
     }
 
     public Response openStore(String token, String userId, String storeName) {

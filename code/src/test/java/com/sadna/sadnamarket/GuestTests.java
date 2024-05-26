@@ -697,7 +697,7 @@ class GuestTests {
             bridge.addProductToBasketGuest(uuid, storeId, productId, 1);
             resp = bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                     new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                            "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                            "+97254-989-4939", "jimjimmy@gmail.com"));
             Assertions.assertFalse(resp.getError());
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "1");
         }catch (Exception e){
@@ -734,7 +734,7 @@ class GuestTests {
             bridge.addProductToBasketGuest(uuid, storeId, productId, 1);
             resp = bridge.buyCartGuest(uuid, new CreditCardDTO("1234234534564567", "103", new Date(), "123456789"),
                     new AddressDTO("Israel", "Petah Tikvah", "Benyamin 12", "Apartment 12", "5", "Jim Jimmy",
-                            "+97254-989-4939", "jimjimmy@gmail", "987654321"));
+                            "+97254-989-4939", "jimjimmy@gmail"));
             Assertions.assertTrue(resp.getError());
         }catch (Exception e){
 
@@ -771,7 +771,7 @@ class GuestTests {
             bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 4);
             resp = bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                     new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                            "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                            "+97254-989-4939", "jimjimmy@gmail.com"));
             Assertions.assertTrue(resp.getError());
         }catch (Exception e){
 
@@ -807,7 +807,7 @@ class GuestTests {
             bridge.addProductToBasketGuest(uuid, storeId, productId, 2);
             resp = bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                     new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                            "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                            "+97254-989-4939", "jimjimmy@gmail.com"));
             Assertions.assertTrue(resp.getError());
         }catch (Exception e){
 
@@ -843,7 +843,7 @@ class GuestTests {
             bridge.addProductToBasketGuest(uuid, storeId, productId, 2);
             resp = bridge.buyCartGuest(uuid, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                     new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                            "+97254-989-4939", "jimjimmy@gmail.com", "123456782"));
+                            "+97254-989-4939", "jimjimmy@gmail.com"));
             Assertions.assertTrue(resp.getError());
         }catch (Exception e){
 

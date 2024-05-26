@@ -68,6 +68,6 @@ public abstract class DiscountPolicy {
         this.productsId = productsId;
     }
 
-    public abstract int giveDiscount(ProductDTO productDTO, CartItemDTO cartItemDTO);
+    public abstract double giveDiscount(ProductDTO productDTO, CartItemDTO cartItemDTO);
 
 }

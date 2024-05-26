@@ -362,7 +362,7 @@ public class StoreFacade {
         store.setBankAccount(bankAccount);
     }
 
-    public synchronized BankAccountDTO getStoreBankAccount(int storeId) throws JsonProcessingException {
+    public synchronized BankAccountDTO getStoreBankAccount(int storeId) {
         Store store = storeRepository.findStoreByID(storeId);
         return store.getBankAccount();
     }

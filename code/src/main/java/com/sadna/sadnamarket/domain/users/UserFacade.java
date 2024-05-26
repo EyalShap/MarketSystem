@@ -444,12 +444,14 @@ public class UserFacade {
 
         
     }
-    public void purchaseCart(String username,CreditCardDTO creditCard,String country, String city, String addressLine1, String addressLine2, String zipCode, String ordererName, String contactPhone, String contactEmail){
+    public void purchaseCart(String username,CreditCardDTO creditCard,AddressDTO addressDTO){
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         storeFacade.checkCart(username, items);
         // proxy payment
         PaymentService payment = PaymentService.getInstance();
-        payment.checkCardValid(creditCard);
+        if(!payment.checkCardValid(creditCard)){
+            throw new IllegalArgumentException("Credit card is invalid");
+        }
         // update quantities
         storeFacade.buyCart(username, items);
         // create new order 
@@ -462,12 +464,21 @@ public class UserFacade {
         for(ProductDataPrice product:productList){
             productAmount.put(product.getId(),product.getAmount());
         }
-        supply.makeOrder(new OrderDetailsDTO(productAmount), new AddressDTO( country,  city,  addressLine1,  addressLine2,  zipCode,  username,  contactPhone,  contactEmail));
-        
+        String supplyString = supply.makeOrder(new OrderDetailsDTO(productAmount), addressDTO);
+        for(int storeId : storeBag.keySet()){
+            double payAmount = 0;
+            for(ProductDataPrice price : storeBag.get(storeId)){
+                payAmount += price.getNewPrice();
+            }
+            if(!payment.pay(payAmount, creditCard, storeFacade.getStoreBankAccount(storeId))){
+                supply.cancelOrder(supplyString);
+                throw new IllegalStateException("Payment could not be completed for store " + storeId);
+            }
+        }
     }
 
 
-    public void purchaseCart(int guestId,CreditCardDTO creditCard,String country, String city, String addressLine1, String addressLine2, String zipCode, String ordererName, String contactPhone, String contactEmail,String name){
+    public void purchaseCart(int guestId,CreditCardDTO creditCard,AddressDTO addressDTO){
         List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
         storeFacade.checkCart(null, items);
          PaymentService payment = PaymentService.getInstance();
@@ -484,8 +495,17 @@ public class UserFacade {
         for(ProductDataPrice product:productList){
             productAmount.put(product.getId(),product.getAmount());
         }
-        supply.makeOrder(new OrderDetailsDTO(productAmount), new AddressDTO( country,  city,  addressLine1,  addressLine2,  zipCode,  name,  contactPhone,  contactEmail));
-        
+        String supplyString = supply.makeOrder(new OrderDetailsDTO(productAmount), addressDTO);
+        for(int storeId : storeBag.keySet()){
+            double payAmount = 0;
+            for(ProductDataPrice price : storeBag.get(storeId)){
+                payAmount += price.getNewPrice();
+            }
+            if(!payment.pay(payAmount, creditCard, storeFacade.getStoreBankAccount(storeId))){
+                supply.cancelOrder(supplyString);
+                throw new IllegalStateException("Payment could not be completed for store " + storeId);
+            }
+        }
     }
 
     //only for tests
