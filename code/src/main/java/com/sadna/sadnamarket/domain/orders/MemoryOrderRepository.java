@@ -1,5 +1,9 @@
 package com.sadna.sadnamarket.domain.orders;
 
+import com.sadna.sadnamarket.domain.products.MemoryProductRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,12 +12,13 @@ import java.util.Map;
 public class MemoryOrderRepository implements IOrderRepository {
     private Map<Integer, Map<Integer, Order>> orders;
     private int nextOrderId;
+    private static final Logger logger = LogManager.getLogger(MemoryOrderRepository.class);
     public MemoryOrderRepository() {
         orders = new HashMap<>();
         this.nextOrderId = 0;
     }
     @Override
-    public int createOrder(Map<Integer, OrderDTO> storeOrdersDTO){
+    public synchronized int createOrder(Map<Integer, OrderDTO> storeOrdersDTO){
         if (storeOrdersDTO == null) {
             throw new IllegalArgumentException("The order is null.");
         }
@@ -40,7 +45,6 @@ public class MemoryOrderRepository implements IOrderRepository {
     }
 
     private Order DTOToOrder( OrderDTO ordersDTO) {
-        //int orderId = ordersDTO.getOrderId();
         String memberName=ordersDTO.getMemberName();
         String storeNameWhenOrdered = ordersDTO.getStoreNameWhenOrdered();
         Map<Integer, Integer> copiedProductAmounts=new HashMap<>();
@@ -125,6 +129,20 @@ public class MemoryOrderRepository implements IOrderRepository {
         return orderDTOByOrderId;
     }
 
+    public List<OrderDTO> getAllOrders(){
+        List<OrderDTO> allOrders = new LinkedList<>();
+        for (Map.Entry<Integer, Map<Integer, Order>> outerEntry : orders.entrySet()) {
+            Map<Integer, Order> innerMap = outerEntry.getValue();
+            for (Map.Entry<Integer, Order> innerEntry : innerMap.entrySet()) {
+                allOrders.add(orderToDTO(innerEntry.getValue()));
+            }
+        }
+        if(allOrders.isEmpty()){
+            throw new IllegalArgumentException("There are no orders.");
+        }
+        return allOrders;
+    }
+
     public void resetOrders(){
         orders = new HashMap<>();
     }
@@ -162,6 +180,8 @@ public class MemoryOrderRepository implements IOrderRepository {
 
         Map<Integer,Map<Integer,OrderDTO>>a =memoryOrderRepository.getOrdersByMember("matan");
         Map<Integer,OrderDTO>b=memoryOrderRepository.getOrderByOrderId(2);
+
+        List<OrderDTO>ksl=memoryOrderRepository.getAllOrders();
     }
 
 }

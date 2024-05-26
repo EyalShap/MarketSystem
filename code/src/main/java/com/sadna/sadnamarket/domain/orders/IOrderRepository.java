@@ -9,4 +9,5 @@ public interface IOrderRepository {
 
     Map<Integer,Map<Integer,OrderDTO>> getOrdersByMember(String nameMember);
     Map<Integer,OrderDTO> getOrderByOrderId(int orderId);
+    List<OrderDTO> getAllOrders();
 }
