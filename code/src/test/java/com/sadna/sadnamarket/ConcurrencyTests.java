@@ -39,7 +39,7 @@ class ConcurrencyTests {
     String maliciousToken;
 
     @BeforeEach
-    void clean(){
+    void clean() {
         bridge.reset();
         ownerUsername = "StoreOwnerMan";
         Response resp = bridge.guestEnterSystem();
@@ -48,7 +48,8 @@ class ConcurrencyTests {
         ownerToken = resp.getDataJson();
         resp = bridge.openStore(ownerToken, ownerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
+        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId,
+                new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";
@@ -57,7 +58,7 @@ class ConcurrencyTests {
     }
 
     @Test
-    void twoBuyLastProductTest(){
+    void twoBuyLastProductTest() {
         SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
@@ -65,23 +66,24 @@ class ConcurrencyTests {
         Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
-        Mockito.when(paymentMock.pay(Mockito.anyDouble(),Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
         Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
-                new ProductDTO(-1, "TestProduct", 100.3, "Product"));
+                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 1);
         resp = bridge.guestEnterSystem();
         String uuid1 = resp.getDataJson();
         resp = bridge.guestEnterSystem();
         String uuid2 = resp.getDataJson();
-        try{
+        try {
             bridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
             bridge.addProductToBasketGuest(uuid2, storeId, productId, 1);
             Thread t1 = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    bridge.buyCartGuest(uuid1, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
+                    bridge.buyCartGuest(uuid1,
+                            new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                             new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
                                     "+97254-989-4939", "jimjimmy@gmail.com"));
                 }
@@ -89,9 +91,16 @@ class ConcurrencyTests {
             Thread t2 = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    bridge.buyCartGuest(uuid2, new CreditCardDTO("4580458045804580", "852", new Date(1930297600), "213958804"),
-                            new AddressDTO("Israel", "Kfar Shmaryahu", "Jabotinsky 39", "Apartment 13", "1234567", "Bob Bobby",
+                    bridge.buyCartGuest(uuid2,
+                            new CreditCardDTO("4580458045804580", "852", new Date(1930297600), "213958804"),
+                            new AddressDTO("Israel", "Kfar Shmaryahu", "Jabotinsky 39", "Apartment 13", "1234567",
+                                    "Bob Bobby",
                                     "+97255-123-4569", "bobbobby@gmail.com"));
+                    bridge.buyCartGuest(uuid2,
+                            new CreditCardDTO("4580458045804580", "852", new Date(1930297600), "213958804"),
+                            new AddressDTO("Israel", "Kfar Shmaryahu", "Jabotinsky 39", "Apartment 13", "1234567",
+                                    "Bob Bobby",
+                                    "+97255-123-4569", "bobbobby@gmail.com", "213958804"));
                 }
             });
             t1.run();
@@ -99,13 +108,13 @@ class ConcurrencyTests {
             t1.join();
             t2.join();
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "0");
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     @Test
-    void costumerBuyRemovedProductTest(){
+    void costumerBuyRemovedProductTest() {
         SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
@@ -113,10 +122,10 @@ class ConcurrencyTests {
         Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
-        Mockito.when(paymentMock.pay(Mockito.anyDouble(),Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
         Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
-                new ProductDTO(-1, "TestProduct", 100.3, "Product"));
+                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 5);
         resp = bridge.guestEnterSystem();
@@ -124,15 +133,16 @@ class ConcurrencyTests {
         final int[] succeeded = new int[2];
         succeeded[0] = 0;
         succeeded[1] = 0;
-        try{
+        try {
             Thread t1 = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     bridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
-                    Response resp = bridge.buyCartGuest(uuid1, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
+                    Response resp = bridge.buyCartGuest(uuid1,
+                            new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                             new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
                                     "+97254-989-4939", "jimjimmy@gmail.com"));
-                    if(!resp.getError()){
+                    if (!resp.getError()) {
                         succeeded[0]++;
                         succeeded[1] = 0;
                     }
@@ -141,8 +151,8 @@ class ConcurrencyTests {
             Thread t2 = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Response resp = bridge.removeProductFromStore(ownerToken, ownerUsername,storeId,productId);
-                    if(!resp.getError()){
+                    Response resp = bridge.removeProductFromStore(ownerToken, ownerUsername, storeId, productId);
+                    if (!resp.getError()) {
                         succeeded[0]++;
                         succeeded[1] = 5;
                     }
@@ -153,14 +163,14 @@ class ConcurrencyTests {
             t1.join();
             t2.join();
             Assertions.assertFalse(succeeded[0] == 2 && succeeded[1] == 0);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     @Test
-    void twoAppointManagerSameUser(){
-        //make mallory an owner so we have 2 owners to make this test
+    void twoAppointManagerSameUser() {
+        // make mallory an owner so we have 2 owners to make this test
         bridge.appointOwner(ownerToken, ownerUsername, storeId, maliciousUsername);
         bridge.acceptOwnerAppointment(maliciousToken, maliciousUsername, storeId, 1);
 
@@ -170,17 +180,19 @@ class ConcurrencyTests {
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
 
-        try{
+        try {
             Thread t1 = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Response resp = bridge.appointManager(ownerToken, ownerUsername, storeId, appointeeUsername, new LinkedList<>());
+                    Response resp = bridge.appointManager(ownerToken, ownerUsername, storeId, appointeeUsername,
+                            new LinkedList<>());
                 }
             });
             Thread t2 = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Response resp = bridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername, new LinkedList<>());
+                    Response resp = bridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername,
+                            new LinkedList<>());
                 }
             });
             t1.run();
@@ -188,8 +200,9 @@ class ConcurrencyTests {
             t1.join();
             t2.join();
             bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
-            Assertions.assertEquals("true", bridge.getIsManager(ownerToken, ownerUsername, storeId, appointeeUsername).getDataJson());
-        }catch (Exception e){
+            Assertions.assertEquals("true",
+                    bridge.getIsManager(ownerToken, ownerUsername, storeId, appointeeUsername).getDataJson());
+        } catch (Exception e) {
 
         }
     }

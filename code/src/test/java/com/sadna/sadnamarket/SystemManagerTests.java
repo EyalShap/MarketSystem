@@ -34,7 +34,7 @@ class SystemManagerTests {
     String maliciousToken;
 
     @BeforeEach
-    void clean(){
+    void clean() {
         bridge.reset();
         String storeOwnerUsername = "StoreOwnerMan";
         Response resp = bridge.guestEnterSystem();
@@ -43,21 +43,26 @@ class SystemManagerTests {
         String storeOwnerToken = resp.getDataJson();
         resp = bridge.openStore(storeOwnerToken, storeOwnerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreBankAccount(storeOwnerToken, storeOwnerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
+        bridge.setStoreBankAccount(storeOwnerToken, storeOwnerUsername, storeId,
+                new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         buyerUsername = "Billy";
         resp = bridge.signUp(uuid, "bill@buyer.com", buyerUsername, "imaginaryPassowrd");
         String buyerToken = resp.getDataJson();
 
-        resp = bridge.addProductToStore(storeOwnerToken, storeOwnerUsername, storeId, new ProductDTO(-1 , "product", 100.0, "cat"));
+        resp = bridge.addProductToStore(storeOwnerToken, storeOwnerUsername, storeId,
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(storeOwnerToken, storeOwnerUsername, storeId, productId, 10);
         bridge.addProductToBasketMember(buyerToken, buyerUsername, storeId, productId, 5);
-        bridge.memberSetAddress(buyerToken, buyerUsername, new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-        "+97254-989-4939", "jimjimmy@gmail.com"));
-        bridge.buyCartMember(buyerToken, buyerUsername, new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"), new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
-                "+97254-989-4939", "jimjimmy@gmail.com"));
+        bridge.memberSetAddress(buyerToken, buyerUsername,
+                new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
+                        "+97254-989-4939", "jimjimmy@gmail.com"));
+        bridge.buyCartMember(buyerToken, buyerUsername,
+                new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
+                new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
+                        "+97254-989-4939", "jimjimmy@gmail.com"));
 
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
@@ -75,66 +80,67 @@ class SystemManagerTests {
     }
 
     @Test
-    void seeStoreOrderHistoryTest(){
+    void seeStoreOrderHistoryTest() {
         try {
             Response resp = bridge.getStorePurchaseHistory(token, username, storeId);
             Assertions.assertFalse(resp.getError());
-            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() { });
+            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
+            });
             Assertions.assertEquals(1, history.size());
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     @Test
-    void seeStoreOrderHistoryDoesntExistTest(){
+    void seeStoreOrderHistoryDoesntExistTest() {
         try {
             Response resp = bridge.getStorePurchaseHistory(token, username, Integer.MAX_VALUE);
             Assertions.assertTrue(resp.getError());
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     @Test
-    void seeStoreOrderHistoryNoPermissionTest(){
+    void seeStoreOrderHistoryNoPermissionTest() {
         try {
             Response resp = bridge.getStorePurchaseHistory(maliciousToken, maliciousUsername, storeId);
             Assertions.assertTrue(resp.getError());
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
-
     @Test
-    void seeUserOrderHistoryTest(){
+    void seeUserOrderHistoryTest() {
         try {
             Response resp = bridge.getUserPurchaseHistory(token, username, buyerUsername);
             Assertions.assertFalse(resp.getError());
-            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() { });
+            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
+            });
             Assertions.assertEquals(1, history.size());
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     @Test
-    void seeUserOrderHistoryDoesntExistTest(){
+    void seeUserOrderHistoryDoesntExistTest() {
         try {
             Response resp = bridge.getUserPurchaseHistory(token, username, "Username that nobody has");
             Assertions.assertTrue(resp.getError());
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
 
     @Test
-    void seeUserOrderHistoryNoPermissionTest(){
+    void seeUserOrderHistoryNoPermissionTest() {
         try {
             Response resp = bridge.getUserPurchaseHistory(maliciousToken, maliciousUsername, buyerUsername);
             Assertions.assertTrue(resp.getError());
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
