@@ -54,6 +54,9 @@ public class OrderFacade {
         return orderRepository.getAllOrders();
     }
 
+    public static void main(String[] args) {
+
+    }
 
 
 }
