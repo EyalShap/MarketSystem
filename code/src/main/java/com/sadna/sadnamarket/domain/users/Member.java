@@ -186,7 +186,7 @@ public class Member extends IUser {
             logger.error("Exception in getRequest: member already has role in store");
             throw new IllegalStateException("member already has role in store");
         }
-        notifes.put(++notifyID, new Request(senderName, "You got appointment request", storeId, reqType));
+        notifes.put(++notifyID, new Request(senderName, "You got appointment request", storeId, reqType,notifyID));
         logger.info("Exiting getRequest");
     }
 
