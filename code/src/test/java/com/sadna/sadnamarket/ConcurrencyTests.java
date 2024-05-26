@@ -47,6 +47,7 @@ class ConcurrencyTests {
         ownerToken = resp.getDataJson();
         resp = bridge.openStore(ownerToken, ownerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
+        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";

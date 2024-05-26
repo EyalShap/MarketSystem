@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 
 import java.time.LocalTime;
 import java.util.*;
@@ -16,6 +17,7 @@ public class Store {
     private List<String> managerUsernames;
     private List<String> sellerUsernames;
     private List<Integer> orderIds;
+    private BankAccountDTO bankAccount;
     private final Object lock = new Object();
 
     public Store(int storeId, String founderUsername, StoreInfo storeInfo) {
@@ -37,6 +39,10 @@ public class Store {
 
     public StoreInfo getStoreInfo() {
         return storeInfo;
+    }
+
+    public BankAccountDTO getBankAccount() {
+        return bankAccount;
     }
 
     public String getFounderUsername() {
@@ -67,6 +73,10 @@ public class Store {
 
     public List<Integer> getOrderIds() {
         return this.orderIds;
+    }
+
+    public void setBankAccount(BankAccountDTO bankAccount) {
+        this.bankAccount = bankAccount;
     }
 
     public void addProduct(int productId, int amount) {

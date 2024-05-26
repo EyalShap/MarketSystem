@@ -258,4 +258,8 @@ public class MarketServiceTestAdapter {
         List<OrderDTO> history = new LinkedList<>();
         return Response.createResponse(false, objectMapper.writeValueAsString(history));
     }
+
+    public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
+        return real.setStoreBankAccount(token, username, storeId, bankAccount);
+    }
 }

@@ -18,6 +18,7 @@ import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.users.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +92,19 @@ public class MarketService {
             checkToken(token, username);
             int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category);
             logger.info(String.format("User %s added product %d to store %d.", username, newProductId, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
+        }
+        catch (Exception e) {
+            logger.error("addProductToStore: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
+        try {
+            checkToken(token, username);
+            storeFacade.setStoreBankAccount(username, storeId, bankAccount);
+            logger.info(String.format("User %s changed store %d bank account.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
         catch (Exception e) {
