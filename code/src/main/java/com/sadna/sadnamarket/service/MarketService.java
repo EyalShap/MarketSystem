@@ -48,7 +48,7 @@ public class MarketService {
         this.storeFacade = new StoreFacade(storeRepository);
         this.buyPolicyFacade = new BuyPolicyFacade();
         this.discountPolicyFacade = new DiscountPolicyFacade();
-        this.userFacade = new UserFacade(new MemoryRepo(),storeFacade);
+        this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
 
         this.storeFacade.setUserFacade(userFacade);
@@ -105,7 +105,7 @@ public class MarketService {
             checkToken(token, username);
             storeFacade.setStoreBankAccount(username, storeId, bankAccount);
             logger.info(String.format("User %s changed store %d bank account.", username, storeId));
-            return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
             logger.error("addProductToStore: " + e.getMessage());

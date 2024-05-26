@@ -8,6 +8,7 @@ import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ class SystemManagerTests {
         String storeOwnerToken = resp.getDataJson();
         resp = bridge.openStore(storeOwnerToken, storeOwnerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
+        bridge.setStoreBankAccount(storeOwnerToken, storeOwnerUsername, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         buyerUsername = "Billy";

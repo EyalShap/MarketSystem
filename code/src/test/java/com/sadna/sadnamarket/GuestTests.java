@@ -8,6 +8,7 @@ import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.payment.PaymentInterface;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.payment.PaymentInterface;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.ProductDTO;

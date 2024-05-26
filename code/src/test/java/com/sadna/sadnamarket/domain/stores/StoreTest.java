@@ -549,7 +549,7 @@ class StoreTest {
         store0.addProduct(2, 1000);
         store0.addProduct(3, 1000);
 
-        assertTrue(store0.checkCart(cart));
+        assertEquals("",store0.checkCart(cart));
     }
 
     @Test
@@ -563,7 +563,7 @@ class StoreTest {
         store0.addProduct(1, 1000);
         store0.closeStore();
 
-        assertFalse(store0.checkCart(cart));
+        assertNotEquals("",store0.checkCart(cart));
     }
 
     @Test
@@ -576,7 +576,7 @@ class StoreTest {
 
         store0.addProduct(2, 1000);
 
-        assertFalse(store0.checkCart(cart));
+        assertNotEquals("",store0.checkCart(cart));
     }
 
     @Test
@@ -589,6 +589,6 @@ class StoreTest {
 
         store0.addProduct(1, 10);
 
-        assertFalse(store0.checkCart(cart));
+        assertNotEquals("",store0.checkCart(cart));
     }
 }
