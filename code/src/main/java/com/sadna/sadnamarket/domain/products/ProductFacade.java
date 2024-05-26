@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 public class ProductFacade {
     private static ProductFacade instance;
     private IProductRepository productRepository;
-    private Map<Integer, List<Product>> products; // storeId -> list of products
+    // private Map<Integer, List<Product>> products; // storeId -> list of products
 
     public ProductFacade() {
         productRepository = new MemoryProductRepository();
-        products = new HashMap<>();
+        // products = new HashMap<>();
     }
 
     public static ProductFacade getInstance() {
@@ -30,36 +30,41 @@ public class ProductFacade {
 
         // other checks ??
         // already created in this store ?
-        int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank);
+        int productId = productRepository.addProduct(storeId, productName, productPrice, productCategory, productRank);
 
         Product createdProduct = productRepository.getProduct(productId);
 
-        List<Product> storeProducts = products.get(storeId);
-        if (storeProducts == null) {
-            storeProducts = new ArrayList<>();
-        }
-        storeProducts.add(createdProduct);
-        products.put(storeId, storeProducts);
+        // List<Product> storeProducts = products.get(storeId);
+        // if (storeProducts == null) {
+        // storeProducts = new ArrayList<>();
+        // }
+        // storeProducts.add(createdProduct);
+        // products.put(storeId, storeProducts);
 
         return productId;
     }
 
     public void removeProduct(int storeId, int productId) {
-        if (!isStoreExist(storeId))
-            throw new IllegalArgumentException(String.format("Store Id %d does not exist.", storeId));
-
-        if (isProductExistInStore(storeId, productId)) {
-            productRepository.removeProduct(productId);
-        } else
+        // if (!isStoreExist(storeId))
+        // throw new IllegalArgumentException(String.format("Store Id %d does not
+        // exist.", storeId));
+        if (storeId < 0) {
+            throw new IllegalArgumentException(String.format("Store Id %d is invalid.", storeId));
+        }
+        if (!isProductExistInStore(storeId, productId))
             throw new IllegalArgumentException(
                     String.format("Product Id %d does not exist in store Id %d.", productId, storeId));
+
+        productRepository.removeProduct(productId);
     }
 
     public void updateProduct(int storeId, int productId, String newProductName,
             double newPrice, String newCategory, double newRank) {
-        if (!isStoreExist(storeId))
-            throw new IllegalArgumentException(String.format("Store Id %d does not exist.", storeId));
+        if (storeId < 0) {
+            throw new IllegalArgumentException(String.format("Store Id %d is invalid.", storeId));
+        }
 
+        // mock
         if (!isProductExistInStore(storeId, productId))
             throw new IllegalArgumentException(
                     String.format("Product Id %d does not exist in store Id %d.", productId, storeId));
@@ -72,7 +77,7 @@ public class ProductFacade {
         // merge products with same properties ?
         if (!productToUpdate.isActiveProduct())
             throw new IllegalArgumentException(
-                    String.format("Product Id %d was deleted from store Id %d.", productId, storeId));
+                    String.format("Product Id %d was already deleted from store Id %d.", productId, storeId));
 
         productToUpdate.setProductName(newProductName);
         productToUpdate.setProductPrice(newPrice);
@@ -177,14 +182,9 @@ public class ProductFacade {
         }
     }
 
-    private boolean isStoreExist(int storeId) {
-        return products.containsKey(storeId);
-    }
-
     private boolean isProductExistInStore(int storeId, int productId) {
-        List<Product> storeProducts = products.get(storeId);
-        return !(storeProducts == null
-                || storeProducts.stream().noneMatch(product -> product.getProductId() == productId));
+        // checked in store facade
+        return true;
     }
 
     public ProductDTO getProductDTO(int productId) {
@@ -193,30 +193,14 @@ public class ProductFacade {
         return result.getProductDTO();
     }
 
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        for (Map.Entry<Integer, List<Product>> entry : products.entrySet()) {
-            int storeId = entry.getKey();
-            List<Product> storeProducts = entry.getValue();
-            result.append("Store Id: ").append(storeId).append("\n");
-            for (Product product : storeProducts) {
-                result.append("  ").append(product).append("\n");
-            }
-        }
-        return result.toString();
-    }
+    // // package-private for tests
+    // Map<Integer, List<Product>> getProducts() {
+    // return products;
+    // }
 
-    // package-private for tests
-    Map<Integer, List<Product>> getProducts() {
-        return products;
-    }
-
-    // package-private for tests
-    void resetProducts() {
-        products = new HashMap<>();
-    }
-
+    // // package-private for tests
+    // void resetProducts() {
+    // products = new HashMap<>();
     // }
 
 }
