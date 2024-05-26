@@ -152,7 +152,7 @@ public class StoreFacade {
 
     public void addManagerPermission(String currentOwnerUsername, String newManagerUsername, int storeId,
             Set<Permission> permission) {
-        if (!canAddManagerToStore(storeId, currentOwnerUsername, newManagerUsername))
+        if (!canAddPermissionToManager(storeId, currentOwnerUsername, newManagerUsername))
             throw new IllegalArgumentException(String.format("User %s can not add user %s as a manager to store %d.",
                     currentOwnerUsername, newManagerUsername, storeId));
 
@@ -456,6 +456,14 @@ public class StoreFacade {
                     actorUsername, storeId));
         return store.isStoreOwner(infoUsername);
     }
+
+    public boolean hasProductInStock(int storeId, int productId, int amount){
+        if (!storeRepository.storeExists(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+        Store store = storeRepository.findStoreByID(storeId);
+        return store.hasProductInAmount(productId, amount);
+    }
+
     public boolean getIsManager(String actorUsername, int storeId, String infoUsername){
         if (!storeRepository.storeExists(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
@@ -512,6 +520,12 @@ public class StoreFacade {
         return hasPermission(currOwnerUsername, storeId, Permission.ADD_MANAGER) &&
                 userFacade.isExist(newManagerUsername) &&
                 (!storeRepository.findStoreByID(storeId).isStoreManager(newManagerUsername));
+    }
+
+    private boolean canAddPermissionToManager(int storeId, String currOwnerUsername, String newManagerUsername) {
+        return hasPermission(currOwnerUsername, storeId, Permission.ADD_MANAGER) &&
+                userFacade.isExist(newManagerUsername) &&
+                (storeRepository.findStoreByID(storeId).isStoreManager(newManagerUsername));
     }
 
     private boolean canAddSellerToStore(int storeId, String currOwnerUsername, String newSellerUsername) {

@@ -276,6 +276,10 @@ public class MarketService {
 
             Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfo(username, storeId, category, price, minProductRank);
             logger.info(String.format("A user got products info of store %d.", storeId));
+            if(productDTOsAmounts.isEmpty()){
+                logger.error("getProductsInfo: No products found");
+                return Response.createResponse(true, "No products found");
+            }
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOsAmounts));
         }
         catch (Exception e) {
@@ -520,6 +524,15 @@ public class MarketService {
         }
     }
 
+    public Response getUserCart(int guestId) {
+        try {
+            List<CartItemDTO> items = userFacade.getCartItems(guestId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(items));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response changeQuantityCart(int guestId, int storeId, int productId, int amount) {
         try {
             userFacade.changeQuantityCart(guestId, storeId, productId, amount);
@@ -528,6 +541,7 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
     public Response acceptRequest(String acceptingName, int requestID) {
         try {
             userFacade.accept(acceptingName, requestID);
@@ -623,7 +637,7 @@ public class MarketService {
     public Response getIsManager(String token, String username, int storeId, String managerUsername) {
         checkToken(token, username);
         try {
-            return Response.createResponse(false, String.valueOf(storeFacade.getIsOwner(username, storeId, managerUsername)));
+            return Response.createResponse(false, String.valueOf(storeFacade.getIsManager(username, storeId, managerUsername)));
         } catch (Exception e) {
             return Response.createResponse(true, e.getMessage());
         }

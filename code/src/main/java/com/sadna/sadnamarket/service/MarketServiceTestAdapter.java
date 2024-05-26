@@ -10,6 +10,7 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,10 @@ public class MarketServiceTestAdapter {
     }
 
     public Response signUp(String uuid, String email, String username, String passwordHash){
-        real.register(username, passwordHash, "John", "Doe", email, "052-052-0520");
+        Response resp = real.register(username, passwordHash, "John", "Doe", email, "052-052-0520");
+        if(resp.getError()){
+            return resp;
+        }
         return real.login(username, passwordHash);
     }
 
@@ -110,8 +114,14 @@ public class MarketServiceTestAdapter {
     }
 
     public Response getGuestBasket(String uuid, int storeId) throws JsonProcessingException {
+        Response resp = real.getUserCart(Integer.parseInt(uuid));
+        List<CartItemDTO> items = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<CartItemDTO>>(){});
         Map<Integer, Integer> productToAmount = new HashMap<>();
-        productToAmount.put(5, 1); //THIS ONE IS MISSING
+        for(CartItemDTO item : items){
+            if(item.getStoreId() == storeId){
+                productToAmount.put(item.getProductId(), item.getAmount());
+            }
+        }
         return Response.createResponse(false, objectMapper.writeValueAsString(productToAmount));
     }
 
@@ -167,14 +177,14 @@ public class MarketServiceTestAdapter {
         return real.sendStoreManagerRequest(token, userId, appointedUserId, storeId);
     }
 
-    public Response acceptOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
+    public Response acceptOwnerAppointment(String token, String appointedUserId, int storeId, int requestId) {
         //return Response.createResponse(false, "true");
-        return real.acceptRequest(token, appointedUserId, storeId);
+        return real.acceptRequest(token, appointedUserId, requestId);
     }
 
-    public Response acceptManagerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
+    public Response acceptManagerAppointment(String token, String appointedUserId, int storeId, int requestId) {
         //return Response.createResponse(false, "true");
-        return real.acceptRequest(token, appointedUserId, storeId);
+        return real.acceptRequest(token, appointedUserId, requestId);
     }
 
     public Response rejectOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
@@ -187,7 +197,15 @@ public class MarketServiceTestAdapter {
 
     public Response changeManagerPermissions(String token, String userId, String managerId, int storeId, List<Integer> newPermissions) {
         //return Response.createResponse(false, "true");
-        return real.changeManagerPermission(token, userId, managerId, storeId, new HashSet(newPermissions));
+        Set<Permission> perms = new HashSet<>();
+        for(Integer i : newPermissions){
+            for (Permission type : Permission.values()) {
+                if (type.getValue() == i) {
+                    perms.add(type);
+                }
+            }
+        }
+        return real.changeManagerPermission(token, userId, managerId, storeId, perms);
     }
 
     public Response closeStore(String token, String userId, int storeId) {
