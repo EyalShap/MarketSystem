@@ -30,7 +30,7 @@ public class ProductFacade {
 
         // other checks ??
         // already created in this store ?
-        int productId = productRepository.addProduct(storeId, productName, productPrice, productCategory, productRank);
+        int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank);
 
         Product createdProduct = productRepository.getProduct(productId);
 
