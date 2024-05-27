@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.products;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,28 +15,33 @@ public class MemoryProductRepository implements IProductRepository {
 
     public MemoryProductRepository() {
         this.nextProductId = 0;
-        this.products = new HashMap<>();
+        this.products = new ConcurrentHashMap<>();
     }
 
     @Override
     public int addProduct(String productName, double productPrice,
-                          String productCategory, double productRank) {
-        Product createdProduct = new Product(nextProductId, productName, productPrice,
-                productCategory, productRank);
+            String productCategory, double productRank) {
+        synchronized (products) {
+            Product createdProduct = new Product(nextProductId, productName, productPrice,
+                    productCategory, productRank);
 
-        products.put(nextProductId, createdProduct);
-        nextProductId++;
-        logger.info("product " + createdProduct + " succesfully added");
-        return nextProductId - 1;
+            products.put(nextProductId, createdProduct);
+            nextProductId++;
+            logger.info("product " + createdProduct + " succesfully added");
+            return nextProductId - 1;
+        }
     }
 
     @Override
     public Product getProduct(int productId) {
-        if (!isExistProduct(productId)) {
-            logger.error(String.format("Product Id %d does not exist.", productId));
-            throw new IllegalArgumentException(String.format("Product Id %d does not exist.", productId));
+        synchronized (products) {
+
+            if (!isExistProduct(productId)) {
+                logger.error(String.format("Product Id %d does not exist.", productId));
+                throw new IllegalArgumentException(String.format("Product Id %d does not exist.", productId));
+            }
+            return products.get(productId);
         }
-        return products.get(productId);
     }
 
     @Override
@@ -45,53 +51,73 @@ public class MemoryProductRepository implements IProductRepository {
 
     @Override
     public List<Product> getAllProducts() {
-        return new ArrayList<>(products.values());
+        synchronized (products) {
+
+            return new ArrayList<>(products.values());
+        }
     }
 
     @Override
     public List<Product> getProducts(List<Integer> productIds) {
-        List<Product> foundProducts = new ArrayList<>();
-        for (int productId : productIds) {
-            if (isExistProduct(productId))
-                foundProducts.add(products.get(productId));
-            else
-                logger.error(String.format("Product Id %d does not exist.", productId));
+        synchronized (products) {
+
+            List<Product> foundProducts = new ArrayList<>();
+            for (int productId : productIds) {
+                if (isExistProduct(productId))
+                    foundProducts.add(products.get(productId));
+                else
+                    logger.error(String.format("Product Id %d does not exist.", productId));
+            }
+            return foundProducts;
         }
-        return foundProducts;
     }
 
     @Override
     public void removeProduct(int productId) {
-        if (!isExistProduct(productId)) {
-            logger.error(String.format("Product Id %d does not exist.", productId));
-            throw new IllegalArgumentException(String.format("Product Id %d does not exist.", productId));
-        }
+        synchronized (products) {
 
-        Product product = getProduct(productId);
-        if (!product.isActiveProduct()) {
-            logger.error(String.format("Product Id %d was already removed.", productId));
-            throw new IllegalArgumentException(String.format("Product Id %d was already removed.", productId));
+            if (!isExistProduct(productId)) {
+                logger.error(String.format("Product Id %d does not exist.", productId));
+                throw new IllegalArgumentException(String.format("Product Id %d does not exist.", productId));
+            }
+
+            Product product = getProduct(productId);
+            if (!product.isActiveProduct()) {
+                logger.error(String.format("Product Id %d was already removed.", productId));
+                throw new IllegalArgumentException(String.format("Product Id %d was already removed.", productId));
+            }
+            product.disableProduct();
+            logger.error(String.format("Product Id %d was succesully removed.", productId));
         }
-        product.disableProduct();
-        logger.error(String.format("Product Id %d was succesully removed.", productId));
     }
 
     @Override
     public boolean isExistProduct(int productId) {
-        return products.containsKey(productId);
+        synchronized (products) {
+
+            return products.containsKey(productId);
+        }
     }
 
     @Override
     public List<Product> filterByName(String productName) {
-        return products.values().stream()
-                .filter(product -> product.getProductName().equalsIgnoreCase(productName) && product.isActiveProduct())
-                .collect(Collectors.toList());
+        synchronized (products) {
+
+            return products.values().stream()
+                    .filter(product -> product.getProductName().equalsIgnoreCase(productName)
+                            && product.isActiveProduct())
+                    .collect(Collectors.toList());
+        }
     }
 
     @Override
     public List<Product> filterByCategory(String category) {
-        return products.values().stream()
-                .filter(product -> product.getProductCategory().equalsIgnoreCase(category) && product.isActiveProduct())
-                .collect(Collectors.toList());
+        synchronized (products) {
+
+            return products.values().stream()
+                    .filter(product -> product.getProductCategory().equalsIgnoreCase(category)
+                            && product.isActiveProduct())
+                    .collect(Collectors.toList());
+        }
     }
 }
