@@ -15,7 +15,7 @@ public class DiscountManager {
         discounts = new ArrayList<>();
     }
 
-    public void addDiscountPolicy(DiscountPolicy discountPolicy) {
+    public synchronized void addDiscountPolicy(DiscountPolicy discountPolicy) {
         discounts.add(discountPolicy);
     }
 
