@@ -1,199 +1,263 @@
 package com.sadna.sadnamarket.domain.products;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ProductFacade {
     private static ProductFacade instance;
     private IProductRepository productRepository;
-    // private Map<Integer, List<Product>> products; // storeId -> list of products
+    private static final Logger logger = LogManager.getLogger(ProductFacade.class);
 
+    // will be private
     public ProductFacade() {
         productRepository = new MemoryProductRepository();
-        // products = new HashMap<>();
+    }
+
+    public ProductFacade(IProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     public static ProductFacade getInstance() {
         if (instance == null) {
             instance = new ProductFacade();
+            logger.info("ProductFacade instance created");
         }
         return instance;
     }
 
     public int addProduct(int storeId, String productName, double productPrice, String productCategory,
             double productRank) {
+        logger.info("Adding product with name: {}, price: {}, category: {}, rank: {} to store ID: {}", productName,
+                productPrice, productCategory, productRank, storeId);
         if (storeId < 0) {
-            throw new IllegalArgumentException(String.format("Store Id %d is invalid.", storeId));
+            String errorMessage = String.format("Store Id %d is invalid.", storeId);
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
-        checkProductAttributes(productName, productPrice, productCategory, productRank);
-
-        // other checks ??
-        // already created in this store ?
-        int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank);
-
-        Product createdProduct = productRepository.getProduct(productId);
-
-        // List<Product> storeProducts = products.get(storeId);
-        // if (storeProducts == null) {
-        // storeProducts = new ArrayList<>();
-        // }
-        // storeProducts.add(createdProduct);
-        // products.put(storeId, storeProducts);
-
-        return productId;
+        try {
+            checkProductAttributes(productName, productPrice, productCategory, productRank);
+            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank);
+            Product createdProduct = productRepository.getProduct(productId);
+            logger.info("Product added with ID: {}", productId);
+            return productId;
+        } catch (Exception e) {
+            logger.error("Error adding product: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public void removeProduct(int storeId, int productId) {
-        // if (!isStoreExist(storeId))
-        // throw new IllegalArgumentException(String.format("Store Id %d does not
-        // exist.", storeId));
+        logger.info("Removing product with ID: {} from store ID: {}", productId, storeId);
         if (storeId < 0) {
-            throw new IllegalArgumentException(String.format("Store Id %d is invalid.", storeId));
+            String errorMessage = String.format("Store Id %d is invalid.", storeId);
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
-        if (!isProductExistInStore(storeId, productId))
-            throw new IllegalArgumentException(
-                    String.format("Product Id %d does not exist in store Id %d.", productId, storeId));
 
-        productRepository.removeProduct(productId);
+        try {
+            if (!isProductExistInStore(storeId, productId)) {
+                String errorMessage = String.format("Product Id %d does not exist in store Id %d.", productId, storeId);
+                logger.error(errorMessage);
+                throw new IllegalArgumentException(errorMessage);
+            }
+            productRepository.removeProduct(productId);
+            logger.info("Product removed with ID: {}", productId);
+        } catch (Exception e) {
+            logger.error("Error removing product: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
-    public void updateProduct(int storeId, int productId, String newProductName,
-            double newPrice, String newCategory, double newRank) {
+    public void updateProduct(int storeId, int productId, String newProductName, double newPrice, String newCategory,
+            double newRank) {
+        logger.info("Updating product with ID: {} in store ID: {}", productId, storeId);
         if (storeId < 0) {
-            throw new IllegalArgumentException(String.format("Store Id %d is invalid.", storeId));
+            String errorMessage = String.format("Store Id %d is invalid.", storeId);
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
-        // mock
-        if (!isProductExistInStore(storeId, productId))
-            throw new IllegalArgumentException(
-                    String.format("Product Id %d does not exist in store Id %d.", productId, storeId));
+        try {
+            if (!isProductExistInStore(storeId, productId)) {
+                String errorMessage = String.format("Product Id %d does not exist in store Id %d.", productId, storeId);
+                logger.error(errorMessage);
+                throw new IllegalArgumentException(errorMessage);
+            }
 
-        checkProductAttributes(newProductName, newPrice, newCategory, newRank);
+            checkProductAttributes(newProductName, newPrice, newCategory, newRank);
+            Product productToUpdate = productRepository.getProduct(productId);
 
-        Product productToUpdate = productRepository.getProduct(productId);
+            if (!productToUpdate.isActiveProduct()) {
+                String errorMessage = String.format("Product Id %d was already deleted from store Id %d.", productId,
+                        storeId);
+                logger.error(errorMessage);
+                throw new IllegalArgumentException(errorMessage);
+            }
 
-        // other checks ??
-        // merge products with same properties ?
-        if (!productToUpdate.isActiveProduct())
-            throw new IllegalArgumentException(
-                    String.format("Product Id %d was already deleted from store Id %d.", productId, storeId));
-
-        productToUpdate.setProductName(newProductName);
-        productToUpdate.setProductPrice(newPrice);
-        productToUpdate.setProductCategory(newCategory);
-        productToUpdate.setProductRank(newRank);
+            productToUpdate.setProductName(newProductName);
+            productToUpdate.setProductPrice(newPrice);
+            productToUpdate.setProductCategory(newCategory);
+            productToUpdate.setProductRank(newRank);
+            logger.info("Product updated with ID: {}", productId);
+        } catch (Exception e) {
+            logger.error("Error updating product: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public List<ProductDTO> getFilteredProducts(List<Integer> storeProductIds, String productName,
-            double maxProductPrice, String productCategory,
-            double minProductRank) {
+            double maxProductPrice, String productCategory, double minProductRank) {
+        logger.info("Filtering products with product name: {}, max price: {}, category: {}, min rank: {}", productName,
+                maxProductPrice, productCategory, minProductRank);
+        try {
+            List<Product> storeProducts = productRepository.getProducts(storeProductIds);
 
-        List<Product> storeProducts = productRepository.getProducts(storeProductIds);
-
-        if (productName != null && isValidProductName(productName)) {
-            storeProducts = storeProducts.stream()
-                    .filter(product -> product.getProductCategory().equals(productName))
-                    .collect(Collectors.toList());
-        }
-
-        if (productCategory != null && isValidProductCategory(productCategory)) {
-            storeProducts = storeProducts.stream()
-                    .filter(product -> product.getProductCategory().equals(productCategory))
-                    .collect(Collectors.toList());
-        }
-
-        // if (minProductPrice != null && isValidProductPrice(minProductPrice)) {
-        // storeProducts = storeProducts.stream()
-        // .filter(product -> product.getProductPrice() >= minProductPrice)
-        // .collect(Collectors.toList());
-        // }
-
-        if (maxProductPrice != -1 && isValidProductPrice(maxProductPrice)) {
-            storeProducts = storeProducts.stream()
-                    .filter(product -> product.getProductPrice() <= maxProductPrice)
-                    .collect(Collectors.toList());
-        }
-
-        if (minProductRank != -1 && isValidProductRank(minProductRank)) {
-            storeProducts = storeProducts.stream()
-                    .filter(product -> product.getProductPrice() >= minProductRank)
-                    .collect(Collectors.toList());
-        }
-
-        // if (maxProductRank != null && isValidProductRank(maxProductRank)) {
-        // storeProducts = storeProducts.stream()
-        // .filter(product -> product.getProductRank() <= maxProductRank)
-        // .collect(Collectors.toList());
-        // }
-
-        return ProductMapper.toProductDTOList(storeProducts);
-    }
-
-    public List<ProductDTO> getAllFilteredProducts(String productName,
-            double minProductPrice, double maxProductPrice, String productCategory,
-            double minProductRank) {
-
-        List<Product> products = productRepository.getAllProducts();
-
-        if (productName != null)
-            if (isValidProductName(productName))
-                products = products.stream()
-                        .filter(product -> product.getProductName().equals(productName))
+            if (productName != null && isValidProductName(productName)) {
+                storeProducts = storeProducts.stream()
+                        .filter(product -> product.getProductCategory().equals(productName))
                         .collect(Collectors.toList());
-            else
-                throw new IllegalArgumentException("product name cannot be null or empty. ");
+            }
 
-        if (productCategory != null)
-            if (isValidProductName(productCategory))
-                products = products.stream()
-                        .filter(product -> product.getProductCategory().equals(
-                                productCategory))
+            if (productCategory != null && isValidProductCategory(productCategory)) {
+                storeProducts = storeProducts.stream()
+                        .filter(product -> product.getProductCategory().equals(productCategory))
                         .collect(Collectors.toList());
-            else
-                throw new IllegalArgumentException("product category cannot be null or empty. ");
+            }
 
-        if (minProductPrice != -1 && maxProductPrice != -1)
-            if (minProductPrice > maxProductPrice)
-                throw new IllegalArgumentException("the minimum price must be above the maximum.");
-
-        if (minProductPrice != -1)
-            if (isValidProductPrice(minProductPrice))
-                products = products.stream()
-                        .filter(product -> product.getProductPrice() >= minProductPrice)
-                        .collect(Collectors.toList());
-            else
-                throw new IllegalArgumentException("min product price cannot be negative.");
-
-        if (maxProductPrice != -1)
-            if (isValidProductPrice(maxProductPrice))
-                products = products.stream()
+            if (maxProductPrice != -1 && isValidProductPrice(maxProductPrice)) {
+                storeProducts = storeProducts.stream()
                         .filter(product -> product.getProductPrice() <= maxProductPrice)
                         .collect(Collectors.toList());
-            else
-                throw new IllegalArgumentException("max product price cannot be negative.");
+            }
 
-        if (minProductRank != -1)
-            if (isValidProductPrice(minProductRank))
-                products = products.stream()
-                        .filter(product -> product.getProductRank() >= minProductRank)
+            if (minProductRank != -1 && isValidProductRank(minProductRank)) {
+                storeProducts = storeProducts.stream()
+                        .filter(product -> product.getProductPrice() >= minProductRank)
                         .collect(Collectors.toList());
-            else
-                throw new IllegalArgumentException("Product rank have to be between 0 and 5. ");
+            }
 
-        return ProductMapper.toProductDTOList(products);
+            List<ProductDTO> filteredProducts = ProductMapper.toProductDTOList(storeProducts);
+            logger.info("Filtered products retrieved: {}", filteredProducts.size());
+            return filteredProducts;
+        } catch (Exception e) {
+            logger.error("Error filtering products: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public List<ProductDTO> getAllFilteredProducts(String productName, double minProductPrice, double maxProductPrice,
+            String productCategory, double minProductRank) {
+        logger.info(
+                "Filtering all products with product name: {}, min price: {}, max price: {}, category: {}, min rank: {}",
+                productName, minProductPrice, maxProductPrice, productCategory, minProductRank);
+        try {
+            List<Product> products = productRepository.getAllProducts();
+
+            if (productName != null) {
+                if (isValidProductName(productName)) {
+                    products = products.stream()
+                            .filter(product -> product.getProductName().equals(productName))
+                            .collect(Collectors.toList());
+                } else {
+                    throw new IllegalArgumentException("Product name cannot be null or empty.");
+                }
+            }
+
+            if (productCategory != null) {
+                if (isValidProductName(productCategory)) {
+                    products = products.stream()
+                            .filter(product -> product.getProductCategory().equals(productCategory))
+                            .collect(Collectors.toList());
+                } else {
+                    throw new IllegalArgumentException("Product category cannot be null or empty.");
+                }
+            }
+
+            if (minProductPrice != -1 && maxProductPrice != -1) {
+                if (minProductPrice > maxProductPrice) {
+                    throw new IllegalArgumentException("The minimum price must be below the maximum.");
+                }
+            }
+
+            if (minProductPrice != -1) {
+                if (isValidProductPrice(minProductPrice)) {
+                    products = products.stream()
+                            .filter(product -> product.getProductPrice() >= minProductPrice)
+                            .collect(Collectors.toList());
+                } else {
+                    throw new IllegalArgumentException("Min product price cannot be negative.");
+                }
+            }
+
+            if (maxProductPrice != -1) {
+                if (isValidProductPrice(maxProductPrice)) {
+                    products = products.stream()
+                            .filter(product -> product.getProductPrice() <= maxProductPrice)
+                            .collect(Collectors.toList());
+                } else {
+                    throw new IllegalArgumentException("Max product price cannot be negative.");
+                }
+            }
+
+            if (minProductRank != -1) {
+                if (isValidProductRank(minProductRank)) {
+                    products = products.stream()
+                            .filter(product -> product.getProductRank() >= minProductRank)
+                            .collect(Collectors.toList());
+                } else {
+                    throw new IllegalArgumentException("Product rank has to be between 0 and 5.");
+                }
+            }
+
+            List<ProductDTO> filteredProducts = ProductMapper.toProductDTOList(products);
+            logger.info("Filtered products retrieved: {}", filteredProducts.size());
+            return filteredProducts;
+        } catch (Exception e) {
+            logger.error("Error filtering all products: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public List<ProductDTO> getAllProducts() {
-        return ProductMapper.toProductDTOList(productRepository.getAllProducts());
+        logger.info("Retrieving all products");
+        try {
+            List<ProductDTO> allProducts = ProductMapper.toProductDTOList(productRepository.getAllProducts());
+            logger.info("All products retrieved: {}", allProducts.size());
+            return allProducts;
+        } catch (Exception e) {
+            logger.error("Error retrieving all products: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public List<ProductDTO> getAllProductsByName(String productName) {
-        return ProductMapper.toProductDTOList(productRepository.filterByName(productName));
+        logger.info("Retrieving all products with name: {}", productName);
+        try {
+            List<ProductDTO> productsByName = ProductMapper
+                    .toProductDTOList(productRepository.filterByName(productName));
+            logger.info("Products retrieved by name: {}", productsByName.size());
+            return productsByName;
+        } catch (Exception e) {
+            logger.error("Error retrieving products by name: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     public List<ProductDTO> getAllProductsByCategory(String category) {
-        return ProductMapper.toProductDTOList(productRepository.filterByCategory(category));
+        logger.info("Retrieving all products with category: {}", category);
+        try {
+            List<ProductDTO> productsByCategory = ProductMapper
+                    .toProductDTOList(productRepository.filterByCategory(category));
+            logger.info("Products retrieved by category: {}", productsByCategory.size());
+            return productsByCategory;
+        } catch (Exception e) {
+            logger.error("Error retrieving products by category: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     private boolean isValidProductName(String name) {
@@ -221,18 +285,24 @@ public class ProductFacade {
         boolean isAllValid = isValidProductName && isValidProductPrice && isValidProductCategory && isValidProductRank;
 
         if (!isAllValid) {
-            StringBuilder result = new StringBuilder("Product information's are wrong: ");
+            StringBuilder result = new StringBuilder("Product information is invalid: ");
 
-            if (!isValidProductName)
+            if (!isValidProductName) {
                 result.append("Product name cannot be null or empty. ");
-            if (!isValidProductPrice)
+            }
+            if (!isValidProductPrice) {
                 result.append("Product price cannot be negative. ");
-            if (!isValidProductCategory)
+            }
+            if (!isValidProductCategory) {
                 result.append("Product category cannot be null or empty. ");
-            if (!isValidProductRank)
-                result.append("Product rank have to be between 0 and 5. ");
+            }
+            if (!isValidProductRank) {
+                result.append("Product rank must be between 0 and 5. ");
+            }
 
-            throw new IllegalArgumentException(String.valueOf(result));
+            String errorMessage = result.toString();
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
     }
 
@@ -242,19 +312,15 @@ public class ProductFacade {
     }
 
     public ProductDTO getProductDTO(int productId) {
-        Product result = productRepository.getProduct(productId);
-
-        return result.getProductDTO();
+        logger.info("Retrieving product DTO for product ID: {}", productId);
+        try {
+            Product result = productRepository.getProduct(productId);
+            ProductDTO productDTO = result.getProductDTO();
+            logger.info("Product DTO retrieved for product ID: {}", productId);
+            return productDTO;
+        } catch (Exception e) {
+            logger.error("Error retrieving product DTO: {}", e.getMessage(), e);
+            throw e;
+        }
     }
-
-    // // package-private for tests
-    // Map<Integer, List<Product>> getProducts() {
-    // return products;
-    // }
-
-    // // package-private for tests
-    // void resetProducts() {
-    // products = new HashMap<>();
-    // }
-
 }
