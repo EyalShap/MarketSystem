@@ -476,7 +476,7 @@ public class UserFacade {
             throw new IllegalArgumentException("Credit card is invalid");
         }
         // update quantities
-        storeFacade.buyCart(username, items);
+        
         // create new order 
         Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(username, items);
         SupplyService supply=SupplyService.getInstance();
@@ -504,6 +504,7 @@ public class UserFacade {
             int orderId=orderFacade.createOrder(productAmounts,username);
             iUserRepo.getMember(username).addOrder(orderId);
         }
+        storeFacade.buyCart(username, items);
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
     }
 
@@ -522,8 +523,6 @@ public class UserFacade {
         if(!payment.checkCardValid(creditCard)){
             throw new IllegalArgumentException("Credit card invalid");
         }
-        // update quantities
-        storeFacade.buyCart(null, items);
         // create new order 
         Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(null, items);
         SupplyService supply=SupplyService.getInstance();
@@ -550,6 +549,8 @@ public class UserFacade {
             productAmounts.put(storeId, productList);
             orderFacade.createOrder(productAmounts,null);
         }
+        // update quantities
+        storeFacade.buyCart(null, items);
         logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
     }
 
