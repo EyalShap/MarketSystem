@@ -29,8 +29,10 @@ public class DiscountPolicyFacade {
     // for now that function dosent do anything special
     public boolean addDiscountPolicy(int storeId, String args) {
         DiscountPolicy dp;
-        if (mapper.get(storeId) == null) {
-            mapper.put(storeId, new DiscountManager());
+        synchronized(mapper){
+            if (mapper.get(storeId) == null) {
+                mapper.put(storeId, new DiscountManager());
+            }
         }
         try {
             // create new DiscountPolicy

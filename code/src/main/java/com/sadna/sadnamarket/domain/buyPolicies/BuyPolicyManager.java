@@ -12,7 +12,7 @@ public class BuyPolicyManager {
         buyPolicies = new ArrayList<>();
     }
 
-    public void addBuyPolicy(BuyPolicy bp) {
+    public synchronized void addBuyPolicy(BuyPolicy bp) {
         buyPolicies.add(bp);
     }
 
