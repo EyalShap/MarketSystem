@@ -26,8 +26,10 @@ public class BuyPolicyFacade {
     // for now that function dosent do anything special
     public boolean addBuyPolicy(int storeId, String args) {
         BuyPolicy bp;
-        if (!mapper.containsKey(storeId)) {
-            mapper.put(storeId, new BuyPolicyManager());
+        synchronized(mapper){
+            if (!mapper.containsKey(storeId)) {
+                mapper.put(storeId, new BuyPolicyManager());
+            }
         }
         try {
             // create new DiscountPolicy
@@ -38,6 +40,7 @@ public class BuyPolicyFacade {
         BuyPolicyManager buyPolicyManager = mapper.get(storeId);
         buyPolicyManager.addBuyPolicy(bp);
         return true;
+
     }
 
     public String canBuy(int storeId, List<CartItemDTO> cart, String username) {
