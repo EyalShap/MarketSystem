@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.orders;
 
 import com.sadna.sadnamarket.domain.products.MemoryProductRepository;
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,17 +21,17 @@ public class MemoryOrderRepository implements IOrderRepository {
     @Override
     public synchronized int createOrder(Map<Integer, OrderDTO> storeOrdersDTO){
         if (storeOrdersDTO == null) {
-            throw new IllegalArgumentException("The order is null.");
+            throw new IllegalArgumentException(Error.makeOrderNullError());
         }
         if (storeOrdersDTO.isEmpty()) {
-            throw new IllegalArgumentException("The order is empty.");
+            throw new IllegalArgumentException(Error.makeOrderEmptyError());
         }
         for (Map.Entry<Integer, OrderDTO> entry : storeOrdersDTO.entrySet()) {
             if (entry.getValue() == null) {
-                throw new IllegalArgumentException("The store with ID: " + entry.getKey() + " has null order.");
+                throw new IllegalArgumentException(Error.makeOrderStoreNullError(entry.getKey()));
             }
             if(entry.getValue().getProductAmounts().isEmpty()||entry.getValue().getOrderProductsJsons().isEmpty()){
-                throw new IllegalArgumentException("The store with ID: " + entry.getKey() + " has no products.");
+                throw new IllegalArgumentException(Error.makeOrderStoreNoProductsError(entry.getKey()));
             }
 
         }
@@ -66,7 +67,7 @@ public class MemoryOrderRepository implements IOrderRepository {
             }
         }
         if(ordersStore.isEmpty()){
-            throw new IllegalArgumentException("The store with ID: " + storeId + " has no orders.");
+            throw new IllegalArgumentException(Error.makeOrderStoreNoOrdersError(storeId));
         }
         return ordersStore;
     }
@@ -84,10 +85,10 @@ public class MemoryOrderRepository implements IOrderRepository {
 
     public Map<Integer,Map<Integer,OrderDTO>> getOrdersByMember(String nameMember) {
         if(nameMember==null){
-            throw new IllegalArgumentException("The name is null.");
+            throw new IllegalArgumentException(Error.makeOrderNameNullError());
         }
         if(nameMember.isEmpty()){
-            throw new IllegalArgumentException("The name is empty.");
+            throw new IllegalArgumentException(Error.makeOrderNameEmptyError());
         }
         Map<Integer,Map<Integer,OrderDTO>> ordersByMember = new HashMap<>();
         for (Map.Entry<Integer, Map<Integer, Order>> outerEntry : orders.entrySet()) {
@@ -107,7 +108,7 @@ public class MemoryOrderRepository implements IOrderRepository {
             }
         }
         if(ordersByMember.isEmpty()){
-            throw new IllegalArgumentException("There are no orders for "+nameMember+".");
+            throw new IllegalArgumentException(Error.makeOrderNoOrdersForUserError(nameMember));
         }
         return ordersByMember;
     }
@@ -123,7 +124,7 @@ public class MemoryOrderRepository implements IOrderRepository {
             }
         }
         else {
-            throw new IllegalArgumentException("The order: "+ orderId +" does not exist.");
+            throw new IllegalArgumentException(Error.makeOrderDoesntExistError(orderId));
         }
         return orderDTOByOrderId;
     }
@@ -137,7 +138,7 @@ public class MemoryOrderRepository implements IOrderRepository {
             }
         }
         if(allOrders.isEmpty()){
-            throw new IllegalArgumentException("There are no orders.");
+            throw new IllegalArgumentException(Error.makeOrderNoOrdersError());
         }
         return allOrders;
     }

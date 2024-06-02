@@ -205,7 +205,7 @@ class StoreTest {
             store0.deleteProduct(0);
         });
 
-        String expectedMessage1 = "A product with id 0 does not exist.";
+        String expectedMessage1 = "Product Id 0 does not exist.";
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 
@@ -253,7 +253,7 @@ class StoreTest {
             store0.setProductAmounts(3, 18);
         });
 
-        String expectedMessage1 = "A product with id 3 does not exist.";
+        String expectedMessage1 = "Product Id 3 does not exist.";
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 

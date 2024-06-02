@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -92,7 +93,7 @@ public class UserFacade {
         logger.info("set system username {}",username);
         if(!isExist(username)){
             logger.error("user doesnt exist",username);
-            throw new IllegalStateException("only registered user can be system manager");
+            throw new IllegalStateException(Error.makeUserSystemManagerError());
         }
         systemManagerUserName=username;
         logger.info("done set system username {}",username);
@@ -106,7 +107,7 @@ public class UserFacade {
         isValid(userName);
         if(iUserRepo.getMember(userName).isLoggedIn()){
             logger.error("user {} already logged in",userName);
-            throw new IllegalStateException("user already logged in");
+            throw new IllegalStateException(Error.makeUserLoggedInError());
         }
         iUserRepo.getMember(userName).setLogin(true);
         logger.info("{} done login",userName);
@@ -114,18 +115,18 @@ public class UserFacade {
     public void addProductToCart(String username,int storeId, int productId,int amount){
         logger.info("{} add prooduct {} from store id {} amount: {}",username,productId,storeId,amount);
         if(amount<=0)
-            throw new IllegalArgumentException("amount should be above 0");
+            throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
-            throw new IllegalArgumentException("Amount doesn't exist in store");
+            throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
         iUserRepo.getMember(username).addProductToCart(storeId, productId, amount);
         logger.info("{} added prooduct {} from store id {} amount: {}",username,productId,storeId,amount);
     }
     public void addProductToCart(int guestId,int storeId, int productId,int amount){
         logger.info("guest: {} add prooduct {} from store id {} amount: {}",guestId,productId,storeId,amount);
         if(amount<=0)
-            throw new IllegalArgumentException("amount should be above 0");
+            throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
-            throw new IllegalArgumentException("Amount doesn't exist in store");
+            throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
         iUserRepo.getGuest(guestId).addProductToCart(storeId, productId, amount);
         logger.info("guest: {} add prooduct {} from store id {} amount: {}",guestId,productId,storeId,amount);
 
@@ -143,9 +144,9 @@ public class UserFacade {
     public void changeQuantityCart(String username,int storeId, int productId,int amount){
         logger.info("{} try to change amount of prooduct {} from store id {} amount: {}",username,productId,storeId,amount);
         if(amount<=0)
-            throw new IllegalArgumentException("amount should be above 0");
+            throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
-            throw new IllegalArgumentException("Amount doesn't exist in store");
+            throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
         iUserRepo.getMember(username).changeQuantityCart(storeId, productId, amount);
         logger.info("{} changed amount of prooduct {} from store id {} amount: {}",username,productId,storeId,amount);
 
@@ -153,9 +154,9 @@ public class UserFacade {
     public void changeQuantityCart(int guestId,int storeId, int productId,int amount){
         logger.info("guest {} try to change amount of prooduct {} from store id {} amount: {}",guestId,productId,storeId,amount);
         if(amount<=0)
-            throw new IllegalArgumentException("amount should be above 0");
+            throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
-            throw new IllegalArgumentException("Amount doesn't exist in store");
+            throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
         iUserRepo.getGuest(guestId).changeQuantityCart(storeId, productId, amount);
         logger.info("guest: {} try to changed amount of prooduct {} from store id {} amount: {}",guestId,productId,storeId,amount);
 
@@ -261,7 +262,7 @@ public class UserFacade {
     public void addPremssionToStore(String giverUserName,String userName, int storeId,Permission permission){
         logger.info("{} get permission to store {} to {}",userName,storeId,permission);
         if(!iUserRepo.getMember(giverUserName).getRoleOfStore(storeId).getAppointers().contains(userName))
-            throw new IllegalStateException("you can add permissions only to your appointers");
+            throw new IllegalStateException(Error.makeUserCanOnlyEditPermissionsToApointeesError());
         Member member=iUserRepo.getMember(userName);
         member.addPermissionToRole(permission, storeId);
         logger.info("{} got permission to store {} to {}",userName,storeId,permission);
@@ -270,7 +271,7 @@ public class UserFacade {
     public void removePremssionFromStore(String removerUsername,String userName, int storeId,Permission permission){
         logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
         if(!iUserRepo.getMember(removerUsername).getRoleOfStore(storeId).getAppointers().contains(userName))
-            throw new IllegalStateException("you can add permissions only to your appointers");
+            throw new IllegalStateException(Error.makeUserCanOnlyEditPermissionsToApointeesError());
         Member member=iUserRepo.getMember(userName);
         member.removePermissionFromRole(permission, storeId);
         logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
@@ -339,7 +340,7 @@ public class UserFacade {
     private void isValid(String detail){
         logger.info("check if field is valid");
         if(detail==null||detail.trim().equals("")){
-            throw new IllegalArgumentException("please enter valid string");
+            throw new IllegalArgumentException(Error.makeValidStringError());
         }
         logger.info("field {} is valid",detail);
 
@@ -464,16 +465,16 @@ public class UserFacade {
         logger.info("purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         if(creditCard.getDigitsOnTheBack().isEmpty() || creditCard.getCreditCardNumber().isEmpty() || creditCard.getOwnerId().isEmpty()){
-            throw new IllegalArgumentException("Missing card details");
+            throw new IllegalArgumentException(Error.makePurchaseMissingCardError());
         }
         if(addressDTO.getCountry().isEmpty() || addressDTO.getCity().isEmpty() || addressDTO.getAddressLine1().isEmpty()){
-            throw new IllegalArgumentException("Missing address details");
+            throw new IllegalArgumentException(Error.makePurchaseMissingAddressError());
         }
         storeFacade.checkCart(username, items);
         // proxy payment
         PaymentService payment = PaymentService.getInstance();
         if(!payment.checkCardValid(creditCard)){
-            throw new IllegalArgumentException("Credit card is invalid");
+            throw new IllegalArgumentException(Error.makePurchaseInvalidCardError());
         }
         // update quantities
         
@@ -487,7 +488,7 @@ public class UserFacade {
             productAmount.put(product.getId(),product.getAmount());
         }
         if(!supply.canMakeOrder(new OrderDetailsDTO(productAmount), addressDTO)){
-            throw new IllegalStateException("Order cannot be supplied");
+            throw new IllegalStateException(Error.makePurchaseOrderCannotBeSuppliedError());
         }
         String supplyString = supply.makeOrder(new OrderDetailsDTO(productAmount), addressDTO);
         for(int storeId : storeBag.keySet()){
@@ -497,7 +498,7 @@ public class UserFacade {
             }
             if(!payment.pay(payAmount, creditCard, storeFacade.getStoreBankAccount(storeId))){
                 supply.cancelOrder(supplyString);
-                throw new IllegalStateException("Payment could not be completed for store " + storeId);
+                throw new IllegalStateException(Error.makePurchasePaymentCannotBeCompletedForStoreError(storeId));
             }
             Map<Integer,List<ProductDataPrice>> productAmounts=new HashMap<>();
             productAmounts.put(storeId, productList);
@@ -513,15 +514,15 @@ public class UserFacade {
         logger.info("purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
         List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
         if(creditCard.getDigitsOnTheBack().isEmpty() || creditCard.getCreditCardNumber().isEmpty() || creditCard.getOwnerId().isEmpty()){
-            throw new IllegalArgumentException("Missing card details");
+            throw new IllegalArgumentException(Error.makePurchaseMissingCardError());
         }
         if(addressDTO.getCountry().isEmpty() || addressDTO.getCity().isEmpty() || addressDTO.getAddressLine1().isEmpty()){
-            throw new IllegalArgumentException("Missing address details");
+            throw new IllegalArgumentException(Error.makePurchaseMissingAddressError());
         }
         storeFacade.checkCart(null, items);
          PaymentService payment = PaymentService.getInstance();
         if(!payment.checkCardValid(creditCard)){
-            throw new IllegalArgumentException("Credit card invalid");
+            throw new IllegalArgumentException(Error.makePurchaseInvalidCardError());
         }
         // create new order 
         Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(null, items);
@@ -533,7 +534,7 @@ public class UserFacade {
             productAmount.put(product.getId(),product.getAmount());
         }
         if(!supply.canMakeOrder(new OrderDetailsDTO(productAmount), addressDTO)){
-            throw new IllegalStateException("Order cannot be supplied");
+            throw new IllegalStateException(Error.makePurchaseOrderCannotBeSuppliedError());
         }
         String supplyString = supply.makeOrder(new OrderDetailsDTO(productAmount), addressDTO);
         for(int storeId : storeBag.keySet()){
@@ -543,7 +544,7 @@ public class UserFacade {
             }
             if(!payment.pay(payAmount, creditCard, storeFacade.getStoreBankAccount(storeId))){
                 supply.cancelOrder(supplyString);
-                throw new IllegalStateException("Payment could not be completed for store " + storeId);
+                throw new IllegalStateException(Error.makePurchasePaymentCannotBeCompletedForStoreError(storeId));
             }
             Map<Integer,List<ProductDataPrice>> productAmounts=new HashMap<>();
             productAmounts.put(storeId, productList);
@@ -557,11 +558,11 @@ public class UserFacade {
     public List<OrderDTO> getAllOrders(String username){
         logger.info("get all orders for {}",username);
         if(!isExist(username))
-            throw new NoSuchElementException("User doesnt exist in system");
+            throw new NoSuchElementException(Error.makeUserDoesntExistError());
         if(!iUserRepo.getMember(username).isLoggedIn())
-            throw new IllegalStateException("User is not logged in");
+            throw new IllegalStateException(Error.makeUserLoggedInError());
         if(!username.equals(systemManagerUserName))
-            throw new IllegalStateException("Only system manager can view all orders");
+            throw new IllegalStateException(Error.makeSystemManagerCanOnlyViewOrdersError());
         logger.info("got all orders for {}",username);
         return orderFacade.getAllOrders();
     }

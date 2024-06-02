@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +22,7 @@ public class UserRoleVisitor {
   }
   public void visitStoreFounder(StoreFounder role, int storeId,Member member) {
     logger.error("try remove role from Store founder");
-    throw new IllegalStateException("owner cant leave the job");
+    throw new IllegalStateException(Error.makeFounderCannotLeaveJobError());
   }
 
 }
