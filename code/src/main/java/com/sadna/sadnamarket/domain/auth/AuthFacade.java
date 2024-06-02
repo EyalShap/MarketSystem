@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.auth;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +52,7 @@ public class AuthFacade {
     }
     public String login(String jwt) {
         if(!tokenService.validateToken(jwt))
-            throw new IllegalArgumentException("jwt isnt valid");
+            throw new IllegalArgumentException(Error.makeAuthInvalidJWTError());
         else 
             return tokenService.extractUsername(jwt);
 

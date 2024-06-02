@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.auth;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -20,11 +21,11 @@ public class AuthRepositoryMemoryImpl implements IAuthRepository {
         logger.info("start-Login. args: "+username+", "+password);
         if(!hasMember(username)){
             logger.error("user doesnt exist");
-            throw new NoSuchElementException("user doesnt exist");
+            throw new NoSuchElementException(Error.makeAuthUserDoesntExistError());
         }
         if(!isPasswordCorrect(username,password)){
             logger.error("user doesnt exist");
-            throw new IllegalArgumentException("password is incorrect");
+            throw new IllegalArgumentException(Error.makeAuthPasswordIncorrectError());
             }
         logger.info("end-Login.");
 
@@ -46,7 +47,7 @@ public class AuthRepositoryMemoryImpl implements IAuthRepository {
     @Override
     public void add(String username, String password) {
         if (hasMember(username))
-            throw new IllegalArgumentException("username already exits");
+            throw new IllegalArgumentException(Error.makeAuthUsernameExistsError());
         userNameAndPassword.put(username,hashPassword(password));
     }
     @Override
