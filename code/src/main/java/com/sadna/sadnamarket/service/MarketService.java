@@ -203,7 +203,7 @@ public class MarketService {
         }
     } //From Store page, Actions menu, only for owner, new page with list of managers, for each manager button that shows details and permissions (in squares like my stores)
 
-    public Response getSellers(String token, String username, int storeId) {
+    /*public Response getSellers(String token, String username, int storeId) {
         try {
             checkToken(token, username);
             List<MemberDTO> sellers = storeFacade.getSellers(username, storeId);
@@ -214,7 +214,7 @@ public class MarketService {
             logger.error("getSellers: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    }*/
 
     public Response sendStoreOwnerRequest(String token, String currentOwnerUsername, String newOwnerUsername, int storeId) {
         try {
@@ -341,7 +341,7 @@ public class MarketService {
         }
     }
 
-    public Response addSellerToStore(String token, int storeId, String adderUsername, String sellerUsername) {
+    /*public Response addSellerToStore(String token, int storeId, String adderUsername, String sellerUsername) {
         try {
             checkToken(token, adderUsername);
             storeFacade.addSeller(storeId, adderUsername, sellerUsername);
@@ -352,7 +352,7 @@ public class MarketService {
             logger.error("addSellerToStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    }*/
 
     public Response addBuyPolicy(String token, String username, int storeId, String args) {
         try {

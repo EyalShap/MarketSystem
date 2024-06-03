@@ -83,6 +83,7 @@ class StoreTest {
         assertEquals(expected1, new HashSet<>(store0.getManagerUsernames()));
     }
 
+    /*
     @Test
     void getSellerUsernames() {
         Set<String> expected1 = new HashSet<>();
@@ -97,7 +98,7 @@ class StoreTest {
         assertEquals(expected2, new HashSet<>(store1.getSellerUsernames()));
 
         assertEquals(expected1, new HashSet<>(store0.getSellerUsernames()));
-    }
+    }*/
 
     @Test
     void getProductAmounts() {
@@ -381,7 +382,7 @@ class StoreTest {
         assertTrue(store1.isStoreManager("Netta"));
     }
 
-    @Test
+    /*@Test
     void isSeller() {
         store0.addSeller("Alice");
         store0.addSeller("Bob");
@@ -392,7 +393,7 @@ class StoreTest {
         assertTrue(store1.isSeller("Alice"));
         assertTrue(store0.isSeller("Bob"));
         assertTrue(store1.isSeller("Netta"));
-    }
+    }*/
 
     @Test
     void addStoreOwnerAlreadyExists() {
@@ -442,7 +443,7 @@ class StoreTest {
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 
-    @Test
+    /*@Test
     void addSellerAlreadyExists() {
         store1.addSeller("Bob");
 
@@ -452,9 +453,9 @@ class StoreTest {
 
         String expectedMessage1 = "User Bob is already a seller of store 1.";
         assertEquals(expectedMessage1, expected1.getMessage());
-    }
+    }*/
 
-    @Test
+    /*@Test
     void addSellerStoreNotActive() {
         store0.closeStore();
 
@@ -464,7 +465,7 @@ class StoreTest {
 
         String expectedMessage1 = "A store with id 0 is not active.";
         assertEquals(expectedMessage1, expected1.getMessage());
-    }
+    }*/
 
     @Test
     void closeStore() {

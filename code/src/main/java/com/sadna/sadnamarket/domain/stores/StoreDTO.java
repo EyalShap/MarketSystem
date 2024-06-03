@@ -22,7 +22,7 @@ public class StoreDTO {
     private String founderUsername;
     private List<String> ownerUsernames;
     private List<String> managerUsernames;
-    private List<String> sellerUsernames;
+    //private List<String> sellerUsernames;
     private List<Integer> orderIds;
 
     public StoreDTO() {
@@ -42,11 +42,11 @@ public class StoreDTO {
         this.founderUsername = store.getFounderUsername();
         this.ownerUsernames = store.getOwnerUsernames();
         this.managerUsernames = store.getManagerUsernames();
-        this.sellerUsernames = store.getSellerUsernames();
+        //this.sellerUsernames = store.getSellerUsernames();
         this.orderIds = store.getOrderIds();
     }
 
-    public StoreDTO(int storeId, boolean isActive, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours, Map<Integer, Integer> productAmounts, String founderUsername, List<String> ownerUsernames, List<String> managerUsernames, List<String> sellerUsernames, List<Integer> orderIds) {
+    public StoreDTO(int storeId, boolean isActive, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours, Map<Integer, Integer> productAmounts, String founderUsername, List<String> ownerUsernames, List<String> managerUsernames, List<Integer> orderIds) {
         this.storeId = storeId;
         this.isActive = isActive;
         this.storeName = storeName;
@@ -60,7 +60,7 @@ public class StoreDTO {
         this.founderUsername = founderUsername;
         this.ownerUsernames = ownerUsernames;
         this.managerUsernames = managerUsernames;
-        this.sellerUsernames = sellerUsernames;
+        //this.sellerUsernames = sellerUsernames;
         this.orderIds = orderIds;
     }
 
@@ -169,13 +169,13 @@ public class StoreDTO {
         this.managerUsernames = managerUsernames;
     }
 
-    public List<String> getSellerUsernames() {
+    /*public List<String> getSellerUsernames() {
         return sellerUsernames;
     }
 
     public void setSellerUsernames(List<String> sellerUsernames) {
         this.sellerUsernames = sellerUsernames;
-    }
+    }*/
 
     public List<Integer> getOrderIds() {
         return orderIds;
@@ -190,12 +190,12 @@ public class StoreDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StoreDTO storeDTO = (StoreDTO) o;
-        return storeId == storeDTO.storeId && isActive == storeDTO.isActive && Double.compare(storeDTO.rank, rank) == 0 && Objects.equals(storeName, storeDTO.storeName) && Objects.equals(address, storeDTO.address) && Objects.equals(email, storeDTO.email) && Objects.equals(phoneNumber, storeDTO.phoneNumber) && Arrays.equals(openingHours, storeDTO.openingHours) && Arrays.equals(closingHours, storeDTO.closingHours) && Objects.equals(productAmounts, storeDTO.productAmounts) && Objects.equals(founderUsername, storeDTO.founderUsername) && Objects.equals(ownerUsernames, storeDTO.ownerUsernames) && Objects.equals(managerUsernames, storeDTO.managerUsernames) && Objects.equals(sellerUsernames, storeDTO.sellerUsernames) && Objects.equals(orderIds, storeDTO.orderIds);
+        return storeId == storeDTO.storeId && isActive == storeDTO.isActive && Double.compare(storeDTO.rank, rank) == 0 && Objects.equals(storeName, storeDTO.storeName) && Objects.equals(address, storeDTO.address) && Objects.equals(email, storeDTO.email) && Objects.equals(phoneNumber, storeDTO.phoneNumber) && Arrays.equals(openingHours, storeDTO.openingHours) && Arrays.equals(closingHours, storeDTO.closingHours) && Objects.equals(productAmounts, storeDTO.productAmounts) && Objects.equals(founderUsername, storeDTO.founderUsername) && Objects.equals(ownerUsernames, storeDTO.ownerUsernames) && Objects.equals(managerUsernames, storeDTO.managerUsernames) && Objects.equals(orderIds, storeDTO.orderIds);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(storeId, isActive, storeName, rank, address, email, phoneNumber, productAmounts, founderUsername, ownerUsernames, managerUsernames, sellerUsernames, orderIds);
+        int result = Objects.hash(storeId, isActive, storeName, rank, address, email, phoneNumber, productAmounts, founderUsername, ownerUsernames, managerUsernames, orderIds);
         result = 31 * result + Arrays.hashCode(openingHours);
         result = 31 * result + Arrays.hashCode(closingHours);
         return result;
