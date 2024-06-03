@@ -16,7 +16,7 @@ public class Store {
     private String founderUsername;
     private List<String> ownerUsernames;
     private List<String> managerUsernames;
-    private List<String> sellerUsernames;
+    //private List<String> sellerUsernames;
     private List<Integer> orderIds;
     private BankAccountDTO bankAccount;
     private final Object lock = new Object();
@@ -30,7 +30,7 @@ public class Store {
         this.ownerUsernames = Collections.synchronizedList(new ArrayList<>());
         this.ownerUsernames.add(founderUsername);
         this.managerUsernames = Collections.synchronizedList(new ArrayList<>());
-        this.sellerUsernames = Collections.synchronizedList(new ArrayList<>());
+        //this.sellerUsernames = Collections.synchronizedList(new ArrayList<>());
         this.orderIds = Collections.synchronizedList(new ArrayList<>());
     }
 
@@ -64,9 +64,9 @@ public class Store {
         return this.managerUsernames;
     }
 
-    public List<String> getSellerUsernames() {
+    /*public List<String> getSellerUsernames() {
         return this.sellerUsernames;
-    }
+    }*/
 
     public Map<Integer, Integer> getProductAmounts() {
         return this.productAmounts;
@@ -157,9 +157,9 @@ public class Store {
         return managerUsernames.contains(username);
     }
 
-    public boolean isSeller(String username) {
+    /*public boolean isSeller(String username) {
         return sellerUsernames.contains(username);
-    }
+    }*/
 
     public void addStoreOwner(String newOwnerUsername) {
         synchronized (ownerUsernames) {
@@ -183,7 +183,7 @@ public class Store {
         }
     }
 
-    public synchronized void addSeller(String sellerUsername) {
+    /*public synchronized void addSeller(String sellerUsername) {
         synchronized (sellerUsername) {
             if (!isActive)
                 throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
@@ -193,7 +193,7 @@ public class Store {
 
             this.sellerUsernames.add(sellerUsername);
         }
-    }
+    }*/
 
     public void closeStore() {
         synchronized (lock) {
@@ -258,13 +258,13 @@ public class Store {
                 Objects.equals(founderUsername, store.founderUsername) &&
                 Objects.equals(ownerUsernames, store.ownerUsernames) &&
                 Objects.equals(managerUsernames, store.managerUsernames) &&
-                Objects.equals(sellerUsernames, store.sellerUsernames) &&
+                //Objects.equals(sellerUsernames, store.sellerUsernames) &&
                 Objects.equals(orderIds, store.orderIds);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(storeId, isActive, storeInfo, productAmounts, founderUsername, ownerUsernames,
-                managerUsernames, sellerUsernames, orderIds, lock);
+                managerUsernames, orderIds, lock);
     }
 }
