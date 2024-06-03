@@ -4,12 +4,12 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
+import SearchBar from './components/Search';
 
 function App() {
   return (
     <div className="App">
-      <Router>
-      
+      <Router>   
       <Navbar/>
         <Routes>
           <Route path="/" element={<Home/>}/>
@@ -17,15 +17,8 @@ function App() {
           <Route path="/register" element={<Register/>}/>
           <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>}/>
         </Routes>
-      
-      
-      
-      
+       
       </Router>
-    
-
-
-
     </div>
   );
 }
