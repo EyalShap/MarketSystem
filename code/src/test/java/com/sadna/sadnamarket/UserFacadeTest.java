@@ -4,8 +4,12 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -19,10 +23,18 @@ import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
+import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.PaymentInterface;
+import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
+import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.domain.supply.SupplyInterface;
+import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
+import com.sadna.sadnamarket.domain.users.UserOrderDTO;
 
 public class UserFacadeTest {
 
@@ -61,13 +73,13 @@ public class UserFacadeTest {
         authFacade.login(testUsername2, testPassword);
         authFacade.register(testUsername3,testPassword,"Nir","Mor","nir@gmail.com","05033303030");
         authFacade.login(testUsername3, testPassword);
-        when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID 
+        when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID  
         testStoreId=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
         when(storeFacade.createStore(anyString(), anyString(),  anyString(), anyString(), anyString(), any(), any())).thenReturn(2); // Return a predefined store ID 
         testStoreId2=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
         doNothing().when(storeFacade).addStoreOwner(anyString(), anyInt());
         when(storeFacade.hasProductInStock(anyInt(), anyInt(), anyInt())).thenReturn(true);
-
+        
     }
 
     @Test
@@ -270,5 +282,61 @@ public class UserFacadeTest {
         authFacade.login(testUsername2, testPassword, guestId);
         List<CartItemDTO> items=userFacade.getMember(testUsername2).getCartItems();
         assertEquals(2, items.size());
+    }
+    @Test
+    public void viewCart() throws Exception{
+        userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
+        userFacade.addProductToCart(testUsername1, testStoreId, 2, 3);
+        Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
+        List<ProductDataPrice> list1=new ArrayList<>();
+        list1.add(new ProductDataPrice(1,2,7,5));
+        list1.add(new ProductDataPrice(2,3,8,5));
+        ans.put(testStoreId, list1);
+        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
+        UserOrderDTO res=userFacade.viewCart(testUsername1);
+        assertEquals(2, res.getProductsData().size());
+        assertEquals(15.0, res.getOldPrice(),0);
+        assertEquals(10.0, res.getNewPrice(),0);
+    }
+    @Test
+    public void viewCartWith2stores() throws Exception{
+        userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
+        userFacade.addProductToCart(testUsername1, testStoreId2++, 2, 3);
+        Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
+        List<ProductDataPrice> list1=new ArrayList<>();
+        List<ProductDataPrice> list2=new ArrayList<>();
+        list1.add(new ProductDataPrice(1,2,7,5));
+        list2.add(new ProductDataPrice(2,3,8,5));
+        ans.put(testStoreId, list1);
+        ans.put(testStoreId2, list2);
+        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
+        UserOrderDTO res=userFacade.viewCart(testUsername1);
+        assertEquals(2, res.getProductsData().size());
+        assertEquals(15.0, res.getOldPrice(),0);
+        assertEquals(10.0, res.getNewPrice(),0);
+    }
+    @Test
+    public void purchaseCart() throws Exception{
+        userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
+        userFacade.addProductToCart(testUsername1, testStoreId2, 2, 3);
+        Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
+        List<ProductDataPrice> list1=new ArrayList<>();
+        List<ProductDataPrice> list2=new ArrayList<>();
+        list1.add(new ProductDataPrice(1,2,7,5));
+        list2.add(new ProductDataPrice(2,3,8,5));
+        ans.put(testStoreId, list1);
+        ans.put(testStoreId2, list2);
+        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
+        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
+        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
+        PaymentService.getInstance().setController(paymentMock);
+        SupplyService.getInstance().setController(supplyMock);
+        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
+        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
+        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
+        CreditCardDTO creditCardDTO = new CreditCardDTO(testUsername1, testUsername1, null, testPassword);
+        AddressDTO addressDTO=new AddressDTO(testPassword, testPassword, testPassword, testPassword, testUsername3, testUsername2, testUsername1, testPassword);
+        assertDoesNotThrow(()->userFacade.purchaseCart(testUsername1,creditCardDTO,addressDTO));
     }
 }
