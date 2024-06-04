@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MinBuyCondition implements Condition{
-    int minBuy;
+    private final int minBuy;
 
     public MinBuyCondition(int minBuy){
         this.minBuy = minBuy;

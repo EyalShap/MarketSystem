@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 public class MinProductCondition implements Condition{
-    int minAmount;
-    String productName;
-    String categoryName;
-    boolean chosePath; // promise there is CategoryName Xor ProductName
+    private final int minAmount;
+    private String productName;
+    private String categoryName;
+    private boolean chosePath; // promise there is CategoryName Xor ProductName
 
     public MinProductCondition(int minAmount){
         this.minAmount = minAmount;

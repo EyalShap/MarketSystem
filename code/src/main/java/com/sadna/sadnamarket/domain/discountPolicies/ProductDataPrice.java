@@ -36,4 +36,8 @@ public class ProductDataPrice {
     public void setNewPrice(double newPrice) {
         this.newPrice = newPrice;
     }
+
+    public ProductDataPrice deepCopy(){
+        return new ProductDataPrice(this.id,this.amount,this.oldPrice,this.newPrice);
+    }
 }
