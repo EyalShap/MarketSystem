@@ -5,12 +5,15 @@ import Register from './components/Register';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
 import SearchBar from './components/Search';
+import MemberNavbar from './components/MemberNavbar';
+import { useState } from 'react';
 
 function App() {
+  const [isloggedin,setIsloggedin] = useState(true);
   return (
     <div className="App">
-      <Router>   
-      <Navbar/>
+      <Router>
+      {isloggedin?<MemberNavbar/>: <Navbar/>}
         <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/login" element={<Login/>}/>

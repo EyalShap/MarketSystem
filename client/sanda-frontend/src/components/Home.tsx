@@ -20,7 +20,9 @@ const Home: React.FC = () => {
 
             <h1>Our top products</h1>
             <ProductCarousel products={products} />
+            
         </div>
+        
     );
 };
 
