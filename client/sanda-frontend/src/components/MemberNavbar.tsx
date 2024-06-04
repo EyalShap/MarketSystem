@@ -1,58 +1,72 @@
-import React, { useState } from 'react';
-import '../styles/memberNavbar.css'
+import React, { useContext, useState } from 'react';
+import '../styles/memberNavbar.css';
 import { Link } from 'react-router-dom';
-
-import { Button, IconButton } from '@mui/material'
+import { IconButton, Badge } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import Badge from '@mui/material/Badge';
+
+
 const MemberNavbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [notificationsOpen, setNotificationspen] = useState(false);
-  const [notifications, setNotifications] = useState(["got one message","ask to"]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    "got one message",
+    "ask to ffffffffff",
+    "ffff",
+  ]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
- 
 
   const toggleNotifications = () => {
-    setNotificationspen(!notificationsOpen);
+    setNotificationsOpen(!notificationsOpen);
   };
+  const handleLogout = () => {
+
+  }
 
   return (
-    <nav className="membernavbar">
-    <Link to="/" className="navbar-logo" >
-    Your Logo
-    </Link>
-    
-      <div className="member-navbar-items">
-        <button className="menu-toggle" onClick={toggleMenu}>
-          ☰
-        </button>
-        {menuOpen && (
-          <ul className="menu">
-            <li className="menu-item">My orders</li>
-            <li className="menu-item">My stores</li>
-            <li className="menu-item">Profile</li>
-          </ul>
-        )}      
-      </div>
-      <IconButton size="small" color='inherit'>
-            <ShoppingCartIcon />
-        </IconButton>
+    <nav className="membernavbar" onClick={()=>{menuOpen&&toggleMenu();notificationsOpen&&toggleNotifications();}}>
+      <Link to="/" className="navbar-logo">
+        Your Logo
+      </Link>
+      <div className="navbar-right">
         <div className="notifications-navbar-items">
-        <IconButton size="small" color='inherit' onClick={toggleNotifications}>
-        <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
+          <IconButton size="small" color="inherit" onClick={toggleNotifications}>
+            <Badge badgeContent={notifications.length} color="error">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+          {notificationsOpen && (
+            <ul className="menu">
+              {notifications.map((notification, index) => (
+                <li key={index} className="notification-item">
+                  {notification}
+                  <button className="">accept </button>
+                  <button className="">reject </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div className="member-navbar-items">
+          <button className="menu-toggle" onClick={toggleMenu}>
+            ☰
+          </button>
+          {menuOpen && (
+            <ul className="options-menu">
+              <li className="menu-item">My orders</li>
+              <li className="menu-item">My stores</li>
+              <li className="menu-item">Profile</li>
+              <li className="menu-item"onClick={handleLogout}>logout</li>
+            </ul>
+          )}
+        </div>
+        <IconButton size="small" color="inherit">
+          <ShoppingCartIcon />
         </IconButton>
-        {notificationsOpen && (
-        <ul className="menu">
-          {notifications.map((notification, index) => (<li className="notification-item">{notification}</li>))}
-        </ul>
-        )}
-    </div>
+      </div>
     </nav>
   );
 };

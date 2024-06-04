@@ -1,6 +1,8 @@
 import React from 'react';
 import SearchBar from './Search';
 import ProductCarousel from './ProductsBar';
+import { useState, createContext, useContext } from "react";
+
 const products = [
     { id: 1, name: 'Product 1', price: '10.00' },
     { id: 2, name: 'Product 2', price: '20.00' },
@@ -14,15 +16,16 @@ const products = [
     { id: 10, name: 'Product 5', price: '50.00' },
   ];
 const Home: React.FC = () => {
+
     return (
         <div>
+
             <SearchBar />
 
             <h1>Our top products</h1>
             <ProductCarousel products={products} />
             
         </div>
-        
     );
 };
 
