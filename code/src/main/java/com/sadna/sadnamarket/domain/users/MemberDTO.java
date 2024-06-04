@@ -7,6 +7,9 @@ public class MemberDTO {
     private String emailAddress;
     private String phoneNumber;
 
+
+    public MemberDTO() {
+    }
     public MemberDTO(Member member) {
         this.username = member.getUsername();
         this.firstName = member.getFirstName();
