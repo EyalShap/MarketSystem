@@ -1363,3 +1363,16 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 2024-06-04 17:33:52 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
 2024-06-04 17:33:53 ERROR c.s.s.service.MarketService - error in register: username already exits
 2024-06-04 17:33:53 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 19:44:49 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-06-04 19:44:50 ERROR c.s.sadnamarket.domain.users.Member - Exception in logout: user isn't logged in
+2024-06-04 19:44:50 ERROR c.s.s.service.MarketService - error in logout: user isn't logged in
+2024-06-04 19:44:50 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=username that isn't very real does not exist
+2024-06-04 19:44:50 ERROR c.s.s.service.MarketService - error in logout: User with userName username that isn't very real does not exist
+2024-06-04 19:46:04 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-06-04 19:46:04 ERROR c.s.sadnamarket.domain.users.Member - Exception in logout: user isn't logged in
+2024-06-04 19:46:04 ERROR c.s.s.service.MarketService - error in logout: user isn't logged in
+2024-06-04 19:46:06 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=username that isn't very real does not exist
+2024-06-04 19:46:06 ERROR c.s.s.service.MarketService - error in logout: User with userName username that isn't very real does not exist
+2024-06-04 19:48:29 ERROR c.s.s.service.MarketService - getStoreOrderHistory: There is no store with id 2147483647.
+2024-06-04 19:48:30 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=Username that nobody has does not exist
+2024-06-04 19:48:30 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: Username that nobody has. Error: User with userName Username that nobody has does not exist
