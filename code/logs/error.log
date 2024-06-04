@@ -1153,3 +1153,213 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 2024-06-02 21:03:04 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
 2024-06-02 21:03:04 ERROR c.s.s.service.MarketService - error in register: username already exits
 2024-06-02 21:03:04 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:15:04 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:15:06 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Missing card details
+2024-06-04 17:15:06 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:15:06 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:15:06 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:15:07 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
+2024-06-04 17:15:07 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Order cannot be supplied
+2024-06-04 17:15:07 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:15:07 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:15:07 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:15:08 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-06-04 17:15:08 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-06-04 17:15:08 ERROR c.s.s.service.MarketService - error in login: user already logged in
+2024-06-04 17:15:08 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-06-04 17:15:08 ERROR c.s.s.service.MarketService - error in exitGuest: Guest with guestID 1 does not exist
+2024-06-04 17:15:08 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-06-04 17:15:09 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:15:09 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-06-04 17:15:10 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-04 17:15:10 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 2. Error: Amount doesn't exist in store
+2024-06-04 17:15:10 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 2147483647, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:15:11 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:15:11 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
+2024-06-04 17:15:11 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Credit card is invalid
+2024-06-04 17:15:12 ERROR c.s.s.domain.auth.AuthFacade - password incorrect
+2024-06-04 17:15:12 ERROR c.s.s.service.MarketService - error in login: password is incorrect
+2024-06-04 17:15:12 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: You can not buy 5 of product 0 - there are only 4 in stock.
+
+
+2024-06-04 17:15:12 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:15:12 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:15:13 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:15:13 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:15:13 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:16:24 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:16:26 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Missing card details
+2024-06-04 17:16:26 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:16:26 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:16:27 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:16:27 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
+2024-06-04 17:16:27 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Order cannot be supplied
+2024-06-04 17:16:27 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:16:27 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:16:28 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:16:28 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-06-04 17:16:29 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-06-04 17:16:29 ERROR c.s.s.service.MarketService - error in login: user already logged in
+2024-06-04 17:16:29 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-06-04 17:16:29 ERROR c.s.s.service.MarketService - error in exitGuest: Guest with guestID 1 does not exist
+2024-06-04 17:16:29 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-06-04 17:16:29 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:16:30 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-06-04 17:16:30 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-04 17:16:30 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 2. Error: Amount doesn't exist in store
+2024-06-04 17:16:30 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 2147483647, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:16:31 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:16:31 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
+2024-06-04 17:16:32 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Credit card is invalid
+2024-06-04 17:16:32 ERROR c.s.s.domain.auth.AuthFacade - password incorrect
+2024-06-04 17:16:32 ERROR c.s.s.service.MarketService - error in login: password is incorrect
+2024-06-04 17:16:32 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: You can not buy 5 of product 0 - there are only 4 in stock.
+
+
+2024-06-04 17:16:32 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:16:32 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:16:33 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:16:33 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:16:33 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:17:16 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:17:18 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Missing card details
+2024-06-04 17:17:18 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:17:18 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:17:19 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:17:19 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
+2024-06-04 17:17:19 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Order cannot be supplied
+2024-06-04 17:17:19 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:17:19 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:17:20 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:17:20 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-06-04 17:17:21 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-06-04 17:17:21 ERROR c.s.s.service.MarketService - error in login: user already logged in
+2024-06-04 17:17:21 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-06-04 17:17:21 ERROR c.s.s.service.MarketService - error in exitGuest: Guest with guestID 1 does not exist
+2024-06-04 17:17:21 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-06-04 17:17:21 ERROR c.s.s.service.MarketService - getStoreInfo: Product Id 2147483647 does not exist.
+2024-06-04 17:17:22 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-06-04 17:17:22 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-04 17:17:22 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 2. Error: Amount doesn't exist in store
+2024-06-04 17:17:23 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 2147483647, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:17:23 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:17:24 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
+2024-06-04 17:17:24 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Credit card is invalid
+2024-06-04 17:17:25 ERROR c.s.s.domain.auth.AuthFacade - password incorrect
+2024-06-04 17:17:25 ERROR c.s.s.service.MarketService - error in login: password is incorrect
+2024-06-04 17:17:25 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: You can not buy 5 of product 0 - there are only 4 in stock.
+
+
+2024-06-04 17:17:25 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:17:25 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:17:25 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:17:26 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:17:26 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:22:37 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:22:39 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Missing card details
+2024-06-04 17:22:39 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:22:39 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:22:40 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:22:40 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because "username" is null
+2024-06-04 17:22:40 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Order cannot be supplied
+2024-06-04 17:22:40 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:22:40 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:22:40 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:22:41 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-06-04 17:22:41 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-06-04 17:22:41 ERROR c.s.s.service.MarketService - error in login: user already logged in
+2024-06-04 17:22:41 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-06-04 17:22:41 ERROR c.s.s.service.MarketService - error in exitGuest: Guest with guestID 1 does not exist
+2024-06-04 17:22:42 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-06-04 17:22:42 ERROR c.s.s.service.MarketService - getStoreInfo: Product Id 2147483647 does not exist.
+2024-06-04 17:22:42 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-06-04 17:22:43 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-04 17:22:43 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 2. Error: Amount doesn't exist in store
+2024-06-04 17:22:43 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 2147483647, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:22:44 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because "username" is null
+2024-06-04 17:22:44 ERROR c.s.s.service.MarketService - getStoreInfo: Cannot invoke "String.equals(Object)" because "username" is null
+2024-06-04 17:22:44 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Payment could not be completed for store 0
+2024-06-04 17:22:44 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:22:44 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:22:45 ERROR c.s.s.domain.auth.AuthFacade - password incorrect
+2024-06-04 17:22:45 ERROR c.s.s.service.MarketService - error in login: password is incorrect
+2024-06-04 17:22:45 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: You can not buy 5 of product 0 - there are only 4 in stock.
+
+
+2024-06-04 17:22:45 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:22:45 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:22:46 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:22:46 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:22:46 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:23:54 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:23:57 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Missing card details
+2024-06-04 17:23:57 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:23:57 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:23:57 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:23:57 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-06-04 17:23:57 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Order cannot be supplied
+2024-06-04 17:23:57 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:23:57 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:23:58 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:23:58 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-06-04 17:23:59 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-06-04 17:23:59 ERROR c.s.s.service.MarketService - error in login: user already logged in
+2024-06-04 17:23:59 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-06-04 17:23:59 ERROR c.s.s.service.MarketService - error in exitGuest: Guest with guestID 1 does not exist
+2024-06-04 17:23:59 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-06-04 17:23:59 ERROR c.s.s.service.MarketService - getStoreInfo: Product Id 2147483647 does not exist.
+2024-06-04 17:24:00 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-06-04 17:24:00 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-04 17:24:00 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 2. Error: Amount doesn't exist in store
+2024-06-04 17:24:00 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 2147483647, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:24:01 ERROR c.s.s.service.MarketService - getStoreInfo: The store of product with id 0 is not active.
+2024-06-04 17:24:01 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-06-04 17:24:02 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Payment could not be completed for store 0
+2024-06-04 17:24:02 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:24:02 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:24:02 ERROR c.s.s.domain.auth.AuthFacade - password incorrect
+2024-06-04 17:24:02 ERROR c.s.s.service.MarketService - error in login: password is incorrect
+2024-06-04 17:24:03 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: You can not buy 5 of product 0 - there are only 4 in stock.
+
+
+2024-06-04 17:24:03 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:24:03 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:24:03 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:24:03 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:24:03 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:33:43 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:33:46 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Missing card details
+2024-06-04 17:33:46 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:33:46 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:33:46 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:33:46 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-06-04 17:33:47 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Order cannot be supplied
+2024-06-04 17:33:47 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:33:47 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:33:47 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:33:48 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-06-04 17:33:48 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-06-04 17:33:48 ERROR c.s.s.service.MarketService - error in login: user already logged in
+2024-06-04 17:33:48 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-06-04 17:33:48 ERROR c.s.s.service.MarketService - error in exitGuest: Guest with guestID 1 does not exist
+2024-06-04 17:33:49 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-06-04 17:33:49 ERROR c.s.s.service.MarketService - getStoreInfo: Product Id 2147483647 does not exist.
+2024-06-04 17:33:49 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-06-04 17:33:50 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-04 17:33:50 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 2, storeId: 0, productId: 0, amount: 2. Error: Amount doesn't exist in store
+2024-06-04 17:33:50 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 2, storeId: 0, productId: 2147483647, amount: 3. Error: Amount doesn't exist in store
+2024-06-04 17:33:51 ERROR c.s.s.service.MarketService - getStoreInfo: The store of product with id 0 is not active.
+2024-06-04 17:33:51 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-06-04 17:33:51 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: Payment could not be completed for store 0
+2024-06-04 17:33:51 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:33:51 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:33:52 ERROR c.s.s.domain.auth.AuthFacade - password incorrect
+2024-06-04 17:33:52 ERROR c.s.s.service.MarketService - error in login: password is incorrect
+2024-06-04 17:33:52 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 2. Error: One or more stores did not accept your basket for the following reason: You can not buy 5 of product 0 - there are only 4 in stock.
+
+
+2024-06-04 17:33:52 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=2 does not exist
+2024-06-04 17:33:52 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 2. Error: User with userName 2 does not exist
+2024-06-04 17:33:52 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-04 17:33:53 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-04 17:33:53 ERROR c.s.s.service.MarketService - error in register: username already exits

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
+import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.payment.PaymentInterface;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
@@ -13,6 +14,7 @@ import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
+import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +66,7 @@ class GuestTests {
         resp = bridge.guestLeaveSystem(resp.getDataJson());
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeMemberGuestDoesntExistError(Integer.parseInt(uuid)), resp.getErrorString());
     }
 
     @Test
@@ -94,9 +97,11 @@ class GuestTests {
         resp = bridge.signUp(uuid, "john@john.com", username, "thisIsn'tWhatAHashLooksLike");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeAuthUsernameExistsError(), resp.getErrorString());
         resp = bridge.signUp(uuid, "jane@john.com", username, "thisIsn'tWhatAHashLooksLikeEither");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeAuthUsernameExistsError(), resp.getErrorString());
     }
 
     @Test
@@ -123,6 +128,7 @@ class GuestTests {
         resp = bridge.login(username, "thisIsn'tWhatAHashLooksLike");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeUserLoggedInError(), resp.getErrorString());
     }
 
     @Test
@@ -136,6 +142,7 @@ class GuestTests {
         resp = bridge.login(username, "thisPasswordIsVeryWrong");
         Assertions.assertNotEquals(resp, null);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeAuthPasswordIncorrectError(), resp.getErrorString());
     }
 
     @Test
@@ -172,6 +179,7 @@ class GuestTests {
         try {
             resp = bridge.getStoreData("", null, Integer.MAX_VALUE);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreNoStoreWithIdError(Integer.MAX_VALUE), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -190,6 +198,7 @@ class GuestTests {
             bridge.closeStore(ownerToken, ownerUsername, storeId);
             resp = bridge.getStoreData("", null, storeId);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreWithIdNotActiveError(storeId), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -259,8 +268,9 @@ class GuestTests {
         bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5));
         try {
-            resp = bridge.getProductData("", "", Integer.MAX_VALUE);
+            resp = bridge.getProductData(null, null, Integer.MAX_VALUE);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeProductDoesntExistError(Integer.MAX_VALUE), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -280,8 +290,9 @@ class GuestTests {
         int productId = Integer.parseInt(resp.getDataJson());
         try {
             bridge.closeStore(ownerToken, ownerUsername, storeId);
-            resp = bridge.getProductData("", "", productId);
+            resp = bridge.getProductData(null, null, productId);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreOfProductIsNotActiveError(productId), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -391,6 +402,7 @@ class GuestTests {
         try {
             resp = bridge.searchProduct(null, 500, 505, "Product", -1, -1);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals("No results for products were found", resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -491,6 +503,7 @@ class GuestTests {
         try {
             resp = bridge.searchProductInStore(storeId, "TestProduct", 50, 50, "Product", -1);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals("No products found", resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -517,6 +530,7 @@ class GuestTests {
         try {
             resp = bridge.searchProductInStore(Integer.MAX_VALUE, "TestProduct", 500, 505, "Product", -1);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreNoStoreWithIdError(Integer.MAX_VALUE), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -582,6 +596,7 @@ class GuestTests {
         try {
             resp = bridge.addProductToBasketGuest(uuid, storeId, productId, 3);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeCartAmountDoesntExistError(), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -605,6 +620,7 @@ class GuestTests {
         try {
             resp = bridge.addProductToBasketGuest(uuid, storeId, Integer.MAX_VALUE, 3);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeCartAmountDoesntExistError(), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -660,6 +676,13 @@ class GuestTests {
             bridge.addProductToBasketGuest(uuid, storeId, productId, 1);
             resp = bridge.setGuestBasketProductAmount(uuid, storeId, productId, 3);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeCartAmountDoesntExistError(), resp.getErrorString());
+            resp = bridge.getGuestBasket(uuid, storeId);
+            String json = resp.getDataJson();
+            Map<Integer, Integer> basket = objectMapper.readValue(json, new TypeReference<Map<Integer, Integer>>() {
+            });
+            Assertions.assertTrue(basket.containsKey(productId));
+            Assertions.assertEquals(1, basket.get(productId));
         } catch (Exception e) {
 
         }
@@ -685,6 +708,13 @@ class GuestTests {
             bridge.removeProductFromStore(ownerToken, ownerUsername, storeId, productId);
             resp = bridge.setGuestBasketProductAmount(uuid, storeId, productId, 2);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeCartAmountDoesntExistError(), resp.getErrorString());
+            resp = bridge.getGuestBasket(uuid, storeId);
+            String json = resp.getDataJson();
+            Map<Integer, Integer> basket = objectMapper.readValue(json, new TypeReference<Map<Integer, Integer>>() {
+            });
+            Assertions.assertTrue(basket.containsKey(productId));
+            Assertions.assertEquals(1, basket.get(productId));
         } catch (Exception e) {
 
         }
@@ -761,6 +791,12 @@ class GuestTests {
                     new AddressDTO("Israel", "Petah Tikvah", "Benyamin 12", "Apartment 12", "5", "Jim Jimmy",
                             "+97254-989-4939", "jimjimmy@gmail"));
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makePurchaseMissingCardError(), resp.getErrorString());
+            Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "2");
+            resp = bridge.getUserPurchaseHistory("", "", uuid);
+            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
+            });
+            Assertions.assertEquals(0, history.size());
         } catch (Exception e) {
 
         }
@@ -800,6 +836,12 @@ class GuestTests {
                     new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
                             "+97254-989-4939", "jimjimmy@gmail.com"));
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "4");
+            Assertions.assertTrue(resp.getErrorString().startsWith("One or more stores did not accept your basket for the following reason: "));
+            resp = bridge.getUserPurchaseHistory("", "", uuid);
+            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
+            });
+            Assertions.assertEquals(0, history.size());
         } catch (Exception e) {
 
         }
@@ -838,6 +880,12 @@ class GuestTests {
                     new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
                             "+97254-989-4939", "jimjimmy@gmail.com"));
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makePurchaseOrderCannotBeSuppliedError(), resp.getErrorString());
+            Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "5");
+            resp = bridge.getUserPurchaseHistory("", "", uuid);
+            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
+            });
+            Assertions.assertEquals(0, history.size());
         } catch (Exception e) {
 
         }
@@ -851,7 +899,7 @@ class GuestTests {
         SupplyService.getInstance().setController(supplyMock);
         Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
         Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
-        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(false);
+        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(false);
 
         Response resp = bridge.guestEnterSystem();
@@ -876,6 +924,12 @@ class GuestTests {
                     new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
                             "+97254-989-4939", "jimjimmy@gmail.com"));
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makePurchasePaymentCannotBeCompletedForStoreError(storeId), resp.getErrorString());
+            Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "5");
+            resp = bridge.getUserPurchaseHistory("", "", uuid);
+            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
+            });
+            Assertions.assertEquals(0, history.size());
         } catch (Exception e) {
 
         }

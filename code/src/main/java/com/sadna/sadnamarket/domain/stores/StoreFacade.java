@@ -295,7 +295,7 @@ public class StoreFacade {
      */
 
     public List<OrderDTO> getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
-        if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.getSystemManagerUserName().equals(username))
+        if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.isSystemManager(username))
             throw new IllegalArgumentException(Error.makeStoreUserCannotStoreHistoryError(username, storeId));
 
         List<OrderDTO> orderDTOS = new LinkedList<>();
@@ -311,7 +311,7 @@ public class StoreFacade {
         Store store = storeRepository.findStoreByID(storeId);
         synchronized (store) {
             if (!isStoreActive(storeId)) {
-                if (!store.isStoreOwner(username) && !userFacade.getSystemManagerUserName().equals(username))
+                if (!store.isStoreOwner(username) && !userFacade.isSystemManager(username))
                     throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             }
 
@@ -325,7 +325,7 @@ public class StoreFacade {
             throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
         }
         if (!isStoreActive(storeId)) {
-            if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.getSystemManagerUserName().equals(username))
+            if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.isSystemManager(username))
                 throw new IllegalArgumentException(Error.makeStoreOfProductIsNotActiveError(productId));
         }
 
