@@ -33,4 +33,7 @@ public class ProductDataPrice {
         return newPrice;
     }
 
+    public void setNewPrice(double newPrice) {
+        this.newPrice = newPrice;
+    }
 }
