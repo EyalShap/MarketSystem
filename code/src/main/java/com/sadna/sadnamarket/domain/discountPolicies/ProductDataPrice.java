@@ -34,7 +34,12 @@ public class ProductDataPrice {
     }
 
     public void setNewPrice(double newPrice) {
-        this.newPrice = newPrice;
+        if(newPrice < 0){
+            this.newPrice = 0;
+        }
+        else{
+            this.newPrice = newPrice;
+        }
     }
 
     public ProductDataPrice deepCopy(){
