@@ -9,7 +9,7 @@ import { useState } from 'react';
 import Profile from './components/Profile';
 
 function App() {
-  const [isloggedin,setIsloggedin] = useState(true);
+  const [isloggedin,setIsloggedin] = useState(false);
   return (
     <div className="App">
       <Router>
@@ -20,8 +20,16 @@ function App() {
           <Route path="/register" element={<Register/>}/>
           <Route path="/profile" element={<Profile/>}/>
           <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>}/>
-        </Routes> 
+        </Routes>
+      
+      
+      
+      
       </Router>
+    
+
+
+
     </div>
   );
 }
