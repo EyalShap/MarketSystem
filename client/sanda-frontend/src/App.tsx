@@ -4,9 +4,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
-import SearchBar from './components/Search';
 import MemberNavbar from './components/MemberNavbar';
 import { useState } from 'react';
+import Profile from './components/Profile';
 
 function App() {
   const [isloggedin,setIsloggedin] = useState(true);
@@ -18,9 +18,9 @@ function App() {
           <Route path="/" element={<Home/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
+          <Route path="/profile" element={<Profile/>}/>
           <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>}/>
-        </Routes>
-       
+        </Routes> 
       </Router>
     </div>
   );

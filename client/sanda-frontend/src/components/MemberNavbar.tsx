@@ -58,7 +58,7 @@ const MemberNavbar = () => {
             <ul className="options-menu">
               <li className="menu-item">My orders</li>
               <li className="menu-item">My stores</li>
-              <li className="menu-item">Profile</li>
+              <li className="menu-item"><Link to="/profile" className="navbar-link">Profile</Link></li>
               <li className="menu-item"onClick={handleLogout}>logout</li>
             </ul>
           )}
