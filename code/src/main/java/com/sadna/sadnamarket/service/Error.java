@@ -163,6 +163,16 @@ public class Error {
                 username, newManagerUsername, storeId);
     }
 
+    public static String makeStoreUserCannotAddManagerPermissionsError(String username, String newManagerUsername, int storeId){
+        return String.format("User %s can not edit user %s's manager permissions in store %d.",
+                username, newManagerUsername, storeId);
+    }
+
+    public static String makeStoreUserCannotAddOwnerError(String username, String newOwnerUsername, int storeId){
+        return String.format("User %s can not add user %s as an owner to store %d.",
+                username, newOwnerUsername, storeId);
+    }
+
     public static String makeStoreUserCannotCloseStoreError(String username, int storeId){
         return String.format("User %s can not close the store with id %d (not a founder).", username, storeId);
     }

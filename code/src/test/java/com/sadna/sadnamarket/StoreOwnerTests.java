@@ -13,6 +13,7 @@ import com.sadna.sadnamarket.domain.supply.SupplyInterface;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
+import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,6 +86,7 @@ class StoreOwnerTests {
     void addProductBadInfoTest() {
         Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "", -100.0, "cat", -10));
         Assertions.assertTrue(resp.getError());
+        Assertions.assertTrue(resp.getErrorString().contains(Error.makeProductAspectCannotBeNullOrEmptyError("name")));
     }
 
     @Test
@@ -92,6 +94,7 @@ class StoreOwnerTests {
         Response resp = bridge.addProductToStore(maliciousToken, maliciousUsername, storeId,
                 new ProductDTO(-1, "product", 100.0, "cat", 3.5));
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserCannotAddProductError(maliciousUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -122,6 +125,7 @@ class StoreOwnerTests {
         resp = bridge.editStoreProduct(token, username, storeId, productId,
                 new ProductDTO(-1, null, -200.0, null, -10));
         Assertions.assertTrue(resp.getError());
+        Assertions.assertTrue(resp.getErrorString().contains(Error.makeProductAspectCannotBeNullOrEmptyError("name")));
     }
 
     @Test
@@ -132,6 +136,7 @@ class StoreOwnerTests {
         resp = bridge.editStoreProduct(token, username, storeId, Integer.MAX_VALUE,
                 new ProductDTO(-1, null, -200.0, null, -10));
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreProductDoesntExistError(storeId, Integer.MAX_VALUE), resp.getErrorString());
     }
 
     @Test
@@ -142,6 +147,7 @@ class StoreOwnerTests {
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, null, 200.0, null, -10));
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreProductDoesntExistError(storeId, productId), resp.getErrorString());
     }
 
     @Test
@@ -152,6 +158,7 @@ class StoreOwnerTests {
         resp = bridge.editStoreProduct(maliciousToken, maliciousUsername, storeId, productId,
                 new ProductDTO(-1, null, 200.0, null, -10));
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserCannotUpdateProductError(maliciousUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -175,6 +182,7 @@ class StoreOwnerTests {
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.removeProductFromStore(token, username, storeId, Integer.MAX_VALUE);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreProductDoesntExistError(storeId, Integer.MAX_VALUE), resp.getErrorString());
     }
 
     @Test
@@ -185,6 +193,7 @@ class StoreOwnerTests {
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.removeProductFromStore(token, username, storeId, productId);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreProductDoesntExistError(storeId, productId), resp.getErrorString());
     }
 
     @Test
@@ -194,6 +203,7 @@ class StoreOwnerTests {
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.removeProductFromStore(maliciousToken, maliciousUsername, storeId, productId);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserCannotDeleteProductError(maliciousUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -254,12 +264,14 @@ class StoreOwnerTests {
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserAlreadyOwnerError(appointeeUsername, storeId), resp.getErrorString());
     }
 
     @Test
     void appointOwnerDoesntExistTest() {
         Response resp = bridge.appointOwner(token, username, storeId, "Eric");
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeMemberUserDoesntExistError("Eric"), resp.getErrorString());
     }
 
     @Test
@@ -270,6 +282,7 @@ class StoreOwnerTests {
         bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         resp = bridge.appointOwner(maliciousToken, maliciousUsername, storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserCannotAddOwnerError(maliciousUsername, appointeeUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -280,6 +293,7 @@ class StoreOwnerTests {
         bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         resp = bridge.appointOwner("token that isn't real", "username that nobody has", storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeAuthInvalidJWTError(), resp.getErrorString());
     }
 
     @Test
@@ -340,6 +354,7 @@ class StoreOwnerTests {
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserAlreadyManagerError(appointeeUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -354,12 +369,14 @@ class StoreOwnerTests {
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserAlreadyOwnerError(appointeeUsername, storeId), resp.getErrorString());
     }
 
     @Test
     void appointManagerDoesntExistTest() {
         Response resp = bridge.appointManager(token, username, storeId, "Eric", new LinkedList<>());
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeMemberUserDoesntExistError("Eric"), resp.getErrorString());
     }
 
     @Test
@@ -370,6 +387,7 @@ class StoreOwnerTests {
         bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         resp = bridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername, new LinkedList<>());
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserCannotAddManagerError(maliciousUsername, appointeeUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -381,6 +399,7 @@ class StoreOwnerTests {
         resp = bridge.appointManager("token that isn't real", "username that nobody has", storeId, appointeeUsername,
                 new LinkedList<>());
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeAuthInvalidJWTError(), resp.getErrorString());
     }
 
     @Test
@@ -420,6 +439,7 @@ class StoreOwnerTests {
         newPerms.add(1);
         resp = bridge.changeManagerPermissions(maliciousToken, maliciousUsername, appointeeUsername, storeId, newPerms);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserCannotAddManagerPermissionsError(maliciousUsername, appointeeUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -432,6 +452,7 @@ class StoreOwnerTests {
         newPerms.add(1);
         resp = bridge.changeManagerPermissions(token, username, appointeeUsername, storeId, newPerms);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeMemberUserHasNoRoleError(), resp.getErrorString());
     }
 
     @Test
@@ -444,12 +465,14 @@ class StoreOwnerTests {
     void closeStoreDoesntExistTest() {
         Response resp = bridge.closeStore(token, username, Integer.MAX_VALUE);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreNoStoreWithIdError(Integer.MAX_VALUE), resp.getErrorString());
     }
 
     @Test
     void closeStoreNotOwnerTest() {
         Response resp = bridge.closeStore(maliciousToken, maliciousUsername, storeId);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeStoreUserCannotCloseStoreError(maliciousUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -492,9 +515,11 @@ class StoreOwnerTests {
         try {
             resp = bridge.getStoreOwners(token, username, Integer.MAX_VALUE);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreNoStoreWithIdError(Integer.MAX_VALUE),resp.getErrorString());
 
             resp = bridge.getStoreManagers(token, username, Integer.MAX_VALUE);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreNoStoreWithIdError(Integer.MAX_VALUE),resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -511,11 +536,13 @@ class StoreOwnerTests {
         bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
 
         try {
-            resp = bridge.getStoreOwners(maliciousToken, maliciousUsername, Integer.MAX_VALUE);
+            resp = bridge.getStoreOwners(maliciousToken, maliciousUsername, storeId);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreUserCannotGetRolesInfoError(maliciousUsername, storeId),resp.getErrorString());
 
-            resp = bridge.getStoreManagers(maliciousToken, maliciousUsername, Integer.MAX_VALUE);
+            resp = bridge.getStoreManagers(maliciousToken, maliciousUsername, storeId);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreUserCannotGetRolesInfoError(maliciousUsername, storeId),resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -574,6 +601,7 @@ class StoreOwnerTests {
         try {
             resp = bridge.getStorePurchaseHistory(maliciousToken, maliciousUsername, storeId);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreUserCannotStoreHistoryError(maliciousUsername, storeId), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -594,6 +622,7 @@ class StoreOwnerTests {
         try {
             resp = bridge.getStorePurchaseHistory("nopety nope nope", "doesnt exist", storeId);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeAuthInvalidJWTError(), resp.getErrorString());
         } catch (Exception e) {
 
         }

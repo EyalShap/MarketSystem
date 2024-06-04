@@ -101,8 +101,7 @@ public class StoreFacade {
         Store store = storeRepository.findStoreByID(storeId);
         synchronized (store.getProductAmounts()) {
             if (!store.productExists(productId))
-                throw new IllegalArgumentException(
-                        String.format("A store with id %d does not have a product with id %d.", storeId, productId));
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
 
             store.setProductAmounts(productId, newQuantity);
             productFacade.updateProduct(storeId, productId, newProductName, newPrice, newCategory, newRank);
@@ -112,13 +111,11 @@ public class StoreFacade {
 
     public int updateProductAmount(String username, int storeId, int productId, int newQuantity) {
         if (!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
-            throw new IllegalArgumentException(
-                    String.format("user %s can not update a product in store with id %d.", username, storeId));
+            throw new IllegalArgumentException(Error.makeStoreUserCannotUpdateProductError(username, storeId));
         Store store = storeRepository.findStoreByID(storeId);
         synchronized (store) {
             if (!store.productExists(productId))
-                throw new IllegalArgumentException(
-                        String.format("A store with id %d does not have a product with id %d.", storeId, productId));
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
 
             store.setProductAmounts(productId, newQuantity);
             return productId;
@@ -126,21 +123,29 @@ public class StoreFacade {
     }
 
     public void sendStoreOwnerRequest(String currentOwnerUsername, String newOwnerUsername, int storeId) {
+        if(getIsOwner(currentOwnerUsername, storeId, newOwnerUsername)){
+            throw new IllegalArgumentException(Error.makeStoreUserAlreadyOwnerError(newOwnerUsername, storeId));
+        }
         if (!canAddOwnerToStore(storeId, currentOwnerUsername, newOwnerUsername))
-            throw new IllegalArgumentException(String.format("User %s can not add user %s as an owner to store %d.",
-                    currentOwnerUsername, newOwnerUsername, storeId));
+            throw new IllegalArgumentException(Error.makeStoreUserCannotAddOwnerError(currentOwnerUsername, newOwnerUsername, storeId));
 
         synchronized (storeRepository) {
             if (!storeRepository.storeExists(storeId))
-                throw new IllegalArgumentException(String.format("A store with id %d does not exist.", storeId));
+                throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             if (!isStoreActive(storeId))
-                throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
 
             userFacade.addOwnerRequest(currentOwnerUsername, newOwnerUsername, storeId);
         }
     }
 
     public void sendStoreManagerRequest(String currentOwnerUsername, String newManagerUsername, int storeId) {
+        if(getIsOwner(currentOwnerUsername, storeId, newManagerUsername)){
+            throw new IllegalArgumentException(Error.makeStoreUserAlreadyOwnerError(newManagerUsername, storeId));
+        }
+        if(getIsManager(currentOwnerUsername, storeId, newManagerUsername)){
+            throw new IllegalArgumentException(Error.makeStoreUserAlreadyManagerError(newManagerUsername, storeId));
+        }
         if (!canAddManagerToStore(storeId, currentOwnerUsername, newManagerUsername))
             throw new IllegalArgumentException(Error.makeStoreUserCannotAddManagerError(currentOwnerUsername, newManagerUsername, storeId));
 
@@ -164,8 +169,11 @@ public class StoreFacade {
 
     public void addManagerPermission(String currentOwnerUsername, String newManagerUsername, int storeId,
             Set<Permission> permission) {
+        if(!getIsManager(currentOwnerUsername, storeId, newManagerUsername)){
+            throw new IllegalArgumentException(Error.makeMemberUserHasNoRoleError());
+        }
         if (!canAddPermissionToManager(storeId, currentOwnerUsername, newManagerUsername))
-            throw new IllegalArgumentException(Error.makeStoreUserCannotAddManagerError(currentOwnerUsername, newManagerUsername, storeId));
+            throw new IllegalArgumentException(Error.makeStoreUserCannotAddManagerPermissionsError(currentOwnerUsername, newManagerUsername, storeId));
 
         synchronized (storeRepository) {
             if (!storeRepository.storeExists(storeId))

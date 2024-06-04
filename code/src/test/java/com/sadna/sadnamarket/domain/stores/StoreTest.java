@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.service.Error;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -206,7 +207,7 @@ class StoreTest {
             store0.deleteProduct(0);
         });
 
-        String expectedMessage1 = "Product Id 0 does not exist.";
+        String expectedMessage1 = Error.makeStoreProductDoesntExistError(store0.getStoreId(), 0);
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 

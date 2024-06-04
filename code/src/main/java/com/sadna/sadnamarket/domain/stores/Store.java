@@ -97,7 +97,7 @@ public class Store {
             if (!isActive)
                 throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (!productExists(productId))
-                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId,productId));
 
             productAmounts.remove(productId);
         }
