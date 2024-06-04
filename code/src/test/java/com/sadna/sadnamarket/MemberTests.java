@@ -12,6 +12,7 @@ import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
+import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +55,7 @@ class MemberTests {
     void memberLogoutDoesntExistTest() {
         Response resp = bridge.logout("username that isn't very real");
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeMemberUserDoesntExistError("username that isn't very real"), resp.getErrorString());
     }
 
     @Test
@@ -61,6 +63,7 @@ class MemberTests {
         bridge.logout(username);
         Response resp = bridge.logout(username);
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeMemberUserIsNotLoggedInError(), resp.getErrorString());
     }
 
     @Test
@@ -71,6 +74,8 @@ class MemberTests {
         try {
             resp = bridge.getStoreData(token, username, storeId);
             Assertions.assertFalse(resp.getError());
+            StoreDTO storeDTO = objectMapper.readValue(resp.getDataJson(), StoreDTO.class);
+            Assertions.assertEquals("Peter's Store", storeDTO.getStoreName());
         }catch (Exception e){
 
         }
@@ -80,5 +85,6 @@ class MemberTests {
     void memberOpenStoreNotMemberTest() {
         Response resp = bridge.openStore("not token", "not username", "Peter's Store");
         Assertions.assertTrue(resp.getError());
+        Assertions.assertEquals(Error.makeAuthInvalidJWTError(), resp.getErrorString());
     }
 }

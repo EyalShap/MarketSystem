@@ -11,6 +11,7 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
+import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import org.junit.jupiter.api.Assertions;
@@ -110,6 +111,7 @@ class SystemManagerTests {
         try {
             Response resp = bridge.getStorePurchaseHistory(token, username, Integer.MAX_VALUE);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeStoreNoStoreWithIdError(Integer.MAX_VALUE), resp.getErrorString());
         } catch (Exception e) {
 
         }
@@ -133,6 +135,7 @@ class SystemManagerTests {
         try {
             Response resp = bridge.getUserPurchaseHistory(token, username, "Username that nobody has");
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeMemberUserDoesntExistError("Username that nobody has"), resp.getErrorString());
         } catch (Exception e) {
 
         }

@@ -102,6 +102,12 @@ public class UserFacade {
         logger.info("get system username {}",systemManagerUserName);
         return systemManagerUserName;
     }
+
+    public boolean isSystemManager(String username){
+        logger.info("check if username is system manager {}",username);
+        return username != null && username.equals(systemManagerUserName);
+    }
+
     public void login(String userName,String password){
         logger.info("{} tries to login",userName);
         isValid(userName);
@@ -467,7 +473,11 @@ public class UserFacade {
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         validateCreditCard(creditCard);
         validateAddress(addressDTO);
-        storeFacade.checkCart(username, items); 
+        try {
+            storeFacade.checkCart(null, items);
+        }catch (Exception e){
+            throw new Exception("One or more stores did not accept your basket for the following reason: " + e.getMessage());
+        }
         Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(username, items);
         List<ProductDataPrice> productList=getAllProductData(storeBag);
         Map<Integer,Integer> productAmount=new HashMap<>();
@@ -482,7 +492,11 @@ public class UserFacade {
         List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
         validateCreditCard(creditCard);
         validateAddress(addressDTO);
-        storeFacade.checkCart(null, items);
+        try {
+            storeFacade.checkCart(null, items);
+        }catch (Exception e){
+            throw new Exception("One or more stores did not accept your basket for the following reason: " + e.getMessage());
+        }
         Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(null, items);
         UserOrderDTO order= viewCart(guestId);
         List<ProductDataPrice> productList= order.getProductsData();
