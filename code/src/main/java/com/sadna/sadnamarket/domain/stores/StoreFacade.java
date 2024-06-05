@@ -475,7 +475,6 @@ public class StoreFacade {
     }
 
     public void checkCart(String username, List<CartItemDTO> cart) throws Exception {
-
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         String error = "";
         for (int storeId : cartByStore.keySet()) {

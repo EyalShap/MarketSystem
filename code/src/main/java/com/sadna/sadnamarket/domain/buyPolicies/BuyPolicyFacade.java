@@ -125,7 +125,9 @@ public class BuyPolicyFacade {
     public void addPolicyToStore(int storeId, int policyId) throws Exception {
         if(!buyPolicyRepository.buyPolicyExists(policyId))
             throw new Exception();
-        BuyPolicyManager manager = mapper.getOrDefault(storeId, new BuyPolicyManager(this));
+        if(!mapper.containsKey(storeId))
+            mapper.put(storeId, new BuyPolicyManager(this));
+        BuyPolicyManager manager = mapper.get(storeId);
         manager.addBuyPolicy(policyId);
     }
 
