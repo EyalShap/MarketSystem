@@ -7,6 +7,7 @@ import java.util.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyType;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
@@ -64,11 +65,25 @@ public class StoreFacade {
         int storeId = storeRepository.addStore(founderUserName, storeName, address, email, phoneNumber, openingHours,
                 closingHours);
         userFacade.addStoreFounder(founderUserName, storeId);
+
+        // adding default buy policies (laws)
+        List<BuyType> buyTypes1 = new ArrayList<>();
+        List<BuyType> buyTypes2 = new ArrayList<>();
+        buyTypes1.add(BuyType.immidiatePurchase);
+        buyTypes2.add(BuyType.immidiatePurchase);
+        try {
+            // this will not throw an exception since all the parameters are legal
+            int policyId1 = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Alcohol", buyTypes1, 18, -1, founderUserName);
+            int policyId2 = buyPolicyFacade.createCategoryHourLimitBuyPolicy("Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0), founderUserName);
+            addBuyPolicyToStore(founderUserName, storeId, policyId1);
+            addBuyPolicyToStore(founderUserName, storeId, policyId2);
+        }
+        catch (Exception e) {}
         return storeId;
     }
 
     public int addProductToStore(String username, int storeId, String productName, int productQuantity,
-            double productPrice, String category, double rank) {
+            double productPrice, String category, double rank, double productWeight) {
         if (!hasPermission(username, storeId, Permission.ADD_PRODUCTS))
             throw new IllegalArgumentException(
                     String.format("user %s can not add a product to store with id %d.", username, storeId));
@@ -77,7 +92,7 @@ public class StoreFacade {
         if (!isStoreActive(storeId))
             throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
 
-        int newProductId = productFacade.addProduct(storeId, productName, productPrice, category, rank);
+        int newProductId = productFacade.addProduct(storeId, productName, productPrice, category, rank, productWeight);
         storeRepository.findStoreByID(storeId).addProduct(newProductId, productQuantity);
         return newProductId;
     }
@@ -427,12 +442,12 @@ public class StoreFacade {
         return sellerUsername;
     }
 
-    public void addBuyPolicy(String username, int storeId, String args) {
+    public void addBuyPolicyToStore(String username, int storeId, int policyId) throws Exception {
         if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(
-                    String.format("User %s can not add buy policy to store with id %d.", username, storeId));
+                    String.format("User %s can not add buy policy %d to store %d.", username, policyId, storeId));
 
-        buyPolicyFacade.addBuyPolicy(storeId, args);
+        buyPolicyFacade.addPolicyToStore(storeId, policyId);
     }
 
     public void addDiscountPolicy(String username, int storeId, String args) {
@@ -460,7 +475,6 @@ public class StoreFacade {
     }
 
     public void checkCart(String username, List<CartItemDTO> cart) throws Exception {
-
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         String error = "";
         for (int storeId : cartByStore.keySet()) {
@@ -531,7 +545,7 @@ public class StoreFacade {
         return mapPrice;
     }
 
-    private boolean hasPermission(String username, int storeId, Permission permission) {
+    public boolean hasPermission(String username, int storeId, Permission permission) {
         if (!userFacade.isLoggedIn(username))
             return false;
 
@@ -571,5 +585,9 @@ public class StoreFacade {
 
     public StoreInfo getStoreInfo(int storeId) {
         return storeRepository.findStoreByID(storeId).getStoreInfo();
+    }
+
+    public Set<Integer> getAllStoreIds() {
+        return storeRepository.getAllStoreIds();
     }
 }

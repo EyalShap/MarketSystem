@@ -7,6 +7,8 @@ import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyType;
+import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
@@ -47,7 +49,7 @@ public class MarketService {
         this.productFacade = new ProductFacade();
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(storeRepository);
-        this.buyPolicyFacade = new BuyPolicyFacade();
+        this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
         this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
         this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
@@ -57,6 +59,9 @@ public class MarketService {
         this.storeFacade.setOrderFacade(orderFacade);
         this.storeFacade.setBuyPolicyFacade(buyPolicyFacade);
         this.storeFacade.setDiscountPolicyFacade(discountPolicyFacade);
+        this.buyPolicyFacade.setProductFacade(productFacade);
+        this.buyPolicyFacade.setStoreFacade(storeFacade);
+        this.buyPolicyFacade.setUserFacade(userFacade);
     }
 
     public static MarketService getInstance() {
@@ -84,7 +89,7 @@ public class MarketService {
         try {
             checkToken(token, founderUsername);
             int newStoreId = storeFacade.createStore(founderUsername, storeName, address, email, phoneNumber, openingHours, closingHours); // will throw an exception if the store already exists
-            addBuyPolicy(token, founderUsername, newStoreId,"");
+            //addBuyPolicy(token, founderUsername, newStoreId,"");
             addDiscountPolicy(token, founderUsername, newStoreId,"");
             logger.info(String.format("User %s created a store with id %d.", founderUsername, newStoreId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
@@ -95,10 +100,10 @@ public class MarketService {
         }
     }
 
-    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, double productPrice, String category, double rank) {
+    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, double productPrice, String category, double rank, double productWeight) {
         try {
             checkToken(token, username);
-            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category, rank);
+            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category, rank, productWeight);
             logger.info(String.format("User %s added product %d to store %d.", username, newProductId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
@@ -354,15 +359,132 @@ public class MarketService {
         }
     }
 
-    public Response addBuyPolicy(String token, String username, int storeId, String args) {
+    public Response createProductKgBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, double min, double max) {
         try {
             checkToken(token, username);
-            storeFacade.addBuyPolicy(username, storeId, args);
-            logger.info(String.format("User %s added buy policy to store %d.", username, storeId));
+            buyPolicyFacade.createProductKgBuyPolicy(productId, buytypes, min, max, username);
+            logger.info(String.format("User %s added product kg limit buy policy: product %d, weight range %d - %d.", username, productId, min, max));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addBuyPolicy: " + e.getMessage());
+            logger.error("createProductKgBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createProductAmountBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, int min, int max) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createProductAmountBuyPolicy(productId, buytypes, min, max, username);
+            logger.info(String.format("User %s added product amount limit buy policy: product %d, amount %d - %d.", username, productId, min, max));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createProductAmountBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createCategoryAgeLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, int min, int max) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createCategoryAgeLimitBuyPolicy(category, buytypes, min, max, username);
+            logger.info(String.format("User %s added category age limit buy policy : category %s, age %d - %d.", username, category, min, max));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createCategoryAgeLimitBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createCategoryHourLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, LocalTime from, LocalTime to) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createCategoryHourLimitBuyPolicy(category, buytypes, from, to, username);
+            logger.info(String.format("User %s added category hour limit buy policy : category %s, hour %s - %s.", username, category, from.toString(), to.toString()));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createCategoryHourLimitBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createCategoryRoshChodeshBuyPolicy(String token, String username, String category, List<BuyType> buytypes) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createCategoryRoshChodeshBuyPolicy(category, buytypes, username);
+            logger.info(String.format("User %s added category rosh chodesh limit buy policy: category %s.", username, category));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createCategoryRoshChodeshBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createCategoryHolidayBuyPolicy(String token, String username,  String category, List<BuyType> buytypes) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createCategoryHolidayBuyPolicy(category, buytypes, username);
+            logger.info(String.format("User %s added category holiday limit buy policy: category %s.", username, category));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createCategoryHolidayBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createAndBuyPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createAndBuyPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added composition buy policy: AND(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createAndBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createOrBuyPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createOrBuyPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added composition buy policy: OR(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createOrBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createConditioningBuyPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createConditioningBuyPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added composition buy policy: CONDITIONING(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createConditioningBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response addBuyPolicyToStore(String token, String username, int storeId, int policyId) {
+        try {
+            checkToken(token, username);
+            storeFacade.addBuyPolicyToStore(username, storeId, policyId);
+            logger.info(String.format("User %s added policy %d to store %d.", username, storeId, policyId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("addPolicyToStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
