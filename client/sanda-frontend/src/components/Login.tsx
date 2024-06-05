@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 export const Login = () => {
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value);
+        setUsername(e.target.value);
     };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,8 +22,8 @@ export const Login = () => {
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <div>
-                    <label htmlFor="email">Email:</label>
-                    <input type="email" id="email" value={email} onChange={handleEmailChange} />
+                    <label htmlFor="username">username:</label>
+                    <input type="text" id="email" value={username} onChange={handleEmailChange} />
                 </div>
                 <div>
                     <label htmlFor="password">Password:</label>

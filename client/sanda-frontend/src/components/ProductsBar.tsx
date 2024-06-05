@@ -11,7 +11,7 @@ type ProductCarouselProps= {
   products: Product[];
 }
 
-const ProductCarousel = ( products:ProductCarouselProps) => {
+const ProductsBar = ( products:ProductCarouselProps) => {
     const [carouselRef, setcarouselRef]= useState(0);
     const [currentProduct, setProducts]= useState(products.products.slice(5));
 
@@ -49,6 +49,6 @@ const ProductCarousel = ( products:ProductCarouselProps) => {
     );
   };
   
-export default ProductCarousel;
+export default ProductsBar;
 
 

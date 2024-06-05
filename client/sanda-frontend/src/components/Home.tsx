@@ -1,6 +1,10 @@
 import React from 'react';
 import SearchBar from './Search';
-import ProductCarousel from './ProductsBar';
+import ProductsBar from './ProductsBar';
+import { useState, createContext, useContext } from "react";
+import { Category } from '@mui/icons-material';
+import CategoriesBar from './CategoriesBar';
+
 const products = [
     { id: 1, name: 'Product 1', price: '10.00' },
     { id: 2, name: 'Product 2', price: '20.00' },
@@ -13,13 +17,19 @@ const products = [
     { id: 9, name: 'Product 4', price: '40.00' },
     { id: 10, name: 'Product 5', price: '50.00' },
   ];
-const Home: React.FC = () => {
+
+const Home = () => {
+
     return (
         <div>
-            <SearchBar />
+
+            
 
             <h1>Our top products</h1>
-            <ProductCarousel products={products} />
+            <ProductsBar products={products} />
+            <h3>Our Top Categories</h3>
+            <CategoriesBar />
+            
         </div>
     );
 };
