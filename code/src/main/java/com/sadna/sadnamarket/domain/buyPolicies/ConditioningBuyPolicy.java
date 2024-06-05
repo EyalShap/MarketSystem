@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class ConditioningBuyPolicy extends CompositeBuyPolicy{
     // policy1 -> policy2
-    public ConditioningBuyPolicy(List<BuyType> buytypes, BuyPolicy policy1, BuyPolicy policy2) {
-        super(buytypes, policy1, policy2);
+    public ConditioningBuyPolicy(int id, List<BuyType> buytypes, BuyPolicy policy1, BuyPolicy policy2) {
+        super(id, buytypes, policy1, policy2);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
 
     @Override
     public int addProductAmountBuyPolicy(int productId, List<BuyType> buytypes, int min, int max) throws Exception {
-        BuyPolicy newPolicy = new AmountBuyPolicy(buytypes, new ProductSubject(productId), min, max);
+        BuyPolicy newPolicy = new AmountBuyPolicy(nextId, buytypes, new ProductSubject(productId), min, max);
         buyPolicies.put(nextId, newPolicy);
         nextId++;
         return nextId - 1;
@@ -46,7 +46,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
 
     @Override
     public int addCategoryAgeLimitBuyPolicy(String category, List<BuyType> buytypes, int min, int max) {
-        BuyPolicy newPolicy = new AgeLimitBuyPolicy(buytypes, new CategorySubject(category), min, max);
+        BuyPolicy newPolicy = new AgeLimitBuyPolicy(nextId, buytypes, new CategorySubject(category), min, max);
         buyPolicies.put(nextId, newPolicy);
         nextId++;
         return nextId - 1;
@@ -54,7 +54,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
 
     @Override
     public int addCategoryHourLimitBuyPolicy(String category, List<BuyType> buytypes, LocalTime from, LocalTime to) throws Exception {
-        BuyPolicy newPolicy = new HourLimitBuyPolicy(buytypes, new CategorySubject(category), from, to);
+        BuyPolicy newPolicy = new HourLimitBuyPolicy(nextId, buytypes, new CategorySubject(category), from, to);
         buyPolicies.put(nextId, newPolicy);
         nextId++;
         return nextId - 1;

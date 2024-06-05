@@ -11,8 +11,8 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
     private int from;
     private int to; // if this is equal to -1 there is no limit
 
-    AmountBuyPolicy(List<BuyType> buytypes, PolicySubject subject, int from, int to) throws Exception {
-        super(buytypes, subject);
+    AmountBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int from, int to) throws Exception {
+        super(id, buytypes, subject);
         if(to != -1 && to < from) {
             throw new Exception();
         }

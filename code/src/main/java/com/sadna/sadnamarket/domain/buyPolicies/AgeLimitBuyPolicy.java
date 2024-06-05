@@ -13,8 +13,8 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
     private int minAge;
     private int maxAge; // -1 if no limit
 
-    AgeLimitBuyPolicy(List<BuyType> buytypes, PolicySubject subject, int minAge, int maxAge) {
-        super(buytypes, subject);
+    AgeLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int minAge, int maxAge) {
+        super(id, buytypes, subject);
         this.minAge = minAge;
         this.maxAge = maxAge;
     }

@@ -12,8 +12,8 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
     private LocalTime from;
     private LocalTime to; // null if no limit
 
-    HourLimitBuyPolicy(List<BuyType> buytypes, PolicySubject subject, LocalTime from, LocalTime to) throws Exception {
-        super(buytypes, subject);
+    HourLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, LocalTime from, LocalTime to) throws Exception {
+        super(id, buytypes, subject);
         if(to.isBefore(from)) {
             throw new Exception();
         }

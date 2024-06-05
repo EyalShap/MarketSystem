@@ -13,8 +13,8 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
     private int month;
     private int year;
 
-    SpecificDateBuyPolicy(List<BuyType> buytypes, PolicySubject subject, int day, int month, int year) throws Exception {
-        super(buytypes, subject);
+    SpecificDateBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int day, int month, int year) throws Exception {
+        super(id, buytypes, subject);
         if(day != -1 && (day < 1 || day > 31)) {
             throw new Exception();
         }
