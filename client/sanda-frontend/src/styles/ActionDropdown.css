@@ -36,7 +36,7 @@
     height: 60px;
     border-width: 1;
     border-color: palevioletred;
-    background-color: #AA0011;
+    background-color: #c45d0a;
     box-shadow: 0 0 10px inset palevioletred;
     border-radius: 10px;
     font-family: Roboto;
@@ -44,4 +44,12 @@
     font-size: 20px;
     color: #FFFFFF;
     justify-content: center;
+}
+
+.closeStore{
+    background-color: #FF4444;
+}
+
+.reopenStore{
+    background-color: #11BB11;
 }

@@ -1,15 +1,19 @@
 import { ReactElement, useState } from "react";
 import { IoIosArrowDown  } from "react-icons/io";
 import { IoBagAddOutline, IoBagAdd, IoPerson  } from "react-icons/io5";
-import { getPermissions, hasPermission } from "../API";
+import { getPermissions, hasPermission, isOwner, storeActive } from "../API";
+import { FaSkull } from "react-icons/fa6";
+import { FaDoorOpen } from "react-icons/fa";
 import Permission from "../models/Permission";
 import { FaPlusCircle, FaTrashAlt, FaEdit  } from "react-icons/fa";
 import '../styles/ActionDropdown.css';
 import { IconType } from "react-icons";
+import { useNavigate } from "react-router-dom";
  
 
 export const ActionDropdown = (props: any) => {
     const [showMenu, setShowMenu] = useState(false);
+    const navigate = useNavigate()
 
     const toggleShowMenu = () => {
         setShowMenu(!showMenu)
@@ -39,7 +43,10 @@ export const ActionDropdown = (props: any) => {
             {showMenu && 
             <div className="options">
                 {permissions.map(permission => (permission in permissionToIcon) && <button className="optionButton">{permissionToIcon[permission]} {permissionToText[permission]}</button>)}
-                <button className="optionButton"><IoPerson /> View Staff</button>
+                {isOwner(props.storeId) &&
+                <button className="optionButton" onClick={() => navigate("./staff")}><IoPerson /> View Staff</button>
+                }
+                {isOwner(props.storeId) && (storeActive(props.storeId) ? <button className="optionButton closeStore"><FaSkull /> Close Store</button> : <button className="optionButton reopenStore"><FaDoorOpen /> Reopen Store</button>)}
             </div>
             }
         </div>

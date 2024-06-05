@@ -3,6 +3,7 @@ import StoreModel from "./models/StoreModel"
 import RestResponse from "./models/RestResponse";
 import ProductModel from "./models/ProductModel";
 import Permission from "./models/Permission";
+import MemberModel from "./models/MemberModel";
 
 export var globalToken = "";
 export var globalUsername = "";
@@ -80,6 +81,28 @@ export const hasPermission = (storeId: string, permission: Permission): boolean 
     return true;
 }
 
+export const storeActive = (storeId: string): boolean => {
+    return true;
+}
+
 export const getPermissions = (storeId: string): Permission[] => {
     return [Permission.ADD_PRODUCTS, Permission.DELETE_PRODUCTS, Permission.UPDATE_PRODUCTS, Permission.ADD_BUY_POLICY, Permission.ADD_DISCOUNT_POLICY, Permission.ADD_MANAGER, Permission.ADD_OWNER, Permission.CLOSE_STORE, Permission.REOPEN_STORE];
+}
+
+export const getStoreManagers = (storeId: string): MemberModel[] => {
+    let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", email: "eric@excited.com", phoneNumber: "052-0520525"}
+    let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", email: "benny@sad.com", phoneNumber: "052-0520525"}
+    let list: MemberModel[] = []
+    list.push(defaultExample1)
+    list.push(defaultExample2)
+    return list;
+}
+
+export const getStoreOwners = (storeId: string): MemberModel[] => {
+    let defaultExample1: MemberModel = {username: "mrOwnerMan", firstName: "Owner", lastName: "Man", email: "man@store.com", phoneNumber: "052-0520525"}
+    let defaultExample2: MemberModel = {username: "GuyWhoOwnsStore", firstName: "Guy", lastName: "Store", email: "guy@store.com", phoneNumber: "052-0520525"}
+    let list: MemberModel[] = []
+    list.push(defaultExample1)
+    list.push(defaultExample2)
+    return list;
 }
