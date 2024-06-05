@@ -15,5 +15,8 @@ public interface IBuyPolicyRepository {
     public int addCategoryHourLimitBuyPolicy(String category, List<BuyType> buytypes, LocalTime from, LocalTime to) throws Exception;
     public int addCategoryRoshChodeshBuyPolicy(String category, List<BuyType> buytypes);
     public int addCategoryHolidayBuyPolicy(String category, List<BuyType> buytypes);
+    public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2);
+    public int addOrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2);
+    public int addConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2);
     public boolean buyPolicyExists(int policyId);
 }

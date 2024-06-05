@@ -118,6 +118,36 @@ public class BuyPolicyFacade {
         return buyPolicyRepository.addCategoryHolidayBuyPolicy(category, buytypes);
     }
 
+    public int createAndBuyPolicy(int policyId1, int policyId2, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
+        BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
+        return buyPolicyRepository.addAndBuyPolicy(policy1, policy2);
+    }
+
+    public int createOrBuyPolicy(int policyId1, int policyId2, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
+        BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
+        return buyPolicyRepository.addOrBuyPolicy(policy1, policy2);
+    }
+
+    public int createConditioningBuyPolicy(int policyId1, int policyId2, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
+        BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
+        return buyPolicyRepository.addConditioningBuyPolicy(policy1, policy2);
+    }
+
     public void addPolicyToStore(int storeId, int policyId) throws Exception {
         if(!buyPolicyRepository.buyPolicyExists(policyId))
             throw new Exception();

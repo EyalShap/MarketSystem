@@ -364,7 +364,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addBuyPolicy: " + e.getMessage());
+            logger.error("createProductKgBuyPolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
@@ -377,7 +377,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addBuyPolicy: " + e.getMessage());
+            logger.error("createProductAmountBuyPolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
@@ -390,7 +390,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addBuyPolicy: " + e.getMessage());
+            logger.error("createCategoryAgeLimitBuyPolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
@@ -403,7 +403,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addBuyPolicy: " + e.getMessage());
+            logger.error("createCategoryHourLimitBuyPolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
@@ -416,7 +416,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addBuyPolicy: " + e.getMessage());
+            logger.error("createCategoryRoshChodeshBuyPolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
@@ -429,7 +429,46 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addBuyPolicy: " + e.getMessage());
+            logger.error("createCategoryHolidayBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createAndBuyPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createAndBuyPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added composition buy policy: AND(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createAndBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createOrBuyPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createOrBuyPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added composition buy policy: OR(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createOrBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createConditioningBuyPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.createConditioningBuyPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added composition buy policy: CONDITIONING(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createConditioningBuyPolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }

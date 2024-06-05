@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class OrBuyPolicy extends CompositeBuyPolicy{
 
-    public OrBuyPolicy(int id, List<BuyType> buytypes, BuyPolicy policy1, BuyPolicy policy2) {
-        super(id, buytypes, policy1, policy2);
+    public OrBuyPolicy(int id, BuyPolicy policy1, BuyPolicy policy2) {
+        super(id, policy1, policy2);
     }
 
     @Override

@@ -10,12 +10,10 @@ import java.util.Map;
 
 public abstract class BuyPolicy {
     protected int id;
-    protected List<BuyType> buytypes;
     protected String errorDescription;
 
-    BuyPolicy(int id, List<BuyType> buytypes) {
+    BuyPolicy(int id) {
         this.id = id;
-        this.buytypes = buytypes;
         this.errorDescription = null;
     }
 

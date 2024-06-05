@@ -77,6 +77,30 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
+    public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+        BuyPolicy newPolicy = new AndBuyPolicy(nextId, policy1, policy2);
+        buyPolicies.put(nextId, newPolicy);
+        nextId++;
+        return nextId - 1;
+    }
+
+    @Override
+    public int addOrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+        BuyPolicy newPolicy = new OrBuyPolicy(nextId, policy1, policy2);
+        buyPolicies.put(nextId, newPolicy);
+        nextId++;
+        return nextId - 1;
+    }
+
+    @Override
+    public int addConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+        BuyPolicy newPolicy = new ConditioningBuyPolicy(nextId, policy1, policy2);
+        buyPolicies.put(nextId, newPolicy);
+        nextId++;
+        return nextId - 1;
+    }
+
+    @Override
     public boolean buyPolicyExists(int policyId) {
         return buyPolicies.containsKey(policyId);
     }
