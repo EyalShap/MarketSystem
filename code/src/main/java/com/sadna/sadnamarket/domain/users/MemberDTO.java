@@ -13,6 +13,9 @@ public class MemberDTO {
     private String phoneNumber;
     private LocalDate birthDate;
 
+
+    public MemberDTO() {
+    }
     public MemberDTO(Member member) {
         this.username = member.getUsername();
         this.firstName = member.getFirstName();
