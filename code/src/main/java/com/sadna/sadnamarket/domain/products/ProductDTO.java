@@ -7,14 +7,16 @@ public class ProductDTO {
     private String productCategory;
     private double productRank;
     private boolean isActive = true;
+    private double productWeight;
 
     public ProductDTO(int productID, String productName, double productPrice, String productCategory,
-            double productRank) {
+            double productRank, double productWeight) {
         this.productID = productID;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productCategory = productCategory;
         this.productRank = productRank;
+        this.productWeight = productWeight;
     }
 
     public ProductDTO() {
@@ -43,6 +45,8 @@ public class ProductDTO {
     public boolean isActiveProduct() {
         return isActive;
     }
+
+    public double getProductWeight() { return this.productWeight; }
 
     public void setActiveProduct(boolean active) {
         isActive = active;

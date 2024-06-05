@@ -1,11 +1,17 @@
 package com.sadna.sadnamarket.domain.users;
 
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalDate;
+import java.util.Date;
+
 public class MemberDTO {
     private String username;
     private String firstName;
     private String lastName;
     private String emailAddress;
     private String phoneNumber;
+    private LocalDate birthDate;
 
 
     public MemberDTO() {
@@ -64,6 +70,14 @@ public class MemberDTO {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 }
 

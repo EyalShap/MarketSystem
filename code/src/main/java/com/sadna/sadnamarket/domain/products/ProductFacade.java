@@ -29,7 +29,7 @@ public class ProductFacade {
     }
 
     public int addProduct(int storeId, String productName, double productPrice, String productCategory,
-            double productRank) {
+            double productRank, double productWeight) {
         logger.info("Adding product with name: {}, price: {}, category: {}, rank: {} to store ID: {}", productName,
                 productPrice, productCategory, productRank, storeId);
         if (storeId < 0) {
@@ -40,7 +40,7 @@ public class ProductFacade {
 
         try {
             checkProductAttributes(productName, productPrice, productCategory, productRank);
-            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank);
+            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank, productWeight);
             Product createdProduct = productRepository.getProduct(productId);
             logger.info("Product added with ID: {}", productId);
             return productId;

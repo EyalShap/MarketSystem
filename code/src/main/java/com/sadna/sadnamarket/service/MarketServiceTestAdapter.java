@@ -155,7 +155,7 @@ public class MarketServiceTestAdapter {
     public Response addProductToStore(String token, String userId, int storeId, ProductDTO productDetails) {
         // return Response.createResponse(false, "5"); //returns product id
         return real.addProductToStore(token, userId, storeId, productDetails.getProductName(), 100,
-                productDetails.getProductPrice(), productDetails.getProductCategory(), 3);
+                productDetails.getProductPrice(), productDetails.getProductCategory(), productDetails.getProductRank(), productDetails.getProductWeight());
     }
 
     public Response removeProductFromStore(String token, String userId, int storeId, int productId) {
