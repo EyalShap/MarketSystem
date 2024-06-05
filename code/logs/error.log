@@ -1727,3 +1727,20 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 2024-06-05 14:49:09 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
 2024-06-05 14:49:09 ERROR c.s.s.service.MarketService - error in register: username already exits
 2024-06-05 14:49:09 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-05 16:46:03 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-06-05 16:46:03 ERROR c.s.sadnamarket.domain.users.Member - Exception in logout: user isn't logged in
+2024-06-05 16:46:03 ERROR c.s.s.service.MarketService - error in logout: user isn't logged in
+2024-06-05 16:46:04 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=username that isn't very real does not exist
+2024-06-05 16:46:04 ERROR c.s.s.service.MarketService - error in logout: User with username username that isn't very real does not exist
+2024-06-05 16:48:34 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-06-05 16:48:35 ERROR c.s.sadnamarket.domain.users.Member - Exception in logout: user isn't logged in
+2024-06-05 16:48:35 ERROR c.s.s.service.MarketService - error in logout: user isn't logged in
+2024-06-05 16:50:28 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-06-05 16:50:28 ERROR c.s.sadnamarket.domain.users.Member - Exception in logout: user isn't logged in
+2024-06-05 16:50:28 ERROR c.s.s.service.MarketService - error in logout: user isn't logged in
+2024-06-05 16:52:42 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-06-05 16:52:42 ERROR c.s.sadnamarket.domain.users.Member - Exception in logout: user isn't logged in
+2024-06-05 16:52:42 ERROR c.s.s.service.MarketService - error in logout: user isn't logged in
+2024-06-05 16:54:29 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-06-05 16:54:29 ERROR c.s.sadnamarket.domain.users.Member - Exception in logout: user isn't logged in
+2024-06-05 16:54:29 ERROR c.s.s.service.MarketService - error in logout: user isn't logged in

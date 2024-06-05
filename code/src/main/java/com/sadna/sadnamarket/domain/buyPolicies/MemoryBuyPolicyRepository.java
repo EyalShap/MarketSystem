@@ -89,7 +89,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     private int addPolicyToMaps(BuyPolicy newPolicy) throws JsonProcessingException {
-        String policyDesc = objectMapper.writeValueAsString(newPolicy.toString());
+        String policyDesc = newPolicy.getClass().getName() + "-" + objectMapper.writeValueAsString(newPolicy);
         if(!buyPoliciesDesc.containsKey(policyDesc)) {
             buyPolicies.put(nextId, newPolicy);
             buyPoliciesDesc.put(policyDesc, nextId);
