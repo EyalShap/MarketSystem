@@ -22,9 +22,6 @@ const Home = () => {
 
     return (
         <div>
-
-            
-
             <h1>Our top products</h1>
             <ProductsBar products={products} />
             <h3>Our Top Categories</h3>

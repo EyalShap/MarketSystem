@@ -4,17 +4,27 @@ import RestResponse from "./models/RestResponse";
 import ProductModel from "./models/ProductModel";
 import Permission from "./models/Permission";
 import MemberModel from "./models/MemberModel";
+import { registerModel } from "./models/registerModel";
 
 export var globalToken = "";
 export var globalUsername = "";
 
-export const login = (username: string, password: string) => {
+export const login = async(username: string, password: string) => {
     ///request REST to login...
     let resp: RestResponse = {dataJson: "thisIsWhereTheTokenWouldBe", error: false, errorString: ""}
     if(!resp.error){
         globalToken = resp.dataJson;
         globalUsername = username;
     }
+    return resp;
+}
+export const registerMember = async(registerModel: registerModel) => {
+    ///request REST to login...
+    let resp: RestResponse = {dataJson: "thisIsWhereTheTokenWouldBe", error: false, errorString: ""}
+    if(!resp.error){
+       
+    }
+    return resp;
 }
 
 export const getStoreInfo = (storeId: string): StoreModel => {
