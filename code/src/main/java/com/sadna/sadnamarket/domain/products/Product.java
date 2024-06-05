@@ -9,13 +9,15 @@ public class Product {
     private String productCategory;
     private double productRank;
     private boolean isActive = true;
+    private double productWeight;
 
-    public Product(int productId, String productName, double productPrice, String productCategory, double productRank) {
+    public Product(int productId, String productName, double productPrice, String productCategory, double productRank, double productWeight) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
         this.productCategory = productCategory;
         this.productRank = productRank;
+        this.productWeight = productWeight;
     }
 
     public int getProductId() {
@@ -52,6 +54,14 @@ public class Product {
 
     public void setProductRank(double productRank) {
         this.productRank = productRank;
+    }
+
+    public double getProductWeight() {
+        return this.productWeight;
+    }
+
+    public void setProductWeight(double productWeight) {
+        this.productWeight = productWeight;
     }
 
     public boolean isActiveProduct() {
