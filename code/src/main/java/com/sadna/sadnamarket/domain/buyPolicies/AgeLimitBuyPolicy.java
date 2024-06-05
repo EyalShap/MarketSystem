@@ -25,12 +25,10 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
 
     @Override
     public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
-        if(user == null) {
-            return false; // We do not know the age of a guest.
-        }
         if(policySubject.subjectAmount(cart, products) > 0) {
-            return isAgeInLimit(user.getBirthDate());
+            return (user != null) && isAgeInLimit(user.getBirthDate());
         }
+        
         return true;
     }
 

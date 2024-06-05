@@ -142,7 +142,13 @@ public class BuyPolicyFacade {
 
     public String canBuy(int storeId, List<CartItemDTO> cart, String username) throws Exception {
         BuyPolicyManager buyPolicyManager = mapper.get(storeId);
-        MemberDTO user = userFacade.isExist(username) ?  userFacade.getMemberDTO(username) : null;
+        MemberDTO user;
+        try {
+            user = userFacade.getMemberDTO(username);
+        }
+        catch (Exception e) {
+            user = null;
+        }
         return buyPolicyManager.canBuy(cart, getProductDTOs(cart), user);
     }
 
