@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import StoreModel from '../models/StoreModel';
-import { getStoreInfo, getStoreProducts, searchAndFilterStoreProducts } from '../API';
+import { getStoreInfo, getStoreProducts, isManager, isOwner, searchAndFilterStoreProducts } from '../API';
 import { useParams } from 'react-router-dom';
 import ProductModel from '../models/ProductModel';
 import { Rating } from 'react-simple-star-rating'
 import '../styles/Store.css';
 import ProductInStore from './ProductInStore';
+import ActionDropdown from './ActionDropdown';
 
 export const Store = () => {
     const {storeId} = useParams();
@@ -46,6 +47,11 @@ export const Store = () => {
                 <p className = "details">{store.address}</p>
                 <p className='dot'>·</p>
                 <p className = "details">{store.email}</p>
+            </div>
+            <div className='dropdownDiv'>
+            {(isOwner(storeId!) || isManager(storeId!)) &&
+                <ActionDropdown storeId = {storeId}/>
+            }
             </div>
             </div>
             <div className="products">

@@ -2,6 +2,7 @@ import { createContext } from "react";
 import StoreModel from "./models/StoreModel"
 import RestResponse from "./models/RestResponse";
 import ProductModel from "./models/ProductModel";
+import Permission from "./models/Permission";
 
 export var globalToken = "";
 export var globalUsername = "";
@@ -65,4 +66,20 @@ export const searchAndFilterStoreProducts = (storeId: string, category: string, 
     }
     
     return list;
+}
+
+export const isOwner = (storeId: string): boolean => {
+    return true;
+}
+
+export const isManager = (storeId: string): boolean => {
+    return true;
+}
+
+export const hasPermission = (storeId: string, permission: Permission): boolean => {
+    return true;
+}
+
+export const getPermissions = (storeId: string): Permission[] => {
+    return [Permission.ADD_PRODUCTS, Permission.DELETE_PRODUCTS, Permission.UPDATE_PRODUCTS, Permission.ADD_BUY_POLICY, Permission.ADD_DISCOUNT_POLICY, Permission.ADD_MANAGER, Permission.ADD_OWNER, Permission.CLOSE_STORE, Permission.REOPEN_STORE];
 }
