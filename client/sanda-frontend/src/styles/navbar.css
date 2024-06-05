@@ -1,18 +1,15 @@
 /* Navbar.css */
 .navbar-container {
     display: flex;
+    font-size: 20px;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
     background-color: #232F3E; /* Amazon's dark blue color */
+    
 }
 
-.navbar-logo {
-    color: #FF9900; /* Amazon's orange color */
-    font-size: 24px;
-    font-weight: bold;
-    text-decoration: none;
-}
+
 
 .navbar-menu {
     display: flex;

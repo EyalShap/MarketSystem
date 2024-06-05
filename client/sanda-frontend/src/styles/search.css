@@ -4,10 +4,14 @@
     color: white;
     align-items: center;
     text-align: center;
+    margin-right: 100px;
+    
   }
   
   .search-inputs {
-    width: 25%;
+    width: 70%;
+    height: 28px;
+    font-size: medium;
   }
   
   .search-inputs input {
@@ -16,7 +20,9 @@
     border-radius: 4px;
     margin-right: 0.5rem;
     flex: 1;
+    font-size: 40px;
     text-align: center;
+    text-size-adjust: 40px;
   }
   .category {
     border: none;
