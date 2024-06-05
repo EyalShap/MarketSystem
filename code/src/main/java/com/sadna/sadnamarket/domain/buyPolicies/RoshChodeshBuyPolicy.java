@@ -14,6 +14,9 @@ public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
         super(id, buytypes, subject);
     }
 
+    public RoshChodeshBuyPolicy() {
+    }
+
     @Override
     public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         if(policySubject.subjectAmount(cart, products) > 0) {

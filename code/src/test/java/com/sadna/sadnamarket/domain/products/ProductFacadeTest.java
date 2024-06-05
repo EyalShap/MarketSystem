@@ -27,7 +27,7 @@ public class ProductFacadeTest {
 
         int productId = productFacade.addProduct(1, "Test Product", 100.0, "Category1", 4.5, 2);
         assertEquals(1, productId);
-        verify(productRepositoryMock, times(1)).addProduct("Test Product", 100.0, "Category1", 4.5, 1);
+        verify(productRepositoryMock, times(1)).addProduct("Test Product", 100.0, "Category1", 4.5, 2);
     }
 
     @Test

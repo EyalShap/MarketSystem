@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class PolicySubject {
+    public PolicySubject() {
+    }
+
     public abstract int subjectAmount(List<CartItemDTO> cart, Map<Integer, ProductDTO> products);
     public abstract boolean isSubject(ProductDTO product);
 }

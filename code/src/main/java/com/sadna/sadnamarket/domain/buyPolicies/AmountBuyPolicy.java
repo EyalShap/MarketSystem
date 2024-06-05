@@ -20,11 +20,31 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
         this.to = to;
     }
 
+    public AmountBuyPolicy(int id, List<BuyType> buytypes, PolicySubject policySubject) {
+        super(id, buytypes, policySubject);
+    }
+
     @Override
     public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         int amount = policySubject.subjectAmount(cart, products);
         if(to == -1)
             return amount >= from;
         return amount <= to && amount >= from;
+    }
+
+    public int getFrom() {
+        return from;
+    }
+
+    public void setFrom(int from) {
+        this.from = from;
+    }
+
+    public int getTo() {
+        return to;
+    }
+
+    public void setTo(int to) {
+        this.to = to;
     }
 }

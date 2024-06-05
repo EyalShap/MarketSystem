@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountManager;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicy;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
@@ -38,39 +39,12 @@ public class BuyPolicyFacade {
         this.storeFacade = storeFacade;
     }
 
-    // for now that function dosent do anything special
-    /*public boolean addBuyPolicy(BuyPolicyType policyType, int storeId, String args) {
-        BuyPolicy bp;
-        synchronized(mapper){
-            if (!mapper.containsKey(storeId)) {
-                mapper.put(storeId, new BuyPolicyManager());
-            }
-        }
-        try {
-            // add new DiscountPolicy
-            bp = new DefaultBuyPolicy(new LinkedList<>());
-        } catch (Exception e) {
-            return false;
-        }
-        BuyPolicyManager buyPolicyManager = mapper.get(storeId);
-        buyPolicyManager.addBuyPolicy(bp);
-        return true;
-
-    }*/
-
-    /*private void addBuyPolicy(int storeId, BuyPolicy buyPolicy) {
-        synchronized (mapper) {
-            BuyPolicyManager addTo = mapper.getOrDefault(storeId, new BuyPolicyManager());
-            addTo.addBuyPolicy(buyPolicy);
-        }
-    }*/
-
     public BuyPolicy getBuyPolicy(int policyId) throws Exception {
         return buyPolicyRepository.findBuyPolicyByID(policyId);
     }
 
     // only the ones that are in the requirements for now, we can add more if needed
-    public int createProductKgBuyPolicy(int productId, List<BuyType> buytypes, double min, double max, String username) {
+    public int createProductKgBuyPolicy(int productId, List<BuyType> buytypes, double min, double max, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(
                     String.format("User %s can not create buy policy", username));

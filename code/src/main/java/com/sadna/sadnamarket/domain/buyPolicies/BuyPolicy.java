@@ -17,10 +17,24 @@ public abstract class BuyPolicy {
         this.errorDescription = null;
     }
 
+    public BuyPolicy() {
+    }
+
     public abstract boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user);
+
+    public int getId() {
+        return id;
+    }
 
     public String getErrorDescription() {
         return errorDescription;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setErrorDescription(String errorDescription) {
+        this.errorDescription = errorDescription;
+    }
 }

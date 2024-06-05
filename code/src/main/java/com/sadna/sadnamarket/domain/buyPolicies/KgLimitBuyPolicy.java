@@ -18,6 +18,9 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
         this.maxKg = maxKg;
     }
 
+    public KgLimitBuyPolicy() {
+    }
+
     @Override
     public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         double totalWeight = 0;
@@ -32,5 +35,21 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
             return totalWeight >= minKg;
         }
         return totalWeight >= minKg && totalWeight <= maxKg;
+    }
+
+    public double getMinKg() {
+        return minKg;
+    }
+
+    public void setMinKg(double minKg) {
+        this.minKg = minKg;
+    }
+
+    public double getMaxKg() {
+        return maxKg;
+    }
+
+    public void setMaxKg(double maxKg) {
+        this.maxKg = maxKg;
     }
 }

@@ -13,6 +13,9 @@ public class CategorySubject extends PolicySubject{
         this.category = category;
     }
 
+    public CategorySubject() {
+    }
+
     @Override
     public int subjectAmount(List<CartItemDTO> cart, Map<Integer, ProductDTO> products) {
         int categoryAmount = 0;
@@ -30,4 +33,11 @@ public class CategorySubject extends PolicySubject{
         return this.category.equals(product.getProductCategory());
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 }

@@ -67,16 +67,18 @@ public class StoreFacade {
         userFacade.addStoreFounder(founderUserName, storeId);
 
         // adding default buy policies (laws)
-        /*List<BuyType> buyTypes1 = new ArrayList<>();
+        List<BuyType> buyTypes1 = new ArrayList<>();
         List<BuyType> buyTypes2 = new ArrayList<>();
         buyTypes1.add(BuyType.immidiatePurchase);
         buyTypes2.add(BuyType.immidiatePurchase);
         try {
             // this will not throw an exception since all the parameters are legal
-            buyPolicyFacade.createCategoryAgeLimitBuyPolicy(storeId, "Alcohol", buyTypes1, 18, -1);
-            buyPolicyFacade.createCategoryHourLimitBuyPolicy(storeId, "Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0));
+            int policyId1 = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Alcohol", buyTypes1, 18, -1, founderUserName);
+            int policyId2 = buyPolicyFacade.createCategoryHourLimitBuyPolicy("Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0), founderUserName);
+            addBuyPolicyToStore(founderUserName, storeId, policyId1);
+            addBuyPolicyToStore(founderUserName, storeId, policyId2);
         }
-        catch (Exception e) {}*/
+        catch (Exception e) {}
         return storeId;
     }
 

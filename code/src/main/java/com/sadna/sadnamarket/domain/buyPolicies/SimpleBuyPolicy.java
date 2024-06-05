@@ -11,4 +11,23 @@ public abstract class SimpleBuyPolicy extends BuyPolicy{
         this.buytypes = buytypes;
         this.policySubject = policySubject;
     }
+
+    public SimpleBuyPolicy() {
+    }
+
+    public PolicySubject getPolicySubject() {
+        return policySubject;
+    }
+
+    public void setPolicySubject(PolicySubject policySubject) {
+        this.policySubject = policySubject;
+    }
+
+    public List<BuyType> getBuytypes() {
+        return buytypes;
+    }
+
+    public void setBuytypes(List<BuyType> buytypes) {
+        this.buytypes = buytypes;
+    }
 }

@@ -19,6 +19,10 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
         this.maxAge = maxAge;
     }
 
+    public AgeLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject policySubject) {
+        super(id, buytypes, policySubject);
+    }
+
     @Override
     public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         if(user == null) {
@@ -37,5 +41,21 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
             return age >= minAge;
         }
         return age <= maxAge && age >= minAge;
+    }
+
+    public int getMinAge() {
+        return minAge;
+    }
+
+    public void setMinAge(int minAge) {
+        this.minAge = minAge;
+    }
+
+    public int getMaxAge() {
+        return maxAge;
+    }
+
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
     }
 }

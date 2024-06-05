@@ -19,6 +19,9 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
         super(id, buytypes, subject);
     }
 
+    public HolidayBuyPolicy() {
+    }
+
     @Override
     public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         if(policySubject.subjectAmount(cart, products) > 0) {

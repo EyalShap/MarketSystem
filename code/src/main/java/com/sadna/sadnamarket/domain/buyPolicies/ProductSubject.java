@@ -13,6 +13,9 @@ public class ProductSubject extends PolicySubject{
         this.productId = productId;
     }
 
+    public ProductSubject() {
+    }
+
     @Override
     public int subjectAmount(List<CartItemDTO> cart, Map<Integer, ProductDTO> products) {
         int productAmount = 0;
@@ -29,4 +32,11 @@ public class ProductSubject extends PolicySubject{
     }
 
 
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
 }

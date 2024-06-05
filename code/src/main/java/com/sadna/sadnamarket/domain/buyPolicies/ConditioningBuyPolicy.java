@@ -13,6 +13,9 @@ public class ConditioningBuyPolicy extends CompositeBuyPolicy{
         super(id, policy1, policy2);
     }
 
+    public ConditioningBuyPolicy() {
+    }
+
     @Override
     public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         if(policy1.canBuy(cart, products, user)) {

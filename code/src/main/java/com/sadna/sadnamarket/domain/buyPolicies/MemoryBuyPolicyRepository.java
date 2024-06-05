@@ -1,5 +1,8 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -8,10 +11,13 @@ import java.util.Set;
 
 public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     private Map<Integer, BuyPolicy> buyPolicies;
+    private Map<String, Integer> buyPoliciesDesc;
     private int nextId;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public MemoryBuyPolicyRepository() {
         this.buyPolicies = new HashMap<>();
+        this.buyPoliciesDesc = new HashMap<>();
         this.nextId = 0;
     }
 
@@ -29,75 +35,70 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
-    public int addProductKgBuyPolicy(int productId, List<BuyType> buytypes, double min, double max) {
+    public int addProductKgBuyPolicy(int productId, List<BuyType> buytypes, double min, double max) throws JsonProcessingException {
         BuyPolicy newPolicy =  new KgLimitBuyPolicy(nextId, buytypes, new ProductSubject(productId), min, max);
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
     }
 
     @Override
     public int addProductAmountBuyPolicy(int productId, List<BuyType> buytypes, int min, int max) throws Exception {
         BuyPolicy newPolicy = new AmountBuyPolicy(nextId, buytypes, new ProductSubject(productId), min, max);
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
     }
 
     @Override
-    public int addCategoryAgeLimitBuyPolicy(String category, List<BuyType> buytypes, int min, int max) {
+    public int addCategoryAgeLimitBuyPolicy(String category, List<BuyType> buytypes, int min, int max) throws JsonProcessingException {
         BuyPolicy newPolicy = new AgeLimitBuyPolicy(nextId, buytypes, new CategorySubject(category), min, max);
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
     }
 
     @Override
     public int addCategoryHourLimitBuyPolicy(String category, List<BuyType> buytypes, LocalTime from, LocalTime to) throws Exception {
         BuyPolicy newPolicy = new HourLimitBuyPolicy(nextId, buytypes, new CategorySubject(category), from, to);
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
     }
 
     @Override
-    public int addCategoryRoshChodeshBuyPolicy(String category, List<BuyType> buytypes) {
+    public int addCategoryRoshChodeshBuyPolicy(String category, List<BuyType> buytypes) throws JsonProcessingException {
         BuyPolicy newPolicy = new RoshChodeshBuyPolicy(nextId, buytypes, new CategorySubject(category));
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
     }
 
     @Override
-    public int addCategoryHolidayBuyPolicy(String category, List<BuyType> buytypes) {
+    public int addCategoryHolidayBuyPolicy(String category, List<BuyType> buytypes) throws JsonProcessingException {
         BuyPolicy newPolicy = new HolidayBuyPolicy(nextId, buytypes, new CategorySubject(category));
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
     }
 
     @Override
-    public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+    public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
         BuyPolicy newPolicy = new AndBuyPolicy(nextId, policy1, policy2);
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
     }
 
     @Override
-    public int addOrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+    public int addOrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
         BuyPolicy newPolicy = new OrBuyPolicy(nextId, policy1, policy2);
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
     }
 
     @Override
-    public int addConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+    public int addConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
         BuyPolicy newPolicy = new ConditioningBuyPolicy(nextId, policy1, policy2);
-        buyPolicies.put(nextId, newPolicy);
-        nextId++;
-        return nextId - 1;
+        return addPolicyToMaps(newPolicy);
+    }
+
+    private int addPolicyToMaps(BuyPolicy newPolicy) throws JsonProcessingException {
+        String policyDesc = objectMapper.writeValueAsString(newPolicy.toString());
+        if(buyPoliciesDesc.containsKey(policyDesc)) {
+            buyPolicies.put(nextId, newPolicy);
+            buyPoliciesDesc.put(policyDesc, nextId);
+            nextId++;
+            return nextId - 1;
+        }
+        else {
+            return buyPoliciesDesc.get(policyDesc);
+        }
     }
 
     @Override
