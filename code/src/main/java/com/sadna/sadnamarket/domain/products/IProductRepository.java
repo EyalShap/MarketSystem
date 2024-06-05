@@ -15,7 +15,7 @@ public interface IProductRepository {
 
     public void removeProduct(int productId);
 
-    public int addProduct(String productName, double productPrice, String productCategory, double productRank);
+    public int addProduct(String productName, double productPrice, String productCategory, double productRank, double productWeight);
 
     public boolean isExistProduct(int productId);
 
