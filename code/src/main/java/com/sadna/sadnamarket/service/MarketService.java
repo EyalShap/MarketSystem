@@ -8,6 +8,7 @@ import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyType;
+import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
@@ -48,7 +49,7 @@ public class MarketService {
         this.productFacade = new ProductFacade();
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(storeRepository);
-        this.buyPolicyFacade = new BuyPolicyFacade();
+        this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
         this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
         this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
@@ -355,11 +356,11 @@ public class MarketService {
         }
     }
 
-    public Response addProductKgBuyPolicy(String token, String username, int storeId, int productId, List<BuyType> buytypes, double min, double max) {
+    public Response createProductKgBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, double min, double max) {
         try {
             checkToken(token, username);
-            storeFacade.addProductKgBuyPolicy(storeId, productId, buytypes, min, max, username);
-            logger.info(String.format("User %s added product kg limit buy policy to store %d: product %d, weight range %d - %d.", username, storeId, productId, min, max));
+            buyPolicyFacade.createProductKgBuyPolicy(productId, buytypes, min, max, username);
+            logger.info(String.format("User %s added product kg limit buy policy: product %d, weight range %d - %d.", username, productId, min, max));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -368,11 +369,11 @@ public class MarketService {
         }
     }
 
-    public Response addProductAmountBuyPolicy(String token, String username, int storeId, int productId, List<BuyType> buytypes, int min, int max) {
+    public Response createProductAmountBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, int min, int max) {
         try {
             checkToken(token, username);
-            storeFacade.addProductAmountBuyPolicy(storeId, productId, buytypes, min, max, username);
-            logger.info(String.format("User %s added product amount limit buy policy to store %d: product %d, amount %d - %d.", username, storeId, productId, min, max));
+            buyPolicyFacade.createProductAmountBuyPolicy(productId, buytypes, min, max, username);
+            logger.info(String.format("User %s added product amount limit buy policy: product %d, amount %d - %d.", username, productId, min, max));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -381,11 +382,11 @@ public class MarketService {
         }
     }
 
-    public Response addCategoryAgeLimitBuyPolicy(String token, String username, int storeId, String category, List<BuyType> buytypes, int min, int max) {
+    public Response createCategoryAgeLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, int min, int max) {
         try {
             checkToken(token, username);
-            storeFacade.addCategoryAgeLimitBuyPolicy(storeId, category, buytypes, min, max, username);
-            logger.info(String.format("User %s added category age limit buy policy to store %d: category %s, age %d - %d.", username, storeId, category, min, max));
+            buyPolicyFacade.createCategoryAgeLimitBuyPolicy(category, buytypes, min, max, username);
+            logger.info(String.format("User %s added category age limit buy policy : category %s, age %d - %d.", username, category, min, max));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -394,11 +395,11 @@ public class MarketService {
         }
     }
 
-    public Response addCategoryHourLimitBuyPolicy(String token, String username, int storeId, String category, List<BuyType> buytypes, LocalTime from, LocalTime to) {
+    public Response createCategoryHourLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, LocalTime from, LocalTime to) {
         try {
             checkToken(token, username);
-            storeFacade.addCategoryHourLimitBuyPolicy(storeId, category, buytypes, from, to, username);
-            logger.info(String.format("User %s added category hour limit buy policy to store %d: category %s, hour %s - %s.", username, storeId, category, from.toString(), to.toString()));
+            buyPolicyFacade.createCategoryHourLimitBuyPolicy(category, buytypes, from, to, username);
+            logger.info(String.format("User %s added category hour limit buy policy : category %s, hour %s - %s.", username, category, from.toString(), to.toString()));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -407,11 +408,11 @@ public class MarketService {
         }
     }
 
-    public Response addCategoryRoshChodeshBuyPolicy(String token, String username, int storeId, String category, List<BuyType> buytypes) {
+    public Response createCategoryRoshChodeshBuyPolicy(String token, String username, String category, List<BuyType> buytypes) {
         try {
             checkToken(token, username);
-            storeFacade.addCategoryRoshChodeshBuyPolicy(storeId, category, buytypes, username);
-            logger.info(String.format("User %s added category rosh chodesh limit buy policy to store %d: category %s.", username, storeId, category));
+            buyPolicyFacade.createCategoryRoshChodeshBuyPolicy(category, buytypes, username);
+            logger.info(String.format("User %s added category rosh chodesh limit buy policy: category %s.", username, category));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
@@ -420,15 +421,28 @@ public class MarketService {
         }
     }
 
-    public Response addCategoryHolidayBuyPolicy(String token, String username, int storeId, String category, List<BuyType> buytypes) {
+    public Response createCategoryHolidayBuyPolicy(String token, String username,  String category, List<BuyType> buytypes) {
         try {
             checkToken(token, username);
-            storeFacade.addCategoryHolidayBuyPolicy(storeId, category, buytypes, username);
-            logger.info(String.format("User %s added category holiday limit buy policy to store %d: category %s.", username, storeId, category));
+            buyPolicyFacade.createCategoryHolidayBuyPolicy(category, buytypes, username);
+            logger.info(String.format("User %s added category holiday limit buy policy: category %s.", username, category));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
             logger.error("addBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response addBuyPolicyToStore(String token, String username, int storeId, int policyId) {
+        try {
+            checkToken(token, username);
+            storeFacade.addBuyPolicyToStore(username, storeId, policyId);
+            logger.info(String.format("User %s added policy %d to store %d.", username, storeId, policyId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("addPolicyToStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }

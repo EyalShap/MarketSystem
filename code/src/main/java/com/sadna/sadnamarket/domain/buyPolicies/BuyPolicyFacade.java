@@ -5,8 +5,10 @@ import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicy;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 
 import java.time.LocalTime;
@@ -14,13 +16,14 @@ import java.util.*;
 
 public class BuyPolicyFacade {
     private Map<Integer, BuyPolicyManager> mapper;
+    private IBuyPolicyRepository buyPolicyRepository;
     private ProductFacade productFacade;
     private UserFacade userFacade;
-    private int nextId;
+    private StoreFacade storeFacade;
 
-    public BuyPolicyFacade() {
+    public BuyPolicyFacade(IBuyPolicyRepository buyPolicyRepository) {
         this.mapper = new HashMap<Integer, BuyPolicyManager>();
-        this.nextId = 0;
+        this.buyPolicyRepository = buyPolicyRepository;
     }
 
     public void setProductFacade(ProductFacade productFacade) {
@@ -29,6 +32,10 @@ public class BuyPolicyFacade {
 
     public void setUserFacade(UserFacade userFacade) {
         this.userFacade = userFacade;
+    }
+
+    public void setStoreFacade(StoreFacade storeFacade) {
+        this.storeFacade = storeFacade;
     }
 
     // for now that function dosent do anything special
@@ -51,52 +58,83 @@ public class BuyPolicyFacade {
 
     }*/
 
-    private void addBuyPolicy(int storeId, BuyPolicy buyPolicy) {
+    /*private void addBuyPolicy(int storeId, BuyPolicy buyPolicy) {
         synchronized (mapper) {
             BuyPolicyManager addTo = mapper.getOrDefault(storeId, new BuyPolicyManager());
             addTo.addBuyPolicy(buyPolicy);
         }
+    }*/
+
+    public BuyPolicy getBuyPolicy(int policyId) throws Exception {
+        return buyPolicyRepository.findBuyPolicyByID(policyId);
     }
 
     // only the ones that are in the requirements for now, we can add more if needed
-    public void addProductKgBuyPolicy(int storeId, int productId, List<BuyType> buytypes, double min, double max) {
-        BuyPolicy newPolicy =  new KgLimitBuyPolicy(nextId, buytypes, new ProductSubject(productId), min, max);
-        addBuyPolicy(storeId, newPolicy);
-        nextId++;
+    public int createProductKgBuyPolicy(int productId, List<BuyType> buytypes, double min, double max, String username) {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        return buyPolicyRepository.addProductKgBuyPolicy(productId, buytypes, min, max);
     }
 
-    public void addProductAmountBuyPolicy(int storeId, int productId, List<BuyType> buytypes, int min, int max) throws Exception {
-        BuyPolicy newPolicy = new AmountBuyPolicy(buytypes, new ProductSubject(productId), min, max);
-        addBuyPolicy(storeId, newPolicy);
-        nextId++;
+    public int createProductAmountBuyPolicy(int productId, List<BuyType> buytypes, int min, int max, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        return buyPolicyRepository.addProductAmountBuyPolicy(productId, buytypes, min, max);
     }
 
-    public void addCategoryAgeLimitBuyPolicy(int storeId, String category, List<BuyType> buytypes, int min, int max) throws Exception {
-        BuyPolicy newPolicy = new AgeLimitBuyPolicy(buytypes, new CategorySubject(category), min, max);
-        addBuyPolicy(storeId, newPolicy);
-        nextId++;
+    public int createCategoryAgeLimitBuyPolicy(String category, List<BuyType> buytypes, int min, int max, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        return buyPolicyRepository.addCategoryAgeLimitBuyPolicy(category, buytypes, min, max);
     }
 
-    public void addCategoryHourLimitBuyPolicy(int storeId, String category, List<BuyType> buytypes, LocalTime from, LocalTime to) throws Exception {
-        BuyPolicy newPolicy = new HourLimitBuyPolicy(buytypes, new CategorySubject(category), from, to);
-        addBuyPolicy(storeId, newPolicy);
-        nextId++;
+    public int createCategoryHourLimitBuyPolicy(String category, List<BuyType> buytypes, LocalTime from, LocalTime to, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        return buyPolicyRepository.addCategoryHourLimitBuyPolicy(category, buytypes, from, to);
     }
 
-    public void addCategoryRoshChodeshBuyPolicy(int storeId, String category, List<BuyType> buytypes) throws Exception {
-        BuyPolicy newPolicy = new RoshChodeshBuyPolicy(nextId, buytypes, new CategorySubject(category));
-        addBuyPolicy(storeId, newPolicy);
-        nextId++;
+    public int createCategoryRoshChodeshBuyPolicy(String category, List<BuyType> buytypes, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        return buyPolicyRepository.addCategoryRoshChodeshBuyPolicy(category, buytypes);
     }
 
-    public void addCategoryHolidayBuyPolicy(int storeId, String category, List<BuyType> buytypes) throws Exception {
-        BuyPolicy newPolicy = new HolidayBuyPolicy(nextId, buytypes, new CategorySubject(category));
-        addBuyPolicy(storeId, newPolicy);
-        nextId++;
+    public int createCategoryHolidayBuyPolicy(String category, List<BuyType> buytypes, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not create buy policy", username));
+
+        return buyPolicyRepository.addCategoryHolidayBuyPolicy(category, buytypes);
     }
+
+    public void addPolicyToStore(int storeId, int policyId) throws Exception {
+        if(!buyPolicyRepository.buyPolicyExists(policyId))
+            throw new Exception();
+        BuyPolicyManager manager = mapper.getOrDefault(storeId, new BuyPolicyManager(this));
+        manager.addBuyPolicy(policyId);
+    }
+
+    private boolean hasPermission(String username, Permission permission) {
+        for(int storeId : storeFacade.getAllStoreIds())
+            if(storeFacade.hasPermission(username, storeId, permission))
+                return true;
+        return false;
+    }
+
     // --------------------------------------------------------------------------------
-    
-    public String canBuy(int storeId, List<CartItemDTO> cart, String username) {
+
+    public String canBuy(int storeId, List<CartItemDTO> cart, String username) throws Exception {
         BuyPolicyManager buyPolicyManager = mapper.get(storeId);
         MemberDTO user = userFacade.isExist(username) ?  userFacade.getMemberDTO(username) : null;
         return buyPolicyManager.canBuy(cart, getProductDTOs(cart), user);

@@ -67,16 +67,16 @@ public class StoreFacade {
         userFacade.addStoreFounder(founderUserName, storeId);
 
         // adding default buy policies (laws)
-        List<BuyType> buyTypes1 = new ArrayList<>();
+        /*List<BuyType> buyTypes1 = new ArrayList<>();
         List<BuyType> buyTypes2 = new ArrayList<>();
         buyTypes1.add(BuyType.immidiatePurchase);
         buyTypes2.add(BuyType.immidiatePurchase);
         try {
             // this will not throw an exception since all the parameters are legal
-            buyPolicyFacade.addCategoryAgeLimitBuyPolicy(storeId, "Alcohol", buyTypes1, 18, -1);
-            buyPolicyFacade.addCategoryHourLimitBuyPolicy(storeId, "Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0));
+            buyPolicyFacade.createCategoryAgeLimitBuyPolicy(storeId, "Alcohol", buyTypes1, 18, -1);
+            buyPolicyFacade.createCategoryHourLimitBuyPolicy(storeId, "Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0));
         }
-        catch (Exception e) {}
+        catch (Exception e) {}*/
         return storeId;
     }
 
@@ -440,54 +440,13 @@ public class StoreFacade {
         return sellerUsername;
     }
 
-    public void addProductKgBuyPolicy(int storeId, int productId, List<BuyType> buytypes, double min, double max, String username) {
+    public void addBuyPolicyToStore(String username, int storeId, int policyId) throws Exception {
         if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(
-                    String.format("User %s can not add buy policy to store with id %d.", username, storeId));
+                    String.format("User %s can not add buy policy %d to store %d.", username, policyId, storeId));
 
-        buyPolicyFacade.addProductKgBuyPolicy(storeId, productId, buytypes, min, max);
+        buyPolicyFacade.addPolicyToStore(storeId, policyId);
     }
-
-    public void addProductAmountBuyPolicy(int storeId, int productId, List<BuyType> buytypes, int min, int max, String username) throws Exception {
-        if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not add buy policy to store with id %d.", username, storeId));
-
-        buyPolicyFacade.addProductAmountBuyPolicy(storeId, productId, buytypes, min, max);
-    }
-
-    public void addCategoryAgeLimitBuyPolicy(int storeId, String category, List<BuyType> buytypes, int min, int max, String username) throws Exception {
-        if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not add buy policy to store with id %d.", username, storeId));
-
-        buyPolicyFacade.addCategoryAgeLimitBuyPolicy(storeId, category, buytypes, min, max);
-    }
-
-    public void addCategoryHourLimitBuyPolicy(int storeId, String category, List<BuyType> buytypes, LocalTime from, LocalTime to, String username) throws Exception {
-        if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not add buy policy to store with id %d.", username, storeId));
-
-        buyPolicyFacade.addCategoryHourLimitBuyPolicy(storeId, category, buytypes, from, to);
-    }
-
-    public void addCategoryRoshChodeshBuyPolicy(int storeId, String category, List<BuyType> buytypes, String username) throws Exception {
-        if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not add buy policy to store with id %d.", username, storeId));
-
-        buyPolicyFacade.addCategoryRoshChodeshBuyPolicy(storeId, category, buytypes);
-    }
-
-    public void addCategoryHolidayBuyPolicy(int storeId, String category, List<BuyType> buytypes, String username) throws Exception {
-        if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not add buy policy to store with id %d.", username, storeId));
-
-        buyPolicyFacade.addCategoryHolidayBuyPolicy(storeId, category, buytypes);
-    }
-
 
     public void addDiscountPolicy(String username, int storeId, String args) {
         if (!hasPermission(username, storeId, Permission.ADD_DISCOUNT_POLICY))
@@ -585,7 +544,7 @@ public class StoreFacade {
         return mapPrice;
     }
 
-    private boolean hasPermission(String username, int storeId, Permission permission) {
+    public boolean hasPermission(String username, int storeId, Permission permission) {
         if (!userFacade.isLoggedIn(username))
             return false;
 
@@ -625,5 +584,9 @@ public class StoreFacade {
 
     public StoreInfo getStoreInfo(int storeId) {
         return storeRepository.findStoreByID(storeId).getStoreInfo();
+    }
+
+    public Set<Integer> getAllStoreIds() {
+        return storeRepository.getAllStoreIds();
     }
 }
