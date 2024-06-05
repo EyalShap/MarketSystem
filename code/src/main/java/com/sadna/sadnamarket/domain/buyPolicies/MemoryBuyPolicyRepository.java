@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
         this.buyPolicies = new HashMap<>();
         this.buyPoliciesDesc = new HashMap<>();
         this.nextId = 0;
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
@@ -89,7 +91,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     private int addPolicyToMaps(BuyPolicy newPolicy) throws JsonProcessingException {
-        String policyDesc = objectMapper.writeValueAsString(newPolicy.toString());
+        String policyDesc = newPolicy.getClass().getName() + "-" + objectMapper.writeValueAsString(newPolicy);
         if(!buyPoliciesDesc.containsKey(policyDesc)) {
             buyPolicies.put(nextId, newPolicy);
             buyPoliciesDesc.put(policyDesc, nextId);
