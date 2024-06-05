@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import '../styles/search.css';
 
 
@@ -7,6 +9,7 @@ const SearchBar = () => {
   const [searchCategory, setSearchCategory] = useState('all');
   const [minPrice, setMinPrice] = useState(0); // Default price
 const [maxPrice, setMaxPrice] = useState(100); // Default price
+  const navigate = useNavigate();
 
 
   const handleInputChange = (event:any) => {
@@ -16,7 +19,11 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
   const handleSearchSubmit = (event:any) => {
     event.preventDefault();
     console.log('Search Term:', searchTerm);
+    console.log('Search Category:', searchCategory);
+    console.log('Min Price:', minPrice);
+    console.log('Max Price:', maxPrice);
     // Add your search logic here
+  navigate(`/search-results?term=${encodeURIComponent(searchTerm)}&category=${encodeURIComponent(searchCategory)}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
   };
   const handleCategoryChange = (event:any) => {
     setSearchCategory(event.target.value);
@@ -44,7 +51,7 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
           value={searchTerm}
           onChange={handleInputChange}
         />
-        <button type="submit">Search</button>
+        <button type="submit" onClick={handleSearchSubmit}>Search</button>
         
           <div className="price-range">
             <label>

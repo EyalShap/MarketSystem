@@ -2,11 +2,12 @@
   position: relative;
   width: 100%; /* Full width of the parent container */
   overflow: hidden; /* Hide scrollbars */
+   overflow: ellipsis;
+  white-space: nowrap; /* Prevent wrapping to a new line */
 }
 
 .product-list {
   display: flex; /* Uses flexbox to layout items in a row */
-  overflow-x: scroll; /* Enables horizontal scrolling */
   scroll-behavior: smooth; /* Smooth scrolling */
   -webkit-overflow-scrolling: touch; /* Improves scrolling on iOS */
 }

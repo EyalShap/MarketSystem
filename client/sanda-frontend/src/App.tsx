@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import MemberNavbar from './components/MemberNavbar';
 import { useState } from 'react';
 import Profile from './components/Profile';
+import SearchResults from './components/SearchResults';
 
 function App() {
   const [isloggedin,setIsloggedin] = useState(false);
@@ -19,6 +20,7 @@ function App() {
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/profile" element={<Profile/>}/>
+          <Route path="/search-results" element={<SearchResults />} />
           <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>}/>
         </Routes>
       
