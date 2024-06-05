@@ -68,7 +68,7 @@ class StoreOwnerTests {
     @Test
     void addProductTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         Assertions.assertFalse(resp.getError());
         String productIdString = resp.getDataJson();
         Assertions.assertDoesNotThrow(() -> Integer.parseInt(productIdString));
@@ -83,23 +83,23 @@ class StoreOwnerTests {
 
     @Test
     void addProductBadInfoTest() {
-        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "", -100.0, "cat", -10));
+        Response resp = bridge.addProductToStore(token, username, storeId, new ProductDTO(-1, "", -100.0, "cat", -10, 8));
         Assertions.assertTrue(resp.getError());
     }
 
     @Test
     void addProductNoPermissionTest() {
         Response resp = bridge.addProductToStore(maliciousToken, maliciousUsername, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         Assertions.assertTrue(resp.getError());
     }
 
     @Test
     void editProductTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, "product", 200.0, "cat", 3.5));
+        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, "product", 200.0, "cat", 3.5, 4));
         Assertions.assertFalse(resp.getError());
         try {
             resp = bridge.getProductData(token, username, productId);
@@ -117,20 +117,20 @@ class StoreOwnerTests {
     @Test
     void editProductBadInfoTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.editStoreProduct(token, username, storeId, productId,
-                new ProductDTO(-1, null, -200.0, null, -10));
+                new ProductDTO(-1, null, -200.0, null, -10, 3));
         Assertions.assertTrue(resp.getError());
     }
 
     @Test
     void editProductDoesntExistTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.editStoreProduct(token, username, storeId, Integer.MAX_VALUE,
-                new ProductDTO(-1, null, -200.0, null, -10));
+                new ProductDTO(-1, null, -200.0, null, -10, 3));
         Assertions.assertTrue(resp.getError());
     }
 
@@ -138,26 +138,26 @@ class StoreOwnerTests {
     void editProductWrongStoreTest() {
         Response resp = bridge.openStore(token, username, "New Store");
         int newStoreId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.addProductToStore(token, username, newStoreId, new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+        resp = bridge.addProductToStore(token, username, newStoreId, new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, null, 200.0, null, -10));
+        resp = bridge.editStoreProduct(token, username, storeId, productId, new ProductDTO(-1, null, 200.0, null, -10, 4));
         Assertions.assertTrue(resp.getError());
     }
 
     @Test
     void editProductNoPermissionTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.editStoreProduct(maliciousToken, maliciousUsername, storeId, productId,
-                new ProductDTO(-1, null, 200.0, null, -10));
+                new ProductDTO(-1, null, 200.0, null, -10, 5));
         Assertions.assertTrue(resp.getError());
     }
 
     @Test
     void removeProductTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.removeProductFromStore(token, username, storeId, productId);
         Assertions.assertFalse(resp.getError());
@@ -171,7 +171,7 @@ class StoreOwnerTests {
     @Test
     void removeProductDoesntExistTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.removeProductFromStore(token, username, storeId, Integer.MAX_VALUE);
         Assertions.assertTrue(resp.getError());
@@ -181,7 +181,7 @@ class StoreOwnerTests {
     void removeProductWrongStoreTest() {
         Response resp = bridge.openStore(token, username, "New Store");
         int newStoreId = Integer.parseInt(resp.getDataJson());
-        resp = bridge.addProductToStore(token, username, newStoreId, new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+        resp = bridge.addProductToStore(token, username, newStoreId, new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.removeProductFromStore(token, username, storeId, productId);
         Assertions.assertTrue(resp.getError());
@@ -190,7 +190,7 @@ class StoreOwnerTests {
     @Test
     void removeProductNoPermissionTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         resp = bridge.removeProductFromStore(maliciousToken, maliciousUsername, storeId, productId);
         Assertions.assertTrue(resp.getError());
@@ -524,7 +524,7 @@ class StoreOwnerTests {
     @Test
     void seeStoreOrderHistoryTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(token, username, storeId, productId, 10);
         resp = bridge.guestEnterSystem();
@@ -546,7 +546,7 @@ class StoreOwnerTests {
     @Test
     void seeStoreOrderHistoryNeverPurchaseTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(token, username, storeId, productId, 10);
         try {
@@ -562,7 +562,7 @@ class StoreOwnerTests {
     @Test
     void seeStoreOrderHistoryNoOwnerTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(token, username, storeId, productId, 10);
         resp = bridge.guestEnterSystem();
@@ -582,7 +582,7 @@ class StoreOwnerTests {
     @Test
     void seeStoreOrderHistoryDoesntExistTest() {
         Response resp = bridge.addProductToStore(token, username, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, 2));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(token, username, storeId, productId, 10);
         resp = bridge.guestEnterSystem();
