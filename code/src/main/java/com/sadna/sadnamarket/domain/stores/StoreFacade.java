@@ -488,7 +488,7 @@ public class StoreFacade {
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
             Store store = storeRepository.findStoreByID(storeId);
-            store.buyCart(cartByStore.get(storeId));
+            store.updateStock(cartByStore.get(storeId));
         }
     }
 

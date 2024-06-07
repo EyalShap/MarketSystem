@@ -1,11 +1,12 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.service.Error;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,12 +18,48 @@ class StoreTest {
     private Store store0;
     private Store store1;
 
+    private StoreInfo generateStore0Info() {
+        LocalTime openingHour = LocalTime.of(10, 0);
+        LocalTime closingHour = LocalTime.of(21, 0);
+        LocalTime fridayClosingHour = LocalTime.of(14, 0);
+        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
+        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
+        return new StoreInfo("Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
+    }
+
+    private StoreInfo generateStore1Info() {
+        LocalTime openingHour = LocalTime.of(9, 0);
+        LocalTime closingHour = LocalTime.of(20, 0);
+        LocalTime fridayClosingHour = LocalTime.of(15, 0);
+        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
+        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
+        return new StoreInfo("Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120", openingHours, closingHours);
+    }
+
+    private BankAccountDTO generateBankAccount0() {
+        return new BankAccountDTO("123", "456", "789", "Willy");
+    }
+
+    private BankAccountDTO generateBankAccount1() {
+        return new BankAccountDTO("321", "654", "987", "Mr. Krabs");
+    }
+
+    private Store generateStore0() {
+        Store s = new Store(0, "Willy", generateStore0Info());
+        s.setBankAccount(generateBankAccount0());
+        return s;
+    }
+
+    private Store generateStore1() {
+        Store s = new Store(1, "Mr. Krabs", generateStore1Info());
+        s.setBankAccount(generateBankAccount1());
+        return s;
+    }
+
     @BeforeEach
     public void setUp() {
-        StoreInfo storeInfo0 = new StoreInfo("Store0", "Lehavim", "store0@gmail.com", "0546310765", null, null);
-        StoreInfo storeInfo1 = new StoreInfo("Store1",  "Tel Aviv", "store1@gmail.com", "0546310764", null, null);
-        store0 = new Store(0, "Alice", storeInfo0);
-        store1 = new Store(1, "Bob", storeInfo1);
+        this.store0 = generateStore0();
+        this.store1 = generateStore1();
     }
 
     @Test
@@ -33,8 +70,8 @@ class StoreTest {
 
     @Test
     void getFounderUsername() {
-        assertEquals("Alice", store0.getFounderUsername());
-        assertEquals("Bob", store1.getFounderUsername());
+        assertEquals("Willy", store0.getFounderUsername());
+        assertEquals("Mr. Krabs", store1.getFounderUsername());
     }
 
     @Test
@@ -56,13 +93,13 @@ class StoreTest {
         Set<String> expected1 = new HashSet<>();
         Set<String> expected2 = new HashSet<>();
         Set<String> expected3 = new HashSet<>();
-        Collections.addAll(expected1, "Alice");
-        Collections.addAll(expected2, "Bob", "Alice");
-        Collections.addAll(expected3, "Bob");
+        Collections.addAll(expected1, "Willy");
+        Collections.addAll(expected2, "Mr. Krabs", "Willy");
+        Collections.addAll(expected3, "Mr. Krabs");
 
         assertEquals(expected1, new HashSet<>(store0.getOwnerUsernames()));
 
-        store0.addStoreOwner("Bob");
+        store0.addStoreOwner("Mr. Krabs");
         assertEquals(expected2, new HashSet<>(store0.getOwnerUsernames()));
 
         assertEquals(expected3, new HashSet<>(store1.getOwnerUsernames()));
@@ -72,34 +109,17 @@ class StoreTest {
     void getManagerUsernames() {
         Set<String> expected1 = new HashSet<>();
         Set<String> expected2 = new HashSet<>();
-        Collections.addAll(expected2, "Bob", "Moshe");
+        Collections.addAll(expected2, "Mr. Krabs", "Moshe");
 
         assertEquals(expected1, new HashSet<>(store0.getManagerUsernames()));
         assertEquals(expected1, new HashSet<>(store1.getManagerUsernames()));
 
-        store1.addStoreManager("Bob");
+        store1.addStoreManager("Mr. Krabs");
         store1.addStoreManager("Moshe");
         assertEquals(expected2, new HashSet<>(store1.getManagerUsernames()));
 
         assertEquals(expected1, new HashSet<>(store0.getManagerUsernames()));
     }
-
-    /*
-    @Test
-    void getSellerUsernames() {
-        Set<String> expected1 = new HashSet<>();
-        Set<String> expected2 = new HashSet<>();
-        Collections.addAll(expected2, "Bob", "Moshe");
-
-        assertEquals(expected1, new HashSet<>(store0.getSellerUsernames()));
-        assertEquals(expected1, new HashSet<>(store1.getSellerUsernames()));
-
-        store1.addSeller("Bob");
-        store1.addSeller("Moshe");
-        assertEquals(expected2, new HashSet<>(store1.getSellerUsernames()));
-
-        assertEquals(expected1, new HashSet<>(store0.getSellerUsernames()));
-    }*/
 
     @Test
     void getProductAmounts() {
@@ -355,56 +375,59 @@ class StoreTest {
         assertFalse(store0.productExists(2));
     }
 
+
+    @Test
+    void hasProductInAmount() {
+        store0.addProduct(0, 200);
+        store0.addProduct(1, 200);
+        store0.addProduct(2, 200);
+
+        assertTrue(store0.hasProductInAmount(0, 200));
+        assertTrue(store0.hasProductInAmount(1, 200));
+        assertTrue(store0.hasProductInAmount(2, 200));
+
+        assertFalse(store0.hasProductInAmount(0, 201));
+        assertFalse(store0.hasProductInAmount(1, 201));
+        assertFalse(store0.hasProductInAmount(2, 201));
+    }
+
     @Test
     void isStoreOwner() {
-        store0.addStoreOwner("Bob");
+        store0.addStoreOwner("Mr. Krabs");
         store0.addStoreOwner("Netta");
-        store1.addStoreOwner("Alice");
+        store1.addStoreOwner("Willy");
         store1.addStoreOwner("Netta");
 
-        assertTrue(store0.isStoreOwner("Alice"));
-        assertTrue(store1.isStoreOwner("Alice"));
-        assertTrue(store0.isStoreOwner("Bob"));
-        assertTrue(store1.isStoreOwner("Bob"));
+        assertTrue(store0.isStoreOwner("Willy"));
+        assertTrue(store1.isStoreOwner("Willy"));
+        assertTrue(store0.isStoreOwner("Mr. Krabs"));
+        assertTrue(store1.isStoreOwner("Mr. Krabs"));
         assertTrue(store0.isStoreOwner("Netta"));
         assertTrue(store1.isStoreOwner("Netta"));
     }
 
     @Test
     void isStoreManager() {
-        store0.addStoreManager("Alice");
-        store0.addStoreManager("Bob");
-        store1.addStoreManager("Alice");
+        store0.addStoreManager("Willy");
+        store0.addStoreManager("Mr. Krabs");
+        store1.addStoreManager("Willy");
         store1.addStoreManager("Netta");
 
-        assertTrue(store0.isStoreManager("Alice"));
-        assertTrue(store1.isStoreManager("Alice"));
-        assertTrue(store0.isStoreManager("Bob"));
+        assertTrue(store0.isStoreManager("Willy"));
+        assertTrue(store1.isStoreManager("Willy"));
+        assertTrue(store0.isStoreManager("Mr. Krabs"));
         assertTrue(store1.isStoreManager("Netta"));
     }
 
-    /*@Test
-    void isSeller() {
-        store0.addSeller("Alice");
-        store0.addSeller("Bob");
-        store1.addSeller("Alice");
-        store1.addSeller("Netta");
-
-        assertTrue(store0.isSeller("Alice"));
-        assertTrue(store1.isSeller("Alice"));
-        assertTrue(store0.isSeller("Bob"));
-        assertTrue(store1.isSeller("Netta"));
-    }*/
-
     @Test
     void addStoreOwnerAlreadyExists() {
-        store0.addStoreOwner("Bob");
+        store0.addStoreOwner("Mr. Krabs");
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addStoreOwner("Bob");
+            store0.addStoreOwner("Mr. Krabs");
         });
 
-        String expectedMessage1 = "User Bob is already a owner of store 0.";
+        String expectedMessage1 = "User Mr. Krabs is already a owner of store 0.";
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 
@@ -413,7 +436,7 @@ class StoreTest {
         store0.closeStore();
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addStoreOwner("Bob");
+            store0.addStoreOwner("Mr. Krabs");
         });
 
         String expectedMessage1 = "A store with id 0 is not active.";
@@ -422,13 +445,13 @@ class StoreTest {
 
     @Test
     void addStoreManagerAlreadyExists() {
-        store0.addStoreManager("Bob");
+        store0.addStoreManager("Mr. Krabs");
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addStoreManager("Bob");
+            store0.addStoreManager("Mr. Krabs");
         });
 
-        String expectedMessage1 = "User Bob is already a manager of store 0.";
+        String expectedMessage1 = "User Mr. Krabs is already a manager of store 0.";
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 
@@ -437,36 +460,12 @@ class StoreTest {
         store0.closeStore();
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addStoreManager("Bob");
+            store0.addStoreManager("Mr. Krabs");
         });
 
         String expectedMessage1 = "A store with id 0 is not active.";
         assertEquals(expectedMessage1, expected1.getMessage());
     }
-
-    /*@Test
-    void addSellerAlreadyExists() {
-        store1.addSeller("Bob");
-
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store1.addSeller("Bob");
-        });
-
-        String expectedMessage1 = "User Bob is already a seller of store 1.";
-        assertEquals(expectedMessage1, expected1.getMessage());
-    }*/
-
-    /*@Test
-    void addSellerStoreNotActive() {
-        store0.closeStore();
-
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store0.addSeller("Bob");
-        });
-
-        String expectedMessage1 = "A store with id 0 is not active.";
-        assertEquals(expectedMessage1, expected1.getMessage());
-    }*/
 
     @Test
     void closeStore() {
@@ -480,6 +479,17 @@ class StoreTest {
         store1.closeStore();
         assertFalse(store0.getIsActive());
         assertFalse(store1.getIsActive());
+    }
+
+    @Test
+    void closeStoreAlreadyClosed() {
+        store0.closeStore();
+
+        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
+            store0.closeStore();
+        });
+
+        assertEquals(Error.makeStoreAlreadyClosedError(0), expected.getMessage());
     }
 
     @Test
@@ -507,7 +517,7 @@ class StoreTest {
     }
 
     @Test
-    void buyCart() {
+    void updateStock() {
         Map<Integer, Integer> expected1 = new HashMap<>();
         Map<Integer, Integer> expected2 = new HashMap<>();
         expected1.put(1, 100);
@@ -529,7 +539,7 @@ class StoreTest {
 
         assertEquals(expected1, store0.getProductAmounts());
 
-        store0.buyCart(cart);
+        store0.updateStock(cart);
         assertEquals(expected2, store0.getProductAmounts());
     }
 
@@ -592,5 +602,17 @@ class StoreTest {
         store0.addProduct(1, 10);
 
         assertNotEquals("",store0.checkCart(cart));
+    }
+
+
+    @Test
+    void testEquals() {
+        Store toCompare0 = generateStore0();
+        Store toCompare1 = generateStore1();
+
+        assertTrue(store0.equals(toCompare0));
+        assertTrue(store1.equals(toCompare1));
+        assertFalse(store0.equals(toCompare1));
+        assertFalse(store1.equals(toCompare0));
     }
 }
