@@ -3,5 +3,6 @@ export default interface MemberModel {
     firstName: string,
     lastName: string,
     email: string,
-    phoneNumber: string
+    phoneNumber: string,
+    birthday: string  
 }

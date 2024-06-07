@@ -100,8 +100,8 @@ export const getPermissions = (storeId: string): Permission[] => {
 }
 
 export const getStoreManagers = (storeId: string): MemberModel[] => {
-    let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", email: "eric@excited.com", phoneNumber: "052-0520525"}
-    let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", email: "benny@sad.com", phoneNumber: "052-0520525"}
+    let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", email: "eric@excited.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
+    let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", email: "benny@sad.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
     let list: MemberModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
@@ -109,10 +109,21 @@ export const getStoreManagers = (storeId: string): MemberModel[] => {
 }
 
 export const getStoreOwners = (storeId: string): MemberModel[] => {
-    let defaultExample1: MemberModel = {username: "mrOwnerMan", firstName: "Owner", lastName: "Man", email: "man@store.com", phoneNumber: "052-0520525"}
-    let defaultExample2: MemberModel = {username: "GuyWhoOwnsStore", firstName: "Guy", lastName: "Store", email: "guy@store.com", phoneNumber: "052-0520525"}
+    let defaultExample1: MemberModel = {username: "mrOwnerMan", firstName: "Owner", lastName: "Man", email: "man@store.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
+    let defaultExample2: MemberModel = {username: "GuyWhoOwnsStore", firstName: "Guy", lastName: "Store", email: "guy@store.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
     let list: MemberModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
     return list;
+}
+export const getMember = async(username: string): Promise<MemberModel> => {
+    const profile= {
+        username: 'idanasis',
+        firstName: 'Idan',
+        lastName: 'Asis',
+        email: 'idanasis86@gmail.com',
+        phoneNumber: '0523072999',
+        birthday: '2024-06-06' // Default value for birthday
+      }
+    return profile;
 }
