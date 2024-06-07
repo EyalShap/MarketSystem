@@ -479,12 +479,25 @@ public class MarketService {
     public Response addBuyPolicyToStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);
-            storeFacade.addBuyPolicyToStore(username, storeId, policyId);
+            buyPolicyFacade.addBuyPolicyToStore(username, storeId, policyId);
             logger.info(String.format("User %s added policy %d to store %d.", username, storeId, policyId));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
             logger.error("addPolicyToStore: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response removeBuyPolicyFromStore(String token, String username, int storeId, int policyId) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.removePolicyFromStore(username, storeId, policyId);
+            logger.info(String.format("User %s removed policy %d from store %d.", username, storeId, policyId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("removeBuyPolicyFromStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }

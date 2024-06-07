@@ -75,8 +75,8 @@ public class StoreFacade {
             // this will not throw an exception since all the parameters are legal
             int policyId1 = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Alcohol", buyTypes1, 18, -1, founderUserName);
             int policyId2 = buyPolicyFacade.createCategoryHourLimitBuyPolicy("Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0), founderUserName);
-            addBuyPolicyToStore(founderUserName, storeId, policyId1);
-            addBuyPolicyToStore(founderUserName, storeId, policyId2);
+            buyPolicyFacade.addBuyPolicyToStore(founderUserName, storeId, policyId1);
+            buyPolicyFacade.addBuyPolicyToStore(founderUserName, storeId, policyId2);
         }
         catch (Exception e) {}
         return storeId;
@@ -229,7 +229,7 @@ public class StoreFacade {
         return true;
     }
 
-    private boolean isStoreActive(int storeId) {
+    public boolean isStoreActive(int storeId) {
         return storeRepository.findStoreByID(storeId).getIsActive();
     }
 
@@ -440,14 +440,6 @@ public class StoreFacade {
 
         storeRepository.findStoreByID(storeId).addSeller(sellerUsername);
         return sellerUsername;
-    }
-
-    public void addBuyPolicyToStore(String username, int storeId, int policyId) throws Exception {
-        if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not add buy policy %d to store %d.", username, policyId, storeId));
-
-        buyPolicyFacade.addPolicyToStore(storeId, policyId);
     }
 
     public void addDiscountPolicy(String username, int storeId, String args) {

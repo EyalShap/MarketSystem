@@ -25,6 +25,15 @@ public class BuyPolicyManager {
         }
     }
 
+    public void removeBuyPolicy(int buyPolicyId) throws Exception {
+        synchronized (buyPolicyIds) {
+            if(!buyPolicyIds.contains(buyPolicyId)) {
+                throw new Exception();
+            }
+            buyPolicyIds.remove(buyPolicyId);
+        }
+    }
+
     public String canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) throws Exception {
         String error = "";
         // if one policy says that you cant buy return false;
