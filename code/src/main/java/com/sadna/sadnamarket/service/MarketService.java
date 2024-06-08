@@ -37,11 +37,7 @@ public class MarketService {
     private ProductFacade productFacade;
     private OrderFacade orderFacade;
     private StoreFacade storeFacade;
-    private BuyPolicyFacade buyPolicyFacade;
-    private DiscountPolicyFacade discountPolicyFacade;
-    private AuthFacade authFacade;
-    private static ObjectMapper objectMapper = new ObjectMapper();
-    Logger logger = LoggerFactory.getLogger(MarketService.class);
+    private BuyPolicyFacade buyPolicyFacade
 
     public MarketService(IStoreRepository storeRepository) {
         this.productFacade = new ProductFacade();
