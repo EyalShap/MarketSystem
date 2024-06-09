@@ -252,26 +252,26 @@ class StoreFacadeTest {
 
     @Test
     void addProductToStoreSuccess_Owner() {
-        int productId = storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2);
+        int productId = storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2,2);
         assertEquals(409, storeFacade.getProductAmount(0, productId));
 
-        ProductDTO expected = new ProductDTO(productId, "Mekupelet", 3.5, "Chocolate", 4.2, true);
+        ProductDTO expected = new ProductDTO(productId, "Mekupelet", 3.5, "Chocolate", 4.2, 2,true);
         assertEquals(expected, productFacade.getProductDTO(productId));
     }
 
     @Test
     void addProductToStoreSuccess_ManagerWithPermissions() {
-        int productId = storeFacade.addProductToStore("Mr. Krabs", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2);
+        int productId = storeFacade.addProductToStore("Mr. Krabs", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2,2);
         assertEquals(409, storeFacade.getProductAmount(0, productId));
 
-        ProductDTO expected = new ProductDTO(productId, "Mekupelet", 3.5, "Chocolate", 4.2, true);
+        ProductDTO expected = new ProductDTO(productId, "Mekupelet", 3.5, "Chocolate", 4.2, 2, true);
         assertEquals(expected, productFacade.getProductDTO(productId));
     }
 
     @Test
     void addProductToStore_StoreDoesNotExist() {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.addProductToStore("WillyTheChocolateDude", 400, "Mekupelet", 409, 3.5, "Chocolate", 4.2);
+            storeFacade.addProductToStore("WillyTheChocolateDude", 400, "Mekupelet", 409, 3.5, "Chocolate", 4.2,2);
         });
 
         assertEquals(Error.makeStoreNoStoreWithIdError(400), expected.getMessage());
@@ -281,7 +281,7 @@ class StoreFacadeTest {
     void addProductToStore_StoreNotActive() {
         storeFacade.closeStore("WillyTheChocolateDude", 0);
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2);
+            storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2,2);
         });
 
         assertEquals(Error.makeStoreWithIdNotActiveError(0), expected.getMessage());
@@ -290,7 +290,7 @@ class StoreFacadeTest {
     @Test
     void addProductToStore_ParamsNotValid() {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.addProductToStore("WillyTheChocolateDude", 0, "", -57, -3.5, "", 8);
+            storeFacade.addProductToStore("WillyTheChocolateDude", 0, "", -57, -3.5, "", 8,2);
         });
 
         String expectedError = "Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. Product rank must be between 0 and 5. ";
@@ -301,16 +301,16 @@ class StoreFacadeTest {
     void addProductToStore_NoPermissions() {
         storeFacade.removeManagerPermission("WillyTheChocolateDude", "Mr. Krabs", 0, Permission.ADD_PRODUCTS);
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.addProductToStore("Mr. Krabs", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2);
+            storeFacade.addProductToStore("Mr. Krabs", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2,2);
         });
         IllegalArgumentException expected2 = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.addProductToStore("Bob", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2);
+            storeFacade.addProductToStore("Bob", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2,2);
         });
         IllegalArgumentException expected3 = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.addProductToStore("Alice", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2);
+            storeFacade.addProductToStore("Alice", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2,2);
         });
         NoSuchElementException expected4 = assertThrows(NoSuchElementException.class, () -> {
-            storeFacade.addProductToStore("Dana", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2);
+            storeFacade.addProductToStore("Dana", 0, "Mekupelet", 409, 3.5, "Chocolate", 4.2,2);
         });
         assertEquals(Error.makeStoreUserCannotAddProductError("Mr. Krabs", 0), expected1.getMessage());
         assertEquals(Error.makeStoreUserCannotAddProductError("Bob", 0), expected2.getMessage());
@@ -377,11 +377,11 @@ class StoreFacadeTest {
     @Test
     void updateProductSuccess() {
         storeFacade.updateProduct("WillyTheChocolateDude", 0, 0, "Cow Chocolate", 123, 10, "Chocolate", 4.8);
-        ProductDTO expected1 = new ProductDTO(0, "Cow Chocolate", 10, "Chocolate", 4.8, true);
+        ProductDTO expected1 = new ProductDTO(0, "Cow Chocolate", 10, "Chocolate", 4.8, 2,true);
         assertEquals(expected1, productFacade.getProductDTO(0));
 
         storeFacade.updateProduct("Mr. Krabs", 0, 1, "Kit Kat", 100, 8, "Chocolate", 4.21);
-        ProductDTO expected2 = new ProductDTO(1, "Kit Kat", 8, "Chocolate", 4.21, true);
+        ProductDTO expected2 = new ProductDTO(1, "Kit Kat", 8, "Chocolate", 4.21, 2,true);
         assertEquals(expected2, productFacade.getProductDTO(1));
     }
 
@@ -565,7 +565,7 @@ class StoreFacadeTest {
         permissions.add(Permission.ADD_PRODUCTS);
         storeFacade.addManagerPermission("WillyTheChocolateDude", "Bob", 0, permissions);
         assertDoesNotThrow(() -> {
-            storeFacade.addProductToStore("Bob", 0, "Nutella", 10, 12, "Chocolate", 4.8);
+            storeFacade.addProductToStore("Bob", 0, "Nutella", 10, 12, "Chocolate", 4.8,2);
         });
     }
 
@@ -761,7 +761,7 @@ class StoreFacadeTest {
 
     @Test
     void getProductInfoSuccess() {
-        ProductDTO expected = new ProductDTO(0, "Shokolad Parah", 5.5, "Chocolate", 4, true);
+        ProductDTO expected = new ProductDTO(0, "Shokolad Parah", 5.5, "Chocolate", 4, 2,true);
         assertEquals(expected, storeFacade.getProductInfo("WillyTheChocolateDude", 0));
     }
 
@@ -779,7 +779,7 @@ class StoreFacadeTest {
         });
         assertEquals(Error.makeStoreOfProductIsNotActiveError(0), expected2.getMessage());
 
-        ProductDTO expected = new ProductDTO(0, "Shokolad Parah", 5.5, "Chocolate", 4, true);
+        ProductDTO expected = new ProductDTO(0, "Shokolad Parah", 5.5, "Chocolate", 4, 2,true);
         ProductDTO res = storeFacade.getProductInfo("WillyTheChocolateDude", 0);
         assertEquals(expected, res);
     }
@@ -794,9 +794,9 @@ class StoreFacadeTest {
 
     @Test
     void getProductsInfoNotFiltered() throws JsonProcessingException {
-        ProductDTO product0 = new ProductDTO(0, "Shokolad Parah", 5.5, "Chocolate", 4, true);
-        ProductDTO product1 = new ProductDTO(1, "Kif Kef", 4.2, "Chocolate", 4.3, true);
-        ProductDTO product2 = new ProductDTO(2, "Klik Cariot", 7, "Chocolate", 5, true);
+        ProductDTO product0 = new ProductDTO(0, "Shokolad Parah", 5.5, "Chocolate", 4, 2,true);
+        ProductDTO product1 = new ProductDTO(1, "Kif Kef", 4.2, "Chocolate", 4.3, 2,true);
+        ProductDTO product2 = new ProductDTO(2, "Klik Cariot", 7, "Chocolate", 5, 2,true);
         Map<ProductDTO, Integer> expected = new HashMap<>();
         expected.put(product0, 1000);
         expected.put(product1, 982);
@@ -806,7 +806,7 @@ class StoreFacadeTest {
 
     @Test
     void getProductsInfoFiltered() throws JsonProcessingException {
-        ProductDTO product1 = new ProductDTO(1, "Kif Kef", 4.2, "Chocolate", 4.3, true);
+        ProductDTO product1 = new ProductDTO(1, "Kif Kef", 4.2, "Chocolate", 4.3, 2,true);
         Map<ProductDTO, Integer> expected = new HashMap<>();
         expected.put(product1, 982);
         assertEquals(expected, storeFacade.getProductsInfoAndFilter(null, 0, "Kif Kef", null, 5, -1));
@@ -815,7 +815,7 @@ class StoreFacadeTest {
     @Test
     void getProductsInfoDeleteProduct() throws JsonProcessingException {
         storeFacade.deleteProduct("WillyTheChocolateDude", 0, 0);
-        ProductDTO product1 = new ProductDTO(1, "Kif Kef", 4.2, "Chocolate", 4.3, true);
+        ProductDTO product1 = new ProductDTO(1, "Kif Kef", 4.2, "Chocolate", 4.3, 2,true);
         Map<ProductDTO, Integer> expected = new HashMap<>();
         expected.put(product1, 982);
         assertEquals(expected, storeFacade.getProductsInfoAndFilter(null, 0, null, null, 6, -1));
@@ -824,9 +824,9 @@ class StoreFacadeTest {
     @Test
     void getProductsInfoStoreClosed() throws JsonProcessingException {
         storeFacade.closeStore("WillyTheChocolateDude", 0);
-        ProductDTO product0 = new ProductDTO(0, "Shokolad Parah", 5.5, "Chocolate", 4, true);
-        ProductDTO product1 = new ProductDTO(1, "Kif Kef", 4.2, "Chocolate", 4.3, true);
-        ProductDTO product2 = new ProductDTO(2, "Klik Cariot", 7, "Chocolate", 5, true);
+        ProductDTO product0 = new ProductDTO(0, "Shokolad Parah", 5.5, "Chocolate", 4, 2,true);
+        ProductDTO product1 = new ProductDTO(1, "Kif Kef", 4.2, "Chocolate", 4.3, 2,true);
+        ProductDTO product2 = new ProductDTO(2, "Klik Cariot", 7, "Chocolate", 5, 2,true);
         Map<ProductDTO, Integer> expected = new HashMap<>();
         expected.put(product0, 1000);
         expected.put(product1, 982);
