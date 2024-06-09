@@ -92,7 +92,7 @@ public class UserRestController {
         public Response register(@RequestParam String username, @RequestParam String password, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String emailAddress, @RequestParam String phoneNumber) {
         return marketService.register(username, password, firstName,lastName,emailAddress,phoneNumber);
     }
-
+    
     @PostMapping("/leaveRole")
     public Response leaveRole(@RequestParam String username,@RequestParam int firstName) {
         return marketService.leaveRole(username,firstName);
@@ -157,6 +157,5 @@ public class UserRestController {
     public Response getUserCart(@RequestParam int guestId) {
         return marketService.getUserCart(guestId);
     }
-    
 
 }
