@@ -18,6 +18,11 @@ public class UserOrderDTO {
     public List<ProductDataPrice> getProductsData(){
         return productsData;
     }
-   
+   public double getOldPrice(){
+        return oldPrice;
+    }
+    public double getNewPrice(){
+        return newPrice;
+    }
 
 }

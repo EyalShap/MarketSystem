@@ -81,7 +81,7 @@ public class MarketService {
     private void checkToken(String token, String username) {
         if(!authFacade.login(token).equals(username)) {
             logger.error(String.format("failed to verify token for user %s", username));
-            throw new IllegalArgumentException(String.format("Token is not valid for user %s.", username));
+            throw new IllegalArgumentException(Error.makeTokenInvalidError(username));
         }
     }
 
@@ -98,7 +98,7 @@ public class MarketService {
             logger.error("createStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From "My Stores" page, redirects to new store
 
     public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, double productPrice, String category, double rank, double productWeight) {
         try {
@@ -111,7 +111,7 @@ public class MarketService {
             logger.error("addProductToStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, Actions menu, only for permission, new page
 
     public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
         try {
@@ -124,7 +124,7 @@ public class MarketService {
             logger.error("addProductToStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, Actions menu, only for owner, new page
 
     public Response deleteProductFromStore(String token, String username, int storeId, int productId) {
         try {
@@ -137,7 +137,7 @@ public class MarketService {
             logger.error("deleteProductFromStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, X on products from products list, only for permission
 
     public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, double newPrice, String newCategory, double newRank) {
         try {
@@ -151,7 +151,7 @@ public class MarketService {
 
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Product page, button, only for permission, new page
 
     public Response updateProductAmountInStore(String token, String username, int storeId, int productId, int newQuantity) {
         try {
@@ -179,7 +179,7 @@ public class MarketService {
 
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, Actions menu, only for owner, popup
 
     public Response getOwners(String token, String username, int storeId) {
         try {
@@ -193,7 +193,7 @@ public class MarketService {
 
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, Actions menu, only for owner, new page with list of owners, for each owner button that shows details (in squares like my stores)
 
     public Response getManagers(String token, String username, int storeId) {
         try {
@@ -206,9 +206,9 @@ public class MarketService {
             logger.error("getManagers: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, Actions menu, only for owner, new page with list of managers, for each manager button that shows details and permissions (in squares like my stores)
 
-    public Response getSellers(String token, String username, int storeId) {
+    /*public Response getSellers(String token, String username, int storeId) {
         try {
             checkToken(token, username);
             List<MemberDTO> sellers = storeFacade.getSellers(username, storeId);
@@ -219,7 +219,7 @@ public class MarketService {
             logger.error("getSellers: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    }*/
 
     public Response sendStoreOwnerRequest(String token, String currentOwnerUsername, String newOwnerUsername, int storeId) {
         try {
@@ -232,7 +232,7 @@ public class MarketService {
             logger.error("sendStoreOwnerRequest: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, Actions menu, new page, enter username and click send
 
     public Response sendStoreManagerRequest(String token, String currentOwnerUsername, String newManagerUsername, int storeId) {
         try {
@@ -245,7 +245,7 @@ public class MarketService {
             logger.error("sendStoreManagerRequest: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, Actions menu, new page, enter username and click send
 
     public Response acceptRequest(String token, String newUsername, int storeId) {
         try {
@@ -258,7 +258,7 @@ public class MarketService {
             logger.error("acceptStoreOwnerRequest: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From notifications, choose "Request" notification and click "accept"
 
     public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
@@ -271,7 +271,7 @@ public class MarketService {
             logger.error("getStoreOrderHistory: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From Store page, Actions menu, only for persmission, new page
 
     public Response getStoreInfo(String token, String username, int storeId) {
         try {
@@ -290,7 +290,7 @@ public class MarketService {
             logger.error("getStoreInfo: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From "my stores" page OR from search store (from main search)
   
   public Response getProductInfo(String token, String username, int productId) {
         try {
@@ -306,14 +306,14 @@ public class MarketService {
             logger.error("getStoreInfo: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From boxes in store or from main search
 
     public Response getStoreProductsInfo(String token, String username, int storeId, String productName, String category, double price, double minProductRank) {
         try {
             if(username != null)
                 checkToken(token, username);
 
-            Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfo(username, storeId, productName, category, price, minProductRank);
+            Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfoAndFilter(username, storeId, productName, category, price, minProductRank);
             Map<String, Integer> jsonMap = new HashMap<>();
             for(ProductDTO productDTO : productDTOsAmounts.keySet()){
                 jsonMap.put(objectMapper.writeValueAsString(productDTO),productDTOsAmounts.get(productDTO));
@@ -329,14 +329,14 @@ public class MarketService {
             logger.error("getProductsInfo: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //In store info window
 
     public Response getStoreProductAmount(String token, String username, int storeId, int productId) {
         try {
             if(username != null)
                 checkToken(token, username);
 
-            int amount = storeFacade.getProductAmount(username, storeId, productId);
+            int amount = storeFacade.getProductAmount(storeId, productId);
             logger.info(String.format("A user got product %d amount in store %d.", productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(amount));
         }
@@ -346,7 +346,7 @@ public class MarketService {
         }
     }
 
-    public Response addSellerToStore(String token, int storeId, String adderUsername, String sellerUsername) {
+    /*public Response addSellerToStore(String token, int storeId, String adderUsername, String sellerUsername) {
         try {
             checkToken(token, adderUsername);
             storeFacade.addSeller(storeId, adderUsername, sellerUsername);
@@ -357,7 +357,7 @@ public class MarketService {
             logger.error("addSellerToStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    }*/
 
     public Response createProductKgBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, double min, double max) {
         try {
@@ -500,7 +500,7 @@ public class MarketService {
             logger.error("removeBuyPolicyFromStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from Store window, Actions menu, new page
 
     public Response addDiscountPolicy(String token, String username, int storeId, String args) {
         try {
@@ -513,7 +513,7 @@ public class MarketService {
             logger.error("addDiscountPolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from Store window, Actions menu, new page
 
     public Response changeManagerPermission(String token, String currentOwnerUsername, String newManagerUsername, int storeId, Set<Permission> permission) {
         try {
@@ -526,7 +526,7 @@ public class MarketService {
             logger.error("addManagerPermission: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //Store window->Actions menu->get Managers->choose a manager->shows details and permissions->edit permissions
 
     public Response getManagerPermissions(String token, String currentOwnerUsername, String managerUsername, int storeId) {
         try {
@@ -542,7 +542,7 @@ public class MarketService {
             logger.error("getManagerPermissions: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //Store window->Actions menu->get Managers->choose a manager->shows details and permissions
 
     public Response login(String username, String password){
         try{
@@ -555,7 +555,7 @@ public class MarketService {
             logger.error("error in login: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //Top right, choose "Login", new page
     public Response logout(String username){
         try{
             logger.info(username, username);
@@ -567,7 +567,7 @@ public class MarketService {
             logger.error("error in logout: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //dropdown menu as Member, choose "Logout"
         public Response exitGuest(int guestId){
             try{
                 logger.info("guest {} tries to exit", guestId);
@@ -579,7 +579,7 @@ public class MarketService {
                 logger.error("error in exitGuest: "+e.getMessage());
                 return Response.createResponse(true, e.getMessage());
             }
-        }
+        } //exit page
     public Response enterAsGuest(){
         try{
             logger.info("guest tries to enter");
@@ -590,7 +590,7 @@ public class MarketService {
             logger.error("error in enterAsGuest: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //enter page
 
     public Response register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber){
         try{
@@ -603,7 +603,7 @@ public class MarketService {
             logger.error("error in register: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //Top right, choose "Register", new page
 
     public Response memberExists(String username){
         try{
@@ -640,7 +640,7 @@ public class MarketService {
             logger.error("error in setFirstName: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From profile page, textbox
 
     public Response setLastName(String username, String lastName) {
         try {
@@ -651,7 +651,7 @@ public class MarketService {
         } catch (Exception e) {
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From profile page, textbox
 
     public Response setEmailAddress(String username, String emailAddress) {
         try {
@@ -663,7 +663,7 @@ public class MarketService {
             logger.error("error in setEmailAddress: "+e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From profile page, textbox
 
     public Response setPhoneNumber(String username, String phoneNumber) {
         logger.info("Setting phoneNumber for username: {}", username);
@@ -675,14 +675,14 @@ public class MarketService {
             logger.error("Set phoneNumber failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From profile page, textbox
 
     public Response addProductToCart(String username, int storeId, int productId, int amount) {
         logger.info("Adding product to cart for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
         try {
             if (amount <= 0) {
                 logger.error("Amount should be above 0 for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
-                throw new IllegalArgumentException("amount should be above 0");
+                throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
             }
             userFacade.addProductToCart(username, storeId, productId, amount);
             logger.info("Add product to cart successful for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
@@ -691,14 +691,14 @@ public class MarketService {
             logger.error("Add product to cart failed for username: {}, storeId: {}, productId: {}, amount: {}. Error: {}", username, storeId, productId, amount, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from Product Page, choose quantity and then "Add to Cart"
 
     public Response addProductToCart(int guestId, int storeId, int productId, int amount) {
         logger.info("Adding product to cart for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
         try {
             if (amount <= 0) {
                 logger.error("Amount should be above 0 for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
-                throw new IllegalArgumentException("amount should be above 0");
+                throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
             }
             userFacade.addProductToCart(guestId, storeId, productId, amount);
             logger.info("Add product to cart successful for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
@@ -707,7 +707,7 @@ public class MarketService {
             logger.error("Add product to cart failed for guestId: {}, storeId: {}, productId: {}, amount: {}. Error: {}", guestId, storeId, productId, amount, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from Product Page, choose quantity and then "Add to Cart"
 
     public Response removeProductFromCart(String username, int storeId, int productId) {
         logger.info("Removing product from cart for username: {}, storeId: {}, productId: {}", username, storeId, productId);
@@ -719,7 +719,7 @@ public class MarketService {
             logger.error("Remove product from cart failed for username: {}, storeId: {}, productId: {}. Error: {}", username, storeId, productId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from "Cart" page, click on X/Trash next to product
 
     public Response removeProductFromCart(int guestId, int storeId, int productId) {
         logger.info("Removing product from cart for guestId: {}, storeId: {}, productId: {}", guestId, storeId, productId);
@@ -731,14 +731,14 @@ public class MarketService {
             logger.error("Remove product from cart failed for guestId: {}, storeId: {}, productId: {}. Error: {}", guestId, storeId, productId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from "Cart" page, click on X/Trash next to product
 
     public Response changeQuantityCart(String username, int storeId, int productId, int amount) {
         logger.info("Changing quantity in cart for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
         try {
             if (amount <= 0) {
                 logger.error("Amount should be above 0 for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
-                throw new IllegalArgumentException("amount should be above 0");
+                throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
             }
             userFacade.changeQuantityCart(username, storeId, productId, amount);
             logger.info("Change quantity in cart successful for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
@@ -747,14 +747,14 @@ public class MarketService {
             logger.error("Change quantity in cart failed for username: {}, storeId: {}, productId: {}, amount: {}. Error: {}", username, storeId, productId, amount, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from "Cart" page, edit Textbox next to product
 
     public Response changeQuantityCart(int guestId, int storeId, int productId, int amount) {
         logger.info("Changing quantity in cart for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
         try {
             if (amount <= 0) {
                 logger.error("Amount should be above 0 for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
-                throw new IllegalArgumentException("amount should be above 0");
+                throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
             }
             userFacade.changeQuantityCart(guestId, storeId, productId, amount);
             logger.info("Change quantity in cart successful for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
@@ -763,7 +763,7 @@ public class MarketService {
             logger.error("Change quantity in cart failed for guestId: {}, storeId: {}, productId: {}, amount: {}. Error: {}", guestId, storeId, productId, amount, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from "Cart" page, edit Textbox next to product
 
     public Response getUserCart(int guestId) {
         logger.info("Getting user cart for guestId: {}", guestId);
@@ -775,7 +775,7 @@ public class MarketService {
             logger.error("Get user cart failed for guestId: {}. Error: {}", guestId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //Cart page, for each product show amount and price before and after discount
 
     public Response acceptRequest(String acceptingName, int requestID) {
         logger.info("Accepting request for acceptingName: {}, requestID: {}", acceptingName, requestID);
@@ -787,7 +787,7 @@ public class MarketService {
             logger.error("Accept request failed for acceptingName: {}, requestID: {}. Error: {}", acceptingName, requestID, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From notifications, choose "Request" notification and click "accept", "Accept" and "Reject" on the request
 
     public Response setSystemAdminstor(String username) {
         logger.info("Setting system administrator for username: {}", username);
@@ -811,7 +811,7 @@ public class MarketService {
             logger.error("Leave role failed for username: {}, storeId: {}. Error: {}", username, storeId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From store page, Actions menu, popup
 
     public Response getOrderHistory(String username) {
         logger.info("Getting order history for username: {}", username);
@@ -823,7 +823,7 @@ public class MarketService {
             logger.error("Get order history failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From profile page or system manager menu->choose username
 
     public Response getOrderDTOHistory(String username) {
         logger.info("Getting order DTO history for username: {}", username);
@@ -835,7 +835,7 @@ public class MarketService {
             logger.error("Get order DTO history failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From profile page or system manager menu->choose username
 
     public Response getAllOrderDTOHistory(String username) {
         logger.info("Getting all order DTO history for username: {}", username);
@@ -847,7 +847,7 @@ public class MarketService {
             logger.error("Get all order DTO history failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    }//From profile page or system manager menu
 
     public Response viewCart(String username) {
         logger.info("Viewing cart for username: {}", username);
@@ -859,7 +859,7 @@ public class MarketService {
             logger.error("View cart failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //Cart page, for each product show amount and price before and after discount
 
     public Response purchaseCart(String username, CreditCardDTO creditCard, AddressDTO addressDTO) {
         logger.info("Purchasing cart for username: {}, creditCard: {}, addressDTO: {}", username, creditCard, addressDTO);
@@ -871,7 +871,7 @@ public class MarketService {
             logger.error("Purchase cart failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //button in Cart view, "Buy", begin procedure in new pages
 
     public Response viewCart(int guestId) {
         logger.info("Viewing cart for guestId: {}", guestId);
@@ -883,7 +883,7 @@ public class MarketService {
             logger.error("View cart failed for guestId: {}. Error: {}", guestId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //Cart page, for each product show amount and price before and after discount
 
     public Response purchaseCart(int guestId, CreditCardDTO creditCard, AddressDTO addressDTO) {
         logger.info("Purchasing cart for guestId: {}, creditCard: {}, addressDTO: {}", guestId, creditCard, addressDTO);
@@ -895,7 +895,7 @@ public class MarketService {
             logger.error("Purchase cart failed for guestId: {}. Error: {}", guestId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //button in Cart view, "Buy", begin procedure in new pages
     
 
     public Response getIsOwner(String token, String username, int storeId, String ownerUsername) {
@@ -949,6 +949,6 @@ public class MarketService {
             logger.error("getFilteredProducts: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //From main search or search in store
 
 }

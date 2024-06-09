@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.sadna.sadnamarket.service.Error;
+
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Map;
@@ -29,24 +31,24 @@ public class StoreInfo {
 
     private void verify(String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         if(storeName == null || storeName.trim().equals(""))
-            throw new IllegalArgumentException(String.format("%s is not a valid store name.", storeName));
+            throw new IllegalArgumentException(Error.makeStoreNotValidAspectError(storeName, "store name"));
         if(address == null || address.trim().equals(""))
-            throw new IllegalArgumentException(String.format("%s is not a valid address.", address));
+            throw new IllegalArgumentException(Error.makeStoreNotValidAspectError(address, "address"));
         if(email == null || !email.matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"))
-            throw new IllegalArgumentException(String.format("%s is not a valid email address.", email));
+            throw new IllegalArgumentException(Error.makeStoreNotValidAspectError(email, "email address"));
         if(phoneNumber == null || phoneNumber.matches("^\\d{9}$"))
-            throw new IllegalArgumentException(String.format("%s is not a valid phone number.", phoneNumber));
+            throw new IllegalArgumentException(Error.makeStoreNotValidAspectError(phoneNumber, "phone number"));
         if(!(openingHours == null && closingHours == null)) {
             if(openingHours.length != 7 || closingHours.length != 7)
-                throw new IllegalArgumentException("Opening or closing hours are not valid");
+                throw new IllegalArgumentException(Error.makeStoreOpeningHoursNotValid());
 
             for(int i = 0; i < openingHours.length; i++) {
                 if(openingHours[i] == null ^ closingHours[i] == null) {
-                    throw new IllegalArgumentException("Opening or closing hours are not valid");
+                    throw new IllegalArgumentException(Error.makeStoreOpeningHoursNotValid());
                 }
                 if(openingHours[i] != null) {
                     if(openingHours[i].isAfter(closingHours[i])) {
-                        throw new IllegalArgumentException("Opening or closing hours are not valid");
+                        throw new IllegalArgumentException(Error.makeStoreOpeningHoursNotValid());
                     }
                 }
             }

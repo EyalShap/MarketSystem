@@ -2050,6 +2050,7 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.intellij.rt.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:35)
 	at com.intellij.rt.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:235)
 	at com.intellij.rt.junit.JUnitStarter.main(JUnitStarter.java:54)
+<<<<<<< HEAD
 2024-06-05 17:08:13 ERROR c.s.s.service.MarketService - addProductToStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product rank must be between 0 and 5. 
 2024-06-05 17:08:13 ERROR c.s.s.service.MarketService - getStoreOrderHistory: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
 2024-06-05 17:08:14 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: jwt isnt valid
@@ -2081,6 +2082,38 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.sadna.sadnamarket.service.MarketService.updateProductInStore(MarketService.java:145)
 	at com.sadna.sadnamarket.service.MarketServiceTestAdapter.editStoreProduct(MarketServiceTestAdapter.java:169)
 	at com.sadna.sadnamarket.StoreOwnerTests.editProductBadInfoTest(StoreOwnerTests.java:122)
+=======
+2024-06-09 20:51:54 ERROR c.s.s.service.MarketService - addProductToStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. 
+2024-06-09 20:51:54 ERROR c.s.s.service.MarketService - getStoreOrderHistory: A user Mallory is not an owner of store 0 and can not request order history.
+2024-06-09 20:51:55 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: jwt isnt valid
+2024-06-09 20:51:55 ERROR c.s.s.service.MarketService - closeStore: User Mallory can not close the store with id 0 (not a founder).
+2024-06-09 20:51:56 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User Eric is already a owner of store 0.
+2024-06-09 20:51:56 ERROR c.s.s.service.MarketService - getOwners: A user Mallory is not an owner of store 0 and can not request roles information.
+2024-06-09 20:51:56 ERROR c.s.s.service.MarketService - getManagers: A user Mallory is not an owner of store 0 and can not request roles information.
+2024-06-09 20:51:57 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: User Eric is already a owner of store 0.
+2024-06-09 20:51:57 ERROR c.s.s.service.MarketService - addManagerPermission: User has no role in this store
+2024-06-09 20:51:57 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User Eric is already a manager of store 0.
+2024-06-09 20:51:59 ERROR c.s.s.service.MarketService - getStoreOrderHistory: jwt isnt valid
+2024-06-09 20:51:59 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User Mallory can not add user Eric as a manager to store 0.
+2024-06-09 20:52:00 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:52:00 ERROR c.s.s.service.MarketService - getStoreInfo: Product Id 0 does not exist.
+2024-06-09 20:52:01 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: User Mallory can not add user Eric as an owner to store 0.
+2024-06-09 20:52:01 ERROR c.s.s.service.MarketService - updateProductInStore: A product with id 2147483647 does not exist in store 0.
+2024-06-09 20:52:01 ERROR c.s.s.service.MarketService - deleteProductFromStore: A product with id 2147483647 does not exist in store 0.
+2024-06-09 20:52:01 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Eric does not exist
+2024-06-09 20:52:01 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User with userName Eric does not exist
+2024-06-09 20:52:02 ERROR c.s.s.service.MarketService - updateProductInStore: A product with id 0 does not exist in store 0.
+2024-06-09 20:52:03 ERROR c.s.s.service.MarketService - addManagerPermission: User Mallory can not edit user Eric's manager permissions in store 0.
+2024-06-09 20:52:03 ERROR c.s.s.domain.products.ProductFacade - Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-06-09 20:52:03 ERROR c.s.s.domain.products.ProductFacade - Error updating product: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+java.lang.IllegalArgumentException: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+	at com.sadna.sadnamarket.domain.products.ProductFacade.checkProductAttributes(ProductFacade.java:305)
+	at com.sadna.sadnamarket.domain.products.ProductFacade.updateProduct(ProductFacade.java:92)
+	at com.sadna.sadnamarket.domain.stores.StoreFacade.updateProduct(StoreFacade.java:103)
+	at com.sadna.sadnamarket.service.MarketService.updateProductInStore(MarketService.java:140)
+	at com.sadna.sadnamarket.service.MarketServiceTestAdapter.editStoreProduct(MarketServiceTestAdapter.java:169)
+	at com.sadna.sadnamarket.StoreOwnerTests.editProductBadInfoTest(StoreOwnerTests.java:125)
+>>>>>>> master
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
@@ -2149,6 +2182,7 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.intellij.rt.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:35)
 	at com.intellij.rt.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:235)
 	at com.intellij.rt.junit.JUnitStarter.main(JUnitStarter.java:54)
+<<<<<<< HEAD
 2024-06-05 17:08:32 ERROR c.s.s.service.MarketService - updateProductInStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
 2024-06-05 17:08:33 ERROR c.s.s.service.MarketService - deleteProductFromStore: A product with id 0 does not exist.
 2024-06-05 17:08:34 ERROR c.s.s.service.MarketService - updateProductInStore: user Mallory can not update a product in store with id 0.
@@ -2213,6 +2247,29 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.sadna.sadnamarket.service.MarketService.addProductToStore(MarketService.java:106)
 	at com.sadna.sadnamarket.service.MarketServiceTestAdapter.addProductToStore(MarketServiceTestAdapter.java:157)
 	at com.sadna.sadnamarket.StoreOwnerTests.addProductBadInfoTest(StoreOwnerTests.java:86)
+=======
+2024-06-09 20:52:03 ERROR c.s.s.service.MarketService - updateProductInStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-06-09 20:52:04 ERROR c.s.s.service.MarketService - deleteProductFromStore: A product with id 0 does not exist in store 0.
+2024-06-09 20:52:05 ERROR c.s.s.service.MarketService - updateProductInStore: user Mallory can not update a product in store with id 0.
+2024-06-09 20:52:05 ERROR c.s.s.service.MarketService - addProductToStore: user Mallory can not add a product to store with id 0.
+2024-06-09 20:52:10 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Dana does not exist
+2024-06-09 20:52:21 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Dana does not exist
+2024-06-09 20:52:25 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Dana does not exist
+2024-06-09 20:52:28 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:52:35 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:52:35 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 1 was succesully removed.
+2024-06-09 20:52:38 ERROR c.s.s.domain.products.ProductFacade - Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. Product rank must be between 0 and 5. 
+2024-06-09 20:52:38 ERROR c.s.s.domain.products.ProductFacade - Error adding product: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. Product rank must be between 0 and 5. 
+java.lang.IllegalArgumentException: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. Product rank must be between 0 and 5. 
+	at com.sadna.sadnamarket.domain.products.ProductFacade.checkProductAttributes(ProductFacade.java:305)
+	at com.sadna.sadnamarket.domain.products.ProductFacade.addProduct(ProductFacade.java:43)
+	at com.sadna.sadnamarket.domain.stores.StoreFacade.addProductToStore(StoreFacade.java:76)
+	at com.sadna.sadnamarket.domain.stores.StoreFacadeTest.lambda$addProductToStore_ParamsNotValid$7(StoreFacadeTest.java:293)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at com.sadna.sadnamarket.domain.stores.StoreFacadeTest.addProductToStore_ParamsNotValid(StoreFacadeTest.java:292)
+>>>>>>> master
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
@@ -2281,6 +2338,7 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.intellij.rt.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:35)
 	at com.intellij.rt.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:235)
 	at com.intellij.rt.junit.JUnitStarter.main(JUnitStarter.java:54)
+<<<<<<< HEAD
 2024-06-05 17:12:25 ERROR c.s.s.service.MarketService - addProductToStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product rank must be between 0 and 5. 
 2024-06-05 17:12:25 ERROR c.s.s.service.MarketService - getStoreOrderHistory: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
 2024-06-05 17:12:26 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: jwt isnt valid
@@ -2312,6 +2370,78 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.sadna.sadnamarket.service.MarketService.updateProductInStore(MarketService.java:145)
 	at com.sadna.sadnamarket.service.MarketServiceTestAdapter.editStoreProduct(MarketServiceTestAdapter.java:169)
 	at com.sadna.sadnamarket.StoreOwnerTests.editProductBadInfoTest(StoreOwnerTests.java:122)
+=======
+2024-06-09 20:52:40 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 4. Error: One or more stores did not accept your basket for the following reason: You can not buy 1 of product 0 - there are only 0 in stock in store 0.
+
+
+2024-06-09 20:52:41 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:52:42 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-09 20:53:35 ERROR c.s.s.service.MarketService - getStoreOrderHistory: There is no store with id 2147483647.
+2024-06-09 20:53:36 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=Username that nobody has does not exist
+2024-06-09 20:53:36 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: Username that nobody has. Error: User with userName Username that nobody has does not exist
+2024-06-09 20:53:36 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 1, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-09 20:53:36 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 1. Error: Missing card details
+2024-06-09 20:53:36 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=1 does not exist
+2024-06-09 20:53:36 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 1. Error: User with userName 1 does not exist
+2024-06-09 20:53:36 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 1, storeId: 0, productId: 0, amount: 3. Error: Amount doesn't exist in store
+2024-06-09 20:53:37 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 1. Error: Order cannot be supplied
+2024-06-09 20:53:37 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=1 does not exist
+2024-06-09 20:53:37 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 1. Error: User with userName 1 does not exist
+2024-06-09 20:53:37 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:53:37 ERROR c.s.s.service.MarketService - Change quantity in cart failed for guestId: 1, storeId: 0, productId: 0, amount: 2. Error: Amount doesn't exist in store
+2024-06-09 20:53:37 ERROR c.s.s.service.MarketService - Add product to cart failed for guestId: 1, storeId: 0, productId: 2147483647, amount: 3. Error: Amount doesn't exist in store
+2024-06-09 20:53:37 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 1. Error: Payment could not be completed for store 0
+2024-06-09 20:53:37 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=1 does not exist
+2024-06-09 20:53:37 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 1. Error: User with userName 1 does not exist
+2024-06-09 20:53:38 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 1. Error: One or more stores did not accept your basket for the following reason: You can not buy 5 of product 0 - there are only 4 in stock in store 0.
+
+
+2024-06-09 20:53:38 ERROR c.s.s.domain.users.MemoryRepo - Exception in getMember: User with userName=1 does not exist
+2024-06-09 20:53:38 ERROR c.s.s.service.MarketService - Get order DTO history failed for username: 1. Error: User with userName 1 does not exist
+2024-06-09 20:53:38 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 999 does not exist.
+2024-06-09 20:53:38 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:53:38 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 999 does not exist.
+2024-06-09 20:53:38 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-06-09 20:53:38 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-09 20:53:38 ERROR c.s.s.service.MarketService - getStoreInfo: There is no store with id 2147483647.
+2024-06-09 20:53:39 ERROR c.s.s.domain.users.UserFacade - user JohnDoe already logged in
+2024-06-09 20:53:39 ERROR c.s.s.service.MarketService - error in login: user already logged in
+2024-06-09 20:53:39 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasGuest: Guest with guestID=1 does not exist
+2024-06-09 20:53:39 ERROR c.s.s.service.MarketService - error in exitGuest: Guest with guestID 1 does not exist
+2024-06-09 20:53:39 ERROR c.s.s.service.MarketService - getStoreInfo: A store with id 0 is not active.
+2024-06-09 20:53:39 ERROR c.s.s.domain.auth.AuthFacade - password incorrect
+2024-06-09 20:53:39 ERROR c.s.s.service.MarketService - error in login: password is incorrect
+2024-06-09 20:53:39 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-09 20:53:39 ERROR c.s.s.service.MarketService - error in register: username already exits
+2024-06-09 20:53:39 ERROR c.s.s.domain.products.ProductFacade - Store Id -1 is invalid.
+2024-06-09 20:53:39 ERROR c.s.s.domain.products.ProductFacade - Store Id -1 is invalid.
+2024-06-09 20:53:39 ERROR c.s.s.domain.products.ProductFacade - Store Id -1 is invalid.
+2024-06-09 20:53:39 ERROR c.s.s.service.MarketService - createStore: jwt isnt valid
+2024-06-09 20:53:40 ERROR c.s.sadnamarket.domain.users.Member - Exception in logout: user isn't logged in
+2024-06-09 20:53:40 ERROR c.s.s.service.MarketService - error in logout: user isn't logged in
+2024-06-09 20:53:40 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=username that isn't very real does not exist
+2024-06-09 20:53:40 ERROR c.s.s.service.MarketService - error in logout: User with userName username that isn't very real does not exist
+2024-06-09 20:53:40 ERROR c.s.s.service.MarketService - getProductsInfo: No products found
+2024-06-09 20:53:41 ERROR c.s.s.service.MarketService - getStoreInfo: Product Id 2147483647 does not exist.
+2024-06-09 20:53:41 ERROR c.s.s.service.MarketService - getProductsInfo: There is no store with id 2147483647.
+2024-06-09 20:53:41 ERROR c.s.s.service.MarketService - getStoreInfo: The store of product with id 0 is not active.
+2024-06-09 20:53:42 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
+2024-06-09 20:53:42 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Eric does not exist
+2024-06-09 20:53:42 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: User with userName Eric does not exist
+2024-06-09 20:53:42 ERROR c.s.s.service.MarketService - closeStore: There is no store with id 2147483647.
+2024-06-09 20:53:43 ERROR c.s.s.service.MarketService - getOwners: There is no store with id 2147483647.
+2024-06-09 20:53:43 ERROR c.s.s.service.MarketService - getManagers: There is no store with id 2147483647.
+2024-06-09 20:53:43 ERROR c.s.s.service.MarketService - deleteProductFromStore: user Mallory can not delete a product from store with id 0.
+2024-06-09 20:53:43 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: jwt isnt valid
+2024-06-09 20:53:44 ERROR c.s.s.domain.products.ProductFacade - Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. 
+2024-06-09 20:53:44 ERROR c.s.s.domain.products.ProductFacade - Error adding product: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. 
+java.lang.IllegalArgumentException: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. 
+	at com.sadna.sadnamarket.domain.products.ProductFacade.checkProductAttributes(ProductFacade.java:305)
+	at com.sadna.sadnamarket.domain.products.ProductFacade.addProduct(ProductFacade.java:43)
+	at com.sadna.sadnamarket.domain.stores.StoreFacade.addProductToStore(StoreFacade.java:76)
+	at com.sadna.sadnamarket.service.MarketService.addProductToStore(MarketService.java:101)
+	at com.sadna.sadnamarket.service.MarketServiceTestAdapter.addProductToStore(MarketServiceTestAdapter.java:157)
+	at com.sadna.sadnamarket.StoreOwnerTests.addProductBadInfoTest(StoreOwnerTests.java:87)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
@@ -2380,6 +2510,106 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.intellij.rt.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:35)
 	at com.intellij.rt.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:235)
 	at com.intellij.rt.junit.JUnitStarter.main(JUnitStarter.java:54)
+2024-06-09 20:53:44 ERROR c.s.s.service.MarketService - addProductToStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. 
+2024-06-09 20:53:44 ERROR c.s.s.service.MarketService - getStoreOrderHistory: A user Mallory is not an owner of store 0 and can not request order history.
+2024-06-09 20:53:44 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: jwt isnt valid
+2024-06-09 20:53:45 ERROR c.s.s.service.MarketService - closeStore: User Mallory can not close the store with id 0 (not a founder).
+2024-06-09 20:53:45 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User Eric is already a owner of store 0.
+2024-06-09 20:53:46 ERROR c.s.s.service.MarketService - getOwners: A user Mallory is not an owner of store 0 and can not request roles information.
+2024-06-09 20:53:46 ERROR c.s.s.service.MarketService - getManagers: A user Mallory is not an owner of store 0 and can not request roles information.
+2024-06-09 20:53:46 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: User Eric is already a owner of store 0.
+2024-06-09 20:53:47 ERROR c.s.s.service.MarketService - addManagerPermission: User has no role in this store
+2024-06-09 20:53:47 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User Eric is already a manager of store 0.
+2024-06-09 20:53:49 ERROR c.s.s.service.MarketService - getStoreOrderHistory: jwt isnt valid
+2024-06-09 20:53:49 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User Mallory can not add user Eric as a manager to store 0.
+2024-06-09 20:53:49 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:53:49 ERROR c.s.s.service.MarketService - getStoreInfo: Product Id 0 does not exist.
+2024-06-09 20:53:50 ERROR c.s.s.service.MarketService - sendStoreOwnerRequest: User Mallory can not add user Eric as an owner to store 0.
+2024-06-09 20:53:50 ERROR c.s.s.service.MarketService - updateProductInStore: A product with id 2147483647 does not exist in store 0.
+2024-06-09 20:53:51 ERROR c.s.s.service.MarketService - deleteProductFromStore: A product with id 2147483647 does not exist in store 0.
+2024-06-09 20:53:51 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Eric does not exist
+2024-06-09 20:53:51 ERROR c.s.s.service.MarketService - sendStoreManagerRequest: User with userName Eric does not exist
+2024-06-09 20:53:52 ERROR c.s.s.service.MarketService - updateProductInStore: A product with id 0 does not exist in store 0.
+2024-06-09 20:53:52 ERROR c.s.s.service.MarketService - addManagerPermission: User Mallory can not edit user Eric's manager permissions in store 0.
+2024-06-09 20:53:53 ERROR c.s.s.domain.products.ProductFacade - Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-06-09 20:53:53 ERROR c.s.s.domain.products.ProductFacade - Error updating product: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+java.lang.IllegalArgumentException: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+	at com.sadna.sadnamarket.domain.products.ProductFacade.checkProductAttributes(ProductFacade.java:305)
+	at com.sadna.sadnamarket.domain.products.ProductFacade.updateProduct(ProductFacade.java:92)
+	at com.sadna.sadnamarket.domain.stores.StoreFacade.updateProduct(StoreFacade.java:103)
+	at com.sadna.sadnamarket.service.MarketService.updateProductInStore(MarketService.java:140)
+	at com.sadna.sadnamarket.service.MarketServiceTestAdapter.editStoreProduct(MarketServiceTestAdapter.java:169)
+	at com.sadna.sadnamarket.StoreOwnerTests.editProductBadInfoTest(StoreOwnerTests.java:125)
+>>>>>>> master
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:156)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:147)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:103)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:93)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:92)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:86)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:218)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:214)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:139)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:198)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:169)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:93)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:58)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:141)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:57)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:63)
+	at com.intellij.junit5.JUnit5IdeaTestRunner.startRunnerWithArgs(JUnit5IdeaTestRunner.java:71)
+	at com.intellij.rt.junit.IdeaTestRunner$Repeater$1.execute(IdeaTestRunner.java:38)
+	at com.intellij.rt.execution.junit.TestsRepeater.repeat(TestsRepeater.java:11)
+	at com.intellij.rt.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:35)
+	at com.intellij.rt.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:235)
+	at com.intellij.rt.junit.JUnitStarter.main(JUnitStarter.java:54)
+<<<<<<< HEAD
 2024-06-05 17:12:37 ERROR c.s.s.service.MarketService - updateProductInStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
 2024-06-05 17:12:38 ERROR c.s.s.service.MarketService - deleteProductFromStore: A product with id 0 does not exist.
 2024-06-05 17:12:39 ERROR c.s.s.service.MarketService - updateProductInStore: user Mallory can not update a product in store with id 0.
@@ -2448,6 +2678,29 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.sadna.sadnamarket.service.MarketService.addProductToStore(MarketService.java:106)
 	at com.sadna.sadnamarket.service.MarketServiceTestAdapter.addProductToStore(MarketServiceTestAdapter.java:157)
 	at com.sadna.sadnamarket.StoreOwnerTests.addProductBadInfoTest(StoreOwnerTests.java:86)
+=======
+2024-06-09 20:53:53 ERROR c.s.s.service.MarketService - updateProductInStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. 
+2024-06-09 20:53:54 ERROR c.s.s.service.MarketService - deleteProductFromStore: A product with id 0 does not exist in store 0.
+2024-06-09 20:53:55 ERROR c.s.s.service.MarketService - updateProductInStore: user Mallory can not update a product in store with id 0.
+2024-06-09 20:53:55 ERROR c.s.s.service.MarketService - addProductToStore: user Mallory can not add a product to store with id 0.
+2024-06-09 20:54:00 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Dana does not exist
+2024-06-09 20:54:15 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Dana does not exist
+2024-06-09 20:54:18 ERROR c.s.s.domain.users.MemoryRepo - Exception in hasMember: User with username=Dana does not exist
+2024-06-09 20:54:21 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:54:28 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:54:28 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 1 was succesully removed.
+2024-06-09 20:54:31 ERROR c.s.s.domain.products.ProductFacade - Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. Product rank must be between 0 and 5. 
+2024-06-09 20:54:31 ERROR c.s.s.domain.products.ProductFacade - Error adding product: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. Product rank must be between 0 and 5. 
+java.lang.IllegalArgumentException: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product category cannot be null or empty. Product rank must be between 0 and 5. 
+	at com.sadna.sadnamarket.domain.products.ProductFacade.checkProductAttributes(ProductFacade.java:305)
+	at com.sadna.sadnamarket.domain.products.ProductFacade.addProduct(ProductFacade.java:43)
+	at com.sadna.sadnamarket.domain.stores.StoreFacade.addProductToStore(StoreFacade.java:76)
+	at com.sadna.sadnamarket.domain.stores.StoreFacadeTest.lambda$addProductToStore_ParamsNotValid$7(StoreFacadeTest.java:293)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at com.sadna.sadnamarket.domain.stores.StoreFacadeTest.addProductToStore_ParamsNotValid(StoreFacadeTest.java:292)
+>>>>>>> master
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728)
@@ -2516,6 +2769,7 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 	at com.intellij.rt.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:35)
 	at com.intellij.rt.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:235)
 	at com.intellij.rt.junit.JUnitStarter.main(JUnitStarter.java:54)
+<<<<<<< HEAD
 2024-06-05 17:13:27 ERROR c.s.s.service.MarketService - addProductToStore: Product information is invalid: Product name cannot be null or empty. Product price cannot be negative. Product rank must be between 0 and 5. 
 2024-06-05 17:13:27 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 3. Error: Cannot invoke "com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyManager.canBuy(java.util.List, java.util.Map, com.sadna.sadnamarket.domain.users.MemberDTO)" because "buyPolicyManager" is null
 2024-06-05 17:13:27 ERROR c.s.s.service.MarketService - getStoreOrderHistory: Cannot invoke "String.equals(Object)" because the return value of "com.sadna.sadnamarket.domain.users.UserFacade.getSystemManagerUserName()" is null
@@ -4504,3 +4758,10 @@ java.lang.IllegalArgumentException: Product information is invalid: Product name
 2024-06-07 10:49:43 ERROR c.s.s.service.MarketService - getStoreInfo: jwt isnt valid
 2024-06-07 10:49:44 ERROR c.s.s.service.MarketService - error in register: username already exits
 2024-06-07 10:49:44 ERROR c.s.s.service.MarketService - error in register: username already exits
+=======
+2024-06-09 20:54:34 ERROR c.s.s.service.MarketService - Purchase cart failed for guestId: 4. Error: One or more stores did not accept your basket for the following reason: You can not buy 1 of product 0 - there are only 0 in stock in store 0.
+
+
+2024-06-09 20:54:35 ERROR c.s.s.d.p.MemoryProductRepository - Product Id 0 was succesully removed.
+2024-06-09 20:54:35 ERROR c.s.s.service.MarketService - error in register: username already exits
+>>>>>>> master

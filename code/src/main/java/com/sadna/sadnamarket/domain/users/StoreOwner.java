@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,7 +47,7 @@ public class StoreOwner implements UserRole {
     @Override
     public void addPermission(Permission permission) {
         logger.error("Exception in addPermission: store owner has all the permissions");
-        throw new IllegalStateException("store owner has all the permissions");
+        throw new IllegalStateException(Error.makeOwnerHasAllPermissionsError());
     }
 
     @Override
@@ -87,7 +88,7 @@ public class StoreOwner implements UserRole {
     @Override
     public void removePermission(Permission permission) {
         logger.error("Exception in removePermission: can't remove permissions from a store owner");
-        throw new IllegalStateException("can't remove permissions from a store owner");
+        throw new IllegalStateException(Error.makeOwnerCannotRemovePermissionError());
     }
 
     @Override

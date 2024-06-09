@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.sadna.sadnamarket.service.Error;
+
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +22,7 @@ public class MemoryStoreRepository implements IStoreRepository {
     public Store findStoreByID(int storeId) {
         synchronized (stores) {
             if (!stores.containsKey(storeId))
-                throw new IllegalArgumentException(String.format("There is no store with id %d.", storeId));
+                throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
 
             return stores.get(storeId);
         }
@@ -43,10 +45,10 @@ public class MemoryStoreRepository implements IStoreRepository {
         synchronized (stores) {
             if (storeExists(nextStoreId))
                 throw new IllegalArgumentException(
-                        String.format("A store with the id %d already exists.", nextStoreId));
+                        Error.makeStoreWithIdAlreadyExistsError(nextStoreId));
             if (storeNameExists(storeName))
                 throw new IllegalArgumentException(
-                        String.format("A store with the name %s already exists.", storeName));
+                        Error.makeStoreWithNameAlreadyExistsError(storeName));
 
             Store createdStore = new Store(nextStoreId, founderUsername, new StoreInfo(storeName, address, email, phoneNumber, openingHours, closingHours));
             stores.put(nextStoreId, createdStore);

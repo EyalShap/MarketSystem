@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.auth;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,7 +27,7 @@ public class AuthFacade {
     }
     
     public String login(String username, String password) {
-        logger.info("start-Login. args: "+username+", "+password);
+        logger.info("start-Login. username: {} ", username);
         String token = auth(username,password);
         userFacade.login(username, password);
         logger.info("end-Login. returnedValue:"+ token);
@@ -35,7 +36,7 @@ public class AuthFacade {
     }
     public String login(String username, String password, int guestId) {
         // If the user is authenticated, generate a JWT token for the user
-        logger.info("start-Login. args: "+username+", "+password+", "+ guestId);
+        logger.info("start-Login. username: {} from guest {} ", username, guestId);
         String token = auth(username,password);
         userFacade.login(username, password,guestId);
         logger.info("end-Login. returnedValue:"+ token);
@@ -43,22 +44,23 @@ public class AuthFacade {
     
     }
     private String auth(String username, String password){
-        logger.info("start-auth. args: "+username+", "+password);
+        logger.info("start-auth. username: {} ", username);
         iAuthRepository.login(username,password); 
         // If the user is authenticated, generate a JWT token for the user
-        logger.info("end-auth. returnedValue:"+ tokenService.generateToken(username));
-        return tokenService.generateToken(username);
+        String token = tokenService.generateToken(username);
+        logger.info("end-auth. token:{}",token);
+        return token;
     }
     public String login(String jwt) {
         if(!tokenService.validateToken(jwt))
-            throw new IllegalArgumentException("jwt isnt valid");
+            throw new IllegalArgumentException(Error.makeAuthInvalidJWTError());
         else 
             return tokenService.extractUsername(jwt);
 
     }
 
     public void register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber){
-        logger.info("start-register. args: "+username+", "+password);
+        logger.info("start-register. username: {} first name={}, last name={}, email={} phone number={}", username,firstName,lastName,emailAddress,phoneNumber);
         iAuthRepository.add(username, password);
         userFacade.register(username, firstName, lastName, emailAddress, phoneNumber);
         logger.info("end-register.");
