@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.payment;
 
+import java.util.Objects;
+
 public class BankAccountDTO {
     String bankCode;
     String bankBranchCode;
@@ -27,5 +29,18 @@ public class BankAccountDTO {
 
     public String getOwnerId() {
         return ownerId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BankAccountDTO that = (BankAccountDTO) o;
+        return Objects.equals(bankCode, that.bankCode) && Objects.equals(bankBranchCode, that.bankBranchCode) && Objects.equals(accountCode, that.accountCode) && Objects.equals(ownerId, that.ownerId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bankCode, bankBranchCode, accountCode, ownerId);
     }
 }
