@@ -81,7 +81,7 @@ public class ProductFacadeTest {
         List<ProductDTO> filteredProducts = productFacade.getFilteredProducts(Arrays.asList(1, 2), "Product1", 100.0,
                 "Category1", 3.0);
 
-        assertEquals(0, filteredProducts.size());
+        assertEquals(1, filteredProducts.size());
         verify(productRepositoryMock, times(1)).getProducts(anyList());
     }
 
