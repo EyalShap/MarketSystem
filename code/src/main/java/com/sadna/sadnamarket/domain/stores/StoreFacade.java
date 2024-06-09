@@ -435,16 +435,6 @@ public class StoreFacade {
         return sellerUsername;
     }*/
 
-<<<<<<< HEAD
-=======
-    public void addBuyPolicy(String username, int storeId, String args) {
-        if (!hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(Error.makeStoreUserCannotAddBuyPolicyError(username, storeId));
-
-        buyPolicyFacade.addBuyPolicy(storeId, args);
-    }
-
->>>>>>> master
     public void addDiscountPolicy(String username, int storeId, String args) {
         if (!hasPermission(username, storeId, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(Error.makeStoreUserCannotAddDiscountPolicyError(username, storeId));
