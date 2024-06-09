@@ -29,13 +29,15 @@ public class UserRestController {
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/user/isExist""
     @PostMapping("/isExist")
-    public Response isExist(@RequestParam String username) {
+    public Response isExist(@RequestParam String token,@RequestParam String username) {
+        marketService.checkToken(token,username);
         return marketService.memberExists(username);
     }
 
 
     @PostMapping("/setSystemAdminstor")
-    public Response setSystemAdminstor(@RequestParam String username) {
+    public Response setSystemAdminstor(@RequestParam String token,@RequestParam String username) {
+        marketService.checkToken(token,username);
         return marketService.setSystemAdminstor(username);
     }
 
@@ -45,7 +47,8 @@ public class UserRestController {
     }
 
     @PostMapping("/addProductToCart")
-    public Response addProductToCart(@RequestParam String username, @RequestParam int storeId, @RequestParam int productId, @RequestParam int amount) {
+    public Response addProductToCart(@RequestParam String token,@RequestParam String username, @RequestParam int storeId, @RequestParam int productId, @RequestParam int amount) {
+        marketService.checkToken(token,username);
         return marketService.addProductToCart(username,storeId,productId,amount);
     }
 
@@ -54,7 +57,8 @@ public class UserRestController {
         return marketService.addProductToCart(guestId,storeId,productId,amount);
     }
     @PostMapping("/removeProductFromCart")
-    public Response removeProductFromCart(@RequestParam String username,@RequestParam int storeId,@RequestParam int productId) {
+    public Response removeProductFromCart(@RequestParam String token,@RequestParam String username,@RequestParam int storeId,@RequestParam int productId) {
+        marketService.checkToken(token,username);
         return marketService.removeProductFromCart(username,storeId,productId);
     }
 
@@ -64,7 +68,8 @@ public class UserRestController {
     }
 
     @PostMapping("/changeQuantityCart")
-    public Response changeQuantityCart(@RequestParam String username, @RequestParam int storeId,@RequestParam int productId,@RequestParam int amount) {
+    public Response changeQuantityCart(@RequestParam String token,@RequestParam String username, @RequestParam int storeId,@RequestParam int productId,@RequestParam int amount) {
+        marketService.checkToken(token,username);
         return marketService.changeQuantityCart(username,storeId,productId, amount);
     }
 
@@ -79,7 +84,8 @@ public class UserRestController {
     }
 
     @PostMapping("/acceptRequest")
-    public Response acceptRequest(@RequestParam String acceptingName,@RequestParam int requestID) {
+    public Response acceptRequest(@RequestParam String token,@RequestParam String acceptingName,@RequestParam int requestID) {
+        marketService.checkToken(token,acceptingName);
         return marketService.acceptRequest(acceptingName,requestID);
     }
 
@@ -89,47 +95,56 @@ public class UserRestController {
     }
 
     @PostMapping("/register")
-        public Response register(@RequestParam String username, @RequestParam String password, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String emailAddress, @RequestParam String phoneNumber) {
+        public Response register(@RequestParam String token,@RequestParam String username, @RequestParam String password, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String emailAddress, @RequestParam String phoneNumber) {
+        marketService.checkToken(token,username);
         return marketService.register(username, password, firstName,lastName,emailAddress,phoneNumber);
     }
     
     @PostMapping("/leaveRole")
-    public Response leaveRole(@RequestParam String username,@RequestParam int firstName) {
+    public Response leaveRole(@RequestParam String token,@RequestParam String username,@RequestParam int firstName) {
+        marketService.checkToken(token,username);
         return marketService.leaveRole(username,firstName);
     }
 
     @PostMapping("/setFirstName")
-    public Response setFirstName(@RequestParam String username, @RequestParam String firstName) {
+    public Response setFirstName(@RequestParam String token,@RequestParam String username, @RequestParam String firstName) {
+        marketService.checkToken(token,username);
         return marketService.setFirstName(username, firstName);
     }
 
     @PostMapping("/setLastName")
-    public Response setLastName(@RequestParam String username, @RequestParam String lastName) {
+    public Response setLastName(@RequestParam String token,@RequestParam String username, @RequestParam String lastName) {
+        marketService.checkToken(token,username);
         return marketService.setLastName(username, lastName);
     }
 
     @PostMapping("/setEmailAddress")
-    public Response setEmailAddress(@RequestParam String username, @RequestParam String emailAddress) {
+    public Response setEmailAddress(@RequestParam String token,@RequestParam String username, @RequestParam String emailAddress) {
+        marketService.checkToken(token,username);
         return marketService.setEmailAddress(username, emailAddress);
     }
 
     @PostMapping("/setPhoneNumber")
-    public Response setPhoneNumber(@RequestParam String username, @RequestParam String phoneNumber) {
+    public Response setPhoneNumber(@RequestParam String token,@RequestParam String username, @RequestParam String phoneNumber) {
+        marketService.checkToken(token,username);
         return marketService.setPhoneNumber(username, phoneNumber);
     }
 
     @PostMapping("/getOrderHistory")
-    public Response getOrderHistory(@RequestParam String username) {
+    public Response getOrderHistory(@RequestParam String token,@RequestParam String username) {
+        marketService.checkToken(token,username);
         return marketService.getOrderHistory(username);
     }
 
     @PostMapping("/getOrderDTOHistory")
-    public Response getOrderDTOHistory(@RequestParam String username) {
+    public Response getOrderDTOHistory(@RequestParam String token,@RequestParam String username) {
+        marketService.checkToken(token,username);
         return marketService.getOrderDTOHistory(username);
     }
 
     @PostMapping("/viewCart")
-    public Response viewCart(@RequestParam String username) {
+    public Response viewCart(@RequestParam String token,@RequestParam String username) {
+        marketService.checkToken(token,username);
         return marketService.viewCart(username);
     }
 
@@ -139,7 +154,8 @@ public class UserRestController {
     }
 
     @PostMapping("/purchaseCart")
-    public Response purchaseCart(@RequestParam String username, @RequestParam CreditCardDTO creditCard, @RequestParam AddressDTO addressDTO) {
+    public Response purchaseCart(@RequestParam String token,@RequestParam String username, @RequestParam CreditCardDTO creditCard, @RequestParam AddressDTO addressDTO) {
+        marketService.checkToken(token,username);
         return marketService.purchaseCart(username,creditCard,addressDTO);
     }
 
@@ -149,7 +165,8 @@ public class UserRestController {
     }
 
     @PostMapping("/getAllOrderDTOHistory")
-    public Response getAllOrderDTOHistory(@RequestParam String username) {
+    public Response getAllOrderDTOHistory(@RequestParam String token,@RequestParam String username) {
+        marketService.checkToken(token,username);
         return marketService.getAllOrderDTOHistory(username);
     }
 

@@ -78,7 +78,7 @@ public class MarketService {
 
     // ----------------------- Stores -----------------------
 
-    private void checkToken(String token, String username) {
+    public void checkToken(String token, String username) {
         if(!authFacade.login(token).equals(username)) {
             logger.error(String.format("failed to verify token for user %s", username));
             throw new IllegalArgumentException(String.format("Token is not valid for user %s.", username));
