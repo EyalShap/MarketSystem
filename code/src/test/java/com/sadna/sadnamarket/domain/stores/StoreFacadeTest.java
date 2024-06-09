@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
+import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.orders.IOrderRepository;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
@@ -52,7 +53,7 @@ class StoreFacadeTest {
         IProductRepository productRepo = new MemoryProductRepository();
         this.productFacade = new ProductFacade(productRepo);
 
-        BuyPolicyFacade buyPolicyFacade = new BuyPolicyFacade();
+        BuyPolicyFacade buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
         DiscountPolicyFacade discountPolicyFacade = new DiscountPolicyFacade(productFacade);
 
         this.storeFacade.setUserFacade(userFacade);
@@ -94,9 +95,9 @@ class StoreFacadeTest {
     }
 
     private void addProducts() {
-        storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Shokolad Parah", 1000, 5.5, "Chocolate", 4);
-        storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Kif Kef", 982, 4.2, "Chocolate", 4.3);
-        storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Klik Cariot", 312, 7, "Chocolate", 5);
+        storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Shokolad Parah", 1000, 5.5, "Chocolate", 4,2);
+        storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Kif Kef", 982, 4.2, "Chocolate", 4.3,2);
+        storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Klik Cariot", 312, 7, "Chocolate", 5, 2);
     }
 
     private StoreInfo generateStore0Info() {
