@@ -5,9 +5,11 @@ import { useParams } from 'react-router-dom';
 import ProductModel from '../models/ProductModel';
 import { Rating } from 'react-simple-star-rating'
 import '../styles/Staff.css';
+import { IoPersonAdd } from "react-icons/io5";
 import ProductInStore from './ProductInStore';
 import ActionDropdown from './ActionDropdown';
 import MemberModel from '../models/MemberModel';
+import StaffRow from './StaffRow';
 
 export const Staff = () => {
     const {storeId} = useParams();
@@ -17,12 +19,13 @@ export const Staff = () => {
         <div className='walled'>
             <div className='managers'>
                 <h1>Managers:</h1>
-                {managers.map(manager => <p>Username: {manager.username}</p>)}
+                {managers.map(manager => <StaffRow member={manager} isManager={true}/>)}
+                <button className='addStaff'><IoPersonAdd /> Add Manager</button>
             </div>
-            <div className='divider'/>
             <div className='owners'>
                 <h1>Owners:</h1>
-                {owners.map(owner => <p>Username: {owner.username}</p>)}
+                {owners.map(owner => <StaffRow member={owner} isManager={false}/>)}
+                <button className='addStaff'><IoPersonAdd /> Add Owner</button>
             </div>
         </div>
     );
