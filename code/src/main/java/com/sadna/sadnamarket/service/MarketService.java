@@ -308,7 +308,7 @@ public class MarketService {
             if(username != null)
                 checkToken(token, username);
 
-            Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfo(username, storeId, productName, category, price, minProductRank);
+            Map<ProductDTO, Integer> productDTOsAmounts = storeFacade.getProductsInfoAndFilter(username, storeId, productName, category, price, minProductRank);
             Map<String, Integer> jsonMap = new HashMap<>();
             for(ProductDTO productDTO : productDTOsAmounts.keySet()){
                 jsonMap.put(objectMapper.writeValueAsString(productDTO),productDTOsAmounts.get(productDTO));
@@ -331,7 +331,7 @@ public class MarketService {
             if(username != null)
                 checkToken(token, username);
 
-            int amount = storeFacade.getProductAmount(username, storeId, productId);
+            int amount = storeFacade.getProductAmount(storeId, productId);
             logger.info(String.format("A user got product %d amount in store %d.", productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(amount));
         }

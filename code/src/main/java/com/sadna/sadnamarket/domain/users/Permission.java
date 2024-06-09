@@ -10,7 +10,8 @@ public enum Permission {
     ADD_MANAGER(7),
     //ADD_SELLER(8),
     ADD_BUY_POLICY(8),
-    ADD_DISCOUNT_POLICY(9);
+    ADD_DISCOUNT_POLICY(9),
+    VIEW_ROLES(10);
 
 
     private final int value;

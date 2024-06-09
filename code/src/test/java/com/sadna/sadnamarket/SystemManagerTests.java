@@ -66,7 +66,7 @@ class SystemManagerTests {
         String buyerToken = resp.getDataJson();
 
         resp = bridge.addProductToStore(storeOwnerToken, storeOwnerUsername, storeId,
-                new ProductDTO(-1, "product", 100.0, "cat", 3.5));
+                new ProductDTO(-1, "product", 100.0, "cat", 3.5, true));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(storeOwnerToken, storeOwnerUsername, storeId, productId, 10);
         bridge.addProductToBasketMember(buyerToken, buyerUsername, storeId, productId, 5);

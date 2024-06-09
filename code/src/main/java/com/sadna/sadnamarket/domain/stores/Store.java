@@ -4,7 +4,6 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.service.Error;
 
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -129,10 +128,11 @@ public class Store {
      * }
      */
 
-    public void buyCart(List<CartItemDTO> cart) {
+    public void updateStock(List<CartItemDTO> cart) {
         synchronized (productAmounts) {
-            if (!checkCart(cart).equals(""))
-                throw new IllegalArgumentException(Error.makeStoreCartCannotBePurchasedError());
+            String checkCartRes = checkCart(cart);
+            if (!checkCartRes.equals(""))
+                throw new IllegalArgumentException(checkCartRes);
 
             for (CartItemDTO item : cart) {
                 int newAmount = productAmounts.get(item.getProductId()) - item.getAmount();
@@ -222,19 +222,26 @@ public class Store {
         }
     }
 
+    /*private boolean isStoreOpen() {
+        LocalDateTime now = LocalDateTime.now();
+        int day = now.getDayOfWeek().getValue(); // monday = 1, sunday = 7
+        int dayIndex = day == 7 ? 0 : day;
+        LocalTime dayOpeningHour = storeInfo.getOpeningHours()[dayIndex];
+        LocalTime dayClosingHour = storeInfo.getClosingHours()[dayIndex];
+        return now.toLocalTime().isAfter(dayOpeningHour) && now.toLocalTime().isBefore(dayClosingHour);
+    }*/
+
     public String checkCart(List<CartItemDTO> cart) {
         String error = "";
         synchronized (productAmounts) {
             synchronized (lock) {
                 if (!isActive)
-                    error = error + String.format("Store %d is closed.\n", storeId);
+                    return Error.makeStoreClosedError(storeId);
                 for (CartItemDTO item : cart) {
                     if (!productExists(item.getProductId()))
-                        error = String.format("Product %d does not exist in store %d.\n", item.getProductId(), storeId);
+                        error += Error.makeProductDoesntExistInStoreError(storeId, item.getProductId()) + "\n";
                     else if (item.getAmount() > productAmounts.get(item.getProductId()))
-                        error = String.format("You can not buy %d of product %d - there are only %d in stock.\n",
-                                item.getAmount(), item.getProductId(), productAmounts.get(item.getProductId()));
-
+                        error += Error.makeNotEnoughInStcokError(storeId, item.getProductId(), item.getAmount(), productAmounts.get(item.getProductId())) + "\n";
                 }
                 return error;
             }

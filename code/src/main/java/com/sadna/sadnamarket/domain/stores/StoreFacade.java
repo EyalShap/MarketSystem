@@ -5,7 +5,6 @@ import java.time.LocalTime;
 import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
@@ -27,7 +26,6 @@ public class StoreFacade {
     private BuyPolicyFacade buyPolicyFacade;
     private DiscountPolicyFacade discountPolicyFacade;
     private IStoreRepository storeRepository;
-    private static ObjectMapper objectMapper = new ObjectMapper();
 
     public StoreFacade(IStoreRepository storeRepository) {
         // this.userFacade = userFacade;
@@ -56,14 +54,12 @@ public class StoreFacade {
         this.discountPolicyFacade = discountPolicyFacade;
     }
 
-    public int createStore(String founderUserName, String storeName, String address, String email, String phoneNumber,
-            LocalTime[] openingHours, LocalTime[] closingHours) {
+    public int createStore(String founderUserName, String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         if (!userFacade.isLoggedIn(founderUserName))
             throw new IllegalArgumentException(
                     Error.makeStoreUserHasToBeLoggedInError(founderUserName));
 
-        int storeId = storeRepository.addStore(founderUserName, storeName, address, email, phoneNumber, openingHours,
-                closingHours);
+        int storeId = storeRepository.addStore(founderUserName, storeName, address, email, phoneNumber, openingHours, closingHours);
         userFacade.addStoreFounder(founderUserName, storeId);
         return storeId;
     }
@@ -194,6 +190,23 @@ public class StoreFacade {
             for (Permission p : toAdd) {
                 userFacade.addPremssionToStore(currentOwnerUsername, newManagerUsername, storeId, p);
             }
+        }
+    }
+
+    public void removeManagerPermission(String currentOwnerUsername, String newManagerUsername, int storeId, Permission permission) {
+        if(!getIsManager(currentOwnerUsername, storeId, newManagerUsername)){
+            throw new IllegalArgumentException(Error.makeMemberUserHasNoRoleError());
+        }
+        if (!canAddPermissionToManager(storeId, currentOwnerUsername, newManagerUsername))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotAddManagerPermissionsError(currentOwnerUsername, newManagerUsername, storeId));
+
+        synchronized (storeRepository) {
+            if (!storeRepository.storeExists(storeId))
+                throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+            if (!isStoreActive(storeId))
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+
+            userFacade.removePremssionFromStore(currentOwnerUsername, newManagerUsername, storeId, permission);
         }
     }
 
@@ -349,8 +362,8 @@ public class StoreFacade {
         return -1;
     }
 
-    public Map<ProductDTO, Integer> getProductsInfo(String username, int storeId, String productName, String category,
-            double price, double minProductRank) throws JsonProcessingException {
+    public Map<ProductDTO, Integer> getProductsInfoAndFilter(String username, int storeId, String productName, String category,
+                                                             double price, double minProductRank) throws JsonProcessingException {
         Store store = storeRepository.findStoreByID(storeId);
         synchronized (store) {
             if (!isStoreActive(storeId)) {
@@ -383,8 +396,7 @@ public class StoreFacade {
         return store.getBankAccount();
     }
 
-    public int getProductAmount(String username, int storeId, int productId)
-            throws JsonProcessingException {
+    public int getProductAmount(int storeId, int productId) {
         Store store = storeRepository.findStoreByID(storeId);
 
         if (!isStoreActive(storeId))
@@ -462,6 +474,8 @@ public class StoreFacade {
     }
 
     public boolean getIsOwner(String actorUsername, int storeId, String infoUsername){
+        //if (!hasPermission(actorUsername, storeId, Permission.VIEW_ROLES) && !storeRepository.findStoreByID(storeId).isStoreOwner(actorUsername))
+        //    throw new IllegalArgumentException(Error.makeStoreUserCannotGetRolesInfoError(actorUsername, storeId));
         if (!storeRepository.storeExists(storeId))
             throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
         Store store = storeRepository.findStoreByID(storeId);
@@ -488,7 +502,7 @@ public class StoreFacade {
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
             Store store = storeRepository.findStoreByID(storeId);
-            store.buyCart(cartByStore.get(storeId));
+            store.updateStock(cartByStore.get(storeId));
         }
     }
 
@@ -530,10 +544,12 @@ public class StoreFacade {
     }
 
     private boolean canAddPermissionToManager(int storeId, String currOwnerUsername, String newManagerUsername) {
-        return hasPermission(currOwnerUsername, storeId, Permission.ADD_MANAGER) &&
+        return (hasPermission(currOwnerUsername, storeId, Permission.ADD_MANAGER) ||
+                storeRepository.findStoreByID(storeId).isStoreOwner(currOwnerUsername)) &&
                 userFacade.isExist(newManagerUsername) &&
                 (storeRepository.findStoreByID(storeId).isStoreManager(newManagerUsername));
     }
+
 
     /*private boolean canAddSellerToStore(int storeId, String currOwnerUsername, String newSellerUsername) {
         return hasPermission(currOwnerUsername, storeId, Permission.ADD_SELLER) &&
@@ -543,5 +559,9 @@ public class StoreFacade {
 
     public StoreInfo getStoreInfo(int storeId) {
         return storeRepository.findStoreByID(storeId).getStoreInfo();
+    }
+
+    public Set<Integer> getAllStoreIds() {
+        return storeRepository.getAllStoreIds();
     }
 }

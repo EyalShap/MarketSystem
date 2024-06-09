@@ -49,7 +49,7 @@ public class CartTests {
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         storeId = Integer.parseInt(resp.getDataJson());
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
-                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5));
+                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, true));
         productId = Integer.parseInt(resp.getDataJson());
         BankAccountDTO bankAccountDTO = new BankAccountDTO("10", "392", "393013", "2131516175");
         bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, bankAccountDTO);

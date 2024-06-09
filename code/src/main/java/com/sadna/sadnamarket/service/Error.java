@@ -74,7 +74,11 @@ public class Error {
     }
 
     public static String makeProductDoesntExistInStoreError(int storeId, int productId){
-        return String.format("Product Id %d does not exist in store Id %d.", productId, storeId);
+        return String.format("Product %d does not exist in store %d.", productId, storeId);
+    }
+
+    public static String makeNotEnoughInStcokError(int storeId, int productId, int wantedAmount, int actualAmount){
+        return String.format("You can not buy %d of product %d - there are only %d in stock in store %d.", wantedAmount, productId, actualAmount, storeId);
     }
 
     public static String makeProductAlreadyDeletedFromStoreError(int storeId, int productId){
@@ -112,6 +116,10 @@ public class Error {
 
     public static String makeStoreWithIdNotActiveError(int storeId){
         return String.format("A store with id %d is not active.", storeId);
+    }
+
+    public static String makeStoreClosedError(int storeId){
+        return String.format("Store with id %d is closed.", storeId);
     }
 
     public static String makeStoreAlreadyClosedError(int storeId){
