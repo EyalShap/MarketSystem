@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class AndCondition extends CompositeCondition{
 
-    public AndCondition(Condition conditionA, Condition conditionB) {
-        super(conditionA, conditionB);
+    public AndCondition(int id, Condition conditionA, Condition conditionB) {
+        super(id, conditionA, conditionB);
     }
 
     @Override

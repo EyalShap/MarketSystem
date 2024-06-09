@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 public class AdditionDiscount extends CompositeDiscount{
-    public AdditionDiscount(Discount discountA, Discount discountB) {
-        super(discountA, discountB);
+    public AdditionDiscount(int id, Discount discountA, Discount discountB) {
+        super(id, discountA, discountB);
     }
 
     @Override

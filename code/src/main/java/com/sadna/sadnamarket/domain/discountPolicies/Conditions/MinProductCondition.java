@@ -6,13 +6,14 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import java.util.List;
 import java.util.Map;
 
-public class MinProductCondition implements Condition{
+public class MinProductCondition extends Condition{
     private final int minAmount;
     private String productName;
     private String categoryName;
     private boolean chosePath; // promise there is CategoryName Xor ProductName
 
-    public MinProductCondition(int minAmount){
+    public MinProductCondition(int id, int minAmount){
+        super(id);
         this.minAmount = minAmount;
         productName = null;
         categoryName = null;

@@ -6,11 +6,12 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import java.util.List;
 import java.util.Map;
 
-public abstract class CompositeCondition implements Condition{
+public abstract class CompositeCondition extends Condition{
     Condition conditionA;
     Condition conditionB;
 
-    public CompositeCondition(Condition conditionA, Condition conditionB){
+    public CompositeCondition(int id, Condition conditionA, Condition conditionB){
+        super(id);
         this.conditionA = conditionA;
         this.conditionB = conditionB;
 

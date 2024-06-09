@@ -6,10 +6,11 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import java.util.List;
 import java.util.Map;
 
-public abstract class CompositeDiscount implements Discount{
+public abstract class CompositeDiscount extends Discount{
     Discount discountA;
     Discount discountB;
-    public CompositeDiscount(Discount discountA, Discount discountB){
+    public CompositeDiscount(int id, Discount discountA, Discount discountB){
+        super(id);
         this.discountA = discountA;
         this.discountB = discountB;
     }
