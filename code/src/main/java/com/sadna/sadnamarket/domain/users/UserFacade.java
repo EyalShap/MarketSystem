@@ -405,7 +405,7 @@ public class UserFacade {
     }
 
 
-    private double calculateFinalPrice(String username,List<CartItemDTO> items){
+    private double calculateFinalPrice(String username,List<CartItemDTO> items) throws Exception {
         logger.info("calculate final price for user {} with items {}",username,items);
         double sum=0;
         Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);
@@ -417,7 +417,7 @@ public class UserFacade {
         logger.info("finished calculate final price for user {} with items {} and got {}",username,items, sum);
         return sum;
     }
-    private double calculateOldPrice(String username,List<CartItemDTO> items){
+    private double calculateOldPrice(String username,List<CartItemDTO> items) throws Exception {
         logger.info("calculate old price for user {} with items {}",username,items);
         double sum=0;
         Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);

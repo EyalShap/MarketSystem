@@ -228,7 +228,7 @@ public class DiscountPolicyFacade {
 
 
 
-    public List<ProductDataPrice> calculatePrice(int storeId, List<CartItemDTO> cart) {
+    public List<ProductDataPrice> calculatePrice(int storeId, List<CartItemDTO> cart) throws Exception {
         int itemID;
         DiscountPolicyManager discountManager = mapper.get(storeId);
         Map<Integer, ProductDTO> productDTOMap = new HashMap<>();

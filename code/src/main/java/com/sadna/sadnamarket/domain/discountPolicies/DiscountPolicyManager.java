@@ -29,7 +29,7 @@ public class DiscountPolicyManager {
     }
 
     // for now that function dosent do anything special
-    public List<ProductDataPrice> giveDiscount(List<CartItemDTO> cart, Map<Integer, ProductDTO> productDTOMap) {
+    public List<ProductDataPrice> giveDiscount(List<CartItemDTO> cart, Map<Integer, ProductDTO> productDTOMap) throws Exception {
         List<ProductDataPrice> listProductDataPrice = new ArrayList<>();
         //create the ProductDataPrices and add them to listProductDataPrice
         for (CartItemDTO cartItemDTO : cart) {
@@ -40,7 +40,7 @@ public class DiscountPolicyManager {
             listProductDataPrice.add(productDataPrice);
         }
         for(Integer discountID : discountIds){
-            Discount discount = discountPolicyFacade.getDiscount(discountID);
+            Discount discount = discountPolicyFacade.getDiscountPolicy(discountID);
             discount.giveDiscount(productDTOMap, listProductDataPrice);
         }
         return listProductDataPrice;
