@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +39,7 @@ public class StoreManager implements UserRole {
             permissions.remove(permission);
         } else {
             logger.error("user doesnt has this permission");
-            throw new IllegalArgumentException("user doesnt has this permission");
+            throw new IllegalArgumentException(Error.makeManagerDoesntHavePermissionError());
         }
         logger.info("Exiting removePermission");
     }
@@ -82,7 +83,7 @@ public class StoreManager implements UserRole {
     public void sendRequest(UserFacade userFacade, String senderName, String sentName, String reqType) {
         logger.info("Entering sendRequest with userFacade={}, senderName={}, sentName={}, reqType={}", userFacade, senderName, sentName, reqType);
         logger.error("You are not authorized to perform this action");
-        throw new IllegalAccessError("You are not authorized to perform this action");
+        throw new IllegalAccessError(Error.makeManagerYouAreNotAuthorizedError());
     }
 
     @Override
@@ -96,13 +97,13 @@ public class StoreManager implements UserRole {
     public String getApointee() {
         logger.info("Entering getApointee");
         logger.error("its not relvant who apointed you");
-        throw new IllegalAccessError("its not relvant who apointed you");
+        throw new IllegalAccessError(Error.makeManagerNotRelevantError());
     }
 
     @Override
     public void addAppointers(String apointee) {
         logger.info("Entering addAppointers with apointee={}", apointee);
         logger.error("manager doesnt has apointees");
-        throw new IllegalStateException("manager doesnt has apointees");
+        throw new IllegalStateException(Error.makeManagerCannotAppointError());
     }
 }

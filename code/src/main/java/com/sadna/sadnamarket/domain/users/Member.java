@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,7 +70,7 @@ public class Member extends IUser {
         UserRole role = getRoleOfStore(store_id);
         if (role.getApointee().equals(userName)) {
             logger.error("Exception in addOwnerRequest: You disallowed appoint the one who appointed you!");
-            throw new IllegalStateException("You disallowed appoint the one who appointed you!");
+            throw new IllegalStateException(Error.makeMemberDisallowedAppointError());
         }
         role.sendRequest(userFacade, username, userName, "Owner");
         logger.info("Exiting addOwnerRequest");
@@ -91,7 +92,7 @@ public class Member extends IUser {
             }
         }
         logger.error("Exception in getRoleOfStore: User has no role in this store");
-        throw new IllegalArgumentException("User has no role in this store");
+        throw new IllegalArgumentException(Error.makeMemberUserHasNoRoleError());
     }
 
     private boolean hasRoleInStore(int store_id) {
@@ -110,7 +111,7 @@ public class Member extends IUser {
         logger.info("Entering logout");
         if (!isLoggedIn) {
             logger.error("Exception in logout: user isn't logged in");
-            throw new IllegalStateException("user isn't logged in");
+            throw new IllegalStateException(Error.makeMemberUserIsNotLoggedInError());
         }
         this.setLogin(false);
         logger.info("Exiting logout");
@@ -202,7 +203,7 @@ public class Member extends IUser {
         logger.info("Entering getRequest with senderName={}, storeId={}, reqType={}", senderName, storeId, reqType);
         if (hasRoleInStore(storeId)) {
             logger.error("Exception in getRequest: member already has role in store");
-            throw new IllegalStateException("member already has role in store");
+            throw new IllegalStateException(Error.makeMemberUserAlreadyHasRoleError());
         }
         notifes.put(++notifyID, new Request(senderName, "You got appointment request", storeId, reqType,notifyID));
         logger.info("Exiting getRequest");

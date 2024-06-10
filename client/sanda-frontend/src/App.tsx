@@ -11,6 +11,7 @@ import SearchResults from './components/SearchResults';
 import SearchBar from './components/Search';
 import Store from './components/Store';
 import Staff from './components/Staff';
+import Cart from './components/Cart';
 
 function App() {
   const [isloggedin,setIsloggedin] = useState(false);
@@ -22,7 +23,8 @@ function App() {
           <Route path="/" element={<Home/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
-          <Route path="/profile" element={<Profile/>}/>
+          <Route path="/profile/:username" element={<Profile/>}/>
+          <Route path="/cart/:username" element={<Cart/>}/>
           <Route path="/search-results" element={<SearchResults />} />
           <Route path="/store/:storeId" element={<Store/>}/>
           <Route path="/store/:storeId/staff" element={<Staff/>}/>

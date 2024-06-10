@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.products;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,7 +34,7 @@ public class ProductFacade {
         logger.info("Adding product with name: {}, price: {}, category: {}, rank: {} to store ID: {}", productName,
                 productPrice, productCategory, productRank, storeId);
         if (storeId < 0) {
-            String errorMessage = String.format("Store Id %d is invalid.", storeId);
+            String errorMessage = Error.makeProductStoreIdInvalidError(storeId);
             logger.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
@@ -53,14 +54,14 @@ public class ProductFacade {
     public void removeProduct(int storeId, int productId) {
         logger.info("Removing product with ID: {} from store ID: {}", productId, storeId);
         if (storeId < 0) {
-            String errorMessage = String.format("Store Id %d is invalid.", storeId);
+            String errorMessage = Error.makeProductStoreIdInvalidError(storeId);
             logger.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
         try {
             if (!isProductExistInStore(storeId, productId)) {
-                String errorMessage = String.format("Product Id %d does not exist in store Id %d.", productId, storeId);
+                String errorMessage = Error.makeProductDoesntExistInStoreError(storeId, productId);
                 logger.error(errorMessage);
                 throw new IllegalArgumentException(errorMessage);
             }
@@ -76,14 +77,14 @@ public class ProductFacade {
             double newRank) {
         logger.info("Updating product with ID: {} in store ID: {}", productId, storeId);
         if (storeId < 0) {
-            String errorMessage = String.format("Store Id %d is invalid.", storeId);
+            String errorMessage = Error.makeProductStoreIdInvalidError(storeId);
             logger.error(errorMessage);
             throw new IllegalArgumentException(errorMessage);
         }
 
         try {
             if (!isProductExistInStore(storeId, productId)) {
-                String errorMessage = String.format("Product Id %d does not exist in store Id %d.", productId, storeId);
+                String errorMessage = Error.makeProductDoesntExistInStoreError(storeId, productId);
                 logger.error(errorMessage);
                 throw new IllegalArgumentException(errorMessage);
             }
@@ -92,8 +93,7 @@ public class ProductFacade {
             Product productToUpdate = productRepository.getProduct(productId);
 
             if (!productToUpdate.isActiveProduct()) {
-                String errorMessage = String.format("Product Id %d was already deleted from store Id %d.", productId,
-                        storeId);
+                String errorMessage = Error.makeProductAlreadyDeletedFromStoreError(storeId, productId);
                 logger.error(errorMessage);
                 throw new IllegalArgumentException(errorMessage);
             }
@@ -118,7 +118,7 @@ public class ProductFacade {
 
             if (productName != null && isValidProductName(productName)) {
                 storeProducts = storeProducts.stream()
-                        .filter(product -> product.getProductCategory().equals(productName))
+                        .filter(product -> product.getProductName().equals(productName))
                         .collect(Collectors.toList());
             }
 
@@ -163,7 +163,7 @@ public class ProductFacade {
                             .filter(product -> product.getProductName().equals(productName))
                             .collect(Collectors.toList());
                 } else {
-                    throw new IllegalArgumentException("Product name cannot be null or empty.");
+                    throw new IllegalArgumentException(Error.makeProductAspectCannotBeNullOrEmptyError("name"));
                 }
             }
 
@@ -173,13 +173,13 @@ public class ProductFacade {
                             .filter(product -> product.getProductCategory().equals(productCategory))
                             .collect(Collectors.toList());
                 } else {
-                    throw new IllegalArgumentException("Product category cannot be null or empty.");
+                    throw new IllegalArgumentException(Error.makeProductAspectCannotBeNullOrEmptyError("category"));
                 }
             }
 
             if (minProductPrice != -1 && maxProductPrice != -1) {
                 if (minProductPrice > maxProductPrice) {
-                    throw new IllegalArgumentException("The minimum price must be below the maximum.");
+                    throw new IllegalArgumentException(Error.makeProductMinimumPriceMustBeBelowMaximumError());
                 }
             }
 
@@ -189,7 +189,7 @@ public class ProductFacade {
                             .filter(product -> product.getProductPrice() >= minProductPrice)
                             .collect(Collectors.toList());
                 } else {
-                    throw new IllegalArgumentException("Min product price cannot be negative.");
+                    throw new IllegalArgumentException(Error.makeProductValuePriceCannotBeNegativeError("Min"));
                 }
             }
 
@@ -199,7 +199,7 @@ public class ProductFacade {
                             .filter(product -> product.getProductPrice() <= maxProductPrice)
                             .collect(Collectors.toList());
                 } else {
-                    throw new IllegalArgumentException("Max product price cannot be negative.");
+                    throw new IllegalArgumentException(Error.makeProductValuePriceCannotBeNegativeError("Max"));
                 }
             }
 
@@ -209,7 +209,7 @@ public class ProductFacade {
                             .filter(product -> product.getProductRank() >= minProductRank)
                             .collect(Collectors.toList());
                 } else {
-                    throw new IllegalArgumentException("Product rank has to be between 0 and 5.");
+                    throw new IllegalArgumentException(Error.makeProductRankHasToBeBetweenError());
                 }
             }
 

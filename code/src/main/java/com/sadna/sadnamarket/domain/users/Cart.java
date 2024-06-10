@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +35,7 @@ public class Cart {
         logger.info("Entering removeProduct with storeId={} and productId={}", storeId, productId);
         if (!hasStore(storeId)) {
             logger.error("Exception in removeProduct: product doesn't exist in cart");
-            throw new IllegalArgumentException("product doesn't exist in cart");
+            throw new IllegalArgumentException(Error.makeBasketProductDoesntExistError());
         }
         baskets.get(storeId).removeProduct(productId);
         if(baskets.get(storeId).isEmpty())
@@ -60,7 +61,7 @@ public class Cart {
         logger.info("Entering changeQuantity with storeId={}, productId={}, and quantity={}", storeId, productId, quantity);
         if (!hasStore(storeId)) {
             logger.error("Exception in changeQuantity: product doesn't exist in cart");
-            throw new IllegalArgumentException("product doesn't exist in cart");
+            throw new IllegalArgumentException(Error.makeBasketProductDoesntExistError());
         }
         baskets.get(storeId).changeQuantity(productId, quantity);
         logger.info("Exiting changeQuantity");

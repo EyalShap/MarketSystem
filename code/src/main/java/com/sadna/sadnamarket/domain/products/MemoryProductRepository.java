@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +39,7 @@ public class MemoryProductRepository implements IProductRepository {
 
             if (!isExistProduct(productId)) {
                 logger.error(String.format("Product Id %d does not exist.", productId));
-                throw new IllegalArgumentException(String.format("Product Id %d does not exist.", productId));
+                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
             }
             return products.get(productId);
         }
@@ -78,13 +79,13 @@ public class MemoryProductRepository implements IProductRepository {
 
             if (!isExistProduct(productId)) {
                 logger.error(String.format("Product Id %d does not exist.", productId));
-                throw new IllegalArgumentException(String.format("Product Id %d does not exist.", productId));
+                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
             }
 
             Product product = getProduct(productId);
             if (!product.isActiveProduct()) {
                 logger.error(String.format("Product Id %d was already removed.", productId));
-                throw new IllegalArgumentException(String.format("Product Id %d was already removed.", productId));
+                throw new IllegalArgumentException(Error.makeProductAlreadyRemovedError(productId));
             }
             product.disableProduct();
             logger.error(String.format("Product Id %d was succesully removed.", productId));
