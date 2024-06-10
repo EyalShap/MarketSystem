@@ -99,6 +99,14 @@ export const getPermissions = (storeId: string): Permission[] => {
     return [Permission.ADD_PRODUCTS, Permission.DELETE_PRODUCTS, Permission.UPDATE_PRODUCTS, Permission.ADD_BUY_POLICY, Permission.ADD_DISCOUNT_POLICY, Permission.ADD_MANAGER, Permission.ADD_OWNER, Permission.CLOSE_STORE, Permission.REOPEN_STORE];
 }
 
+export const getMangerPermissions = (storeId: string, managerUsername: string): Permission[] => {
+    return [Permission.ADD_PRODUCTS, Permission.DELETE_PRODUCTS, Permission.UPDATE_PRODUCTS];
+}
+
+export const updateManagerPermissions = (storeId: string, managerUsername: string, perms: Permission[]): boolean => {
+    return true;
+}
+
 export const getStoreManagers = (storeId: string): MemberModel[] => {
     let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", email: "eric@excited.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
     let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", email: "benny@sad.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
