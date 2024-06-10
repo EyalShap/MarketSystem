@@ -6,6 +6,7 @@ public class StoreRequest {
     int productId;
     int amount;
 
+    String owner;
     public int getStoreId() {
         return storeId;
     }
@@ -28,5 +29,13 @@ public class StoreRequest {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }
