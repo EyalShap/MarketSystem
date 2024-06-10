@@ -19,6 +19,7 @@ import com.sadna.sadnamarket.service.Error;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -30,6 +31,8 @@ class StoreFacadeTest {
     private UserFacade userFacade;
     private ProductFacade productFacade;
     ObjectMapper objectMapper = new ObjectMapper();
+    private LocalDate testDate=LocalDate.of(1990, 11, 11);
+
 
     @BeforeEach
     public void setUp() {
@@ -66,13 +69,13 @@ class StoreFacadeTest {
     }
 
     private void registerUsers() {
-        authFacade.register("Mr. Krabs", "654321", "Eugene", "Krabs", "eugene@gmail.com", "0521957682");
+        authFacade.register("Mr. Krabs", "654321", "Eugene", "Krabs", "eugene@gmail.com", "0521957682",testDate);
         authFacade.login("Mr. Krabs", "654321");
-        authFacade.register("WillyTheChocolateDude", "123456", "Willy", "Wonka", "willy@gmail.com", "0541095600");
+        authFacade.register("WillyTheChocolateDude", "123456", "Willy", "Wonka", "willy@gmail.com", "0541095600",testDate);
         authFacade.login("WillyTheChocolateDude", "123456");
-        authFacade.register("Bob", "24680", "Bob", "Cohen", "bob@gmail.com", "0544219674");
+        authFacade.register("Bob", "24680", "Bob", "Cohen", "bob@gmail.com", "0544219674",testDate);
         authFacade.login("Bob", "24680");
-        authFacade.register("Alice", "08642", "Alice", "Levi", "alice@gmail.com", "0523176455");
+        authFacade.register("Alice", "08642", "Alice", "Levi", "alice@gmail.com", "0523176455",testDate);
     }
 
     private void addPermissions() {
