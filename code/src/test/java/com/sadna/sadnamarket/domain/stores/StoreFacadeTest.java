@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
-import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
-import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
+import com.sadna.sadnamarket.domain.buyPolicies.*;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.orders.IOrderRepository;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
@@ -29,6 +28,8 @@ class StoreFacadeTest {
     private AuthFacade authFacade;
     private UserFacade userFacade;
     private ProductFacade productFacade;
+    private BuyPolicyFacade buyPolicyFacade;
+    private DiscountPolicyFacade discountPolicyFacade;
     ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
@@ -53,8 +54,8 @@ class StoreFacadeTest {
         IProductRepository productRepo = new MemoryProductRepository();
         this.productFacade = new ProductFacade(productRepo);
 
-        BuyPolicyFacade buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
-        DiscountPolicyFacade discountPolicyFacade = new DiscountPolicyFacade(productFacade);
+        this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
+        this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
 
         this.storeFacade.setUserFacade(userFacade);
         this.storeFacade.setOrderFacade(orderFacade);
@@ -864,8 +865,15 @@ class StoreFacadeTest {
     }
 
     @Test
-    void addBuyPolicy() {
-        // in v2
+    void addBuyPolicy() throws Exception {
+        List<BuyType> buyTypes = new ArrayList<>();
+        buyTypes.add(BuyType.immidiatePurchase);
+        int policyId = buyPolicyFacade.createCategoryHolidayBuyPolicy("Fruits", buyTypes, "WillyTheChocolateDude");
+        buyPolicyFacade.addBuyPolicyToStore("WillyTheChocolateDude", 0, policyId);
+
+        BuyPolicy res = buyPolicyFacade.getBuyPolicy(0);
+        HolidayBuyPolicy expected = new HolidayBuyPolicy();
+
     }
 
     @Test

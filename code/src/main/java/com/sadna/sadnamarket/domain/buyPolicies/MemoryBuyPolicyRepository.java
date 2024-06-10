@@ -2,6 +2,8 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.time.LocalTime;
@@ -14,12 +16,14 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     private Map<Integer, BuyPolicy> buyPolicies;
     private Map<String, Integer> buyPoliciesDesc;
     private int nextId;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private SimpleFilterProvider idFilter;
 
     public MemoryBuyPolicyRepository() {
         this.buyPolicies = new HashMap<>();
         this.buyPoliciesDesc = new HashMap<>();
         this.nextId = 0;
+        this.idFilter = new SimpleFilterProvider().addFilter("idFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
         objectMapper.registerModule(new JavaTimeModule());
     }
 
@@ -91,7 +95,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     private int addPolicyToMaps(BuyPolicy newPolicy) throws JsonProcessingException {
-        String policyDesc = newPolicy.getClass().getName() + "-" + objectMapper.writeValueAsString(newPolicy);
+        String policyDesc = newPolicy.getClass().getName() + "-" + objectMapper.writer(idFilter).writeValueAsString(newPolicy);
         if(!buyPoliciesDesc.containsKey(policyDesc)) {
             buyPolicies.put(nextId, newPolicy);
             buyPoliciesDesc.put(policyDesc, nextId);
