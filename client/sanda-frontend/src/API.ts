@@ -157,3 +157,13 @@ export const updateCart = (cart: cartModel) => {
 export const removeFromCart = (cart: cartModel) => {
     console.log("Cart updated");
 }
+
+export const searchProducts = (term: string, category: string, minPrice: number, maxPrice: number): ProductModel[] => {
+    const products = [
+        { name: "sami 1", productDescription: "Description of Product 1", productCategory: "Category 1", productRank: 2.5, price: 20 },
+        { name: "Product 2", productDescription: "Description of Product 2", productCategory: "Category 2", productRank: 4.0, price: 2000 },
+        { name: "Product 3", productDescription: "Description of Product 3", productCategory: "Category 3", productRank: 4.8, price: 2500 }
+    ];
+
+    return products;
+};
