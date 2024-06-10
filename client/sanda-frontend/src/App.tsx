@@ -12,6 +12,7 @@ import SearchBar from './components/Search';
 import Store from './components/Store';
 import Staff from './components/Staff';
 import Cart from './components/Cart';
+import Orders from './components/Orders';
 
 function App() {
   const [isloggedin,setIsloggedin] = useState(false);
@@ -24,6 +25,7 @@ function App() {
           <Route path="/login" element={<Login/>}/>
           <Route path="/register" element={<Register/>}/>
           <Route path="/profile/:username" element={<Profile/>}/>
+          <Route path="/orders/:username" element={<Orders/>}/>
           <Route path="/cart/:username" element={<Cart/>}/>
           <Route path="/search-results" element={<SearchResults />} />
           <Route path="/store/:storeId" element={<Store/>}/>

@@ -8,6 +8,7 @@ import { registerModel } from "./models/registerModel";
 import cartModel from "./models/CartModel";
 import { get } from "http";
 import ProductCartModel from "./models/ProductCartModel";
+import { OrderModel } from "./models/OrderModel"; // Adjust the path as needed
 
 export var globalToken = "";
 export var globalUsername = "";
@@ -36,8 +37,8 @@ export const getStoreInfo = (storeId: string): StoreModel => {
 }
 
 export const getStoreProducts = (storeId: string): ProductModel[] => {
-    let defaultExample1: ProductModel = {name: "Example1", price: 123.3}
-    let defaultExample2: ProductModel = {name: "Example2", price: 3.5}
+    let defaultExample1: ProductModel = {id:1,storeId:2,name: "Example1", price: 123.3}
+    let defaultExample2: ProductModel = {id:1,storeId:2,name: "Example2", price: 3.5}
     let list: ProductModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
@@ -52,8 +53,8 @@ export const getStoreProducts = (storeId: string): ProductModel[] => {
 }
 
 export const searchAndFilterStoreProducts = (storeId: string, category: string, keywords: string, minprice: number, maxprice: number): ProductModel[] => {
-    let defaultExample1: ProductModel = {name: "Example1", price: 123.3}
-    let defaultExample2: ProductModel = {name: "Example2", price: 3.5}
+    let defaultExample1: ProductModel = {id:1,storeId:2,name: "Example1", price: 123.3}
+    let defaultExample2: ProductModel = {id:1,storeId:2,name: "Example2", price: 3.5}
     let list: ProductModel[] = []
     if(keywords === "Example1"){
         console.log("AAAAAAAAAAAAAA");
@@ -149,7 +150,7 @@ export const viewCart = (username:string): cartModel => {
 }
 
 export const getProductDetails = (productId: number): ProductModel => {
-    return { name: "Example1", price: 123.3 };
+    return {id:2,storeId:4, name: "Example1", price: 123.3 };
 }
 export const updateCart = (cart: cartModel) => {
     console.log("Cart updated");
@@ -160,10 +161,48 @@ export const removeFromCart = (cart: cartModel) => {
 
 export const searchProducts = (term: string, category: string, minPrice: number, maxPrice: number): ProductModel[] => {
     const products = [
-        { name: "sami 1", productDescription: "Description of Product 1", productCategory: "Category 1", productRank: 2.5, price: 20 },
-        { name: "Product 2", productDescription: "Description of Product 2", productCategory: "Category 2", productRank: 4.0, price: 2000 },
-        { name: "Product 3", productDescription: "Description of Product 3", productCategory: "Category 3", productRank: 4.8, price: 2500 }
+        { id:1,name: "sami 1",storeId:2, productDescription: "Description of Product 1", productCategory: "Category 1", productRank: 2.5, price: 20 },
+        { id:2,name: "Product 2",storeId:3, productDescription: "Description of Product 2", productCategory: "Category 2", productRank: 4.0, price: 2000 },
+        { id:3,name: "Product 3", storeId:4,productDescription: "Description of Product 3", productCategory: "Category 3", productRank: 4.8, price: 2500 }
     ];
 
     return products;
+};
+
+
+export const getOrders = async (username: string): Promise<OrderModel[]> => {
+    return [
+        {
+            id: '27cba69d-4c3d-4098-b42d-ac7fa62b7664',
+            date: 'August 12',
+            total: 35.06,
+            products: [
+                {
+                    id: 1,
+                    name: 'Black and Gray Athletic Cotton Socks - 6 Pairs',
+                    storeId: 1,
+                    quantity: 1
+                },
+                {
+                    id: 2,
+                    name: 'Adults Plain Cotton T-Shirt - 2 Pack',
+                    storeId: 1,
+                    quantity: 2
+                }
+            ]
+        },
+        {
+            id: 'b6b6c212-d30e-4d4a-805d-90b52ce6b37d',
+            date: 'June 10',
+            total: 41.90,
+            products: [
+                {
+                    id: 3,
+                    name: 'Intermediate Size Basketball',
+                    storeId: 2,
+                    quantity: 2
+                }
+            ]
+        }
+    ];
 };
