@@ -5,6 +5,9 @@ import ProductModel from "./models/ProductModel";
 import Permission from "./models/Permission";
 import MemberModel from "./models/MemberModel";
 import { registerModel } from "./models/registerModel";
+import cartModel from "./models/CartModel";
+import { get } from "http";
+import ProductCartModel from "./models/ProductCartModel";
 
 export var globalToken = "";
 export var globalUsername = "";
@@ -52,14 +55,14 @@ export const searchAndFilterStoreProducts = (storeId: string, category: string, 
     let defaultExample1: ProductModel = {name: "Example1", price: 123.3}
     let defaultExample2: ProductModel = {name: "Example2", price: 3.5}
     let list: ProductModel[] = []
-    if(keywords == "Example1"){
+    if(keywords === "Example1"){
         console.log("AAAAAAAAAAAAAA");
         list.push(defaultExample1)
         list.push(defaultExample1)
         list.push(defaultExample1)
         list.push(defaultExample1)
         list.push(defaultExample1)
-    }else if(keywords == "Example2"){
+    }else if(keywords === "Example2"){
         list.push(defaultExample2)
         list.push(defaultExample2)
         list.push(defaultExample2)
@@ -100,8 +103,8 @@ export const getPermissions = (storeId: string): Permission[] => {
 }
 
 export const getStoreManagers = (storeId: string): MemberModel[] => {
-    let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", email: "eric@excited.com", phoneNumber: "052-0520525"}
-    let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", email: "benny@sad.com", phoneNumber: "052-0520525"}
+    let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", email: "eric@excited.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
+    let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", email: "benny@sad.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
     let list: MemberModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
@@ -109,10 +112,48 @@ export const getStoreManagers = (storeId: string): MemberModel[] => {
 }
 
 export const getStoreOwners = (storeId: string): MemberModel[] => {
-    let defaultExample1: MemberModel = {username: "mrOwnerMan", firstName: "Owner", lastName: "Man", email: "man@store.com", phoneNumber: "052-0520525"}
-    let defaultExample2: MemberModel = {username: "GuyWhoOwnsStore", firstName: "Guy", lastName: "Store", email: "guy@store.com", phoneNumber: "052-0520525"}
+    let defaultExample1: MemberModel = {username: "mrOwnerMan", firstName: "Owner", lastName: "Man", email: "man@store.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
+    let defaultExample2: MemberModel = {username: "GuyWhoOwnsStore", firstName: "Guy", lastName: "Store", email: "guy@store.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
     let list: MemberModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
     return list;
+}
+export const getMember = async(username: string): Promise<MemberModel> => {
+    const profile= {
+        username: 'idanasis',
+        firstName: 'Idan',
+        lastName: 'Asis',
+        email: 'idanasis86@gmail.com',
+        phoneNumber: '0523072999',
+        birthday: '2024-06-06' // Default value for birthday
+      }
+    return profile;
+}
+export const viewCart = (username:string): cartModel => {
+    const cart: ProductCartModel[] = [
+        { id: 1, amount: 5,storeId:1, originalPrice: 100, discountedPrice: 90, name: ''  },
+        { id: 2, amount: 3,storeId:1, originalPrice: 50, discountedPrice: 45, name: ''}
+    ];
+    let totalPrice = 150;
+    let totalDiscountedPrice = 135;
+    for (let i = 0; i < cart.length; i++) {
+        const productDetails = getProductDetails(cart[i].id);
+        cart[i].name = productDetails.name;    
+    }
+    return {
+        products: cart,
+        totalPrice: totalPrice,
+        discountedPrice: totalDiscountedPrice
+    };
+}
+
+export const getProductDetails = (productId: number): ProductModel => {
+    return { name: "Example1", price: 123.3 };
+}
+export const updateCart = (cart: cartModel) => {
+    console.log("Cart updated");
+}
+export const removeFromCart = (cart: cartModel) => {
+    console.log("Cart updated");
 }

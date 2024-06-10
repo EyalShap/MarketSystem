@@ -19,38 +19,9 @@ public class OrderDTO {
         this.orderProductsJsons=orderProductsJsons;
     }
 
-    public String getStoreName() {
-        // dana added this proxy function for the get store order history use case
-        return "Proxy Store";
-    }
-
-    public List<Integer> getProductIds() {
-        // dana added this proxy function for the get store order history use case
-        return new ArrayList<>();
-    }
-
-    public int getProductAmount(int productId) {
-        // dana added this proxy function for the get store order history use case
-        return 0;
-    }
-
-    public String getProductDescription(int productId) {
-        // dana added this proxy function for the get store order history use case
-        return "";
-    }
-
-    public Date getOrderDate() {
-        // dana added this proxy function for the get store order history use case
-        return new Date();
-    }
-
     public String getMemberName() {
         return memberName;
     }
-
-    //public int getOrderId() {
-      //  return orderId;
-    //}
 
     public String getStoreNameWhenOrdered() {
         return storeNameWhenOrdered;

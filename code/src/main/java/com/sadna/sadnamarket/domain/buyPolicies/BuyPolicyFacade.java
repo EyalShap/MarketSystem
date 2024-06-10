@@ -119,13 +119,26 @@ public class BuyPolicyFacade {
         return buyPolicyRepository.addConditioningBuyPolicy(policy1, policy2);
     }
 
-    public void addPolicyToStore(int storeId, int policyId) throws Exception {
+    public void addBuyPolicyToStore(String username, int storeId, int policyId) throws Exception {
+        if (!storeFacade.isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if (!storeFacade.hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(String.format("User %s can not add buy policy %d to store %d.", username, policyId, storeId));
         if(!buyPolicyRepository.buyPolicyExists(policyId))
             throw new Exception();
         if(!mapper.containsKey(storeId))
             mapper.put(storeId, new BuyPolicyManager(this));
-        BuyPolicyManager manager = mapper.get(storeId);
-        manager.addBuyPolicy(policyId);
+        mapper.get(storeId).addBuyPolicy(policyId);
+    }
+
+    public void removePolicyFromStore(String username, int storeId, int policyId) throws Exception {
+        if (!storeFacade.isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+        if (!storeFacade.hasPermission(username, storeId, Permission.REMOVE_BUY_POLICY))
+            throw new IllegalArgumentException(String.format("User %s can not add buy policy %d to store %d.", username, policyId, storeId));
+        if(!mapper.containsKey(storeId))
+            throw new Exception();
+        mapper.get(storeId).removeBuyPolicy(policyId);
     }
 
     private boolean hasPermission(String username, Permission permission) {

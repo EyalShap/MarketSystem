@@ -2,8 +2,8 @@ package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
+import com.sadna.sadnamarket.service.Error;
 
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,7 +15,7 @@ public class Store {
     private String founderUsername;
     private List<String> ownerUsernames;
     private List<String> managerUsernames;
-    private List<String> sellerUsernames;
+    //private List<String> sellerUsernames;
     private List<Integer> orderIds;
     private BankAccountDTO bankAccount;
     private final Object lock = new Object();
@@ -29,7 +29,7 @@ public class Store {
         this.ownerUsernames = Collections.synchronizedList(new ArrayList<>());
         this.ownerUsernames.add(founderUsername);
         this.managerUsernames = Collections.synchronizedList(new ArrayList<>());
-        this.sellerUsernames = Collections.synchronizedList(new ArrayList<>());
+        //this.sellerUsernames = Collections.synchronizedList(new ArrayList<>());
         this.orderIds = Collections.synchronizedList(new ArrayList<>());
     }
 
@@ -63,9 +63,9 @@ public class Store {
         return this.managerUsernames;
     }
 
-    public List<String> getSellerUsernames() {
+    /*public List<String> getSellerUsernames() {
         return this.sellerUsernames;
-    }
+    }*/
 
     public Map<Integer, Integer> getProductAmounts() {
         return this.productAmounts;
@@ -81,11 +81,11 @@ public class Store {
 
     public void addProduct(int productId, int amount) {
         if (amount < 0)
-            throw new IllegalArgumentException(String.format("%d is an illegal amount of products.", amount));
+            throw new IllegalArgumentException(Error.makeStoreIllegalProductAmountError(amount));
 
         synchronized (productAmounts) {
             if (productExists(productId))
-                throw new IllegalArgumentException(String.format("A product with id %d already exists.", productId));
+                throw new IllegalArgumentException(Error.makeStoreProductAlreadyExistsError(productId));
 
             productAmounts.put(productId, amount);
         }
@@ -94,9 +94,9 @@ public class Store {
     public void deleteProduct(int productId) {
         synchronized (productAmounts) {
             if (!isActive)
-                throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (!productExists(productId))
-                throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId,productId));
 
             productAmounts.remove(productId);
         }
@@ -104,13 +104,13 @@ public class Store {
 
     public void setProductAmounts(int productId, int newAmount) {
         if (newAmount < 0)
-            throw new IllegalArgumentException(String.format("%d is an illegal amount of products.", newAmount));
+            throw new IllegalArgumentException(Error.makeStoreIllegalProductAmountError(newAmount));
 
         synchronized (productAmounts) {
             if (!isActive)
-                throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (!productExists(productId))
-                throw new IllegalArgumentException(String.format("A product with id %d does not exist.", productId));
+                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
 
             productAmounts.put(productId, newAmount);
         }
@@ -128,10 +128,11 @@ public class Store {
      * }
      */
 
-    public void buyCart(List<CartItemDTO> cart) {
+    public void updateStock(List<CartItemDTO> cart) {
         synchronized (productAmounts) {
-            if (!checkCart(cart).equals(""))
-                throw new IllegalArgumentException("This cart can not be purchased.");
+            String checkCartRes = checkCart(cart);
+            if (!checkCartRes.equals(""))
+                throw new IllegalArgumentException(checkCartRes);
 
             for (CartItemDTO item : cart) {
                 int newAmount = productAmounts.get(item.getProductId()) - item.getAmount();
@@ -156,17 +157,16 @@ public class Store {
         return managerUsernames.contains(username);
     }
 
-    public boolean isSeller(String username) {
+    /*public boolean isSeller(String username) {
         return sellerUsernames.contains(username);
-    }
+    }*/
 
     public void addStoreOwner(String newOwnerUsername) {
         synchronized (ownerUsernames) {
             if (!isActive)
-                throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (isStoreOwner(newOwnerUsername))
-                throw new IllegalArgumentException(
-                        String.format("User %s is already a owner of store %d.", newOwnerUsername, storeId));
+                throw new IllegalArgumentException(Error.makeStoreUserAlreadyOwnerError(newOwnerUsername, storeId));
 
             ownerUsernames.add(newOwnerUsername);
         }
@@ -175,16 +175,15 @@ public class Store {
     public void addStoreManager(String newManagerUsername) {
         synchronized (managerUsernames) {
             if (!isActive)
-                throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (isStoreManager(newManagerUsername))
-                throw new IllegalArgumentException(
-                        String.format("User %s is already a manager of store %d.", newManagerUsername, storeId));
+                throw new IllegalArgumentException(Error.makeStoreUserAlreadyManagerError(newManagerUsername, storeId));
 
             managerUsernames.add(newManagerUsername);
         }
     }
 
-    public synchronized void addSeller(String sellerUsername) {
+    /*public synchronized void addSeller(String sellerUsername) {
         synchronized (sellerUsername) {
             if (!isActive)
                 throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
@@ -194,12 +193,12 @@ public class Store {
 
             this.sellerUsernames.add(sellerUsername);
         }
-    }
+    }*/
 
     public void closeStore() {
         synchronized (lock) {
             if (!this.isActive)
-                throw new IllegalArgumentException(String.format("A store with id %d is already closed.", storeId));
+                throw new IllegalArgumentException(Error.makeStoreAlreadyClosedError(storeId));
 
             this.isActive = false;
         }
@@ -213,30 +212,36 @@ public class Store {
         synchronized (orderIds) {
             synchronized (lock) {
                 if (!isActive)
-                    throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
+                    throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
 
                 if (orderIds.contains(orderId))
-                    throw new IllegalArgumentException(
-                            String.format("A order with id %d already exists in store %d.", orderId, storeId));
+                    throw new IllegalArgumentException(Error.makeStoreOrderAlreadyExistsError(storeId, orderId));
 
                 this.orderIds.add(orderId);
             }
         }
     }
 
+    /*private boolean isStoreOpen() {
+        LocalDateTime now = LocalDateTime.now();
+        int day = now.getDayOfWeek().getValue(); // monday = 1, sunday = 7
+        int dayIndex = day == 7 ? 0 : day;
+        LocalTime dayOpeningHour = storeInfo.getOpeningHours()[dayIndex];
+        LocalTime dayClosingHour = storeInfo.getClosingHours()[dayIndex];
+        return now.toLocalTime().isAfter(dayOpeningHour) && now.toLocalTime().isBefore(dayClosingHour);
+    }*/
+
     public String checkCart(List<CartItemDTO> cart) {
         String error = "";
         synchronized (productAmounts) {
             synchronized (lock) {
                 if (!isActive)
-                    error = error + String.format("Store %d is closed.\n", storeId);
+                    return Error.makeStoreClosedError(storeId);
                 for (CartItemDTO item : cart) {
                     if (!productExists(item.getProductId()))
-                        error = String.format("Product %d does not exist in store %d.\n", item.getProductId(), storeId);
+                        error += Error.makeProductDoesntExistInStoreError(storeId, item.getProductId()) + "\n";
                     else if (item.getAmount() > productAmounts.get(item.getProductId()))
-                        error = String.format("You can not buy %d of product %d - there are only %d in stock.\n",
-                                item.getAmount(), item.getProductId(), productAmounts.get(item.getProductId()));
-
+                        error += Error.makeNotEnoughInStcokError(storeId, item.getProductId(), item.getAmount(), productAmounts.get(item.getProductId())) + "\n";
                 }
                 return error;
             }
@@ -260,13 +265,13 @@ public class Store {
                 Objects.equals(founderUsername, store.founderUsername) &&
                 Objects.equals(ownerUsernames, store.ownerUsernames) &&
                 Objects.equals(managerUsernames, store.managerUsernames) &&
-                Objects.equals(sellerUsernames, store.sellerUsernames) &&
+                //Objects.equals(sellerUsernames, store.sellerUsernames) &&
                 Objects.equals(orderIds, store.orderIds);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(storeId, isActive, storeInfo, productAmounts, founderUsername, ownerUsernames,
-                managerUsernames, sellerUsernames, orderIds, lock);
+                managerUsernames, orderIds, lock);
     }
 }

@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +28,7 @@ public class MemoryRepo implements IUserRepository {
         Member member = members.get(userName);
         if (member == null) {
             logger.error("Exception in getMember: User with userName={} does not exist", userName);
-            throw new NoSuchElementException("User with userName " + userName + " does not exist");
+            throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
         }
         logger.info("Exiting getMember with result={}", member);
         return member;
@@ -38,7 +39,7 @@ public class MemoryRepo implements IUserRepository {
         boolean result = members.containsKey(username);
         if (!result) {
             logger.error("Exception in hasMember: User with username={} does not exist", username);
-            throw new NoSuchElementException("User with username " + username + " does not exist");
+            throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
         }
         logger.info("Exiting hasMember with result={}", result);
         return result;
@@ -79,7 +80,7 @@ public class MemoryRepo implements IUserRepository {
         boolean result = guests.containsKey(guestID);
         if (!result) {
             logger.error("Exception in hasGuest: Guest with guestID={} does not exist", guestID);
-            throw new NoSuchElementException("Guest with guestID " + guestID + " does not exist");
+            throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
         }
         logger.info("Exiting hasGuest with result={}", result);
         return result;
@@ -91,7 +92,7 @@ public class MemoryRepo implements IUserRepository {
         Guest guest = guests.get(guestID);
         if (guest == null) {
             logger.error("Exception in getGuest: Guest with guestID={} does not exist", guestID);
-            throw new NoSuchElementException("Guest with guestID " + guestID + " does not exist");
+            throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
         }
         logger.info("Exiting getGuest with result={}", guest);
         return guest;
