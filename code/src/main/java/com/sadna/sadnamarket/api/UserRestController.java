@@ -4,10 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.service.MarketService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDate;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/api/user")
@@ -95,9 +102,9 @@ public class UserRestController {
     }
 
     @PostMapping("/register")
-        public Response register(@RequestParam String token,@RequestParam String username, @RequestParam String password, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String emailAddress, @RequestParam String phoneNumber) {
+        public Response register(@RequestParam String token,@RequestParam String username, @RequestParam String password, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String emailAddress, @RequestParam String phoneNumber, @RequestParam LocalDate bDate) {
         marketService.checkToken(token,username);
-        return marketService.register(username, password, firstName,lastName,emailAddress,phoneNumber);
+        return marketService.register(username, password, firstName,lastName,emailAddress,phoneNumber,bDate);
     }
     
     @PostMapping("/leaveRole")
@@ -174,5 +181,16 @@ public class UserRestController {
     public Response getUserCart(@RequestParam int guestId) {
         return marketService.getUserCart(guestId);
     }
+    @GetMapping("/getUserDTO/username")
+    public Response getMethodName(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }   
+        marketService.checkToken(token,username);
+        return marketService.getMemberDto(username);
+    }
+    
 
 }
