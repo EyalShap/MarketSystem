@@ -2,6 +2,9 @@ package com.sadna.sadnamarket.domain.stores;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.buyPolicies.*;
@@ -15,6 +18,7 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.*;
 import com.sadna.sadnamarket.service.Error;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +35,13 @@ class StoreFacadeTest {
     private BuyPolicyFacade buyPolicyFacade;
     private DiscountPolicyFacade discountPolicyFacade;
     ObjectMapper objectMapper = new ObjectMapper();
+    private SimpleFilterProvider idFilter;
 
     @BeforeEach
     public void setUp() {
+        this.idFilter = new SimpleFilterProvider().addFilter("idFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
+        objectMapper.registerModule(new JavaTimeModule());
+
         setUpFacades();
         registerUsers();
         generateStore0();
@@ -64,6 +72,9 @@ class StoreFacadeTest {
         this.storeFacade.setDiscountPolicyFacade(discountPolicyFacade);
 
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
+        this.buyPolicyFacade.setStoreFacade(storeFacade);
+        this.buyPolicyFacade.setUserFacade(userFacade);
+        this.buyPolicyFacade.setProductFacade(productFacade);
     }
 
     private void registerUsers() {
@@ -871,9 +882,10 @@ class StoreFacadeTest {
         int policyId = buyPolicyFacade.createCategoryHolidayBuyPolicy("Fruits", buyTypes, "WillyTheChocolateDude");
         buyPolicyFacade.addBuyPolicyToStore("WillyTheChocolateDude", 0, policyId);
 
-        BuyPolicy res = buyPolicyFacade.getBuyPolicy(0);
-        HolidayBuyPolicy expected = new HolidayBuyPolicy();
+        String res = objectMapper.writer(idFilter).writeValueAsString(buyPolicyFacade.getBuyPolicy(policyId));
+        String expected = objectMapper.writer(idFilter).writeValueAsString(new HolidayBuyPolicy(policyId, buyTypes, new CategorySubject("Fruits")));
 
+        assertEquals(expected, res);
     }
 
     @Test

@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class HolidayBuyPolicy extends SimpleBuyPolicy{
 
-    HolidayBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
+    public HolidayBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
         super(id, buytypes, subject);
     }
 
@@ -41,4 +41,5 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
                 jewishCalendar.isPesach() ||
                 jewishCalendar.isShavuos();
     }
+
 }
