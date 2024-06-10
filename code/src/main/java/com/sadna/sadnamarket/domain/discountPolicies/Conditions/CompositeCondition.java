@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class CompositeCondition extends Condition{
-    Condition conditionA;
-    Condition conditionB;
+    protected Condition conditionA;
+    protected Condition conditionB;
 
     public CompositeCondition(int id, Condition conditionA, Condition conditionB){
         super(id);
@@ -18,4 +18,5 @@ public abstract class CompositeCondition extends Condition{
     }
     @Override
     public abstract boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice);
+
 }

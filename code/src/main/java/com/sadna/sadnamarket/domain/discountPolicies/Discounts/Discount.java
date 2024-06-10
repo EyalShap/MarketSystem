@@ -16,7 +16,7 @@ public abstract class Discount {
         this.id = id;
     }
 
-    abstract void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
+    public abstract void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
     abstract boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
 
     abstract double giveTotalPriceDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
@@ -27,5 +27,13 @@ public abstract class Discount {
 
     public int getId() {
         return id;
+    }
+
+    public int getDiscountAID() {
+        return -1;
+    }
+
+    public int getDiscountBID() {
+        return -1;
     }
 }

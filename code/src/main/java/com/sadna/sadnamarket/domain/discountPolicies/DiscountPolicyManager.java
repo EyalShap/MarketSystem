@@ -22,12 +22,18 @@ public class DiscountPolicyManager {
         discountIds.add(discountPolicyId);
     }
 
+    public synchronized void removeDiscountPolicy(int discountPolicyId) throws Exception{
+        if(discountIds.contains(discountPolicyId))
+            throw new Exception();
+        discountIds.remove(discountPolicyId);
+    }
+
     // for now that function dosent do anything special
     public List<ProductDataPrice> giveDiscount(List<CartItemDTO> cart, Map<Integer, ProductDTO> productDTOMap) {
         List<ProductDataPrice> listProductDataPrice = new ArrayList<>();
+        //create the ProductDataPrices and add them to listProductDataPrice
         for (CartItemDTO cartItemDTO : cart) {
             ProductDTO pDTO = productDTOMap.get(cartItemDTO.getProductId());
-            //create the ProductDataPrice and add it to listProductDataPrice
             ProductDataPrice productDataPrice = new ProductDataPrice(cartItemDTO.getProductId(),
                     cartItemDTO.getAmount(),
                     pDTO.getProductPrice(), pDTO.getProductPrice());

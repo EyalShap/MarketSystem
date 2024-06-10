@@ -9,7 +9,9 @@ import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyType;
 import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
+import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.MemoryDiscountPolicyRepository;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
@@ -50,7 +52,7 @@ public class MarketService {
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(storeRepository);
         this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
-        this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
+        this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
         this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
         this.orderFacade.setStoreFacade(storeFacade);
@@ -90,7 +92,6 @@ public class MarketService {
             checkToken(token, founderUsername);
             int newStoreId = storeFacade.createStore(founderUsername, storeName, address, email, phoneNumber, openingHours, closingHours); // will throw an exception if the store already exists
             //addBuyPolicy(token, founderUsername, newStoreId,"");
-            addDiscountPolicy(token, founderUsername, newStoreId,"");
             logger.info(String.format("User %s created a store with id %d.", founderUsername, newStoreId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
         }
@@ -489,15 +490,236 @@ public class MarketService {
         }
     }
 
-    public Response addDiscountPolicy(String token, String username, int storeId, String args) {
+    public Response createMinProductOnStoreCondition(String token, int minAmount, String username) {
         try {
             checkToken(token, username);
-            storeFacade.addDiscountPolicy(username, storeId, args);
-            logger.info(String.format("User %s added discount policy to store %d.", username, storeId));
+            discountPolicyFacade.createMinProductOnStoreCondition(minAmount, username);
+            logger.info(String.format("User %s added MinProduct On Category Condition", username));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addDiscountPolicy: " + e.getMessage());
+            logger.error("createMinProductOnStoreCondition: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createMinProductOnCategoryCondition(String token, int minAmount, String categoryName, String username) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createMinProductOnCategoryCondition(minAmount, categoryName, username);
+            logger.info(String.format("User %s added MinProduct On Category Condition", username));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createMinProductOnCategoryCondition: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createMinProductCondition(String token, int minAmount, String productName, String username) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createMinProductCondition(minAmount, productName, username);
+            logger.info(String.format("User %s added MinProduct Condition", username));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createMinProductCondition: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createTrueCondition(String token, String username) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createTrueCondition(username);
+            logger.info(String.format("User %s added true Condition", username));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createTrueBuyCondition: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createMinBuyCondition(String token, String username, int minBuy) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createMinBuyCondition(minBuy, username);
+            logger.info(String.format("User %s added minBuy Condition", username));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createMinBuyCondition: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createXorCondition(String token, String username, int conditionAID, int conditionBID) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createXorCondition(conditionAID, conditionBID, username);
+            logger.info(String.format("User %s added Xor Condition: XorCondition(%d, %d)", username, conditionAID, conditionBID));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createXorCondition: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createOrCondition(String token, String username, int conditionAID, int conditionBID) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createOrCondition(conditionAID, conditionBID, username);
+            logger.info(String.format("User %s added Or Condition: OrCondition(%d, %d)", username, conditionAID, conditionBID));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createOrCondition: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createAndCondition(String token, String username, int conditionAID, int conditionBID) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createAndCondition(conditionAID, conditionBID, username);
+            logger.info(String.format("User %s added And Condition: AndCondition(%d, %d)", username, conditionAID, conditionBID));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createAndCondition: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createOnProductSimpleDiscountPolicy(String token, String username, double percentage, String ProductName, int conditionID) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createOnProductSimpleDiscountPolicy(percentage, ProductName, conditionID, username);
+            logger.info(String.format("User %s added OnProductSimple Discount policy: On product %s", username, ProductName));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createOnProductSimpleDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createOnCategorySimpleDiscountPolicy(String token, String username, double percentage, String CategoryName, int conditionID) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createOnCategorySimpleDiscountPolicy(percentage, CategoryName, conditionID, username);
+            logger.info(String.format("User %s added OnCategorySimple Discount policy: On category %s", username, CategoryName));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createOnCategorySimpleDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createOnStoreSimpleDiscountPolicy(String token, String username, double percentage, int conditionID) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createOnStoreSimpleDiscountPolicy(percentage, conditionID, username);
+            logger.info(String.format("User %s added OnStoreSimple Discount policy: On store", username));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createOnStoreSimpleDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createTakeMaxXorDiscountPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createTakeMaxXorDiscountPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added TakeMaxXor Discount policy: TakeMaxXor(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createTakeMaxXorDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createTakeMinXorDiscountPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createTakeMinXorDiscountPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added TakeMinXor Discount policy: TakeMinXor(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createTakeMinXorDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createAdditionDiscountPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createAdditionDiscountPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added Addition Discount policy: Addition(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createAdditionDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response createMaximumDiscountPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createMaximumDiscountPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added Maximum Discount policy: Maximum(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createMaximumDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createAndDiscountPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createAndDiscountPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added And Discount policy: And(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createAndDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createOrDiscountPolicy(String token, String username, int policyId1, int policyId2) {
+        try {
+            checkToken(token, username);
+            discountPolicyFacade.createOrDiscountPolicy(policyId1, policyId2, username);
+            logger.info(String.format("User %s added Or Discount policy: Or(%d, %d)", username, policyId1, policyId2));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("createOeDiscountPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response addDiscountPolicyToStore(String token, String username, int storeId, int policyId) {
+        try {
+            checkToken(token, username);
+            storeFacade.addDiscountPolicyToStore(username, storeId, policyId);
+            logger.info(String.format("User %s added discount policy %d to store %d.", username, storeId, policyId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("addDiscountPolicyToStore: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response removeDiscountPolicyToStore(String token, String username, int storeId, int policyId) {
+        try {
+            checkToken(token, username);
+            storeFacade.removeDiscountPolicyFromStore(username, storeId, policyId);
+            logger.info(String.format("User %s added discount policy %d to store %d.", username, storeId, policyId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("addDiscountPolicyToStore: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }

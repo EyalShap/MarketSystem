@@ -77,8 +77,12 @@ public class StoreFacade {
             int policyId2 = buyPolicyFacade.createCategoryHourLimitBuyPolicy("Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0), founderUserName);
             addBuyPolicyToStore(founderUserName, storeId, policyId1);
             addBuyPolicyToStore(founderUserName, storeId, policyId2);
+            //adding kind of null discount
+            int condID = discountPolicyFacade.createTrueCondition(founderUserName);
+            int discountPolicyID = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(0, condID, founderUserName);
+            addDiscountPolicyToStore(founderUserName, storeId, discountPolicyID);
         }
-        catch (Exception e) {}
+        catch (Exception ignored) {}
         return storeId;
     }
 
@@ -450,12 +454,21 @@ public class StoreFacade {
         buyPolicyFacade.addPolicyToStore(storeId, policyId);
     }
 
-    public void addDiscountPolicy(String username, int storeId, String args) {
+    public void addDiscountPolicyToStore(String username, int storeId, int policyId) throws Exception{
         if (!hasPermission(username, storeId, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(
                     String.format("User %s can not add discount policy to store with id %d.", username, storeId));
 
-        discountPolicyFacade.addDiscountPolicy(storeId, args);
+        discountPolicyFacade.addDiscountPolicyToStore(storeId, policyId);
+
+    }
+
+    public void removeDiscountPolicyFromStore(String username, int storeId, int policyId) throws Exception{
+        if (!hasPermission(username, storeId, Permission.REMOVE_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(
+                    String.format("User %s can not remove discount policy from store with id %d.", username, storeId));
+
+        discountPolicyFacade.removeDiscountPolicyFromStore(storeId, policyId);
 
     }
 

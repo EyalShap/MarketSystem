@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class CompositeDiscount extends Discount{
-    Discount discountA;
-    Discount discountB;
+    protected Discount discountA;
+    protected Discount discountB;
     public CompositeDiscount(int id, Discount discountA, Discount discountB){
         super(id);
         this.discountA = discountA;
@@ -24,5 +24,12 @@ public abstract class CompositeDiscount extends Discount{
     @Override
     public abstract double giveTotalPriceDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
 
-
+    @Override
+    public int getDiscountAID() {
+        return discountA.getId();
+    }
+    @Override
+    public int getDiscountBID() {
+        return discountB.getId();
+    }
 }

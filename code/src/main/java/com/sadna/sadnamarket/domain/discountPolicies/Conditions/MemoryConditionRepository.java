@@ -6,6 +6,7 @@ import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicy;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MemoryConditionRepository implements IConditionRespository{
     private Map<Integer, Condition> conditions;
@@ -40,7 +41,7 @@ public class MemoryConditionRepository implements IConditionRespository{
 }
 
     @Override
-    public int createMinProductOnCStoreCondition(int minAmount)throws JsonProcessingException {
+    public int createMinProductOnStoreCondition(int minAmount)throws JsonProcessingException {
         MinProductCondition newCondition = new MinProductCondition(nextId, minAmount);
         newCondition.setOnStore();
         return addConditionToMaps(newCondition);
@@ -90,6 +91,11 @@ public class MemoryConditionRepository implements IConditionRespository{
     }
     public boolean conditionExists(int condId) {
         return conditions.containsKey(condId);
+    }
+
+    @Override
+    public Set<Integer> getAllConditionsIds() {
+        return conditions.keySet();
     }
 
 }
