@@ -59,50 +59,50 @@ public class UserRestController {
     }
 
     @PatchMapping("/addProductToCart")
-    public Response addProductToCart(@RequestParam String username,@RequestBody ProductRequest productRequest ,HttpServletRequest request) {
+    public Response addProductToCart(@RequestParam String username,@RequestBody StoreRequest storeRequest ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         marketService.checkToken(token,username);
-        return marketService.addProductToCart(username,productRequest.storeId,productRequest.productId,productRequest.amount);
+        return marketService.addProductToCart(username,storeRequest.storeId,storeRequest.productId,storeRequest.amount);
     }
 
     @PatchMapping("/guest/addProductToCart")
-    public Response addProductToCartForGuest(@RequestParam int guestId,@RequestBody ProductRequest productRequest) {
-        return marketService.addProductToCart(guestId,productRequest.storeId,productRequest.productId,productRequest.amount);
+    public Response addProductToCartForGuest(@RequestParam int guestId,@RequestBody StoreRequest storeRequest) {
+        return marketService.addProductToCart(guestId,storeRequest.storeId,storeRequest.productId,storeRequest.amount);
     }
     @PatchMapping("/removeProductFromCart")
-    public Response removeProductFromCart(@RequestParam String username,@RequestBody ProductRequest productRequest,HttpServletRequest request) {
+    public Response removeProductFromCart(@RequestParam String username,@RequestBody StoreRequest storeRequest,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         marketService.checkToken(token,username);
-        return marketService.removeProductFromCart(username,productRequest.getStoreId(),productRequest.getProductId());
+        return marketService.removeProductFromCart(username,storeRequest.getStoreId(),storeRequest.getProductId());
     }
 
     @PatchMapping("/guest/removeProductFromCart")
-    public Response removeProductFromCartForGuest(@RequestParam int guestId,@RequestBody ProductRequest productRequest) {
-        return marketService.removeProductFromCart(guestId,productRequest.getStoreId(),productRequest.getProductId());
+    public Response removeProductFromCartForGuest(@RequestParam int guestId,@RequestBody StoreRequest storeRequest) {
+        return marketService.removeProductFromCart(guestId,storeRequest.getStoreId(),storeRequest.getProductId());
     }
 
     @PatchMapping("/changeQuantityCart")
-    public Response changeQuantityCart(@RequestParam String username, @RequestBody ProductRequest productRequest,HttpServletRequest request) {
+    public Response changeQuantityCart(@RequestParam String username, @RequestBody StoreRequest storeRequest,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         marketService.checkToken(token,username);
-        return marketService.changeQuantityCart(username,productRequest.getStoreId(),productRequest.getProductId(), productRequest.getAmount());
+        return marketService.changeQuantityCart(username,storeRequest.getStoreId(),storeRequest.getProductId(), storeRequest.getAmount());
     }
 
     @PatchMapping("/guest/changeQuantityCart")
-    public Response changeQuantityCartForGusts(@RequestParam int guestId, @RequestBody ProductRequest productRequest) {
-        return marketService.changeQuantityCart(guestId,productRequest.getStoreId(),productRequest.getProductId(), productRequest.getAmount());
+    public Response changeQuantityCartForGusts(@RequestParam int guestId, @RequestBody StoreRequest storeRequest) {
+        return marketService.changeQuantityCart(guestId,storeRequest.getStoreId(),storeRequest.getProductId(), storeRequest.getAmount());
     }
 
     @PostMapping("/token/acceptRequest")

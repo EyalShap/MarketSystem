@@ -3,32 +3,49 @@ package com.sadna.sadnamarket.api;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public class ProductRequest {
+    String productName;
+    double minProductPrice;
+    double maxProductPrice;
+    String productCategory;
+    double minProductRank;
 
-    int storeId;
-    int productId;
-    int amount;
-
-    public int getStoreId() {
-        return storeId;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setStoreId(int storeId) {
-        this.storeId = storeId;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public int getProductId() {
-        return productId;
+    public double getMinProductPrice() {
+        return minProductPrice;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setMinProductPrice(double minProductPrice) {
+        this.minProductPrice = minProductPrice;
     }
 
-    public int getAmount() {
-        return amount;
+    public double getMaxProductPrice() {
+        return maxProductPrice;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+    public void setMaxProductPrice(double maxProductPrice) {
+        this.maxProductPrice = maxProductPrice;
+    }
+
+    public String getProductCategory() {
+        return productCategory;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public double getMinProductRank() {
+        return minProductRank;
+    }
+
+    public void setMinProductRank(double minProductRank) {
+        this.minProductRank = minProductRank;
     }
 }
