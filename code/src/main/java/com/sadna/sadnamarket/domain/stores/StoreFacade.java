@@ -78,7 +78,7 @@ public class StoreFacade {
             //adding kind of null discount
             int condID = discountPolicyFacade.createTrueCondition(founderUserName);
             int discountPolicyID = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(0, condID, founderUserName);
-            addDiscountPolicyToStore(founderUserName, storeId, discountPolicyID);
+            discountPolicyFacade.addDiscountPolicyToStore(storeId, discountPolicyID, founderUserName);
 
         }
         catch (Exception ignored) {}
@@ -441,22 +441,9 @@ public class StoreFacade {
         return sellerUsername;
     }*/
 
-    public void addDiscountPolicyToStore(String username, int storeId, int policyId) throws Exception{
-        if (!hasPermission(username, storeId, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(Error.makeStoreUserCannotAddDiscountPolicyError(username, storeId));
 
-        discountPolicyFacade.addDiscountPolicyToStore(storeId, policyId);
 
-    }
 
-    public void removeDiscountPolicyFromStore(String username, int storeId, int policyId) throws Exception{
-        if (!hasPermission(username, storeId, Permission.REMOVE_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not remove discount policy from store with id %d.", username, storeId));
-
-        discountPolicyFacade.removeDiscountPolicyFromStore(storeId, policyId);
-
-    }
 
     public int addOrderId(int storeId, int orderId) {
         storeRepository.findStoreByID(storeId).addOrderId(orderId);

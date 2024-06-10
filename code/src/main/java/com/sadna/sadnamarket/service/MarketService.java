@@ -716,7 +716,7 @@ public class MarketService {
     public Response addDiscountPolicyToStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);
-            storeFacade.addDiscountPolicyToStore(username, storeId, policyId);
+            discountPolicyFacade.addDiscountPolicyToStore(storeId, policyId, username);
             logger.info(String.format("User %s added discount policy %d to store %d.", username, storeId, policyId));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
@@ -729,7 +729,7 @@ public class MarketService {
     public Response removeDiscountPolicyToStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);
-            storeFacade.removeDiscountPolicyFromStore(username, storeId, policyId);
+            discountPolicyFacade.removeDiscountPolicyFromStore(storeId, policyId,username);
             logger.info(String.format("User %s added discount policy %d to store %d.", username, storeId, policyId));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }

@@ -11,6 +11,7 @@ import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
+import com.sadna.sadnamarket.service.Error;
 
 import java.util.HashMap;
 import java.util.List;
@@ -204,7 +205,11 @@ public class DiscountPolicyFacade {
     }
 
     // --------------------------------------------------------------------------------
-    public void addDiscountPolicyToStore(int storeId, int policyId) throws Exception {
+    public void addDiscountPolicyToStore(int storeId, int policyId, String username) throws Exception {
+        if (!storeFacade.isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format(Error.makeStoreClosedError(storeId)));
+        if (!storeFacade.hasPermission(username, storeId, Permission.ADD_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(String.format(Error.makeStoreUserCannotAddDiscountPolicyError(username, storeId)));
         if(!discountPolicyRepository.discountPolicyExists(policyId))
             throw new Exception();
         if(!mapper.containsKey(storeId))
@@ -217,11 +222,15 @@ public class DiscountPolicyFacade {
         manager.removeDiscountPolicy(discount.getDiscountAID());
         manager.removeDiscountPolicy(discount.getDiscountBID());
     }
-    public void removeDiscountPolicyFromStore(int storeId, int policyId) throws Exception{
+    public void removeDiscountPolicyFromStore(int storeId, int policyId, String username) throws Exception{
+        if (!storeFacade.isStoreActive(storeId))
+            throw new IllegalArgumentException(String.format(Error.makeStoreClosedError(storeId)));
+        if (!storeFacade.hasPermission(username, storeId, Permission.REMOVE_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(String.format(Error.makeStoreUserCannotRemoveDiscountPolicyError(username, storeId)));
+        if(!mapper.containsKey(storeId))
+            throw new Exception();
         if(!discountPolicyRepository.discountPolicyExists(policyId))
             throw new Exception();
-        if(!mapper.containsKey(storeId))
-            mapper.put(storeId, new DiscountPolicyManager(this));
         DiscountPolicyManager manager = mapper.get(storeId);
         manager.removeDiscountPolicy(policyId);
     }
