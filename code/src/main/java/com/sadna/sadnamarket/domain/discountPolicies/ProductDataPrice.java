@@ -2,12 +2,14 @@ package com.sadna.sadnamarket.domain.discountPolicies;
 
 public class ProductDataPrice {
     int id;
+    String name;
     int amount;
     double oldPrice;
     double newPrice;
 
-    public ProductDataPrice(int id, int amount, double oldPrice, double newPrice) {
+    public ProductDataPrice(int id, String name, int amount, double oldPrice, double newPrice) {
         this.id = id;
+        this.name = name;
         this.amount = amount;
         this.oldPrice = oldPrice;
         this.newPrice = newPrice;
@@ -43,6 +45,6 @@ public class ProductDataPrice {
     }
 
     public ProductDataPrice deepCopy(){
-        return new ProductDataPrice(this.id,this.amount,this.oldPrice,this.newPrice);
+        return new ProductDataPrice(this.id, this.name, this.amount,this.oldPrice,this.newPrice);
     }
 }
