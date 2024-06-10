@@ -1143,11 +1143,8 @@ public class MarketService {
         }
     }
 
-    public Response getAllProducts(String token, String username) {
+    public Response getAllProducts(String username) {
         try {
-            if (username != null)
-                checkToken(token, username);
-
             List<ProductDTO> productDTOs = productFacade.getAllProducts();
             logger.info(String.format("User %s got all market products", username));
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
@@ -1157,13 +1154,11 @@ public class MarketService {
         }
     }
 
-    public Response getFilteredProducts(String token, String username, String productName, double minProductPrice,
+    public Response getFilteredProducts(String username, String productName, double minProductPrice,
             double maxProductPrice,
             String productCategory,
             double minProductRank) {
         try {
-            if (username != null)
-                checkToken(token, username);
 
             List<ProductDTO> productDTOs = productFacade.getAllFilteredProducts(productName, minProductPrice,
                     maxProductPrice, productCategory, minProductRank);
