@@ -64,6 +64,8 @@ public class MarketService {
         this.buyPolicyFacade.setProductFacade(productFacade);
         this.buyPolicyFacade.setStoreFacade(storeFacade);
         this.buyPolicyFacade.setUserFacade(userFacade);
+        this.discountPolicyFacade.setProductFacade(productFacade);
+        this.discountPolicyFacade.setStoreFacade(storeFacade);
     }
 
     public static MarketService getInstance() {
