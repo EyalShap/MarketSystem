@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.users;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,13 +17,14 @@ public class Member extends IUser {
     private String phoneNumber;
     private List<UserRole> roles;
     private List<Integer> orders;
+    private LocalDate birthday;
     private HashMap<Integer, Notification> notifes;
     private static final Logger logger = LogManager.getLogger(Member.class);
     private boolean isLoggedIn;
     private int notifyID;
 
-    public Member(String username, String firstName, String lastName, String emailAddress, String phoneNumber) {
-        logger.info("Entering Member constructor with parameters: username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}",
+    public Member(String username, String firstName, String lastName, String emailAddress, String phoneNumber, LocalDate birthday) {
+        logger.info("Entering Member constructor with parameters: username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}, birthday={}",
                 username, firstName, lastName, emailAddress, phoneNumber);
         roles = new ArrayList<>();
         notifes = new HashMap<>();
@@ -34,6 +36,7 @@ public class Member extends IUser {
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.phoneNumber = phoneNumber;
+        this.birthday = birthday;
         logger.info("Exiting Member constructor");
     }
 
@@ -197,7 +200,12 @@ public class Member extends IUser {
         logger.info("Exiting getUsername with result={}", result);
         return result;
     }
-
+    public LocalDate getBirthday() {
+        logger.info("Entering getBirthday");
+        LocalDate result = birthday;
+        logger.info("Exiting getBirthday with result={}", result);
+        return result;
+    }
     public void getRequest(String senderName, int storeId, String reqType) {
         logger.info("Entering getRequest with senderName={}, storeId={}, reqType={}", senderName, storeId, reqType);
         if (hasRoleInStore(storeId)) {

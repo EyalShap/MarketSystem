@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.auth;
 
+import java.time.LocalDate;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,10 +59,10 @@ public class AuthFacade {
 
     }
 
-    public void register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber){
+    public void register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate){
         logger.info("start-register. args: "+username+", "+password);
         iAuthRepository.add(username, password);
-        userFacade.register(username, firstName, lastName, emailAddress, phoneNumber);
+        userFacade.register(username, firstName, lastName, emailAddress, phoneNumber,birthDate);
         logger.info("end-register.");
 
     }

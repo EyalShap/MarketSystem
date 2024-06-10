@@ -24,6 +24,7 @@ import com.sadna.sadnamarket.domain.users.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -457,10 +458,10 @@ public class MarketService {
         }
     }
 
-    public Response register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber){
+    public Response register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate){
         try{
             logger.info("user {} tries to register", username);
-            authFacade.register(username,password,firstName, lastName, emailAddress, phoneNumber);
+            authFacade.register(username,password,firstName, lastName, emailAddress, phoneNumber,birthDate);
             logger.info("user {} registered", username);
             return Response.createResponse();
 
@@ -717,9 +718,10 @@ public class MarketService {
     public Response viewCart(String username) {
         logger.info("Viewing cart for username: {}", username);
         try {
-            userFacade.viewCart(username);
+            UserOrderDTO userOrderDTO=userFacade.viewCart(username);
             logger.info("View cart successful for username: {}", username);
-            return Response.createResponse();
+            return Response.createResponse(false,objectMapper.writeValueAsString(userOrderDTO));
+
         } catch (Exception e) {
             logger.error("View cart failed for username: {}. Error: {}", username, e.getMessage());
             return Response.createResponse(true, e.getMessage());
@@ -741,9 +743,9 @@ public class MarketService {
     public Response viewCart(int guestId) {
         logger.info("Viewing cart for guestId: {}", guestId);
         try {
-            userFacade.viewCart(guestId);
+            UserOrderDTO userOrderDTO=userFacade.viewCart(guestId);
             logger.info("View cart successful for guestId: {}", guestId);
-            return Response.createResponse();
+            return Response.createResponse(false,objectMapper.writeValueAsString(userOrderDTO));
         } catch (Exception e) {
             logger.error("View cart failed for guestId: {}. Error: {}", guestId, e.getMessage());
             return Response.createResponse(true, e.getMessage());
@@ -785,7 +787,6 @@ public class MarketService {
         try {
             if (username != null)
                 checkToken(token, username);
-
             List<ProductDTO> productDTOs = productFacade.getAllProducts();
             logger.info(String.format("User %s got all market products", username));
             return Response.createResponse(false, objectMapper.writeValueAsString(productDTOs));
@@ -814,6 +815,18 @@ public class MarketService {
             logger.error("getFilteredProducts: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
+    }
+    public Response getMemberDto(String username){
+        try{
+            logger.info("get member dto for {}", username);
+            MemberDTO memberDTO = userFacade.getMemberDTO(username);
+            logger.info("finished get member dto {}", memberDTO);
+            return Response.createResponse(false, objectMapper.writeValueAsString(memberDTO));
+        }catch(Exception e){
+            logger.error("get member dto failed for username: {}. Error: {}", username, e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+
     }
 
 }

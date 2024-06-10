@@ -15,6 +15,7 @@ import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class MarketServiceTestAdapter {
@@ -53,7 +54,7 @@ public class MarketServiceTestAdapter {
     }
 
     public Response signUp(String uuid, String email, String username, String passwordHash) {
-        Response resp = real.register(username, passwordHash, "John", "Doe", email, "052-052-0520");
+        Response resp = real.register(username, passwordHash, "John", "Doe", email, "052-052-0520", LocalDate.of(1988, 11, 7));
         if (resp.getError()) {
             return resp;
         }

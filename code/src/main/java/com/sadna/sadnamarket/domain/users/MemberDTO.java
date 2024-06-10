@@ -1,11 +1,14 @@
 package com.sadna.sadnamarket.domain.users;
 
+import java.time.LocalDate;
+
 public class MemberDTO {
     private String username;
     private String firstName;
     private String lastName;
     private String emailAddress;
     private String phoneNumber;
+    private LocalDate birthDate;
 
     public MemberDTO(Member member) {
         this.username = member.getUsername();
@@ -13,14 +16,17 @@ public class MemberDTO {
         this.lastName = member.getLastName();
         this.emailAddress = member.getEmailAddress();
         this.phoneNumber = member.getPhoneNumber();
+        this.birthDate = member.getBirthday();
     }
 
-    public MemberDTO(String username, String firstName, String lastName, String emailAddress, String phoneNumber) {
+    public MemberDTO(String username, String firstName, String lastName, String emailAddress, String phoneNumber, LocalDate birthDate) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
+
     }
 
     public String getUsername() {
@@ -61,6 +67,9 @@ public class MemberDTO {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 }
 

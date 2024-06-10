@@ -1,4 +1,5 @@
 package com.sadna.sadnamarket.domain.users;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.cglib.core.Local;
 
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
@@ -232,10 +234,10 @@ public class UserFacade {
     }
   
 
-    public void register(String username,String firstName, String lastName,String emailAddress,String phoneNumber){
+    public void register(String username,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate){
         logger.info("{} try to register ",username);
 
-        Member member=new Member(username,firstName,lastName,emailAddress,phoneNumber);
+        Member member=new Member(username,firstName,lastName,emailAddress,phoneNumber,birthDate);
         iUserRepo.store(member);
         logger.info("{} done register ",username);
     }

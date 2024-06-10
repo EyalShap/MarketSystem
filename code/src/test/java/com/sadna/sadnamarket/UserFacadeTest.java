@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -45,6 +46,7 @@ public class UserFacadeTest {
     private String testPassword="12";
     private int testStoreId;
     private int testStoreId2;
+    private LocalDate testDate=LocalDate.of(1990, 11, 11);
 
     @Before
     public void setUp() {
@@ -55,11 +57,11 @@ public class UserFacadeTest {
         orderFacade=mock(OrderFacade.class);
         this.userFacade=new UserFacade(iUserRepo, storeFacade,orderFacade);
         this.authFacade=new AuthFacade(iAuthRepo,userFacade);
-        authFacade.register(testUsername1,testPassword,"Idan","Idan","idan@gmail.com","0501118121");
+        authFacade.register(testUsername1,testPassword,"Idan","Idan","idan@gmail.com","0501118121",testDate);
         authFacade.login(testUsername1,testPassword);
-        authFacade.register(testUsername2,testPassword,"Shavit","Mor","shavit@gmail.com","05033303030");
+        authFacade.register(testUsername2,testPassword,"Shavit","Mor","shavit@gmail.com","05033303030",testDate);
         authFacade.login(testUsername2, testPassword);
-        authFacade.register(testUsername3,testPassword,"Nir","Mor","nir@gmail.com","05033303030");
+        authFacade.register(testUsername3,testPassword,"Nir","Mor","nir@gmail.com","05033303030",testDate);
         authFacade.login(testUsername3, testPassword);
         when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID 
         testStoreId=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
@@ -94,7 +96,7 @@ public class UserFacadeTest {
 
     @Test
     public void testLogin() {    
-        authFacade.register("yosi",testPassword,"sami","hatuka","sami@gmail.com","0501118121");
+        authFacade.register("yosi",testPassword,"sami","hatuka","sami@gmail.com","0501118121",testDate);
         authFacade.login("yosi",testPassword);
         assertTrue(userFacade.isLoggedIn("yosi"));
     }
@@ -113,12 +115,12 @@ public class UserFacadeTest {
 
     @Test
     public void testRegister() {
-        authFacade.register("Jimi",testPassword,"Jimi","hatuka","Jimi@gmail.com","0501118121");
+        authFacade.register("Jimi",testPassword,"Jimi","hatuka","Jimi@gmail.com","0501118121",LocalDate.of(1988, 11, 11));
         assertDoesNotThrow(()-> iUserRepo.getMember("Jimi"));
     }
     @Test
     public void testRegisterWithSameUsername() {
-        assertThrows(IllegalArgumentException.class,()->  authFacade.register(testUsername1,"12","Idan","Idan","idan@gmail.com","0501118121"));
+        assertThrows(IllegalArgumentException.class,()->  authFacade.register(testUsername1,"12","Idan","Idan","idan@gmail.com","0501118121",testDate));
     }
 
 
