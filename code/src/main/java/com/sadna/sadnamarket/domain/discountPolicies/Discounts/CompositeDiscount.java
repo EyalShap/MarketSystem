@@ -6,10 +6,11 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import java.util.List;
 import java.util.Map;
 
-public abstract class CompositeDiscount implements Discount{
-    Discount discountA;
-    Discount discountB;
-    public CompositeDiscount(Discount discountA, Discount discountB){
+public abstract class CompositeDiscount extends Discount{
+    protected Discount discountA;
+    protected Discount discountB;
+    public CompositeDiscount(int id, Discount discountA, Discount discountB){
+        super(id);
         this.discountA = discountA;
         this.discountB = discountB;
     }
@@ -23,5 +24,12 @@ public abstract class CompositeDiscount implements Discount{
     @Override
     public abstract double giveTotalPriceDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
 
-
+    @Override
+    public int getDiscountAID() {
+        return discountA.getId();
+    }
+    @Override
+    public int getDiscountBID() {
+        return discountB.getId();
+    }
 }
