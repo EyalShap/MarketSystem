@@ -34,7 +34,7 @@ public class DiscountPolicyManager {
         //create the ProductDataPrices and add them to listProductDataPrice
         for (CartItemDTO cartItemDTO : cart) {
             ProductDTO pDTO = productDTOMap.get(cartItemDTO.getProductId());
-            ProductDataPrice productDataPrice = new ProductDataPrice(cartItemDTO.getProductId(),
+            ProductDataPrice productDataPrice = new ProductDataPrice(cartItemDTO.getProductId(), pDTO.getProductName(),
                     cartItemDTO.getAmount(),
                     pDTO.getProductPrice(), pDTO.getProductPrice());
             listProductDataPrice.add(productDataPrice);
