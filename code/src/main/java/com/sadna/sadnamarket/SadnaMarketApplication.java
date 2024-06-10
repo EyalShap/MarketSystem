@@ -8,13 +8,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-
-
 public class SadnaMarketApplication {
 	public static void main(String[] args) {
 		IStoreRepository repo = new MemoryStoreRepository();
-		SpringApplication.run(SadnaMarketApplication.class, args);
 		MarketService service = new MarketService(repo);
+		SpringApplication.run(SadnaMarketApplication.class, args);
+		
 		//System.out.println(service.createStore("Alice", "hi").getDataJson());
 		//System.out.println(service.createStore("Alice", "hi").getDataJson());
 

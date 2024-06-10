@@ -8,16 +8,21 @@ import com.sadna.sadnamarket.service.MarketService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.apache.commons.logging.Log;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins = "*") // Allow cross-origin requests from any source
 public class UserRestController {
     MarketService marketService = MarketService.getInstance();
 
@@ -49,8 +54,8 @@ public class UserRestController {
     }
 
     @PostMapping("/login")
-    public Response login(@RequestParam String username, @RequestParam String password) {
-        return marketService.login(username, password);
+    public Response login(@RequestBody LoginRequest loginRequest) {
+        return marketService.login(loginRequest.getUsername(), loginRequest.getPassword());
     }
 
     @PostMapping("/addProductToCart")
@@ -102,9 +107,20 @@ public class UserRestController {
     }
 
     @PostMapping("/register")
-        public Response register(@RequestParam String token,@RequestParam String username, @RequestParam String password, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String emailAddress, @RequestParam String phoneNumber, @RequestParam LocalDate bDate) {
-        marketService.checkToken(token,username);
-        return marketService.register(username, password, firstName,lastName,emailAddress,phoneNumber,bDate);
+        public Response register(@RequestBody RegisterRequest registerRequest) {
+        
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa " + registerRequest.getBirthDate());
+            LocalDate birthDate = LocalDate.parse(registerRequest.getBirthDate(), formatter);
+            return marketService.register(
+                registerRequest.getUsername(),
+                registerRequest.getPassword(),
+                registerRequest.getFirstName(),
+                registerRequest.getLastName(),
+                registerRequest.getEmailAddress(),
+                registerRequest.getPhoneNumber(),
+                birthDate
+            );
     }
     
     @PostMapping("/leaveRole")
