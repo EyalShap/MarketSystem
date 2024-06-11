@@ -1,6 +1,9 @@
 package com.sadna.sadnamarket.api;
 
+import com.sadna.sadnamarket.domain.buyPolicies.BuyType;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 public class ProductRequest {
     String productName;
@@ -8,6 +11,7 @@ public class ProductRequest {
     double maxProductPrice;
     String productCategory;
     double minProductRank;
+
 
     public String getProductName() {
         return productName;
@@ -48,4 +52,6 @@ public class ProductRequest {
     public void setMinProductRank(double minProductRank) {
         this.minProductRank = minProductRank;
     }
+
+
 }
