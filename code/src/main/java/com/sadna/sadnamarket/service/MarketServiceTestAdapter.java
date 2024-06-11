@@ -203,11 +203,11 @@ public class MarketServiceTestAdapter {
     }
 
     public Response rejectOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return Response.createResponse(false, "true"); // THIS ONE IS MISSING
+        return real.rejectRequest(token, appointedUserId, storeId);
     }
 
     public Response rejectManagerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return Response.createResponse(false, "true"); // THIS ONE IS MISSING
+        return real.rejectRequest(token, appointedUserId, storeId);
     }
 
     public Response changeManagerPermissions(String token, String userId, String managerId, int storeId,

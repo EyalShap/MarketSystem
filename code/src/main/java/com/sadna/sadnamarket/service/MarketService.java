@@ -264,6 +264,19 @@ public class MarketService {
         }
     } //From notifications, choose "Request" notification and click "accept"
 
+    public Response rejectRequest(String token, String newUsername, int storeId) {
+        try {
+            checkToken(token, newUsername);
+            userFacade.reject(newUsername, storeId);
+            logger.info(String.format("User %s accepted nomination in store %d.", newUsername, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(newUsername));
+        }
+        catch (Exception e) {
+            logger.error("acceptStoreOwnerRequest: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
             checkToken(token, username);
