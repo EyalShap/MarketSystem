@@ -1016,6 +1016,18 @@ public class MarketService {
         }
     } //From notifications, choose "Request" notification and click "accept", "Accept" and "Reject" on the request
 
+    public Response rejectRequest(String rejectingName, int requestID) {
+        logger.info("Rejecting request for rejectingName: {}, requestID: {}", rejectingName, requestID);
+        try {
+            userFacade.reject(rejectingName, requestID);
+            logger.info("Reject request successful for rejectingName: {}, requestID: {}", rejectingName, requestID);
+            return Response.createResponse();
+        } catch (Exception e) {
+            logger.error("Reject request failed for rejectingName: {}, requestID: {}. Error: {}", rejectingName, requestID, e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response setSystemAdminstor(String username) {
         logger.info("Setting system administrator for username: {}", username);
         try {

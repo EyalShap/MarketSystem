@@ -244,7 +244,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, 1, username);
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsOwner(token, username, storeId, appointeeUsername);
@@ -334,7 +334,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.rejectManagerAppointment(apointeeToken, appointeeUsername, storeId, username);
+        resp = bridge.rejectManagerAppointment(apointeeToken, appointeeUsername, 1, username);
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsManager(token, username, storeId, appointeeUsername);
