@@ -262,31 +262,314 @@ public class StoreRestController {
         return marketService.getManagerPermissions(token,currentOwnerUsername,managerUsername,storeId);
     }
 
-    /*
-    //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getProductsInfo?storeId=0" -Method GET
-    @GetMapping("/getProductsInfo")
-    public Response getProductsInfo(@RequestParam int storeId) {
-        Response response = marketService.getProductsInfo(storeId);
-        if(response.getError()) {
-            return response;
-        }
 
-        Response res;
-        List<String> productInfos = new ArrayList<>();
-        try {
-            Map<String, Integer> products = objectMapper.readValue(response.getDataJson(), new TypeReference<Map<String, Integer>>() {});
-            for(String productJson : products.keySet()) {
-                ProductDTO product = objectMapper.readValue(productJson, ProductDTO.class);
-                productInfos.add(String.format("Product id: %d, Product name: %s, Product amount: %d, Product price: %d", product.getProductId(), product.getProductName(), products.get(productJson), product.getProductPrice()));
-            }
-            res = Response.createResponse(false, objectMapper.writeValueAsString(productInfos));
+    @PostMapping("/createProductKgBuyPolicy")
+    public Response createProductKgBuyPolicy(@RequestParam String username,@RequestBody PolicyWeightRequest policyWeightRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        catch(Exception e) {
-            res = Response.createResponse(true, e.getMessage());
-        }
-
-        return res;
+        return marketService.createProductKgBuyPolicy(token,username,policyWeightRequest.getProductId(),policyWeightRequest.getBuyTypes(),policyWeightRequest.getMinWeight(),policyWeightRequest.getMaxWeight());
     }
-    */
+
+
+    @PostMapping("/createProductAmountBuyPolicy")
+    public Response createProductAmountBuyPolicy(@RequestParam String username,@RequestBody PolicyAmountRequest policyAmountRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createProductAmountBuyPolicy(token,username,policyAmountRequest.getProductId(),policyAmountRequest.getBuyTypes(),policyAmountRequest.getMinAmount(),policyAmountRequest.getMaxAmount());
+    }
+
+
+    @PostMapping("/createCategoryAgeLimitBuyPolicy")
+    public Response createCategoryAgeLimitBuyPolicy(@RequestParam String username,@RequestBody PolicyAgeRequest policyAgeRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createCategoryAgeLimitBuyPolicy(token,username,policyAgeRequest.getCategory(),policyAgeRequest.getBuyTypes(),policyAgeRequest.getMinAge(),policyAgeRequest.getMaxAge());
+    }
+
+    @PostMapping("/createCategoryHourLimitBuyPolicy")
+    public Response createCategoryHourLimitBuyPolicy(@RequestParam String username,@RequestBody PolicyHourRequest policyHourRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createCategoryHourLimitBuyPolicy(token,username,policyHourRequest.getCategory(),policyHourRequest.getBuyTypes(),policyHourRequest.getFromHour(),policyHourRequest.getToHour());
+    }
+
+
+    @PostMapping("/createCategoryRoshChodeshBuyPolicy")
+    public Response createCategoryRoshChodeshBuyPolicy(@RequestParam String username,@RequestBody PolicyAgeRequest policyAgeRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createCategoryRoshChodeshBuyPolicy(token,username,policyAgeRequest.getCategory(),policyAgeRequest.getBuyTypes());
+    }
+
+    @PostMapping("/createCategoryHolidayBuyPolicy")
+    public Response createCategoryHolidayBuyPolicy(@RequestParam String username,@RequestBody PolicyAgeRequest policyAgeRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createCategoryHolidayBuyPolicy(token,username,policyAgeRequest.getCategory(),policyAgeRequest.getBuyTypes());
+    }
+
+    @PostMapping("/createAndBuyPolicy")
+    public Response createAndBuyPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createAndBuyPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+    @PostMapping("/createOrBuyPolicy")
+    public Response createOrBuyPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOrBuyPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+
+    @PostMapping("/createConditioningBuyPolicy")
+    public Response createConditioningBuyPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createConditioningBuyPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+
+    @PostMapping("/addBuyPolicyToStore")
+    public Response addBuyPolicyToStore(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.addBuyPolicyToStore(token,username,policyIdRequest.getStoreId(),policyIdRequest.getPolicyId1());
+    }
+
+    @PatchMapping("/removeBuyPolicyFromStore")
+    public Response removeBuyPolicyFromStore(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.removeBuyPolicyFromStore(token,username,policyIdRequest.getStoreId(),policyIdRequest.getPolicyId1());
+    }
+
+
+    @PostMapping("/createMinProductOnStoreCondition")
+    public Response createMinProductOnStoreCondition(@RequestParam String username,@RequestParam int minAmount,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createMinProductOnStoreCondition(token,minAmount,username);
+    }
+
+    @PostMapping("/createMinProductOnCategoryCondition")
+    public Response createMinProductOnCategoryCondition(@RequestParam String username,@RequestBody PolicyAmountRequest policyAmountRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createMinProductOnCategoryCondition(token,policyAmountRequest.getMinAmount(),policyAmountRequest.getCategoryName(),username);
+    }
+
+    @PostMapping("/createMinProductCondition")
+    public Response createMinProductCondition(@RequestParam String username,@RequestBody PolicyAmountRequest policyAmountRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createMinProductCondition(token,policyAmountRequest.getMinAmount(),policyAmountRequest.getProductName(),username);
+    }
+
+    @PostMapping("/createTrueCondition")
+    public Response createTrueCondition(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createTrueCondition(token,username);
+    }
+
+    @PostMapping("/createMinBuyCondition")
+    public Response createMinBuyCondition(@RequestParam String username,@RequestParam int minBuy,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createMinBuyCondition(token,username,minBuy);
+    }
+
+    @PostMapping("/createXorCondition")
+    public Response createXorCondition(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createXorCondition(token,username,policyConditionRequest.getConditionAID(),policyConditionRequest.getConditionBID());
+    }
+
+    @PostMapping("/createOrCondition")
+    public Response createOrCondition(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOrCondition(token,username,policyConditionRequest.getConditionAID(),policyConditionRequest.getConditionBID());
+    }
+
+    @PostMapping("/createAndCondition")
+    public Response createAndCondition(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createAndCondition(token,username,policyConditionRequest.getConditionAID(),policyConditionRequest.getConditionBID());
+    }
+
+    @PostMapping("/createOnProductSimpleDiscountPolicy")
+    public Response createOnProductSimpleDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOnProductSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getProductName(),policyConditionRequest.getConditionAID());
+    }
+    @PostMapping("/createOnCategorySimpleDiscountPolicy")
+    public Response createOnCategorySimpleDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOnCategorySimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getCategoryName(),policyConditionRequest.getConditionAID());
+    }
+
+
+    @PostMapping("/createOnStoreSimpleDiscountPolicy")
+    public Response createOnStoreSimpleDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOnStoreSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getConditionAID());
+    }
+
+    @PostMapping("/createTakeMaxXorDiscountPolicy")
+    public Response createTakeMaxXorDiscountPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createTakeMaxXorDiscountPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+    @PostMapping("/createTakeMinXorDiscountPolicy")
+    public Response createTakeMinXorDiscountPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createTakeMinXorDiscountPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+    @PostMapping("/createAdditionDiscountPolicy")
+    public Response createAdditionDiscountPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createAdditionDiscountPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+
+    @PostMapping("/createMaximumDiscountPolicy")
+    public Response createMaximumDiscountPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createMaximumDiscountPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+    @PostMapping("/createAndDiscountPolicy")
+    public Response createAndDiscountPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createAndDiscountPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+    @PostMapping("/createOrDiscountPolicy")
+    public Response createOrDiscountPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOrDiscountPolicy(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+
+    @PostMapping("/addDiscountPolicyToStore")
+    public Response addDiscountPolicyToStore(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.addDiscountPolicyToStore(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
+    @PatchMapping("/removeDiscountPolicyToStore")
+    public Response removeDiscountPolicyToStore(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.removeDiscountPolicyToStore(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
+    }
+
 
 }
