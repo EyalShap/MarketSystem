@@ -4,15 +4,15 @@ import { getOrders } from '../API';
 import { OrderModel } from '../models/OrderModel'; 
 import '../styles/orders.css'; 
 
-export const Orders: React.FC = () => {
+export const Orders = () => {
     const { username } = useParams<{ username: string }>() 
     const [orders, setOrders] = useState<OrderModel[]>([]);
 
     useEffect(() => {
         async function fetchOrders() {
            
-                const fetchedOrders = await getOrders(username? username:"");
-                setOrders(fetchedOrders);
+            const fetchedOrders = await getOrders(username? username:"");
+            setOrders(fetchedOrders);
             
         }
         fetchOrders();
