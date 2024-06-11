@@ -8,6 +8,7 @@ import { registerModel } from "./models/registerModel";
 import cartModel from "./models/CartModel";
 import { get } from "http";
 import ProductCartModel from "./models/ProductCartModel";
+import axios from "axios";
 
 export var globalToken = "";
 export var globalUsername = "";
@@ -21,8 +22,18 @@ export const login = async(username: string, password: string) => {
     }
     return resp;
 }
+export const enterAsGuest = async() => {
+    ///request REST to login...
+    const response=(await axios.post('http://127.0.0.1:8080/api/user/enterAsGuest')).data
+    console.log(response);
+    return Number.parseInt(response.dataJson);
+}
 export const registerMember = async(registerModel: registerModel) => {
     ///request REST to login...
+    const response=(await axios.post('http://127.0.0.1:8080/api/user/register',{registerModel,Headers:{
+        'Content-Type': 'application/json',
+        //Authorization: `Bearer ${jwt_token}`
+      }})).data
     let resp: RestResponse = {dataJson: "thisIsWhereTheTokenWouldBe", error: false, errorString: ""}
     if(!resp.error){
        
@@ -132,15 +143,11 @@ export const getMember = async(username: string): Promise<MemberModel> => {
 }
 export const viewCart = (username:string): cartModel => {
     const cart: ProductCartModel[] = [
-        { id: 1, amount: 5,storeId:1, originalPrice: 100, discountedPrice: 90, name: ''  },
-        { id: 2, amount: 3,storeId:1, originalPrice: 50, discountedPrice: 45, name: ''}
+        { id: 1, amount: 5,storeId:1, originalPrice: 100, discountedPrice: 90, name: 'example1'  },
+        { id: 2, amount: 3,storeId:1, originalPrice: 50, discountedPrice: 45, name: 'example2'}
     ];
     let totalPrice = 150;
     let totalDiscountedPrice = 135;
-    for (let i = 0; i < cart.length; i++) {
-        const productDetails = getProductDetails(cart[i].id);
-        cart[i].name = productDetails.name;    
-    }
     return {
         products: cart,
         totalPrice: totalPrice,
