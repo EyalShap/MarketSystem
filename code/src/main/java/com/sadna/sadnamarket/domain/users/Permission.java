@@ -12,7 +12,9 @@ public enum Permission {
     ADD_BUY_POLICY(9),
     REMOVE_BUY_POLICY(10),
     ADD_DISCOUNT_POLICY(11),
-    VIEW_ROLES(12);
+    VIEW_ROLES(12),
+    REMOVE_DISCOUNT_POLICY(12);
+
 
 
     private final int value;

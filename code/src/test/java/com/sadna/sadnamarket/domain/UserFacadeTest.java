@@ -291,8 +291,8 @@ public class UserFacadeTest {
         userFacade.addProductToCart(testUsername1, testStoreId, 2, 3);
         Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,2,7,5));
-        list1.add(new ProductDataPrice(2,3,8,5));
+        list1.add(new ProductDataPrice(1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
         ans.put(testStoreId, list1);
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
         UserOrderDTO res=userFacade.viewCart(testUsername1);
@@ -307,8 +307,8 @@ public class UserFacadeTest {
         Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
         List<ProductDataPrice> list2=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,2,7,5));
-        list2.add(new ProductDataPrice(2,3,8,5));
+        list1.add(new ProductDataPrice(1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
         ans.put(testStoreId, list1);
         ans.put(testStoreId2, list2);
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
@@ -324,8 +324,8 @@ public class UserFacadeTest {
         Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
         List<ProductDataPrice> list2=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,2,7,5));
-        list2.add(new ProductDataPrice(2,3,8,5));
+        list1.add(new ProductDataPrice(1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
         ans.put(testStoreId, list1);
         ans.put(testStoreId2, list2);
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);

@@ -1,20 +1,12 @@
 import React, { useState } from 'react';
 import '../styles/searched-product.css';
 import '../styles/general.css';
+import ProductModel from '../models/ProductModel';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  rating: {
-    stars: number;
-    count: number;
-  };
-  priceCents: number;
-}
+
 
 interface SearchedProductProps {
-  product: Product;
+  product: ProductModel;
 }
 
 const SearchedProduct: React.FC<SearchedProductProps> = ({ product }) => {
@@ -34,18 +26,18 @@ const SearchedProduct: React.FC<SearchedProductProps> = ({ product }) => {
       </div>
 
       <div className="product-description">
-        {product.description}
+        {product.productDescription}
       </div>
 
       <div className="product-rating-container">
-        <img className="product-rating-stars" src={require(`../images/ratings/rating-${Math.round(product.rating.stars * 2) * 5}.png`)} alt={"../images/ratings/rating-0.png"} />
+        <img className="product-rating-stars" src={require(`../images/ratings/rating-${Math.round((product.productRank ?? 0) * 2) * 5}.png`)} alt={"../images/ratings/rating-0.png"} />
         <div className="product-rating-count link-primary">
-          {product.rating.count}
+          {product.productRank}
         </div>
       </div>
 
       <div className="product-price">
-        ${(product.priceCents / 100).toFixed(2)}
+        ${(product.price / 100).toFixed(2)}
       </div>
 
       <div className="product-quantity-container">
@@ -61,7 +53,7 @@ const SearchedProduct: React.FC<SearchedProductProps> = ({ product }) => {
         Added
       </div>
 
-      <button className="add-to-cart-button button-primary" data-product-id={product.id} onClick={handleAddToCart}>
+      <button className="add-to-cart-button button-primary" onClick={handleAddToCart}>
         Add to Cart
       </button>
     </div>

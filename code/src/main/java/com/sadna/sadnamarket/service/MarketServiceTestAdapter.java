@@ -97,7 +97,7 @@ public class MarketServiceTestAdapter {
 
     public Response searchProduct(String productName, double productPriceMin, double productPriceMax,
             String productCategory, int storeRating, int productRating) throws JsonProcessingException {
-        return real.getFilteredProducts("", null, productName, productPriceMin, productPriceMax, productCategory, productRating);
+        return real.getFilteredProducts( null, productName, productPriceMin, productPriceMax, productCategory, productRating);
     }
 
     public Response searchProductInStore(int storeId, String productName, double productPriceMin,
