@@ -11,17 +11,21 @@ import ProductCartModel from "./models/ProductCartModel";
 import { OrderModel } from "./models/OrderModel"; // Adjust the path as needed
 import axios from "axios";
 
-export var globalToken = "";
-export var globalUsername = "";
-
 export const login = async(username: string, password: string) => {
     ///request REST to login...
-    let resp: RestResponse = {dataJson: "thisIsWhereTheTokenWouldBe", error: false, errorString: ""}
-    if(!resp.error){
-        globalToken = resp.dataJson;
-        globalUsername = username;
-    }
-    return resp;
+    const response=(await axios.post('http://127.0.0.1:8080/api/user/login',{username: username, password: password},{headers:{
+        'Content-Type': 'application/json',
+        //Authorization: `Bearer ${jwt_token}`
+      }})).data
+    return response;
+}
+export const loginUsingJwt = async(username: string, jwt: string) => {
+    ///request REST to login...
+    const response=(await axios.post(`http://127.0.0.1:8080/api/user/loginUsingJwt?username=${username}`,{},{headers:{
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${jwt}`
+      }})).data
+    return response;
 }
 export const enterAsGuest = async() => {
     ///request REST to login...
@@ -31,15 +35,17 @@ export const enterAsGuest = async() => {
 }
 export const registerMember = async(registerModel: registerModel) => {
     ///request REST to login...
-    const response=(await axios.post('http://127.0.0.1:8080/api/user/register',{registerModel,Headers:{
-        'Content-Type': 'application/json',
-        //Authorization: `Bearer ${jwt_token}`
-      }})).data
-    let resp: RestResponse = {dataJson: "thisIsWhereTheTokenWouldBe", error: false, errorString: ""}
-    if(!resp.error){
-       
-    }
-    return resp;
+    const response = await (await axios.post(
+        'http://127.0.0.1:8080/api/user/register',
+        registerModel,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                // Authorization: `Bearer ${jwt_token}` // Uncomment if you have a JWT token
+            }
+        }
+    )).data;
+    return response;
 }
 
 export const getStoreInfo = (storeId: string): StoreModel => {

@@ -3,5 +3,5 @@ export type registerModel={
     lastName: string,
     email: string,
     phone: string,
-    birthday: string
+    birthDate: string
 }

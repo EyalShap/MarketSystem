@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { login } from '../API';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import '../styles/login.css';
+import { AppContext } from '../App';
 
 
 export const Login = () => {
+    const { setIsloggedin } = useContext(AppContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -24,6 +26,10 @@ export const Login = () => {
             if (resp.error) {
                 alert("Error: " + resp.errorString);
             } else {
+                setIsloggedin(true);
+                localStorage.setItem('token', resp.dataJson); // Save the token in local storage
+                localStorage.setItem('username', username); // Save the username in local storage
+                localStorage.removeItem('guestId')
                 navigate('/'); // Navigate to the home page
             }
         } catch (error) {
