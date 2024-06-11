@@ -1017,13 +1017,13 @@ public class MarketService {
     } //From notifications, choose "Request" notification and click "accept", "Accept" and "Reject" on the request
 
     public Response rejectRequest(String rejectingName, int requestID) {
-        logger.info("Rejecting request for acceptingName: {}, requestID: {}", rejectingName, requestID);
+        logger.info("Rejecting request for rejectingName: {}, requestID: {}", rejectingName, requestID);
         try {
             userFacade.reject(rejectingName, requestID);
-            logger.info("Reject request successful for acceptingName: {}, requestID: {}", rejectingName, requestID);
+            logger.info("Reject request successful for rejectingName: {}, requestID: {}", rejectingName, requestID);
             return Response.createResponse();
         } catch (Exception e) {
-            logger.error("Reject request failed for acceptingName: {}, requestID: {}. Error: {}", rejectingName, requestID, e.getMessage());
+            logger.error("Reject request failed for rejectingName: {}, requestID: {}. Error: {}", rejectingName, requestID, e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
