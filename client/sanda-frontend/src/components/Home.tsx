@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SearchBar from './Search';
 import ProductsBar from './ProductsBar';
 import { useState, createContext, useContext } from "react";
 import { Category } from '@mui/icons-material';
 import CategoriesBar from './CategoriesBar';
+import { enterAsGuest } from '../API';
 
 const products = [
     { id: 1, name: 'Product 1', price: '10.00' },
@@ -19,7 +20,14 @@ const products = [
   ];
 
 const Home = () => {
-
+    useEffect(() => {
+        const fetchData = async () => {
+          const guestId = await enterAsGuest();
+          console.log(guestId);
+        };
+      
+        fetchData();
+      }, []);
     return (
         <div>
             <h1>Our top products</h1>
