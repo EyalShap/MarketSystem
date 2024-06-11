@@ -125,7 +125,16 @@ public class UserRestController {
         marketService.checkToken(token,acceptingName);
         return marketService.acceptRequest(acceptingName,requestID);
     }
-
+    @PostMapping("/loginUsingJwt")
+    public Response loginUsingJwt(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        System.out.println("aaaaaaaaaaaaaaaaa"+authorizationHeader);
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.checkToken(token,username);
+    }
     @PostMapping("/logout")
     public Response logout(@RequestParam String username) {
         return marketService.logout(username);
@@ -133,7 +142,6 @@ public class UserRestController {
 
     @PostMapping("/register")
         public Response register(@RequestBody RegisterRequest registerRequest) {
-        
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate birthDate = LocalDate.parse(registerRequest.getBirthDate(), formatter);
             return marketService.register(
@@ -141,7 +149,7 @@ public class UserRestController {
                 registerRequest.getPassword(),
                 registerRequest.getFirstName(),
                 registerRequest.getLastName(),
-                registerRequest.getEmailAddress(),
+                registerRequest.getEmail(),
                 registerRequest.getPhoneNumber(),
                 birthDate
             );
@@ -280,7 +288,6 @@ public class UserRestController {
         }   
         marketService.checkToken(token,username);
         return marketService.getMemberDto(username);
-    }
-    
+    }  
 
 }

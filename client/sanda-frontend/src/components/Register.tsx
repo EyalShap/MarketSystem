@@ -16,9 +16,16 @@ const schema = yup.object().shape({
     lastName: yup.string().required("Last Name is required"),
     email: yup.string().email("Invalid email format").required("Email is required"),
     phone: yup.string().matches(phoneRegExp, 'Phone number is not valid').required("Phone number is required"),
-    birthday: yup.date().required("Birthday is required"),
+    birthDate: yup.date().required("Birthday is required"),
     
 });
+const formatDate = (date: string): string => {
+    const d = new Date(date);
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    const year = d.getFullYear();
+    return `${year}-${month}-${day}`;
+};
 
 export const Register = () => {
     const { register, handleSubmit, formState: { errors, touchedFields }, trigger } = useForm({
@@ -28,6 +35,7 @@ export const Register = () => {
 
     const onSubmit = async (data: any) => {
         try {
+            data.birthDate = formatDate(new Date(data.birthDate).toISOString());
             const resp = await registerMember(data);
             if (resp.error) {
                 alert("Error: " + resp.errorString);
@@ -126,10 +134,10 @@ export const Register = () => {
                     <input 
                         type="date" 
                         id="birthday" 
-                        {...register("birthday", { onChange: () => trigger("birthday") })} 
-                        className={errors.birthday && touchedFields.birthday ? 'invalid' : ''}
+                        {...register("birthDate", { onChange: () => trigger("birthDate") })} 
+                        className={errors.birthDate && touchedFields.birthDate ? 'invalid' : ''}
                     />
-                    {errors.birthday && <p className="error-message">{errors.birthday.message}</p>}
+                    {errors.birthDate && <p className="error-message">{errors.birthDate.message}</p>}
                 </div>
                 
                 <button type="submit">Register</button>

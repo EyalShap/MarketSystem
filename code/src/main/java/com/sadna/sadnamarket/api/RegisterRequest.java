@@ -5,7 +5,7 @@ public class RegisterRequest {
     private String password;
     private String firstName;
     private String lastName;
-    private String emailAddress;
+    private String email;
     private String phoneNumber;
     private String birthDate; // This can be a String, but better if directly LocalDate
 
@@ -43,12 +43,12 @@ public class RegisterRequest {
         this.lastName = lastName;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPhoneNumber() {
