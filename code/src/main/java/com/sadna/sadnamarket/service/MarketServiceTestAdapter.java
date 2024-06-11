@@ -194,20 +194,20 @@ public class MarketServiceTestAdapter {
 
     public Response acceptOwnerAppointment(String token, String appointedUserId, int storeId, int requestId) {
         // return Response.createResponse(false, "true");
-        return real.acceptRequest(token, appointedUserId, requestId);
+        return real.acceptRequest(appointedUserId, requestId);
     }
 
     public Response acceptManagerAppointment(String token, String appointedUserId, int storeId, int requestId) {
         // return Response.createResponse(false, "true");
-        return real.acceptRequest(token, appointedUserId, requestId);
+        return real.acceptRequest(appointedUserId, requestId);
     }
 
     public Response rejectOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return real.rejectRequest(token, appointedUserId, storeId);
+        return real.rejectRequest(appointedUserId, storeId);
     }
 
     public Response rejectManagerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return real.rejectRequest(token, appointedUserId, storeId);
+        return real.rejectRequest(appointedUserId, storeId);
     }
 
     public Response changeManagerPermissions(String token, String userId, String managerId, int storeId,

@@ -264,19 +264,6 @@ public class MarketService {
         }
     } //From notifications, choose "Request" notification and click "accept"
 
-    public Response rejectRequest(String token, String newUsername, int storeId) {
-        try {
-            checkToken(token, newUsername);
-            userFacade.reject(newUsername, storeId);
-            logger.info(String.format("User %s accepted nomination in store %d.", newUsername, storeId));
-            return Response.createResponse(false, objectMapper.writeValueAsString(newUsername));
-        }
-        catch (Exception e) {
-            logger.error("acceptStoreOwnerRequest: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
-        }
-    }
-
     public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
             checkToken(token, username);
@@ -1028,6 +1015,18 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //From notifications, choose "Request" notification and click "accept", "Accept" and "Reject" on the request
+
+    public Response rejectRequest(String rejectingName, int requestID) {
+        logger.info("Rejecting request for acceptingName: {}, requestID: {}", rejectingName, requestID);
+        try {
+            userFacade.reject(rejectingName, requestID);
+            logger.info("Reject request successful for acceptingName: {}, requestID: {}", rejectingName, requestID);
+            return Response.createResponse();
+        } catch (Exception e) {
+            logger.error("Reject request failed for acceptingName: {}, requestID: {}. Error: {}", rejectingName, requestID, e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 
     public Response setSystemAdminstor(String username) {
         logger.info("Setting system administrator for username: {}", username);
