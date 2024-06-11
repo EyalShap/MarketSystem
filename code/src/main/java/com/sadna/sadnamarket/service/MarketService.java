@@ -83,7 +83,7 @@ public class MarketService {
 
     // ----------------------- Stores -----------------------
 
-    public Response checkToken(String token, String username) {
+    public Response loginUsingToken(String token, String username) {
         try{
             if(!authFacade.login(token).equals(username)) {
                 logger.error(String.format("failed to verify token for user %s", username));
@@ -96,7 +96,12 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
-
+    public void checkToken(String token, String username) {
+        if(!authFacade.login(token).equals(username)) {
+            logger.error(String.format("failed to verify token for user %s", username));
+            throw new IllegalArgumentException(Error.makeTokenInvalidError(username));
+        }
+    }
     public Response createStore(String token, String founderUsername, String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
         try {
             checkToken(token, founderUsername);

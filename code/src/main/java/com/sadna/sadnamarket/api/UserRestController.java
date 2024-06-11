@@ -129,11 +129,10 @@ public class UserRestController {
     public Response loginUsingJwt(@RequestParam String username,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
-        System.out.println("aaaaaaaaaaaaaaaaa"+authorizationHeader);
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.checkToken(token,username);
+        return marketService.loginUsingToken(token,username);
     }
     @PostMapping("/logout")
     public Response logout(@RequestParam String username) {
