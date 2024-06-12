@@ -42,6 +42,7 @@ class BuyPolicyFacadeTest {
     private UserFacade userFacade;
     private ProductFacade productFacade;
     private BuyPolicyFacade buyPolicyFacade;
+    private IBuyPolicyRepository buyPolicyRepository;
     private DiscountPolicyFacade discountPolicyFacade;
     ObjectMapper objectMapper = new ObjectMapper();
     private SimpleFilterProvider idFilter;
@@ -83,7 +84,8 @@ class BuyPolicyFacadeTest {
         IProductRepository productRepo = new MemoryProductRepository();
         this.productFacade = new ProductFacade(productRepo);
 
-        this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
+        this.buyPolicyRepository = new MemoryBuyPolicyRepository();
+        this.buyPolicyFacade = new BuyPolicyFacade(buyPolicyRepository);
         this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
 
         this.storeFacade.setUserFacade(userFacade);
@@ -685,5 +687,20 @@ class BuyPolicyFacadeTest {
             Set<String> res = buyPolicyFacade.canBuy(0, cart, null);
             assertEquals(expected, res);
         }
+    }
+
+    @Test
+    void createPolicyFlyweight() throws JsonProcessingException {
+        Set<Integer> expected1 = Set.of(0, 1);
+        assertEquals(expected1, buyPolicyRepository.getAllPolicyIds()); // default
+
+        // adding a policy that already exists
+        buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Alcohol", List.of(BuyType.immidiatePurchase), 18, -1, "WillyTheChocolateDude");
+        assertEquals(expected1, buyPolicyRepository.getAllPolicyIds());
+
+        // adding a policy that does not exist
+        buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Chocolate", List.of(BuyType.immidiatePurchase), 18, -1, "WillyTheChocolateDude");
+        Set<Integer> expected2 = Set.of(0, 1, 2);
+        assertEquals(expected2, buyPolicyRepository.getAllPolicyIds());
     }
 }
