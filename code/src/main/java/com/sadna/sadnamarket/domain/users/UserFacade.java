@@ -412,26 +412,22 @@ public class UserFacade {
     }
 
 
-    private double calculateFinalPrice(String username,Map<Integer, List<ProductDataPrice>> storeApriceData){
-        logger.info("calculate final price for user {} with items {}",username,storeApriceData);
+    private double calculateFinalPrice(String username,List<ProductDataPrice> storePriceData){
+        logger.info("calculate final price for user {} with items {}",username,storePriceData);
         double sum=0;
-        for(List<ProductDataPrice> price: storeApriceData.values()){
-            for(ProductDataPrice prod: price){
-                sum=sum+prod.getNewPrice();
-            }
+        for(ProductDataPrice productDataPrice: storePriceData){
+            sum=sum+productDataPrice.getNewPrice();
         }
-        logger.info("finished calculate final price for user {} with items {} and got {}",username,storeApriceData, sum);
+        logger.info("finished calculate final price for user {} with items {} and got {}",username,storePriceData, sum);
         return sum;
     }
-    private double calculateOldPrice(String username,Map<Integer, List<ProductDataPrice>> storeApriceData){
-        logger.info("calculate old price for user {} with items {}",username,storeApriceData);
+    private double calculateOldPrice(String username,List<ProductDataPrice> storePriceData){
+        logger.info("calculate old price for user {} with items {}",username,storePriceData);
         double sum=0;
-        for(List<ProductDataPrice> price: storeApriceData.values()){
-            for(ProductDataPrice prod: price){
-                sum=sum+prod.getOldPrice();
-            }
+        for(ProductDataPrice productDataPrice: storePriceData){
+                sum=sum+productDataPrice.getOldPrice();
         }
-        logger.info("finished calculate old price for user {} with items {} and got {}",username,storeApriceData, sum);
+        logger.info("finished calculate old price for user {} with items {} and got {}",username,storePriceData, sum);
         return sum;
     }
 
@@ -439,34 +435,18 @@ public class UserFacade {
         logger.info("view cart for user {}",username);
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         storeFacade.checkCart(username, items);
-        Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(username, items);
-        List<ProductDataPrice> allProudctsData=getAllProductData(storeApriceData);
+        List<ProductDataPrice> storePriceData=storeFacade.calculatePrice(username, items);
         logger.info("finished view cart for user {}",username);
-        return new UserOrderDTO(allProudctsData,calculateOldPrice(username, storeApriceData),calculateFinalPrice(username, storeApriceData)); 
+        return new UserOrderDTO(storePriceData,calculateOldPrice(username, storePriceData),calculateFinalPrice(username, storePriceData)); 
     }
 
     public UserOrderDTO viewCart(int guestId) throws Exception {
         logger.info("view cart for guest {}",guestId);
         List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
         storeFacade.checkCart(null, items);
-        Map<Integer, List<ProductDataPrice>> storeApriceData=storeFacade.calculatePrice(null, items);
-        List<ProductDataPrice> allProudctsData=new ArrayList<ProductDataPrice>();
-        for(List<ProductDataPrice> price: storeApriceData.values()){
-            for(ProductDataPrice prod: price){
-                allProudctsData.add(prod);
-            }
-        }
+        List<ProductDataPrice> storeApriceData=storeFacade.calculatePrice(null, items);
         logger.info("finished view cart for guest {}",guestId);
-        return new UserOrderDTO(allProudctsData,calculateOldPrice(null, storeApriceData),calculateFinalPrice(null, storeApriceData));    
-    }
-    private List<ProductDataPrice> getAllProductData(Map<Integer, List<ProductDataPrice>> storePriceData){
-        List<ProductDataPrice> allProudctsData=new ArrayList<ProductDataPrice>();
-        for(List<ProductDataPrice> price: storePriceData.values()){
-            for(ProductDataPrice prod: price){
-                allProudctsData.add(prod);
-            }
-        }
-        return allProudctsData;
+        return new UserOrderDTO(storeApriceData,calculateOldPrice(null, storeApriceData),calculateFinalPrice(null, storeApriceData));    
     }
     public void purchaseCart(String username,CreditCardDTO creditCard,AddressDTO addressDTO) throws Exception {
         logger.info("purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
@@ -478,11 +458,10 @@ public class UserFacade {
         }catch (Exception e){
             throw new Exception("One or more stores did not accept your basket for the following reason: " + e.getMessage());
         }
-        Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(username, items);
-        List<ProductDataPrice> productList=getAllProductData(storeBag);
+        List<ProductDataPrice> productList=storeFacade.calculatePrice(username, items);
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
-        createUserOrders(storeBag,creditCard,supplyString,productList,username);
+        createUserOrders(productList,creditCard,supplyString,username);
         storeFacade.buyCart(username, items);
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
     }
@@ -497,12 +476,10 @@ public class UserFacade {
         }catch (Exception e){
             throw new Exception("One or more stores did not accept your basket for the following reason: " + e.getMessage());
         }
-        Map<Integer,List<ProductDataPrice>> storeBag=storeFacade.calculatePrice(null, items);
-        UserOrderDTO order= viewCart(guestId);
-        List<ProductDataPrice> productList= order.getProductsData();
+        List<ProductDataPrice> productList=storeFacade.calculatePrice(null, items);
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
-        createUserOrders(storeBag,creditCard,supplyString,productList,null);
+        createUserOrders(productList,creditCard,supplyString,null);
         storeFacade.buyCart(null, items);
         logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
     }
@@ -524,7 +501,7 @@ public class UserFacade {
         }
         logger.info("credit card is valid {}",creditCard);
     }
-    private void createUserOrders(Map<Integer,List<ProductDataPrice>> storeBag, CreditCardDTO creditCard, String supplyString, List<ProductDataPrice> productList,String username){
+    private void createUserOrders(List<ProductDataPrice> storeBag, CreditCardDTO creditCard, String supplyString,String username){
         logger.info("create user orders");
         SupplyService supply=SupplyService.getInstance();
         PaymentService payment = PaymentService.getInstance();
@@ -535,6 +512,7 @@ public class UserFacade {
                 throw new IllegalStateException(Error.makePurchasePaymentCannotBeCompletedForStoreError(storeId));
             }
             Map<Integer,List<ProductDataPrice>> productAmounts=new HashMap<>();
+            List<ProductDataPrice> productList=getStoreOrder(storeBag, storeId);
             productAmounts.put(storeId, productList);      
             int orderId=orderFacade.createOrder(productAmounts,username);
             if(username!=null)
@@ -564,16 +542,26 @@ public class UserFacade {
         logger.info("done make supplyment {}",supplyString);
         return supplyString;
     }
-    private Map<Integer,Double> getStorePrice(Map<Integer,List<ProductDataPrice>> storeBag){
+    private Map<Integer,Double> getStorePrice(List<ProductDataPrice> storeBag){
         Map<Integer,Double> productAmounts=new HashMap<>();
-        for(int storeId : storeBag.keySet()){
-            double payAmount = 0;
-            for(ProductDataPrice price : storeBag.get(storeId)){
-                payAmount += price.getNewPrice();
+        for(ProductDataPrice productDataPrice: storeBag){
+            if(productAmounts.containsKey(productDataPrice.getStoreId())){
+                productAmounts.put(productDataPrice.getStoreId(), productAmounts.get(productDataPrice.getStoreId())+productDataPrice.getNewPrice());
+            }else{
+                productAmounts.put(productDataPrice.getStoreId(), productDataPrice.getNewPrice());
             }
-            productAmounts.put(storeId, payAmount);
         }
         return productAmounts;
+    }
+    private List<ProductDataPrice> getStoreOrder(List<ProductDataPrice> allOrder,int store_id){
+        List<ProductDataPrice> storeOrder=new ArrayList<>();
+        for(ProductDataPrice productDataPrice: allOrder){
+            if(productDataPrice.getStoreId()==store_id){
+                storeOrder.add(productDataPrice);
+            }
+        }
+        return storeOrder;
+
     }
     //only for tests
     public List<CartItemDTO> getCartItems(int guest_id){

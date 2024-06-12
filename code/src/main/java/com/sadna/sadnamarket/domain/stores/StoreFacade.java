@@ -508,14 +508,14 @@ public class StoreFacade {
 
     // return a map from store id to a List that coontain object thats stores : id,
     // amount, original price and new price
-    public Map<Integer, List<ProductDataPrice>> calculatePrice(String username, List<CartItemDTO> cart) {
-        Map<Integer, List<ProductDataPrice>> mapPrice = new HashMap<>();
+    public List<ProductDataPrice> calculatePrice(String username, List<CartItemDTO> cart) {
+        List<ProductDataPrice> res = new ArrayList<>();
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
-            mapPrice.put(storeId, discountPolicyFacade.calculatePrice(storeId, cartByStore.get(storeId)));
+        res.addAll(discountPolicyFacade.calculatePrice(storeId, cartByStore.get(storeId)));
         }
-        return mapPrice;
-    }
+        return res;
+        }
 
     private boolean hasPermission(String username, int storeId, Permission permission) {
         if (!userFacade.isLoggedIn(username))
