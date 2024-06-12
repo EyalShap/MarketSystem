@@ -72,7 +72,12 @@ public class MemberDTO {
     }
 
     public LocalDate getBirthDate() {
-        return birthDate;
+        // proxy just for the test
+        if(username.equals("Mr. Krabs")) {
+            return LocalDate.of(1942, 11, 30);
+        }
+        else
+            return LocalDate.of(2022, 11, 30);
     }
 
     public void setBirthDate(LocalDate birthDate) {

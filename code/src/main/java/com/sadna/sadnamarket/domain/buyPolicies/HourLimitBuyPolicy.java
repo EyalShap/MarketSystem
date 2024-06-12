@@ -3,7 +3,9 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.service.Error;
 
+import java.time.Clock;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +14,14 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
     private LocalTime from;
     private LocalTime to; // null if no limit
 
-    HourLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, LocalTime from, LocalTime to) throws Exception {
+    HourLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, LocalTime from, LocalTime to) {
         super(id, buytypes, subject);
-        if(to.isBefore(from)) {
-            throw new Exception();
+        if(to != null && from != null && to.isBefore(from)) {
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("hour limit", from.toString(), to.toString()));
         }
         this.from = from;
         this.to = to;
+        setErrorDescription(Error.makeHourLimitBuyPolicyError(subject.getSubject(), from, to));
     }
 
     public HourLimitBuyPolicy() {
@@ -33,8 +36,12 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
         return true;
     }
 
+    public static LocalTime getCurrTime() {
+        return LocalTime.now();
+    }
+
     private boolean isTimeInLimit() {
-        LocalTime now = LocalTime.now();
+        LocalTime now = getCurrTime();
         if(to == null) {
             return now.isAfter(from);
         }
@@ -55,5 +62,10 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
 
     public void setTo(LocalTime to) {
         this.to = to;
+    }
+
+    @Override
+    protected boolean dependsOnUser() {
+        return false;
     }
 }

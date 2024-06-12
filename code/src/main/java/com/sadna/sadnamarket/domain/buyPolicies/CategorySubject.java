@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.service.Error;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ public class CategorySubject extends PolicySubject{
     private String category;
 
     public CategorySubject(String category) {
+        if(category == null || category.trim().equals(""))
+            throw new IllegalArgumentException(Error.makeEmptyCategoryError());
         this.category = category;
     }
 
@@ -31,6 +34,11 @@ public class CategorySubject extends PolicySubject{
     @Override
     public boolean isSubject(ProductDTO product) {
         return this.category.equals(product.getProductCategory());
+    }
+
+    @Override
+    public String getSubject() {
+        return category;
     }
 
     public String getCategory() {

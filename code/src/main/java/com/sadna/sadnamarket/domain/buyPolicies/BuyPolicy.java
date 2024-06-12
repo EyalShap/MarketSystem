@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.Member;
@@ -8,9 +9,10 @@ import com.sadna.sadnamarket.domain.users.MemberDTO;
 import java.util.List;
 import java.util.Map;
 
+@JsonFilter("idFilter")
 public abstract class BuyPolicy {
-    protected int id;
-    protected String errorDescription;
+    private int id;
+    private String errorDescription;
 
     BuyPolicy(int id) {
         this.id = id;
@@ -37,4 +39,6 @@ public abstract class BuyPolicy {
     public void setErrorDescription(String errorDescription) {
         this.errorDescription = errorDescription;
     }
+
+    protected abstract boolean dependsOnUser();
 }

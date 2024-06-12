@@ -5,6 +5,7 @@ import com.kosherjava.zmanim.hebrewcalendar.JewishDate;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -15,8 +16,9 @@ import java.util.Map;
 
 public class HolidayBuyPolicy extends SimpleBuyPolicy{
 
-    HolidayBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
+    public HolidayBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
         super(id, buytypes, subject);
+        this.setErrorDescription(Error.makeHolidayBuyPolicyError(subject.getSubject()));
     }
 
     public HolidayBuyPolicy() {
@@ -30,7 +32,7 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
         return true;
     }
 
-    public boolean isHoliday() {
+    public static boolean isHoliday() {
         JewishCalendar jewishCalendar = new JewishCalendar(LocalDate.now());
         return jewishCalendar.isRoshHashana() ||
                 jewishCalendar.isYomKippur() ||
@@ -41,4 +43,11 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
                 jewishCalendar.isPesach() ||
                 jewishCalendar.isShavuos();
     }
+
+    @Override
+    protected boolean dependsOnUser() {
+        return false;
+    }
+
+
 }

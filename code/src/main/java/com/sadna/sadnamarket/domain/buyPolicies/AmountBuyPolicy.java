@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.service.Error;
 
 import java.util.List;
 import java.util.Map;
@@ -11,17 +12,14 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
     private int from;
     private int to; // if this is equal to -1 there is no limit
 
-    AmountBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int from, int to) throws Exception {
+    AmountBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int from, int to) {
         super(id, buytypes, subject);
-        if(to != -1 && to < from) {
-            throw new Exception();
+        if(from < -1 || to < -1 || (to != -1 && to < from)) {
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("amount", String.valueOf(from), String.valueOf(to)));
         }
         this.from = from;
         this.to = to;
-    }
-
-    public AmountBuyPolicy(int id, List<BuyType> buytypes, PolicySubject policySubject) {
-        super(id, buytypes, policySubject);
+        this.setErrorDescription(Error.makeAmountBuyPolicyError(subject.getSubject(), from, to));
     }
 
     @Override
@@ -46,5 +44,10 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
 
     public void setTo(int to) {
         this.to = to;
+    }
+
+    @Override
+    protected boolean dependsOnUser() {
+        return false;
     }
 }
