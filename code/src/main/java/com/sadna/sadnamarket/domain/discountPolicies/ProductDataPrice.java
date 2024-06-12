@@ -2,11 +2,12 @@ package com.sadna.sadnamarket.domain.discountPolicies;
 
 public class ProductDataPrice {
     int id;
+    int storeId;
     int amount;
     double oldPrice;
     double newPrice;
 
-    public ProductDataPrice(int id, int amount, double oldPrice, double newPrice) {
+    public ProductDataPrice(int id,int storeId, int amount, double oldPrice, double newPrice) {
         this.id = id;
         this.amount = amount;
         this.oldPrice = oldPrice;
@@ -31,6 +32,9 @@ public class ProductDataPrice {
     // Getter for newPrice
     public double getNewPrice() {
         return newPrice;
+    }
+    public int getStoreId() {
+        return storeId;
     }
 
 }

@@ -24,7 +24,7 @@ public class DiscountManager {
         List<ProductDataPrice> listProductDataPrice = new ArrayList<>();
         for (CartItemDTO cartItemDTO : cart) {
             ProductDTO pDTO = productDTOMap.get(cartItemDTO.getProductId());
-            ProductDataPrice ProductDataPrice = new ProductDataPrice(cartItemDTO.getProductId(),
+            ProductDataPrice ProductDataPrice = new ProductDataPrice(cartItemDTO.getProductId(),cartItemDTO.getStoreId(),
                     cartItemDTO.getAmount(),
                     pDTO.getProductPrice(), pDTO.getProductPrice());
             listProductDataPrice.add(ProductDataPrice);
