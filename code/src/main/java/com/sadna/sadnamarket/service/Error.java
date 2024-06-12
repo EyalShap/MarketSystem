@@ -421,4 +421,8 @@ public class Error {
     public static String makePermissionError(int num) {
         return String.format("No permission is associated with number %d.", num);
     }
+
+    public static String makeUserCanNotCheckPermissionOfUserError(String actorUsername, String username, int storeId) {
+        return String.format("%s can not permissions of % in store %d.", actorUsername, username, storeId);
+    }
 }

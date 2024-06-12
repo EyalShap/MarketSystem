@@ -545,17 +545,12 @@ public class StoreFacade {
     }
 
     public boolean hasPermission(String actorUsername, String username, int storeId, Permission permission) {
-        if (!hasPermission(actorUsername, storeId, Permission.VIEW_ROLES))
-            return false;
-
         Store store = storeRepository.findStoreByID(storeId);
-        if (store.isStoreOwner(username))
-            return true;
+        if (!actorUsername.equals(username) && !store.isStoreOwner(actorUsername))
+            throw new IllegalArgumentException(Error.makeUserCanNotCheckPermissionOfUserError(actorUsername, username, storeId));
 
-        if (store.isStoreManager(username))
-            return userFacade.checkPremssionToStore(username, storeId, permission);
-
-        return false;
+        return store.isStoreOwner(username) ||
+                (store.isStoreManager(username) && userFacade.checkPremssionToStore(username, storeId, permission));
     }
 
     private boolean canAddOwnerToStore(int storeId, String currOwnerUsername, String newOwnerUsername) {
