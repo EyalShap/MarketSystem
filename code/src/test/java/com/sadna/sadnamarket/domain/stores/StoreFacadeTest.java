@@ -8,7 +8,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.buyPolicies.*;
+import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.MemoryDiscountPolicyRepository;
 import com.sadna.sadnamarket.domain.orders.IOrderRepository;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
@@ -22,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -64,7 +67,7 @@ class StoreFacadeTest {
         this.productFacade = new ProductFacade(productRepo);
 
         this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
-        this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
+        this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
 
         this.storeFacade.setUserFacade(userFacade);
         this.storeFacade.setOrderFacade(orderFacade);
@@ -79,13 +82,13 @@ class StoreFacadeTest {
     }
 
     private void registerUsers() {
-        authFacade.register("Mr. Krabs", "654321", "Eugene", "Krabs", "eugene@gmail.com", "0521957682");
+        authFacade.register("Mr. Krabs", "654321", "Eugene", "Krabs", "eugene@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
         authFacade.login("Mr. Krabs", "654321");
-        authFacade.register("WillyTheChocolateDude", "123456", "Willy", "Wonka", "willy@gmail.com", "0541095600");
+        authFacade.register("WillyTheChocolateDude", "123456", "Willy", "Wonka", "willy@gmail.com", "0541095600", LocalDate.of(1995, 3, 8));
         authFacade.login("WillyTheChocolateDude", "123456");
-        authFacade.register("Bob", "24680", "Bob", "Cohen", "bob@gmail.com", "0544219674");
+        authFacade.register("Bob", "24680", "Bob", "Cohen", "bob@gmail.com", "0544219674", LocalDate.of(2001, 12, 1));
         authFacade.login("Bob", "24680");
-        authFacade.register("Alice", "08642", "Alice", "Levi", "alice@gmail.com", "0523176455");
+        authFacade.register("Alice", "08642", "Alice", "Levi", "alice@gmail.com", "0523176455", LocalDate.of(2004, 1, 18));
     }
 
     private void addPermissions() {

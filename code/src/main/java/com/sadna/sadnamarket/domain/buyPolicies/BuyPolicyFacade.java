@@ -1,10 +1,6 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
-import com.sadna.sadnamarket.domain.discountPolicies.DiscountManager;
-import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicy;
-import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;

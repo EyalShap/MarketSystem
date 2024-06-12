@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public class XorCondition extends CompositeCondition{
-    public XorCondition(Condition conditionA, Condition conditionB) {
-        super(conditionA, conditionB);
+    public XorCondition(int id, Condition conditionA, Condition conditionB) {
+        super(id, conditionA, conditionB);
     }
 
     @Override

@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.MemoryDiscountPolicyRepository;
 import com.sadna.sadnamarket.domain.orders.IOrderRepository;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -60,10 +63,10 @@ class BuyPolicyFacadeTest {
     }
 
     private void generateUsers() {
-        authFacade.register("Mr. Krabs", "654321", "Eugene", "Krabs", "eugene@gmail.com", "0521957682");
-        authFacade.register(ownerUsername, "123456", "Willy", "Wonka", "willy@gmail.com", "0541095600");
+        authFacade.register("Mr. Krabs", "654321", "Eugene", "Krabs", "eugene@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
+        authFacade.register(ownerUsername, "123456", "Willy", "Wonka", "willy@gmail.com", "0541095600", LocalDate.of(1995, 12, 12));
         authFacade.login(ownerUsername, "123456");
-        authFacade.register("FourSeasonsOrlandoBaby", "654321", "Baby", "Orlando", "baby@gmail.com", "0528997287");
+        authFacade.register("FourSeasonsOrlandoBaby", "654321", "Baby", "Orlando", "baby@gmail.com", "0528997287", LocalDate.of(2002, 8, 19));
         authFacade.login("FourSeasonsOrlandoBaby", "654321");
     }
 
@@ -81,7 +84,7 @@ class BuyPolicyFacadeTest {
         this.productFacade = new ProductFacade(productRepo);
 
         this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
-        this.discountPolicyFacade = new DiscountPolicyFacade(productFacade);
+        this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
 
         this.storeFacade.setUserFacade(userFacade);
         this.storeFacade.setOrderFacade(orderFacade);

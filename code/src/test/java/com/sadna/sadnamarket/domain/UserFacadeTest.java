@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +58,7 @@ public class UserFacadeTest {
     private String testPassword="12";
     private int testStoreId;
     private int testStoreId2;
+    private LocalDate testDate=LocalDate.of(1990, 11, 11);
 
     @Before
     public void setUp() {
@@ -67,11 +69,11 @@ public class UserFacadeTest {
         orderFacade=mock(OrderFacade.class);
         this.userFacade=new UserFacade(iUserRepo, storeFacade,orderFacade);
         this.authFacade=new AuthFacade(iAuthRepo,userFacade);
-        authFacade.register(testUsername1,testPassword,"Idan","Idan","idan@gmail.com","0501118121");
+        authFacade.register(testUsername1,testPassword,"Idan","Idan","idan@gmail.com","0501118121",testDate);
         authFacade.login(testUsername1,testPassword);
-        authFacade.register(testUsername2,testPassword,"Shavit","Mor","shavit@gmail.com","05033303030");
+        authFacade.register(testUsername2,testPassword,"Shavit","Mor","shavit@gmail.com","05033303030",testDate);
         authFacade.login(testUsername2, testPassword);
-        authFacade.register(testUsername3,testPassword,"Nir","Mor","nir@gmail.com","05033303030");
+        authFacade.register(testUsername3,testPassword,"Nir","Mor","nir@gmail.com","05033303030",testDate);
         authFacade.login(testUsername3, testPassword);
         when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID  
         testStoreId=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
@@ -106,7 +108,7 @@ public class UserFacadeTest {
 
     @Test
     public void testLogin() {    
-        authFacade.register("yosi",testPassword,"sami","hatuka","sami@gmail.com","0501118121");
+        authFacade.register("yosi",testPassword,"sami","hatuka","sami@gmail.com","0501118121",testDate);
         authFacade.login("yosi",testPassword);
         assertTrue(userFacade.isLoggedIn("yosi"));
     }
@@ -125,12 +127,12 @@ public class UserFacadeTest {
 
     @Test
     public void testRegister() {
-        authFacade.register("Jimi",testPassword,"Jimi","hatuka","Jimi@gmail.com","0501118121");
+        authFacade.register("Jimi",testPassword,"Jimi","hatuka","Jimi@gmail.com","0501118121",testDate);
         assertDoesNotThrow(()-> iUserRepo.getMember("Jimi"));
     }
     @Test
     public void testRegisterWithSameUsername() {
-        assertThrows(IllegalArgumentException.class,()->  authFacade.register(testUsername1,"12","Idan","Idan","idan@gmail.com","0501118121"));
+        assertThrows(IllegalArgumentException.class,()->  authFacade.register(testUsername1,"12","Idan","Idan","idan@gmail.com","0501118121",testDate));
     }
 
 
@@ -289,8 +291,8 @@ public class UserFacadeTest {
         userFacade.addProductToCart(testUsername1, testStoreId, 2, 3);
         Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,2,7,5));
-        list1.add(new ProductDataPrice(2,3,8,5));
+        list1.add(new ProductDataPrice(1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
         ans.put(testStoreId, list1);
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
         UserOrderDTO res=userFacade.viewCart(testUsername1);
@@ -305,8 +307,8 @@ public class UserFacadeTest {
         Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
         List<ProductDataPrice> list2=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,2,7,5));
-        list2.add(new ProductDataPrice(2,3,8,5));
+        list1.add(new ProductDataPrice(1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
         ans.put(testStoreId, list1);
         ans.put(testStoreId2, list2);
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
@@ -322,8 +324,8 @@ public class UserFacadeTest {
         Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
         List<ProductDataPrice> list2=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,2,7,5));
-        list2.add(new ProductDataPrice(2,3,8,5));
+        list1.add(new ProductDataPrice(1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
         ans.put(testStoreId, list1);
         ans.put(testStoreId2, list2);
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);

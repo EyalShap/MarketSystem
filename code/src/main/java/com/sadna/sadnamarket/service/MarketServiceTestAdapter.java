@@ -15,6 +15,7 @@ import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class MarketServiceTestAdapter {
@@ -53,7 +54,7 @@ public class MarketServiceTestAdapter {
     }
 
     public Response signUp(String uuid, String email, String username, String passwordHash) {
-        Response resp = real.register(username, passwordHash, "John", "Doe", email, "052-052-0520");
+        Response resp = real.register(username, passwordHash, "John", "Doe", email, "052-052-0520",LocalDate.of(1988, 11, 7));
         if (resp.getError()) {
             return resp;
         }
@@ -96,7 +97,7 @@ public class MarketServiceTestAdapter {
 
     public Response searchProduct(String productName, double productPriceMin, double productPriceMax,
             String productCategory, int storeRating, int productRating) throws JsonProcessingException {
-        return real.getFilteredProducts("", null, productName, productPriceMin, productPriceMax, productCategory, productRating);
+        return real.getFilteredProducts( null, productName, productPriceMin, productPriceMax, productCategory, productRating);
     }
 
     public Response searchProductInStore(int storeId, String productName, double productPriceMin,
@@ -193,20 +194,20 @@ public class MarketServiceTestAdapter {
 
     public Response acceptOwnerAppointment(String token, String appointedUserId, int storeId, int requestId) {
         // return Response.createResponse(false, "true");
-        return real.acceptRequest(token, appointedUserId, requestId);
+        return real.acceptRequest(appointedUserId, requestId);
     }
 
     public Response acceptManagerAppointment(String token, String appointedUserId, int storeId, int requestId) {
         // return Response.createResponse(false, "true");
-        return real.acceptRequest(token, appointedUserId, requestId);
+        return real.acceptRequest(appointedUserId, requestId);
     }
 
     public Response rejectOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return Response.createResponse(false, "true"); // THIS ONE IS MISSING
+        return real.rejectRequest(appointedUserId, storeId);
     }
 
     public Response rejectManagerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return Response.createResponse(false, "true"); // THIS ONE IS MISSING
+        return real.rejectRequest(appointedUserId, storeId);
     }
 
     public Response changeManagerPermissions(String token, String userId, String managerId, int storeId,

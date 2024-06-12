@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 public class OrCondition extends CompositeCondition{
-    public OrCondition(Condition conditionA, Condition conditionB) {
-        super(conditionA, conditionB);
+    public OrCondition(int id, Condition conditionA, Condition conditionB) {
+        super(id, conditionA, conditionB);
     }
 
     @Override

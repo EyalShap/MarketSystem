@@ -1,9 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
-
-import org.springframework.cglib.core.Local;
-
 import java.time.LocalDate;
-import java.util.Date;
+
 
 public class MemberDTO {
     private String username;
@@ -22,14 +19,16 @@ public class MemberDTO {
         this.lastName = member.getLastName();
         this.emailAddress = member.getEmailAddress();
         this.phoneNumber = member.getPhoneNumber();
+        this.birthDate = member.getBirthday();
     }
 
-    public MemberDTO(String username, String firstName, String lastName, String emailAddress, String phoneNumber) {
+    public MemberDTO(String username, String firstName, String lastName, String emailAddress, String phoneNumber, LocalDate birthDate) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
     }
 
     public String getUsername() {

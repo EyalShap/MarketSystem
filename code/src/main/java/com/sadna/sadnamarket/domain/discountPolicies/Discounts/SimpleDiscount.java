@@ -7,19 +7,21 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import java.util.List;
 import java.util.Map;
 
-public class simpleDiscount implements Discount{
+public class SimpleDiscount extends Discount{
     //percentage is (100-0)
     private final double percentage;
     private String productName;
     private String categoryName;
     private boolean chosePath; // promise there is CategoryName Xor ProductName
-    private Condition condition;
+    private final Condition condition;
 
-    public simpleDiscount(double percentage, Condition condition){
+    public SimpleDiscount(int id, double percentage, Condition condition){
+        super(id);
         this.percentage = percentage;
         productName = null;
         categoryName = null;
         chosePath = false;
+        this.condition = condition;
     }
 
     public void setOnProductName(String productName) {

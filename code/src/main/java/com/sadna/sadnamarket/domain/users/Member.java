@@ -4,6 +4,7 @@ import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,14 +18,15 @@ public class Member extends IUser {
     private String phoneNumber;
     private List<UserRole> roles;
     private List<Integer> orders;
+    private LocalDate birthDate;
     private HashMap<Integer, Notification> notifes;
     private static final Logger logger = LogManager.getLogger(Member.class);
     private boolean isLoggedIn;
     private int notifyID;
 
-    public Member(String username, String firstName, String lastName, String emailAddress, String phoneNumber) {
-        logger.info("Entering Member constructor with parameters: username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}",
-                username, firstName, lastName, emailAddress, phoneNumber);
+    public Member(String username, String firstName, String lastName, String emailAddress, String phoneNumber,LocalDate birthDate) {
+        logger.info("Entering Member constructor with parameters: username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}, birthDate={}",
+                username, firstName, lastName, emailAddress, phoneNumber,birthDate);
         roles = new ArrayList<>();
         notifes = new HashMap<>();
         orders = new ArrayList<>();
@@ -306,6 +308,12 @@ public class Member extends IUser {
         logger.info("Entering getUserRoles");
         List<UserRole> result = roles;
         logger.info("Exiting getUserRoles with result={}", result);
+        return result;
+    }
+    public LocalDate getBirthday() {
+        logger.info("Entering getBirthday");
+        LocalDate result = birthDate;
+        logger.info("Exiting getBirthday with result={}", result);
         return result;
     }
 }

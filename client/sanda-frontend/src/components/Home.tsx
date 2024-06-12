@@ -1,9 +1,9 @@
-import React from 'react';
-import SearchBar from './Search';
+import React, { useContext, useEffect } from 'react';
 import ProductsBar from './ProductsBar';
-import { useState, createContext, useContext } from "react";
-import { Category } from '@mui/icons-material';
 import CategoriesBar from './CategoriesBar';
+import { enterAsGuest, loginUsingJwt } from '../API';
+import { AppContext } from '../App';
+import { set } from 'date-fns';
 
 const products = [
     { id: 1, name: 'Product 1', price: '10.00' },
@@ -19,14 +19,31 @@ const products = [
   ];
 
 const Home = () => {
-
+  const {isloggedin , setIsloggedin } = useContext(AppContext);
+    useEffect(() => {
+        const fetchData = async () => {
+          if(localStorage.getItem("guestId") !== null||isloggedin) return;
+          if(localStorage.getItem("token") !== null&& localStorage.getItem("username") !== "null"){
+            const resp=await loginUsingJwt(localStorage.getItem("username") as string, localStorage.getItem("token") as string);
+            if(!resp.error){
+             setIsloggedin(true);
+             return;
+            }
+            else{
+              alert("Session over please login again");
+            }
+          }
+          const guestId = await enterAsGuest();
+          localStorage.setItem("guestId", `${guestId}`);
+        };
+        fetchData();
+      }, []);
     return (
         <div>
             <h1>Our top products</h1>
             <ProductsBar products={products} />
             <h3>Our Top Categories</h3>
-            <CategoriesBar />
-            
+            <CategoriesBar />     
         </div>
     );
 };

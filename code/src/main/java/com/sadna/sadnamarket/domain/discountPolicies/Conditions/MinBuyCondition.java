@@ -7,10 +7,12 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import java.util.List;
 import java.util.Map;
 
-public class MinBuyCondition implements Condition{
+public class MinBuyCondition extends Condition{
+
     private final int minBuy;
 
-    public MinBuyCondition(int minBuy){
+    public MinBuyCondition(int id, int minBuy){
+        super(id);
         this.minBuy = minBuy;
     }
     @Override

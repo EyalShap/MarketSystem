@@ -72,10 +72,18 @@ public class StoreFacade {
             // this will not throw an exception since all the parameters are legal
             int policyId1 = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Alcohol", buyTypes1, 18, -1, founderUserName);
             int policyId2 = buyPolicyFacade.createCategoryHourLimitBuyPolicy("Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0), founderUserName);
+
+            // default buy policies (laws)
             buyPolicyFacade.addLawBuyPolicyToStore(founderUserName, storeId, policyId1);
             buyPolicyFacade.addLawBuyPolicyToStore(founderUserName, storeId, policyId2);
+
+            //adding kind of null discount
+            int condID = discountPolicyFacade.createTrueCondition(founderUserName);
+            int discountPolicyID = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(0, condID, founderUserName);
+            discountPolicyFacade.addDiscountPolicyToStore(storeId, discountPolicyID, founderUserName);
+
         }
-        catch (Exception e) {}
+        catch (Exception ignored) {}
         return storeId;
     }
 
@@ -435,13 +443,9 @@ public class StoreFacade {
         return sellerUsername;
     }*/
 
-    public void addDiscountPolicy(String username, int storeId, String args) {
-        if (!hasPermission(username, storeId, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(Error.makeStoreUserCannotAddDiscountPolicyError(username, storeId));
 
-        discountPolicyFacade.addDiscountPolicy(storeId, args);
 
-    }
+
 
     public int addOrderId(int storeId, int orderId) {
         storeRepository.findStoreByID(storeId).addOrderId(orderId);
@@ -516,7 +520,8 @@ public class StoreFacade {
 
     // return a map from store id to a List that coontain object thats stores : id,
     // amount, original price and new price
-    public Map<Integer, List<ProductDataPrice>> calculatePrice(String username, List<CartItemDTO> cart) {
+
+    public Map<Integer, List<ProductDataPrice>> calculatePrice(String username, List<CartItemDTO> cart) throws Exception {
         Map<Integer, List<ProductDataPrice>> mapPrice = new HashMap<>();
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {

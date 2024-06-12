@@ -222,6 +222,10 @@ public class Error {
         return String.format("User %s can not add discount policy to store with id %d.", username, storeId);
     }
 
+    public static String makeStoreUserCannotRemoveDiscountPolicyError(String username, int storeId){
+        return String.format("User %s can not remove discount policy to store with id %d.", username, storeId);
+    }
+
     public static String makeStoreNotValidAspectError(String value, String aspect){
         return String.format("%s is not a valid %s.", value, aspect);
     }
