@@ -63,4 +63,13 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
     protected boolean dependsOnUser() {
         return false;
     }
+
+    @Override
+    public String getPolicyDesc() {
+        if(minKg == -1)
+            return String.format("More than %f Kg of %s must be bought.", minKg, policySubject.getDesc());
+        if(maxKg == -1)
+            return String.format("You can not buy more than %f Kg of %s.", maxKg, policySubject.getDesc());
+        return String.format("%f - %f Kg of %s must be bought.", minKg, maxKg, policySubject.getDesc());
+    }
 }

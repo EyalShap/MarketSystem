@@ -41,6 +41,11 @@ public class CategorySubject extends PolicySubject{
         return category;
     }
 
+    @Override
+    public String getDesc() {
+        return category;
+    }
+
     public String getCategory() {
         return category;
     }

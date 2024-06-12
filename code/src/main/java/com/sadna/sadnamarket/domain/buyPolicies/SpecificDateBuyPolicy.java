@@ -7,7 +7,9 @@ import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
@@ -17,6 +19,8 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
 
     SpecificDateBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int day, int month, int year) {
         super(id, buytypes, subject);
+        if(day == -1 && month == -1 && year == -1)
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("specific date", "-"));
         if(day != -1 && (day < 1 || day > 31)) {
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("specific date", "day: " + day));
         }
@@ -81,5 +85,38 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
     @Override
     protected boolean dependsOnUser() {
         return false;
+    }
+
+    @Override
+    public String getPolicyDesc() {
+        StringBuilder date = new StringBuilder();
+        if (day != -1) {
+            date.append(day).append(getDaySuffix(day)).append(" ");
+        }
+        if (month != -1) {
+            if (date.length() > 0) {
+                date.append("of ");
+            }
+            Calendar calendar = Calendar.getInstance();
+            String monthName = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+            date.append(monthName + " ");
+        }
+        if (year != -1) {
+            date.append(year);
+        }
+
+        return String.format("%s can not be bought on %s.", policySubject.getDesc(), date.toString().trim());
+    }
+
+    private static String getDaySuffix(int day) {
+        if (day >= 11 && day <= 13) {
+            return "th";
+        }
+        switch (day % 10) {
+            case 1: return "st";
+            case 2: return "nd";
+            case 3: return "rd";
+            default: return "th";
+        }
     }
 }

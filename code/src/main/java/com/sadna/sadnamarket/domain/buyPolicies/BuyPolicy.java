@@ -41,4 +41,6 @@ public abstract class BuyPolicy {
     }
 
     protected abstract boolean dependsOnUser();
+
+    public abstract String getPolicyDesc();
 }

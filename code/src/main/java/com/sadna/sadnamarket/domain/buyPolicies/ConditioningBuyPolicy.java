@@ -31,4 +31,9 @@ public class ConditioningBuyPolicy extends CompositeBuyPolicy{
     protected boolean dependsOnUser() {
         return policy1.dependsOnUser() || policy2.dependsOnUser();
     }
+
+    @Override
+    public String getPolicyDesc() {
+        return "IF " + policy1.getPolicyDesc() + " THEN " + policy2.getPolicyDesc();
+    }
 }

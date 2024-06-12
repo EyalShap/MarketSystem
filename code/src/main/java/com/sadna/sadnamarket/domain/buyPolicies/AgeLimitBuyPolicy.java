@@ -17,7 +17,7 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
     AgeLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int minAge, int maxAge) {
         super(id, buytypes, subject);
 
-        if(minAge < -1 || maxAge < -1 || (maxAge != -1 && minAge > maxAge))
+        if((minAge == -1 && maxAge == -1) || minAge < -1 || maxAge < -1 || (maxAge != -1 && minAge > maxAge))
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("age limit", String.valueOf(minAge), String.valueOf(maxAge)));
 
         this.minAge = minAge;
@@ -37,6 +37,15 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
     @Override
     protected boolean dependsOnUser() {
         return true;
+    }
+
+    @Override
+    public String getPolicyDesc() {
+        if(minAge == -1)
+            return String.format("Buying %s is allowed only for users younger than %d.", policySubject.getDesc(), maxAge);
+        if(maxAge == -1)
+            return String.format("Buying %s is allowed only for users older than %d.", policySubject.getDesc(), minAge);
+        return String.format("Buying %s is allowed only for users at ages %d - %d.", policySubject.getDesc(), minAge, maxAge);
     }
 
     private boolean isAgeInLimit(LocalDate birthDate) {
