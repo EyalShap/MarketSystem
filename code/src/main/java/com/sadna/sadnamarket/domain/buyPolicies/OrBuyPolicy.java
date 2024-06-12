@@ -27,4 +27,9 @@ public class OrBuyPolicy extends CompositeBuyPolicy{
     protected boolean dependsOnUser() {
         return policy1.dependsOnUser() && policy2.dependsOnUser();
     }
+
+    @Override
+    public String getPolicyDesc() {
+        return policy1.getPolicyDesc() + " OR " + policy2.getPolicyDesc();
+    }
 }

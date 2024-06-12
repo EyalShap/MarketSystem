@@ -14,7 +14,7 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
 
     AmountBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int from, int to) {
         super(id, buytypes, subject);
-        if(from < -1 || to < -1 || (to != -1 && to < from)) {
+        if((from == -1 && to == -1) || from < -1 || to < -1 || (to != -1 && to < from)) {
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("amount", String.valueOf(from), String.valueOf(to)));
         }
         this.from = from;
@@ -49,5 +49,14 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
     @Override
     protected boolean dependsOnUser() {
         return false;
+    }
+
+    @Override
+    public String getPolicyDesc() {
+        if(from == -1)
+            return String.format("More than %d units of %s must be bought.", from, policySubject.getDesc());
+        if(to == -1)
+            return String.format("Less than %d units of %s must be bought.", to, policySubject.getDesc());
+        return String.format("%d - %d units of %s must be bought.", from, to, policySubject.getDesc());
     }
 }

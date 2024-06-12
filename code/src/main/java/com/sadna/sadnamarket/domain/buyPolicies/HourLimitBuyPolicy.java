@@ -16,6 +16,8 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
 
     HourLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, LocalTime from, LocalTime to) {
         super(id, buytypes, subject);
+        if(to == null && from == null)
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("hour limit", "-", "-"));
         if(to != null && from != null && to.isBefore(from)) {
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("hour limit", from.toString(), to.toString()));
         }
@@ -67,5 +69,14 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
     @Override
     protected boolean dependsOnUser() {
         return false;
+    }
+
+    @Override
+    public String getPolicyDesc() {
+        if(from == null)
+            return String.format("%s can only be bought before %s.", policySubject.getDesc(), to.toString());
+        if(to == null)
+            return String.format("%s can only be bought after %s.", policySubject.getDesc(), from.toString());
+        return String.format("%s can only be bought at %s - %s.", policySubject.getDesc(), from.toString(), to.toString());
     }
 }

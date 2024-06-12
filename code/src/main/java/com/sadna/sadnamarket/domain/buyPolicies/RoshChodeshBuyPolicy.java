@@ -36,4 +36,9 @@ public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
     protected boolean dependsOnUser() {
         return false;
     }
+
+    @Override
+    public String getPolicyDesc() {
+        return String.format("%s can not be bought on Rosh Chodesh.", policySubject.getDesc());
+    }
 }

@@ -36,6 +36,11 @@ public class ProductSubject extends PolicySubject{
         return String.valueOf(productId);
     }
 
+    @Override
+    public String getDesc() {
+        return String.format("product with id %d", productId);
+    }
+
 
     public int getProductId() {
         return productId;
@@ -44,4 +49,6 @@ public class ProductSubject extends PolicySubject{
     public void setProductId(int productId) {
         this.productId = productId;
     }
+
+
 }
