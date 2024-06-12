@@ -374,6 +374,16 @@ public class UserFacade {
         return permissionsInRole;
 
     }
+
+    public List<Permission> getMemberPermissionsEnum(String userName, int storeId){
+        List<Integer> permissionNums = getMemberPermissions(userName, storeId);
+        List<Permission> permissions = new ArrayList<>();
+        for(int permission : permissionNums) {
+            permissions.add(Permission.getEnumByInt(permission));
+        }
+        return permissions;
+    }
+
     public List<String> getMemberRoles(String userName){
         logger.info("get user roles for {}",userName);
         Member member=iUserRepo.getMember(userName);

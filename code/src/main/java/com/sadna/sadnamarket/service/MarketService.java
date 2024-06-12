@@ -1233,4 +1233,16 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    public Response getAllPermissions(String token, String actorUsername, int storeId, String actionUsername){
+        try{
+            checkToken(token, actorUsername);
+            logger.info(String.format("%s checked %s permissions in store %d.", actorUsername, actionUsername, storeId));
+            List<Permission> res = storeFacade.getUserPermissions(actorUsername, actionUsername, storeId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(res));
+        }catch(Exception e){
+            logger.error("getAllPermissions failed for username: {}. Error: {}", actorUsername, e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }

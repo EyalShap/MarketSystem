@@ -586,4 +586,12 @@ public class StoreFacade {
     public Set<Integer> getAllStoreIds() {
         return storeRepository.getAllStoreIds();
     }
+
+    public List<Permission> getUserPermissions(String actorUsername, String username, int storeId) {
+        Store store = storeRepository.findStoreByID(storeId);
+        if (!actorUsername.equals(username) && !store.isStoreOwner(actorUsername))
+            throw new IllegalArgumentException(Error.makeUserCanNotCheckPermissionOfUserError(actorUsername, username, storeId));
+
+        return userFacade.getMemberPermissionsEnum(username, storeId);
+    }
 }
