@@ -323,4 +323,8 @@ public class ProductFacade {
             throw e;
         }
     }
+
+    public boolean productExists(int productId) {
+        return productRepository.isExistProduct(productId);
+    }
 }

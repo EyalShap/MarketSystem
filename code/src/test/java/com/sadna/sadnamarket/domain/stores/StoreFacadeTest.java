@@ -18,14 +18,15 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.*;
 import com.sadna.sadnamarket.service.Error;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mockStatic;
 
 class StoreFacadeTest {
     private StoreFacade storeFacade;
@@ -46,7 +47,7 @@ class StoreFacadeTest {
         registerUsers();
         generateStore0();
         addPermissions();
-        addProducts();
+        addProducts0();
     }
 
     private void setUpFacades() {
@@ -106,10 +107,15 @@ class StoreFacadeTest {
         storeFacade.addManagerPermission("WillyTheChocolateDude", "Mr. Krabs", 0, permissions);
     }
 
-    private void addProducts() {
+    private void addProducts0() {
         storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Shokolad Parah", 1000, 5.5, "Chocolate", 4,2);
         storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Kif Kef", 982, 4.2, "Chocolate", 4.3,2);
         storeFacade.addProductToStore("WillyTheChocolateDude", 0, "Klik Cariot", 312, 7, "Chocolate", 5, 2);
+    }
+
+    private void addProducts1() {
+        storeFacade.addProductToStore("Mr. Krabs", 1, "Beer", 1000, 12, "Alcohol", 4,1);
+        storeFacade.addProductToStore("Mr. Krabs", 1, "Wine", 1000, 50, "Alcohol", 4.7,1);
     }
 
     private StoreInfo generateStore0Info() {
@@ -152,13 +158,18 @@ class StoreFacadeTest {
         storeFacade.createStore("WillyTheChocolateDude", "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
     }
 
-    private void generateStore1() {
+    private void generateStore1() throws JsonProcessingException {
         LocalTime openingHour = LocalTime.of(9, 0);
         LocalTime closingHour = LocalTime.of(20, 0);
         LocalTime fridayClosingHour = LocalTime.of(15, 0);
         LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
         LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
         storeFacade.createStore("Mr. Krabs", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120", openingHours, closingHours);
+        addProducts1();
+        int policyId1 = buyPolicyFacade.createCategoryHolidayBuyPolicy("Chocolate", List.of(BuyType.immidiatePurchase), "WillyTheChocolateDude");
+        int policyId2 = buyPolicyFacade.createProductAmountBuyPolicy(2, List.of(BuyType.immidiatePurchase), 3, 10, "WillyTheChocolateDude");
+        int policyId3 = buyPolicyFacade.createOrBuyPolicy(policyId1, policyId2, "WillyTheChocolateDude");
+        buyPolicyFacade.addBuyPolicyToStore("WillyTheChocolateDude", 0, policyId3);
     }
 
     @Test
@@ -706,8 +717,8 @@ class StoreFacadeTest {
     @Test
     void getStoreOrderHistory() throws Exception {
         // This will hopefully work on v2
-
-        /*SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
+/*
+        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         SupplyService.getInstance().setController(supplyMock);
@@ -894,8 +905,120 @@ class StoreFacadeTest {
     }
 
     @Test
-    void checkCart() {
-        // in v2
+    void checkCartOnHoliday() throws JsonProcessingException {
+        try (MockedStatic<HolidayBuyPolicy> mocked1 = mockStatic(HolidayBuyPolicy.class)) {
+            mocked1.when(HolidayBuyPolicy::isHoliday).thenReturn(true);
+
+            generateStore1(); // holiday -> amount(2, 3-10)
+
+            List<CartItemDTO> cart1 = new ArrayList<>();
+            cart1.add(new CartItemDTO(0, 0, 10));
+            cart1.add(new CartItemDTO(0, 2, 8));
+            assertDoesNotThrow(() -> {storeFacade.checkCart(null, cart1);});
+
+            List<CartItemDTO> cart2 = new ArrayList<>();
+            cart2.add(new CartItemDTO(0, 0, 10));
+            cart2.add(new CartItemDTO(0, 2, 18));
+            IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
+                storeFacade.checkCart(null, cart2);
+            });
+            BuyPolicy policy1 = buyPolicyFacade.getBuyPolicy(2);
+            BuyPolicy policy2 = buyPolicyFacade.getBuyPolicy(3);
+            assertEquals(Error.makeOrBuyPolicyError(policy1.getErrorDescription(), policy2.getErrorDescription()), expected.getMessage());
+        }
+    }
+
+    @Test
+    void checkCartNotHoliday() throws JsonProcessingException {
+        try (MockedStatic<HolidayBuyPolicy> mocked1 = mockStatic(HolidayBuyPolicy.class)) {
+            mocked1.when(HolidayBuyPolicy::isHoliday).thenReturn(false);
+
+            generateStore1(); // holiday -> amount(2, 3-10)
+
+            List<CartItemDTO> cart1 = new ArrayList<>();
+            cart1.add(new CartItemDTO(0, 0, 10));
+            cart1.add(new CartItemDTO(0, 2, 18));
+            assertDoesNotThrow(() -> {storeFacade.checkCart(null, cart1);});
+        }
+    }
+
+    @Test
+    void checkCartOnHolidayWithAlcohol() throws JsonProcessingException {
+        try (MockedStatic<HolidayBuyPolicy> mocked1 = mockStatic(HolidayBuyPolicy.class);
+             MockedStatic<HourLimitBuyPolicy> mocked2 = mockStatic(HourLimitBuyPolicy.class)) {
+            mocked1.when(HolidayBuyPolicy::isHoliday).thenReturn(true);
+            mocked2.when(HourLimitBuyPolicy::getCurrTime).thenReturn(LocalTime.of(12, 0));
+
+            generateStore1(); // holiday -> amount(2, 3-10)
+
+            List<CartItemDTO> cart1 = new ArrayList<>();
+            cart1.add(new CartItemDTO(0, 0, 10));
+            cart1.add(new CartItemDTO(0, 2, 8));
+            cart1.add(new CartItemDTO(1, 3, 1));
+            assertDoesNotThrow(() -> {storeFacade.checkCart("Mr. Krabs", cart1);});
+
+            List<CartItemDTO> cart2 = new ArrayList<>();
+            cart1.add(new CartItemDTO(0, 2, 18));
+            cart1.add(new CartItemDTO(1, 3, 1));
+            IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
+                storeFacade.checkCart(null, cart1);
+            });
+
+            BuyPolicy policy1 = buyPolicyFacade.getBuyPolicy(2);
+            BuyPolicy policy2 = buyPolicyFacade.getBuyPolicy(3);
+            String expectedErr = Error.makeAgeLimitBuyPolicyError("Alcohol", 18, -1) + "\n" +
+                    Error.makeOrBuyPolicyError(policy1.getErrorDescription(), policy2.getErrorDescription());
+
+            assertEquals(expectedErr, expected.getMessage());
+        }
+    }
+
+    @Test
+    void checkCartWithAlcoholNotHoliday() throws JsonProcessingException {
+        try (MockedStatic<HolidayBuyPolicy> mocked1 = mockStatic(HolidayBuyPolicy.class);
+             MockedStatic<HourLimitBuyPolicy> mocked2 = mockStatic(HourLimitBuyPolicy.class)) {
+            mocked1.when(HolidayBuyPolicy::isHoliday).thenReturn(false);
+            mocked2.when(HourLimitBuyPolicy::getCurrTime).thenReturn(LocalTime.of(12, 0));
+
+            generateStore1(); // holiday -> amount(2, 3-10)
+
+            List<CartItemDTO> cart1 = new ArrayList<>();
+            cart1.add(new CartItemDTO(0, 0, 10));
+            cart1.add(new CartItemDTO(0, 2, 98));
+            cart1.add(new CartItemDTO(1, 3, 1));
+            assertDoesNotThrow(() -> {storeFacade.checkCart("Mr. Krabs", cart1);});
+
+            IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
+                storeFacade.checkCart(null, cart1);
+            });
+
+            String expectedErr = Error.makeAgeLimitBuyPolicyError("Alcohol", 18, -1);
+            assertEquals(expectedErr, expected.getMessage());
+        }
+    }
+
+    @Test
+    void checkCartNotInStock() throws JsonProcessingException {
+        try (MockedStatic<HolidayBuyPolicy> mocked1 = mockStatic(HolidayBuyPolicy.class);
+             MockedStatic<HourLimitBuyPolicy> mocked2 = mockStatic(HourLimitBuyPolicy.class)) {
+            mocked1.when(HolidayBuyPolicy::isHoliday).thenReturn(false);
+            mocked2.when(HourLimitBuyPolicy::getCurrTime).thenReturn(LocalTime.of(12, 0));
+
+            generateStore1(); // holiday -> amount(2, 3-10)
+
+            List<CartItemDTO> cart1 = new ArrayList<>();
+            cart1.add(new CartItemDTO(0, 0, 100000));
+            cart1.add(new CartItemDTO(0, 2, 5));
+            cart1.add(new CartItemDTO(1, 3, 100000));
+
+            IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
+                storeFacade.checkCart("Mr. Krabs", cart1);
+            });
+
+            String expectedErr = Error.makeNotEnoughInStcokError(0, 0, 100000, 1000) + "\n";
+            expectedErr += Error.makeNotEnoughInStcokError(1, 3, 100000, 1000);
+            assertEquals(expectedErr, expected.getMessage());
+        }
     }
 
     @Test

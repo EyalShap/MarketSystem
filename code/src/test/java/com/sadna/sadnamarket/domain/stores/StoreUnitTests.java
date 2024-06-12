@@ -561,7 +561,7 @@ class StoreUnitTests {
         store0.addProduct(2, 1000);
         store0.addProduct(3, 1000);
 
-        assertEquals("",store0.checkCart(cart));
+        assertEquals(new HashSet<>(),store0.checkCart(cart));
     }
 
     @Test

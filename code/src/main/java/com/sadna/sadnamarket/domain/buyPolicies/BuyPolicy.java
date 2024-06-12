@@ -11,8 +11,8 @@ import java.util.Map;
 
 @JsonFilter("idFilter")
 public abstract class BuyPolicy {
-    protected int id;
-    protected String errorDescription;
+    private int id;
+    private String errorDescription;
 
     BuyPolicy(int id) {
         this.id = id;
@@ -39,4 +39,6 @@ public abstract class BuyPolicy {
     public void setErrorDescription(String errorDescription) {
         this.errorDescription = errorDescription;
     }
+
+    protected abstract boolean dependsOnUser();
 }

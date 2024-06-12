@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -28,9 +29,9 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
-    public BuyPolicy findBuyPolicyByID(int policyId) throws Exception {
+    public BuyPolicy findBuyPolicyByID(int policyId) {
         if(!buyPolicyExists(policyId))
-            throw new Exception();
+            throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
 
         return buyPolicies.get(policyId);
     }
@@ -47,7 +48,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
-    public int addProductAmountBuyPolicy(int productId, List<BuyType> buytypes, int min, int max) throws Exception {
+    public int addProductAmountBuyPolicy(int productId, List<BuyType> buytypes, int min, int max) throws JsonProcessingException {
         BuyPolicy newPolicy = new AmountBuyPolicy(nextId, buytypes, new ProductSubject(productId), min, max);
         return addPolicyToMaps(newPolicy);
     }
@@ -59,7 +60,7 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
-    public int addCategoryHourLimitBuyPolicy(String category, List<BuyType> buytypes, LocalTime from, LocalTime to) throws Exception {
+    public int addCategoryHourLimitBuyPolicy(String category, List<BuyType> buytypes, LocalTime from, LocalTime to) throws JsonProcessingException {
         BuyPolicy newPolicy = new HourLimitBuyPolicy(nextId, buytypes, new CategorySubject(category), from, to);
         return addPolicyToMaps(newPolicy);
     }

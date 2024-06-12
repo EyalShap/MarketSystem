@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.IgnoredPropertyException;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountManager;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicy;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
@@ -11,6 +12,7 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
+import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalTime;
 import java.util.*;
@@ -39,109 +41,114 @@ public class BuyPolicyFacade {
         this.storeFacade = storeFacade;
     }
 
-    public BuyPolicy getBuyPolicy(int policyId) throws Exception {
+    public BuyPolicy getBuyPolicy(int policyId) {
         return buyPolicyRepository.findBuyPolicyByID(policyId);
+    }
+
+    private void checkUserAndProduct(int productId, String username) {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
+        if(!productFacade.productExists(productId))
+            throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
     }
 
     // only the ones that are in the requirements for now, we can add more if needed
     public int createProductKgBuyPolicy(int productId, List<BuyType> buytypes, double min, double max, String username) throws JsonProcessingException {
-        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
-
+        checkUserAndProduct(productId, username);
         return buyPolicyRepository.addProductKgBuyPolicy(productId, buytypes, min, max);
     }
 
-    public int createProductAmountBuyPolicy(int productId, List<BuyType> buytypes, int min, int max, String username) throws Exception {
-        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
-
+    public int createProductAmountBuyPolicy(int productId, List<BuyType> buytypes, int min, int max, String username) throws JsonProcessingException {
+        checkUserAndProduct(productId, username);
         return buyPolicyRepository.addProductAmountBuyPolicy(productId, buytypes, min, max);
     }
 
-    public int createCategoryAgeLimitBuyPolicy(String category, List<BuyType> buytypes, int min, int max, String username) throws Exception {
+    public int createCategoryAgeLimitBuyPolicy(String category, List<BuyType> buytypes, int min, int max, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
         return buyPolicyRepository.addCategoryAgeLimitBuyPolicy(category, buytypes, min, max);
     }
 
-    public int createCategoryHourLimitBuyPolicy(String category, List<BuyType> buytypes, LocalTime from, LocalTime to, String username) throws Exception {
+    public int createCategoryHourLimitBuyPolicy(String category, List<BuyType> buytypes, LocalTime from, LocalTime to, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
         return buyPolicyRepository.addCategoryHourLimitBuyPolicy(category, buytypes, from, to);
     }
 
-    public int createCategoryRoshChodeshBuyPolicy(String category, List<BuyType> buytypes, String username) throws Exception {
+    public int createCategoryRoshChodeshBuyPolicy(String category, List<BuyType> buytypes, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
         return buyPolicyRepository.addCategoryRoshChodeshBuyPolicy(category, buytypes);
     }
 
-    public int createCategoryHolidayBuyPolicy(String category, List<BuyType> buytypes, String username) throws Exception {
+    public int createCategoryHolidayBuyPolicy(String category, List<BuyType> buytypes, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
         return buyPolicyRepository.addCategoryHolidayBuyPolicy(category, buytypes);
     }
 
-    public int createAndBuyPolicy(int policyId1, int policyId2, String username) throws Exception {
+    public int createAndBuyPolicy(int policyId1, int policyId2, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
         BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
         BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
         return buyPolicyRepository.addAndBuyPolicy(policy1, policy2);
     }
 
-    public int createOrBuyPolicy(int policyId1, int policyId2, String username) throws Exception {
+    public int createOrBuyPolicy(int policyId1, int policyId2, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
         BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
         BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
         return buyPolicyRepository.addOrBuyPolicy(policy1, policy2);
     }
 
-    public int createConditioningBuyPolicy(int policyId1, int policyId2, String username) throws Exception {
+    public int createConditioningBuyPolicy(int policyId1, int policyId2, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create buy policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
         BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
         BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
         return buyPolicyRepository.addConditioningBuyPolicy(policy1, policy2);
     }
 
-    public void addBuyPolicyToStore(String username, int storeId, int policyId) throws Exception {
+    public void addBuyPolicyToStore(String username, int storeId, int policyId) {
         if (!storeFacade.isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-        if (!storeFacade.hasPermission(username, storeId, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(String.format("User %s can not add buy policy %d to store %d.", username, policyId, storeId));
+            throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotAddBuyPolicyError(username, storeId));
         if(!buyPolicyRepository.buyPolicyExists(policyId))
-            throw new Exception();
+            throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
         if(!mapper.containsKey(storeId))
             mapper.put(storeId, new BuyPolicyManager(this));
         mapper.get(storeId).addBuyPolicy(policyId);
     }
 
-    public void removePolicyFromStore(String username, int storeId, int policyId) throws Exception {
+    public void addLawBuyPolicyToStore(String username, int storeId, int policyId) {
         if (!storeFacade.isStoreActive(storeId))
-            throw new IllegalArgumentException(String.format("A store with id %d is not active.", storeId));
-        if (!storeFacade.hasPermission(username, storeId, Permission.REMOVE_BUY_POLICY))
-            throw new IllegalArgumentException(String.format("User %s can not add buy policy %d to store %d.", username, policyId, storeId));
+            throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotAddBuyPolicyError(username, storeId));
+        if(!buyPolicyRepository.buyPolicyExists(policyId))
+            throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
         if(!mapper.containsKey(storeId))
-            throw new Exception();
-        mapper.get(storeId).removeBuyPolicy(policyId);
+            mapper.put(storeId, new BuyPolicyManager(this));
+        mapper.get(storeId).addLawBuyPolicy(policyId);
+    }
+
+    public void removePolicyFromStore(String username, int storeId, int policyId) {
+        if (!storeFacade.isStoreActive(storeId))
+            throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+        if (!storeFacade.hasPermission(username, storeId, Permission.REMOVE_BUY_POLICY))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotRemoveBuyPolicyError(username, storeId));
+        if(mapper.containsKey(storeId))
+            mapper.get(storeId).removeBuyPolicy(policyId);
     }
 
     private boolean hasPermission(String username, Permission permission) {
@@ -153,7 +160,7 @@ public class BuyPolicyFacade {
 
     // --------------------------------------------------------------------------------
 
-    public String canBuy(int storeId, List<CartItemDTO> cart, String username) throws Exception {
+    public Set<String> canBuy(int storeId, List<CartItemDTO> cart, String username) {
         BuyPolicyManager buyPolicyManager = mapper.get(storeId);
         MemberDTO user;
         try {
@@ -172,6 +179,13 @@ public class BuyPolicyFacade {
             res.put(productId, productFacade.getProductDTO(productId));
         }
         return res;
+    }
+
+    public boolean hasPolicy(int storeId, int policyId) {
+        if(!mapper.containsKey(storeId))
+            return false;
+        BuyPolicyManager manager = mapper.get(storeId);
+        return manager.hasPolicy(policyId);
     }
 
 }

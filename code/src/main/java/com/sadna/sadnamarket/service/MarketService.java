@@ -489,6 +489,19 @@ public class MarketService {
         }
     }
 
+    public Response addLawBuyPolicyToStore(String token, String username, int storeId, int policyId) {
+        try {
+            checkToken(token, username);
+            buyPolicyFacade.addLawBuyPolicyToStore(username, storeId, policyId);
+            logger.info(String.format("User %s added law buy policy %d to store %d.", username, storeId, policyId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("addLawBuyPolicyToStore: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response removeBuyPolicyFromStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);

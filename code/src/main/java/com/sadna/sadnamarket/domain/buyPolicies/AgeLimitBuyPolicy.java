@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -15,12 +16,13 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
 
     AgeLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int minAge, int maxAge) {
         super(id, buytypes, subject);
+
+        if(minAge < -1 || maxAge < -1 || (maxAge != -1 && minAge > maxAge))
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("age limit", String.valueOf(minAge), String.valueOf(maxAge)));
+
         this.minAge = minAge;
         this.maxAge = maxAge;
-    }
-
-    public AgeLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject policySubject) {
-        super(id, buytypes, policySubject);
+        this.setErrorDescription(Error.makeAgeLimitBuyPolicyError(subject.getSubject(), minAge, maxAge));
     }
 
     @Override
@@ -29,6 +31,11 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
             return (user != null) && isAgeInLimit(user.getBirthDate());
         }
         
+        return true;
+    }
+
+    @Override
+    protected boolean dependsOnUser() {
         return true;
     }
 

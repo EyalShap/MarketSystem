@@ -72,8 +72,8 @@ public class StoreFacade {
             // this will not throw an exception since all the parameters are legal
             int policyId1 = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Alcohol", buyTypes1, 18, -1, founderUserName);
             int policyId2 = buyPolicyFacade.createCategoryHourLimitBuyPolicy("Alcohol", buyTypes2, LocalTime.of(6, 0), LocalTime.of(23, 0), founderUserName);
-            buyPolicyFacade.addBuyPolicyToStore(founderUserName, storeId, policyId1);
-            buyPolicyFacade.addBuyPolicyToStore(founderUserName, storeId, policyId2);
+            buyPolicyFacade.addLawBuyPolicyToStore(founderUserName, storeId, policyId1);
+            buyPolicyFacade.addLawBuyPolicyToStore(founderUserName, storeId, policyId2);
         }
         catch (Exception e) {}
         return storeId;
@@ -458,24 +458,23 @@ public class StoreFacade {
         return cartByStore;
     }
 
-    public void checkCart(String username, List<CartItemDTO> cart) throws Exception {
+    public void checkCart(String username, List<CartItemDTO> cart) {
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
-        String error = "";
+        Set<String> error = new HashSet<>();
         for (int storeId : cartByStore.keySet()) {
             Store store = storeRepository.findStoreByID(storeId);
             synchronized (store.getProductAmounts()) {
-                String newError1 = store.checkCart(cartByStore.get(storeId));
-                if (!newError1.equals("")) {
-                    error = error + newError1 + "\n";
-                }
-                String newError2 = buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username);
-                if (!newError2.equals(""))
-                    error = error + newError2 + "\n\n";
+                Set<String> newError1 = store.checkCart(cartByStore.get(storeId));
+                if (newError1.size() != 0)
+                    error.addAll(newError1);
+                Set<String> newError2 = buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username);
+                if (newError2.size() != 0)
+                    error.addAll(newError2);
             }
         }
 
-        if (!error.equals("")) {
-            throw new Exception(error);
+        if (error.size() != 0) {
+            throw new IllegalArgumentException(String.join("\n", error));
         }
 
     }
@@ -503,13 +502,15 @@ public class StoreFacade {
         return store.isStoreManager(infoUsername);
     }
 
-    public synchronized void buyCart(String username, List<CartItemDTO> cart) throws Exception {
+    public synchronized void buyCart(String username, List<CartItemDTO> cart) {
         checkCart(username, cart);
 
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
             Store store = storeRepository.findStoreByID(storeId);
-            store.updateStock(cartByStore.get(storeId));
+            Set<String> error = store.updateStock(cartByStore.get(storeId));
+                if(error.size() != 0)
+                    throw new IllegalArgumentException(String.join("\n", error));
         }
     }
 

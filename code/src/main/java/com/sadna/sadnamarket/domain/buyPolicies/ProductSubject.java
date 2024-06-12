@@ -31,6 +31,11 @@ public class ProductSubject extends PolicySubject{
         return product.getProductID() == this.productId;
     }
 
+    @Override
+    public String getSubject() {
+        return String.valueOf(productId);
+    }
+
 
     public int getProductId() {
         return productId;

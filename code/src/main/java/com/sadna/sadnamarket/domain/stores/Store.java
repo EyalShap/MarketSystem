@@ -128,16 +128,17 @@ public class Store {
      * }
      */
 
-    public void updateStock(List<CartItemDTO> cart) {
+    public Set<String> updateStock(List<CartItemDTO> cart) {
         synchronized (productAmounts) {
-            String checkCartRes = checkCart(cart);
-            if (!checkCartRes.equals(""))
-                throw new IllegalArgumentException(checkCartRes);
+            Set<String> checkCartRes = checkCart(cart);
+            if (checkCartRes.size() != 0)
+                return checkCartRes;
 
             for (CartItemDTO item : cart) {
                 int newAmount = productAmounts.get(item.getProductId()) - item.getAmount();
                 setProductAmounts(item.getProductId(), newAmount);
             }
+            return new HashSet<>();
         }
     }
 
@@ -231,17 +232,19 @@ public class Store {
         return now.toLocalTime().isAfter(dayOpeningHour) && now.toLocalTime().isBefore(dayClosingHour);
     }*/
 
-    public String checkCart(List<CartItemDTO> cart) {
-        String error = "";
+    public Set<String> checkCart(List<CartItemDTO> cart) {
+        Set<String> error = new HashSet<>();
         synchronized (productAmounts) {
             synchronized (lock) {
-                if (!isActive)
-                    return Error.makeStoreClosedError(storeId);
+                if (!isActive) {
+                    error.add(Error.makeStoreClosedError(storeId));
+                    return error;
+                }
                 for (CartItemDTO item : cart) {
                     if (!productExists(item.getProductId()))
-                        error += Error.makeProductDoesntExistInStoreError(storeId, item.getProductId()) + "\n";
+                        error.add(Error.makeProductDoesntExistInStoreError(storeId, item.getProductId()));
                     else if (item.getAmount() > productAmounts.get(item.getProductId()))
-                        error += Error.makeNotEnoughInStcokError(storeId, item.getProductId(), item.getAmount(), productAmounts.get(item.getProductId())) + "\n";
+                        error.add(Error.makeNotEnoughInStcokError(storeId, item.getProductId(), item.getAmount(), productAmounts.get(item.getProductId())));
                 }
                 return error;
             }
