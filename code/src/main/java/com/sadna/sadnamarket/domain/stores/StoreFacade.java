@@ -539,6 +539,15 @@ public class StoreFacade {
         return false;
     }
 
+    public boolean hasPermission(String actorUsername, String username, int storeId, Permission permission) {
+        Store store = storeRepository.findStoreByID(storeId);
+        if (!actorUsername.equals(username) && !store.isStoreOwner(actorUsername))
+            throw new IllegalArgumentException(Error.makeUserCanNotCheckPermissionOfUserError(actorUsername, username, storeId));
+
+        return store.isStoreOwner(username) ||
+                (store.isStoreManager(username) && userFacade.checkPremssionToStore(username, storeId, permission));
+    }
+
     private boolean canAddOwnerToStore(int storeId, String currOwnerUsername, String newOwnerUsername) {
         return hasPermission(currOwnerUsername, storeId, Permission.ADD_OWNER) &&
                 userFacade.isExist(newOwnerUsername) &&
@@ -571,5 +580,13 @@ public class StoreFacade {
 
     public Set<Integer> getAllStoreIds() {
         return storeRepository.getAllStoreIds();
+    }
+
+    public List<Permission> getUserPermissions(String actorUsername, String username, int storeId) {
+        Store store = storeRepository.findStoreByID(storeId);
+        if (!actorUsername.equals(username) && !store.isStoreOwner(actorUsername))
+            throw new IllegalArgumentException(Error.makeUserCanNotCheckPermissionOfUserError(actorUsername, username, storeId));
+
+        return userFacade.getMemberPermissionsEnum(username, storeId);
     }
 }
