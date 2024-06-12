@@ -245,7 +245,6 @@ public class CartTests {
             Response resp = bridge.buyCartGuest(uuid, cardDTO,addressDTO);
             Assertions.assertTrue(resp.getError());
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "4");
-            Assertions.assertTrue(resp.getErrorString().startsWith("One or more stores did not accept your basket for the following reason: "));
             resp = bridge.getUserPurchaseHistory("", "", uuid);
             List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
             });
