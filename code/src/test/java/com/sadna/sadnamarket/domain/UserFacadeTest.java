@@ -6,9 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 
@@ -289,12 +287,10 @@ public class UserFacadeTest {
     public void viewCart() throws Exception{
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.addProductToCart(testUsername1, testStoreId, 2, 3);
-        Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,"dana",2,7,5));
-        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
-        ans.put(testStoreId, list1);
-        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
+        list1.add(new ProductDataPrice(1,1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,1,"eyal", 3,8,5));
+        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(list1);
         UserOrderDTO res=userFacade.viewCart(testUsername1);
         assertEquals(2, res.getProductsData().size());
         assertEquals(15.0, res.getOldPrice(),0);
@@ -304,14 +300,10 @@ public class UserFacadeTest {
     public void viewCartWith2stores() throws Exception{
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.addProductToCart(testUsername1, testStoreId2++, 2, 3);
-        Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
-        List<ProductDataPrice> list2=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,"dana",2,7,5));
-        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
-        ans.put(testStoreId, list1);
-        ans.put(testStoreId2, list2);
-        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
+        list1.add(new ProductDataPrice(1,1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,1,"eyal", 3,8,5));
+        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(list1);
         UserOrderDTO res=userFacade.viewCart(testUsername1);
         assertEquals(2, res.getProductsData().size());
         assertEquals(15.0, res.getOldPrice(),0);
@@ -321,14 +313,10 @@ public class UserFacadeTest {
     public void purchaseCart() throws Exception{
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.addProductToCart(testUsername1, testStoreId2, 2, 3);
-        Map<Integer, List<ProductDataPrice>> ans=new HashMap<>();
         List<ProductDataPrice> list1=new ArrayList<>();
-        List<ProductDataPrice> list2=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,"dana",2,7,5));
-        list1.add(new ProductDataPrice(2,"eyal", 3,8,5));
-        ans.put(testStoreId, list1);
-        ans.put(testStoreId2, list2);
-        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(ans);
+        list1.add(new ProductDataPrice(1,1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,1,"eyal", 3,8,5));
+        when(storeFacade.calculatePrice(anyString(), any())).thenReturn(list1);
         SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
