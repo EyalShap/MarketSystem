@@ -143,10 +143,8 @@ class StoreIntegrationTests {
         List<CartItemDTO> cart = generateCart0();
         cart.add(new CartItemDTO(0, 3, 100)); // product that does not exist in the store
 
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store.updateStock(cart);
-        });
-        assertEquals(Error.makeProductDoesntExistInStoreError(0, 3) + "\n", expected1.getMessage());
+        Set<String> expected1 = Set.of(Error.makeProductDoesntExistInStoreError(0, 3));
+        assertEquals(expected1, store.updateStock(cart));
         assertEquals(expected0, store.getProductAmounts());
     }
 
@@ -163,10 +161,8 @@ class StoreIntegrationTests {
 
         List<CartItemDTO> cart = generateCart1();
 
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store.updateStock(cart);
-        });
-        assertEquals(Error.makeNotEnoughInStcokError(0, 2, 400, 200) + "\n", expected1.getMessage());
+        Set<String> expected1 = Set.of(Error.makeNotEnoughInStcokError(0, 2, 400, 200));
+        assertEquals(expected1, store.updateStock(cart));
         assertEquals(expected0, store.getProductAmounts());
     }
 
@@ -183,28 +179,21 @@ class StoreIntegrationTests {
 
         List<CartItemDTO> cart = generateCart2();
 
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            store.updateStock(cart);
-        });
-        String error =
-                Error.makeNotEnoughInStcokError(0, 0, 1000, 200) + "\n" +
-                Error.makeNotEnoughInStcokError(0, 2, 400, 200) + "\n" +
-                Error.makeProductDoesntExistInStoreError(0, 3) + "\n"+
-                Error.makeProductDoesntExistInStoreError(0, 4) + "\n";
-        assertEquals(error, expected1.getMessage());
+        Set<String> error = Set.of(
+                Error.makeNotEnoughInStcokError(0, 0, 1000, 200),
+                Error.makeNotEnoughInStcokError(0, 2, 400, 200),
+                Error.makeProductDoesntExistInStoreError(0, 3),
+                Error.makeProductDoesntExistInStoreError(0, 4));
+        assertEquals(error, store.updateStock(cart));
         assertEquals(expected0, store.getProductAmounts());
     }
 
     @Test
     void updateStockStoreClosed() {
         store.closeStore();
-
         List<CartItemDTO> cart = generateCart0();
-
-        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            store.updateStock(cart);
-        });
-        assertEquals(Error.makeStoreClosedError(0), expected.getMessage());
+        Set<String> expected = Set.of(Error.makeStoreClosedError(0));
+        assertEquals(expected, store.updateStock(cart));
     }
 
     @Test
@@ -218,7 +207,7 @@ class StoreIntegrationTests {
     void checkCartSuccess() {
         fillStoreProducts();
         List<CartItemDTO> cart = generateCart0();
-        assertEquals("", store.checkCart(cart));
+        assertEquals(new HashSet<>(), store.checkCart(cart));
     }
 
     @Test
@@ -226,32 +215,37 @@ class StoreIntegrationTests {
         fillStoreProducts();
         List<CartItemDTO> cart = generateCart0();
         cart.add(new CartItemDTO(0, 3, 100)); // product that does not exist in the store
-        assertEquals(Error.makeProductDoesntExistInStoreError(0, 3) + "\n", store.checkCart(cart));
+        Set<String> expected = new HashSet<>();
+        expected.add(Error.makeProductDoesntExistInStoreError(0, 3));
+        assertEquals(expected, store.checkCart(cart));
     }
 
     @Test
     void checkCartNotEnoughInStock() {
         fillStoreProducts();
         List<CartItemDTO> cart = generateCart1();
-        assertEquals(Error.makeNotEnoughInStcokError(0, 2, 400, 200) + "\n", store.checkCart(cart));
+        Set<String> expected = Set.of(Error.makeNotEnoughInStcokError(0, 2, 400, 200));
+        assertEquals(expected, store.checkCart(cart));
     }
 
     @Test
     void checkCartNoProductAndNoStock() {
         fillStoreProducts();
         List<CartItemDTO> cart = generateCart2();
-        String error =
-                Error.makeNotEnoughInStcokError(0, 0, 1000, 200) + "\n" +
-                        Error.makeNotEnoughInStcokError(0, 2, 400, 200) + "\n" +
-                        Error.makeProductDoesntExistInStoreError(0, 3) + "\n"+
-                        Error.makeProductDoesntExistInStoreError(0, 4) + "\n";
-        assertEquals(error, store.checkCart(cart));
+        Set<String> expected = new HashSet<>();
+        expected.add(Error.makeNotEnoughInStcokError(0, 0, 1000, 200));
+        expected.add(Error.makeNotEnoughInStcokError(0, 2, 400, 200));
+        expected.add(Error.makeProductDoesntExistInStoreError(0, 3));
+        expected.add(Error.makeProductDoesntExistInStoreError(0, 4));
+        assertEquals(expected, store.checkCart(cart));
     }
 
     @Test
     void checkCartStoreClosed() {
         store.closeStore();
         List<CartItemDTO> cart = generateCart0();
-        assertEquals(Error.makeStoreClosedError(0), store.checkCart(cart));
+        Set<String> expected = new HashSet<>();
+        expected.add(Error.makeStoreClosedError(0));
+        assertEquals(expected, store.checkCart(cart));
     }
 }

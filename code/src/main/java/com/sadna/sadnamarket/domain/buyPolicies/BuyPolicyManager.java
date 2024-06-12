@@ -1,46 +1,73 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.service.Error;
 
 public class BuyPolicyManager {
     private List<Integer> buyPolicyIds;
+    private List<Integer> lawsBuyPolicyIds;
     private BuyPolicyFacade facade;
 
     public BuyPolicyManager(BuyPolicyFacade facade) {
-        buyPolicyIds = new ArrayList<>();
+        this.buyPolicyIds = new ArrayList<>();
+        this.lawsBuyPolicyIds = new ArrayList<>();
         this.facade = facade;
     }
 
-    public void addBuyPolicy(int buyPolicyId) throws Exception {
-        synchronized (buyPolicyIds) {
-            if(buyPolicyIds.contains(buyPolicyId))
-                throw new Exception();
-            buyPolicyIds.add(buyPolicyId);
-        }
+    public boolean hasPolicy(int policyId) {
+        return buyPolicyIds.contains(policyId) || lawsBuyPolicyIds.contains(policyId);
     }
 
-    public void removeBuyPolicy(int buyPolicyId) throws Exception {
+
+    public void addBuyPolicy(int buyPolicyId) {
         synchronized (buyPolicyIds) {
-            if(!buyPolicyIds.contains(buyPolicyId)) {
-                throw new Exception();
+            synchronized (lawsBuyPolicyIds) {
+                if (hasPolicy(buyPolicyId))
+                    throw new IllegalArgumentException(Error.makeBuyPolicyAlreadyExistsError(buyPolicyId));
+                buyPolicyIds.add(buyPolicyId);
             }
-            buyPolicyIds.remove(buyPolicyId);
         }
     }
 
-    public String canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) throws Exception {
-        String error = "";
+    public void addLawBuyPolicy(int buyPolicyId) {
+        synchronized (buyPolicyIds) {
+            synchronized (lawsBuyPolicyIds) {
+                if (hasPolicy(buyPolicyId))
+                    throw new IllegalArgumentException(Error.makeBuyPolicyAlreadyExistsError(buyPolicyId));
+                lawsBuyPolicyIds.add(buyPolicyId);
+            }
+        }
+    }
+
+    public void removeBuyPolicy(int buyPolicyId) {
+        synchronized (buyPolicyIds) {
+            if(lawsBuyPolicyIds.contains(buyPolicyId)) {
+                throw new IllegalArgumentException(Error.makeCanNotRemoveLawBuyPolicyError(buyPolicyId));
+            }
+            if(!hasPolicy(buyPolicyId)) {
+                throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(buyPolicyId));
+            }
+            buyPolicyIds.removeIf(id -> id == buyPolicyId);
+        }
+    }
+
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        Set<String> error = new HashSet<>();
         // if one policy says that you cant buy return false;
         for (Integer policyId : buyPolicyIds) {
             BuyPolicy policy = facade.getBuyPolicy(policyId);
             if (!policy.canBuy(cart, products, user)) {
-                error = error + policy.getErrorDescription() + "\n";
+                error.add(policy.getErrorDescription());
+            }
+        }
+        for (Integer policyId : lawsBuyPolicyIds) {
+            BuyPolicy policy = facade.getBuyPolicy(policyId);
+            if (!policy.canBuy(cart, products, user)) {
+                error.add(policy.getErrorDescription());
             }
         }
         return error;

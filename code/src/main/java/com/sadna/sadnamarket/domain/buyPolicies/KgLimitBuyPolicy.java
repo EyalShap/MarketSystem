@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.service.Error;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,13 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
 
     KgLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, double minKg, double maxKg) {
         super(id, buytypes, subject);
+
+        if(minKg < -1 || maxKg < -1 || (maxKg != -1 && minKg > maxKg))
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("kg limit", String.format("%.0f", minKg).trim(), String.format("%.0f", maxKg).trim()));
+
         this.minKg = minKg;
         this.maxKg = maxKg;
+        setErrorDescription(Error.makeKgLimitBuyPolicyError(subject.getSubject(), String.valueOf(minKg), String.valueOf(maxKg)));
     }
 
     public KgLimitBuyPolicy() {
@@ -51,5 +57,10 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
 
     public void setMaxKg(double maxKg) {
         this.maxKg = maxKg;
+    }
+
+    @Override
+    protected boolean dependsOnUser() {
+        return false;
     }
 }
