@@ -1220,4 +1220,17 @@ public class MarketService {
         }
 
     }
+
+    public Response hasPermission(String token, String actorUsername, int storeId, String actionUsername, int permission){
+        try{
+            checkToken(token, actorUsername);
+            Permission permissionEnum = Permission.getEnumByInt(permission);
+            logger.info(String.format("%s checked if %s has %s permission in store %d.", actorUsername, actionUsername, permissionEnum.toString(), storeId));
+            boolean res = storeFacade.hasPermission(actorUsername, actionUsername, storeId, permissionEnum);
+            return Response.createResponse(false, objectMapper.writeValueAsString(res));
+        }catch(Exception e){
+            logger.error("hasPermission failed for username: {}. Error: {}", actorUsername, e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }

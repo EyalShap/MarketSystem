@@ -544,6 +544,20 @@ public class StoreFacade {
         return false;
     }
 
+    public boolean hasPermission(String actorUsername, String username, int storeId, Permission permission) {
+        if (!hasPermission(actorUsername, storeId, Permission.VIEW_ROLES))
+            return false;
+
+        Store store = storeRepository.findStoreByID(storeId);
+        if (store.isStoreOwner(username))
+            return true;
+
+        if (store.isStoreManager(username))
+            return userFacade.checkPremssionToStore(username, storeId, permission);
+
+        return false;
+    }
+
     private boolean canAddOwnerToStore(int storeId, String currOwnerUsername, String newOwnerUsername) {
         return hasPermission(currOwnerUsername, storeId, Permission.ADD_OWNER) &&
                 userFacade.isExist(newOwnerUsername) &&

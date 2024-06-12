@@ -417,4 +417,8 @@ public class Error {
     public static String makeConditioningBuyPolicyError(String policy1, String policy2) {
         return policy1 + " AND NOT " + policy2;
     }
+
+    public static String makePermissionError(int num) {
+        return String.format("No permission is associated with number %d.", num);
+    }
 }
