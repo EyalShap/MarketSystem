@@ -363,6 +363,7 @@ public class MarketService {
     }
 
     /*public Response addSellerToStore(String token, int storeId, String adderUsername, String sellerUsername) {
+    /*public Response addSellerToStore(String token, int storeId, String adderUsername, String sellerUsername) {
         try {
             checkToken(token, adderUsername);
             storeFacade.addSeller(storeId, adderUsername, sellerUsername);
@@ -374,6 +375,7 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }*/
+
 
     public Response createProductKgBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, double min, double max) {
         try {
@@ -399,7 +401,7 @@ public class MarketService {
             logger.error("createProductAmountBuyPolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
-    }
+    } //from Store window, Actions menu, new page
 
     public Response createCategoryAgeLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, int min, int max) {
         try {
@@ -1015,7 +1017,6 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //Cart page, for each product show amount and price before and after discount
-
     public Response acceptRequest(String acceptingName, int requestID) {
         logger.info("Accepting request for acceptingName: {}, requestID: {}", acceptingName, requestID);
         try {
