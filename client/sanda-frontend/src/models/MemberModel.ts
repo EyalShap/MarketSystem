@@ -2,7 +2,7 @@ export default interface MemberModel {
     username: string,
     firstName: string,
     lastName: string,
-    email: string,
+    emailAddress: string,
     phoneNumber: string,
-    birthday: string  
+    birthDate: string  
 }

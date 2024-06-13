@@ -37,6 +37,7 @@ public class Member extends IUser {
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
         logger.info("Exiting Member constructor");
     }
 
@@ -315,5 +316,10 @@ public class Member extends IUser {
         LocalDate result = birthDate;
         logger.info("Exiting getBirthday with result={}", result);
         return result;
+    }
+    public void setBirthday(LocalDate birthDate) {
+        logger.info("Entering setBirthday with birthDate={}", birthDate);
+        this.birthDate = birthDate;
+        logger.info("Exiting setBirthday");
     }
 }

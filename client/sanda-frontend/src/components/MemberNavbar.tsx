@@ -25,6 +25,9 @@ const MemberNavbar = () => {
   const handleLogout = () => {
 
   }
+  const getProfileUrl = ():string => {
+    return `/profile/${localStorage.getItem('username')}`;
+  }
 
   return (
     <nav className="membernavbar" onClick={()=>{menuOpen&&toggleMenu();notificationsOpen&&toggleNotifications();}}>
@@ -58,7 +61,7 @@ const MemberNavbar = () => {
             <ul className="options-menu">
               <li className="menu-item">My orders</li>
               <li className="menu-item">My stores</li>
-              <li className="menu-item"><Link to="/profile" className="navbar-link">Profile</Link></li>
+              <li className="menu-item"><Link to={getProfileUrl()} className="navbar-link">Profile</Link></li>
               <li className="menu-item"onClick={handleLogout}>logout</li>
             </ul>
           )}
