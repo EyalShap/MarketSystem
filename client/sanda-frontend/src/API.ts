@@ -19,6 +19,14 @@ export const login = async(username: string, password: string) => {
       }})).data
     return response;
 }
+export const loginFromGuest = async(username: string, password: string,guestId: number ) => {
+    ///request REST to login...
+    const response=(await axios.post('http://127.0.0.1:8080/api/user/loginFromGuest',{username: username, password: password, guestId:guestId},{headers:{
+        'Content-Type': 'application/json',
+        //Authorization: `Bearer ${jwt_token}`
+      }})).data
+    return response;
+}
 export const loginUsingJwt = async(username: string, jwt: string) => {
     ///request REST to login...
     const response=(await axios.post(`http://127.0.0.1:8080/api/user/loginUsingJwt?username=${username}`,{},{headers:{

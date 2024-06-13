@@ -220,7 +220,7 @@ public class UserFacade {
             member.setCart(iUserRepo.getGuest(guestId).getCart());
         }
         member.setLogin(true);
-        iUserRepo.deleteGuest(guestId);
+        exitGuest(guestId);
         logger.info("{} done login from guest {}",userName,guestId);
     }
     
