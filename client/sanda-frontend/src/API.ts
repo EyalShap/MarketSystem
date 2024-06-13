@@ -10,6 +10,7 @@ import { get } from "http";
 import ProductCartModel from "./models/ProductCartModel";
 import { OrderModel } from "./models/OrderModel"; // Adjust the path as needed
 import axios from "axios";
+import RoleModel from "./models/RoleModel";
 
 export const login = async(username: string, password: string) => {
     ///request REST to login...
@@ -337,4 +338,16 @@ export const getOrders = async (username: string): Promise<OrderModel[]> => {
             ]
         }
     ];
+};
+export const fetchUserStores = async (username: string): Promise<RoleModel[]> => {
+    // const response = await axios.get(`http://127.0.0.1:8080/api/user/${username}/stores`);
+    // return response.data;
+    const roles=[{storeId: 1,storeName:"aa",roleName:"Manager" },{storeId: 2,storeName:"bbbbbbbb",roleName:"Manager" },{storeId: 3,storeName:"gff",roleName:"Owner" },{storeId: 4,storeName:"jfk",roleName:"Manager" }];
+    return roles
+};
+
+export const createNewStore = async (username: string, storeName: string): Promise<RoleModel> => {
+    // const response = await axios.post(`http://127.0.0.1:8080/api/user/${username}/stores`, { storeName });
+    // return response.data;
+    return {storeId: 5,storeName:"aa",roleName:"Manager" }
 };

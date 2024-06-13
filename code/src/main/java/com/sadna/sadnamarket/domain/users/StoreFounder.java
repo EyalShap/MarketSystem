@@ -37,7 +37,7 @@ public class StoreFounder extends StoreOwner {
     @Override
     public String toString() {
         logger.info("Entering toString");
-        String result = "store founder of store: " + getStoreId();
+        String result = "store founder";
         logger.info("Exiting toString with result={}", result);
         return result;
     }

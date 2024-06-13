@@ -16,7 +16,7 @@ import org.apache.commons.logging.Log;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "*") // Allow cross-origin requests from any source
+@CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
 public class UserRestController {
     MarketService marketService = MarketService.getInstance();
 
@@ -294,7 +294,7 @@ public class UserRestController {
         return marketService.getUserCart(guestId);
     }
     @GetMapping("/getUserDTO")
-    public Response getMethodName(@RequestParam String username,HttpServletRequest request) {
+    public Response getMemberDTO(@RequestParam String username,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -303,5 +303,15 @@ public class UserRestController {
         marketService.checkToken(token,username);
         return marketService.getMemberDto(username);
     }  
+    @GetMapping("/getUserDTO")
+    public Response getMemberRoles(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }   
+        marketService.checkToken(token,username);
+        return marketService.getUserRoles(username);
+    } 
 
 }

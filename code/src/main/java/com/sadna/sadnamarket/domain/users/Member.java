@@ -295,11 +295,12 @@ public class Member extends IUser {
         return result;
     }
 
-    public List<String> getUserRolesString() {
+    public List<UserRoleDTO> getUserRolesString() {
         logger.info("Entering getUserRolesString");
-        List<String> rolesString = new ArrayList<>();
+        List<UserRoleDTO> rolesString = new ArrayList<>();
         for (UserRole role : roles) {
-            rolesString.add(role.toString());
+            UserRoleDTO roleDTO = new UserRoleDTO(role.getStoreId(), role.toString());
+            rolesString.add(roleDTO);
         }
         logger.info("Exiting getUserRolesString with result={}", rolesString);
         return rolesString;

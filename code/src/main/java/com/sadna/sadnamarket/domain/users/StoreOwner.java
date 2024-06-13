@@ -39,7 +39,7 @@ public class StoreOwner implements UserRole {
     @Override
     public String toString() {
         logger.info("Entering toString");
-        String result = "store owner of store: " + storeId;
+        String result = "store owner";
         logger.info("Exiting toString with result={}", result);
         return result;
     }
