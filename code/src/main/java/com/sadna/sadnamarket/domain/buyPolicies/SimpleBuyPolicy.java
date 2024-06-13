@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,7 +34,9 @@ public abstract class SimpleBuyPolicy extends BuyPolicy{
     }
 
     public Set<Integer> getPolicyProductIds() {
-        return Set.of(policySubject.getProductId());
+        Set<Integer> ids = new HashSet<>();
+        ids.add(policySubject.getProductId());
+        return ids;
     }
 
 }

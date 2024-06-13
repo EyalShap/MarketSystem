@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.service;
 
 import java.time.LocalTime;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Error {
     public static String makeAuthPasswordIncorrectError(){
@@ -428,6 +429,7 @@ public class Error {
     }
 
     public static String makePolicyProductsNotInStore(int storeId, Set<Integer> productIds, int policyId) {
-        return String.format("Policy %d can not be added to store %d because the store does not have all of the policy products: %s.", policyId, storeId, productIds.toString());
+        Set<Integer> sortedSet = new TreeSet<>(productIds);
+        return String.format("Policy %d can not be added to store %d because the store does not have all of the policy products: %s.", policyId, storeId, sortedSet.toString());
     }
 }

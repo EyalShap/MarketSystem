@@ -124,7 +124,7 @@ public class BuyPolicyFacade {
         BuyPolicy policy = buyPolicyRepository.findBuyPolicyByID(policyId);
 
         Set<Integer> policyProducts = policy.getPolicyProductIds();
-        if(!storeFacade.areProductsInStore(storeId, policyProducts));
+        if(!storeFacade.areProductsInStore(storeId, policyProducts))
             throw new IllegalArgumentException(Error.makePolicyProductsNotInStore(storeId, policyProducts, policyId));
     }
 
