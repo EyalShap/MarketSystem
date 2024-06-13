@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.RealtimeService;
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +24,9 @@ public class Member extends IUser {
     private static final Logger logger = LogManager.getLogger(Member.class);
     private boolean isLoggedIn;
     private int notifyID;
+
+    private final RealtimeService realtime = new RealtimeService();
+
 
     public Member(String username, String firstName, String lastName, String emailAddress, String phoneNumber,LocalDate birthDate) {
         logger.info("Entering Member constructor with parameters: username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}, birthDate={}",
@@ -62,28 +66,33 @@ public class Member extends IUser {
         logger.info("Exiting setLogin");
     }
 
-    public void addNotification(String message) {
+    public NotificationDTO addNotification(String message) {
         logger.info("Entering addNotification with message={}", message);
-        notifes.put(++notifyID, new Notification(message,notifyID));
+        notifyID++;
+        Notification notification = new Notification(message,notifyID);
+        notifes.put(notifyID, notification);
         logger.info("Exiting addNotification");
+        return new NotificationDTO(notification);
     }
 
-    public void addOwnerRequest(UserFacade userFacade, String userName, int store_id) {
+    public RequestDTO addOwnerRequest(UserFacade userFacade, String userName, int store_id) {
         logger.info("Entering addOwnerRequest with userFacade={}, userName={}, store_id={}", userFacade, userName, store_id);
         UserRole role = getRoleOfStore(store_id);
         if (role.getApointee().equals(userName)) {
             logger.error("Exception in addOwnerRequest: You disallowed appoint the one who appointed you!");
             throw new IllegalStateException(Error.makeMemberDisallowedAppointError());
         }
-        role.sendRequest(userFacade, username, userName, "Owner");
+        RequestDTO requestDTO = role.sendRequest(userFacade, username, userName, "Owner");
         logger.info("Exiting addOwnerRequest");
+        return requestDTO;
     }
 
-    public void addManagerRequest(UserFacade userFacade, String userName, int store_id) {
+    public RequestDTO addManagerRequest(UserFacade userFacade, String userName, int store_id) {
         logger.info("Entering addManagerRequest with userFacade={}, userName={}, store_id={}", userFacade, userName, store_id);
         UserRole role = getRoleOfStore(store_id);
-        role.sendRequest(userFacade, username, userName, "Manager");
+        RequestDTO requestDTO = role.sendRequest(userFacade, username, userName, "Manager");
         logger.info("Exiting addManagerRequest");
+        return requestDTO;
     }
 
     public UserRole getRoleOfStore(int store_id) {
@@ -202,14 +211,17 @@ public class Member extends IUser {
         return result;
     }
 
-    public void getRequest(String senderName, int storeId, String reqType) {
+    public RequestDTO getRequest(String senderName, int storeId, String reqType) {
         logger.info("Entering getRequest with senderName={}, storeId={}, reqType={}", senderName, storeId, reqType);
         if (hasRoleInStore(storeId)) {
             logger.error("Exception in getRequest: member already has role in store");
             throw new IllegalStateException(Error.makeMemberUserAlreadyHasRoleError());
         }
-        notifes.put(++notifyID, new Request(senderName, "You got appointment request", storeId, reqType,notifyID));
+        notifyID++;
+        Request request = new Request(senderName, "You got appointment request", storeId, reqType,notifyID);
+        notifes.put(notifyID, request);
         logger.info("Exiting getRequest");
+        return new RequestDTO(request);
     }
 
     public void accept(int requestID) {
