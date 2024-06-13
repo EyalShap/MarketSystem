@@ -114,25 +114,29 @@ public class BuyPolicyFacade {
         return buyPolicyRepository.addConditioningBuyPolicy(policy1, policy2);
     }
 
-    public void addBuyPolicyToStore(String username, int storeId, int policyId) {
+    private void checkAddBuyPolicyToStore(String username, int storeId, int policyId) {
         if (!storeFacade.isStoreActive(storeId))
             throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(Error.makeStoreUserCannotAddBuyPolicyError(username, storeId));
-        if(!buyPolicyRepository.buyPolicyExists(policyId))
-            throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
+        //if(!buyPolicyRepository.buyPolicyExists(policyId))
+        //    throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
+        BuyPolicy policy = buyPolicyRepository.findBuyPolicyByID(policyId);
+
+        Set<Integer> policyProducts = policy.getPolicyProductIds();
+        if(!storeFacade.areProductsInStore(storeId, policyProducts))
+            throw new IllegalArgumentException(Error.makePolicyProductsNotInStore(storeId, policyProducts, policyId));
+    }
+
+    public void addBuyPolicyToStore(String username, int storeId, int policyId) {
+        checkAddBuyPolicyToStore(username, storeId, policyId);
         if(!mapper.containsKey(storeId))
             mapper.put(storeId, new BuyPolicyManager(this));
         mapper.get(storeId).addBuyPolicy(policyId);
     }
 
     public void addLawBuyPolicyToStore(String username, int storeId, int policyId) {
-        if (!storeFacade.isStoreActive(storeId))
-            throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
-        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
-            throw new IllegalArgumentException(Error.makeStoreUserCannotAddBuyPolicyError(username, storeId));
-        if(!buyPolicyRepository.buyPolicyExists(policyId))
-            throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
+        checkAddBuyPolicyToStore(username, storeId, policyId);
         if(!mapper.containsKey(storeId))
             mapper.put(storeId, new BuyPolicyManager(this));
         mapper.get(storeId).addLawBuyPolicy(policyId);

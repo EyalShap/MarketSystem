@@ -251,6 +251,15 @@ public class Store {
         }
     }
 
+    public boolean hasProducts(Set<Integer> productIds) {
+        for(int productId : productIds)
+            if(productId != -1) {
+                if(!productExists(productId))
+                    return false;
+            }
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

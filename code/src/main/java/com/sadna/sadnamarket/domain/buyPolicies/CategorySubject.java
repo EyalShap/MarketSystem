@@ -46,6 +46,11 @@ public class CategorySubject extends PolicySubject{
         return category;
     }
 
+    @Override
+    public int getProductId() {
+        return -1;
+    }
+
     public String getCategory() {
         return category;
     }
@@ -53,4 +58,6 @@ public class CategorySubject extends PolicySubject{
     public void setCategory(String category) {
         this.category = category;
     }
+
+
 }
