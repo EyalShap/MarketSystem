@@ -1268,4 +1268,15 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+    public Response getUserRoles(String username){
+        try{
+            logger.info("get user roles for {}", username);
+            List<UserRoleDTO> res = userFacade.getMemberRoles(username);
+            logger.info("finished get user roles {}", res);
+            return Response.createResponse(false, objectMapper.writeValueAsString(res));
+        }catch(Exception e){
+            logger.error("error get member roles {}", e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }

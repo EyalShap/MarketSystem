@@ -29,6 +29,7 @@ public class StoreRestController {
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/createStore" -Method POST -Body "founderId=0&storeName=MyStore"
     @PostMapping("/createStore")
+    @CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
     public Response createStore(@RequestBody CreateStoreRequest createStoreRequest, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;

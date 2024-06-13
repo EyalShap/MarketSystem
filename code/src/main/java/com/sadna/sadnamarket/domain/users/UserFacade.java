@@ -390,13 +390,16 @@ public class UserFacade {
         return permissions;
     }
 
-    public List<String> getMemberRoles(String userName){
+    public List<UserRoleDTO> getMemberRoles(String userName){
         logger.info("get user roles for {}",userName);
         Member member=iUserRepo.getMember(userName);
-        List<String> userRoles=member.getUserRolesString();
+        List<UserRoleDTO> userRoles=member.getUserRolesString();
+        for (UserRoleDTO userRoleDTO : userRoles) {
+            String storeName=storeFacade.getStoreInfo(userName,userRoleDTO.getStoreId()).getStoreName();
+            userRoleDTO.setStoreName(storeName);
+        }
         logger.info("got user roles for {}: {}",userName, userRoles);
         return userRoles;
-
     }
 
     public List<String> getUserOrders(String username){
