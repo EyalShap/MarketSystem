@@ -589,4 +589,9 @@ public class StoreFacade {
 
         return userFacade.getMemberPermissionsEnum(username, storeId);
     }
+
+    public boolean areProductsInStore(int storeId, Set<Integer> productIds) {
+        Store store = storeRepository.findStoreByID(storeId);
+        return store.hasProducts(productIds);
+    }
 }

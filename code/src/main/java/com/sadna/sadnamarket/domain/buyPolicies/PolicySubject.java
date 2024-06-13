@@ -14,4 +14,5 @@ public abstract class PolicySubject {
     public abstract boolean isSubject(ProductDTO product);
     public abstract String getSubject();
     public abstract String getDesc();
+    public abstract int getProductId();
 }

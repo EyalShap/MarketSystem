@@ -251,6 +251,14 @@ public class Store {
         }
     }
 
+    public boolean hasProducts(Set<Integer> productIds) {
+        productIds.remove(-1);
+        for(int productId : productIds)
+            if(!productExists(productId))
+                return false;
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
