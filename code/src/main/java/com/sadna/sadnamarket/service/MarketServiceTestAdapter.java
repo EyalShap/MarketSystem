@@ -150,7 +150,7 @@ public class MarketServiceTestAdapter {
 
     public Response openStore(String token, String userId, String storeName) {
         // return Response.createResponse(false, "4"); //returns store id
-        return real.createStore(token, userId, storeName, "Beer Sheva", "coolio@gmail.com", "0546102344", null, null);
+        return real.createStore(token, userId, storeName, "Beer Sheva", "coolio@gmail.com", "0546102344");
     }
 
     public Response addProductToStore(String token, String userId, int storeId, ProductDTO productDetails) {

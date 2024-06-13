@@ -9,6 +9,6 @@ public interface IStoreRepository {
     public Set<Integer> getAllStoreIds();
 
     public void deleteStore(int storeId);
-    public int addStore(String founderUsername, String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours);
+    public int addStore(String founderUsername, String storeName, String address, String email, String phoneNumber);
     public boolean storeExists(int storeId);
 }

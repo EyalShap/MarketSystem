@@ -55,12 +55,12 @@ public class StoreFacade {
         this.discountPolicyFacade = discountPolicyFacade;
     }
 
-    public int createStore(String founderUserName, String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+    public int createStore(String founderUserName, String storeName, String address, String email, String phoneNumber) {
         if (!userFacade.isLoggedIn(founderUserName))
             throw new IllegalArgumentException(
                     Error.makeStoreUserHasToBeLoggedInError(founderUserName));
 
-        int storeId = storeRepository.addStore(founderUserName, storeName, address, email, phoneNumber, openingHours, closingHours);
+        int storeId = storeRepository.addStore(founderUserName, storeName, address, email, phoneNumber);
         userFacade.addStoreFounder(founderUserName, storeId);
 
         // adding default buy policies (laws)

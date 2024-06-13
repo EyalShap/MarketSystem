@@ -21,13 +21,13 @@ class MemoryStoreRepositoryTest {
 
     @Test
     void findStoreByID() {
-        Store expected0 = new Store(0, "Alice", new StoreInfo("American Eagle", "Beer Sheva", "Eagle@gmail.com", "0548970173", null, null));
-        Store expected1 = new Store(1, "Bob", new StoreInfo("Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173", null, null));
-        Store expected2 = new Store(2, "Netta", new StoreInfo("H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173", null, null));
+        Store expected0 = new Store(0, "Alice", new StoreInfo("American Eagle", "Beer Sheva", "Eagle@gmail.com", "0548970173"));
+        Store expected1 = new Store(1, "Bob", new StoreInfo("Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173"));
+        Store expected2 = new Store(2, "Netta", new StoreInfo("H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173"));
 
-        repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173", null, null);
-        repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173", null, null);
-        repo.addStore("Netta", "H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173", null, null);
+        repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173");
+        repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173");
+        repo.addStore("Netta", "H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173");
 
         assertEquals(expected0, repo.findStoreByID(0));
         assertEquals(expected1, repo.findStoreByID(1));
@@ -46,20 +46,20 @@ class MemoryStoreRepositoryTest {
 
         assertEquals(expected0, new HashSet<>(repo.getAllStoreIds()));
 
-        repo.addStore("Alice", "American Eagle", "Beer Sheva", "Eagle@gmail.com", "0548970173", null, null);
+        repo.addStore("Alice", "American Eagle", "Beer Sheva", "Eagle@gmail.com", "0548970173");
         assertEquals(expected1, new HashSet<>(repo.getAllStoreIds()));
 
-        repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173", null, null);
+        repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173");
         assertEquals(expected2, new HashSet<>(repo.getAllStoreIds()));
 
-        repo.addStore("Netta", "H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173", null, null);
+        repo.addStore("Netta", "H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173");
         assertEquals(expected3, new HashSet<>(repo.getAllStoreIds()));
     }
 
     @Test
     void deleteStore() {
-        repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173", null, null);
-        repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173", null, null);
+        repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173");
+        repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173");
 
         assertTrue(repo.findStoreByID(0).getIsActive());
         assertTrue(repo.findStoreByID(1).getIsActive());
@@ -75,10 +75,10 @@ class MemoryStoreRepositoryTest {
 
     @Test
     void addStoreAlreadyExists() {
-        repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173", null, null);
+        repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173");
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173", null, null);
+            repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173");
         });
 
         String expectedMessage1 = "A store with the name American Eagle already exists.";
@@ -87,9 +87,9 @@ class MemoryStoreRepositoryTest {
 
     @Test
     void storeExists() {
-        repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173", null, null);
-        repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173", null, null);
-        repo.addStore("Netta", "H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173", null, null);
+        repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173");
+        repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173");
+        repo.addStore("Netta", "H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173");
 
         assertTrue(repo.storeExists(0));
         assertTrue(repo.storeExists(1));

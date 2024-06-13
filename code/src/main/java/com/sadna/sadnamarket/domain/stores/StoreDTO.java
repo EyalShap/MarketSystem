@@ -16,8 +16,6 @@ public class StoreDTO {
     private String address;
     private String email;
     private String phoneNumber;
-    private LocalTime[] openingHours;
-    private LocalTime[] closingHours;
     private Map<Integer, Integer> productAmounts;
     private String founderUsername;
     private List<String> ownerUsernames;
@@ -36,8 +34,6 @@ public class StoreDTO {
         this.address = store.getStoreInfo().getAddress();
         this.email = store.getStoreInfo().getEmail();
         this.phoneNumber = store.getStoreInfo().getPhoneNumber();
-        this.openingHours = store.getStoreInfo().getOpeningHours();
-        this.closingHours = store.getStoreInfo().getClosingHours();
         this.productAmounts = store.getProductAmounts();
         this.founderUsername = store.getFounderUsername();
         this.ownerUsernames = store.getOwnerUsernames();
@@ -54,8 +50,6 @@ public class StoreDTO {
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.openingHours = openingHours;
-        this.closingHours = closingHours;
         this.productAmounts = productAmounts;
         this.founderUsername = founderUsername;
         this.ownerUsernames = ownerUsernames;
@@ -121,22 +115,6 @@ public class StoreDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public LocalTime[] getOpeningHours() {
-        return openingHours;
-    }
-
-    public void setOpeningHours(LocalTime[] openingHours) {
-        this.openingHours = openingHours;
-    }
-
-    public LocalTime[] getClosingHours() {
-        return closingHours;
-    }
-
-    public void setClosingHours(LocalTime[] closingHours) {
-        this.closingHours = closingHours;
-    }
-
     public Map<Integer, Integer> getProductAmounts() {
         return productAmounts;
     }
@@ -190,14 +168,12 @@ public class StoreDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StoreDTO storeDTO = (StoreDTO) o;
-        return storeId == storeDTO.storeId && isActive == storeDTO.isActive && Double.compare(storeDTO.rank, rank) == 0 && Objects.equals(storeName, storeDTO.storeName) && Objects.equals(address, storeDTO.address) && Objects.equals(email, storeDTO.email) && Objects.equals(phoneNumber, storeDTO.phoneNumber) && Arrays.equals(openingHours, storeDTO.openingHours) && Arrays.equals(closingHours, storeDTO.closingHours) && Objects.equals(productAmounts, storeDTO.productAmounts) && Objects.equals(founderUsername, storeDTO.founderUsername) && Objects.equals(ownerUsernames, storeDTO.ownerUsernames) && Objects.equals(managerUsernames, storeDTO.managerUsernames) && Objects.equals(orderIds, storeDTO.orderIds);
+        return storeId == storeDTO.storeId && isActive == storeDTO.isActive && Double.compare(storeDTO.rank, rank) == 0 && Objects.equals(storeName, storeDTO.storeName) && Objects.equals(address, storeDTO.address) && Objects.equals(email, storeDTO.email) && Objects.equals(phoneNumber, storeDTO.phoneNumber) && Objects.equals(productAmounts, storeDTO.productAmounts) && Objects.equals(founderUsername, storeDTO.founderUsername) && Objects.equals(ownerUsernames, storeDTO.ownerUsernames) && Objects.equals(managerUsernames, storeDTO.managerUsernames) && Objects.equals(orderIds, storeDTO.orderIds);
     }
 
     @Override
     public int hashCode() {
         int result = Objects.hash(storeId, isActive, storeName, rank, address, email, phoneNumber, productAmounts, founderUsername, ownerUsernames, managerUsernames, orderIds);
-        result = 31 * result + Arrays.hashCode(openingHours);
-        result = 31 * result + Arrays.hashCode(closingHours);
         return result;
     }
 }

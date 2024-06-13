@@ -122,21 +122,11 @@ class StoreFacadeTest {
     }
 
     private StoreInfo generateStore0Info() {
-        LocalTime openingHour = LocalTime.of(10, 0);
-        LocalTime closingHour = LocalTime.of(21, 0);
-        LocalTime fridayClosingHour = LocalTime.of(14, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        return new StoreInfo("Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
+        return new StoreInfo("Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
     }
 
     private StoreInfo generateStore1Info() {
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(15, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        return new StoreInfo("Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120", openingHours, closingHours);
+        return new StoreInfo("Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120");
     }
 
     private Store generateStoreObject0() {
@@ -153,21 +143,11 @@ class StoreFacadeTest {
     }
 
     private void generateStore0() {
-        LocalTime openingHour = LocalTime.of(10, 0);
-        LocalTime closingHour = LocalTime.of(21, 0);
-        LocalTime fridayClosingHour = LocalTime.of(14, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        storeFacade.createStore("WillyTheChocolateDude", "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
+        storeFacade.createStore("WillyTheChocolateDude", "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
     }
 
     private void generateStore1() throws JsonProcessingException {
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(15, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        storeFacade.createStore("Mr. Krabs", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120", openingHours, closingHours);
+        storeFacade.createStore("Mr. Krabs", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120");
         addProducts1();
         int policyId1 = buyPolicyFacade.createCategoryHolidayBuyPolicy("Chocolate", List.of(BuyType.immidiatePurchase), "WillyTheChocolateDude");
         int policyId2 = buyPolicyFacade.createProductAmountBuyPolicy(2, List.of(BuyType.immidiatePurchase), 3, 10, "WillyTheChocolateDude");
@@ -184,12 +164,7 @@ class StoreFacadeTest {
 
         assertEquals(expected0, storeFacade.getAllStoreIds());
 
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(15, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        storeFacade.createStore("Mr. Krabs", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120", openingHours, closingHours);
+        storeFacade.createStore("Mr. Krabs", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120");
 
         assertEquals(expected1, storeFacade.getAllStoreIds());
 
@@ -199,14 +174,8 @@ class StoreFacadeTest {
 
     @Test
     void createStoreNoUser() {
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(15, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-
         NoSuchElementException expected = assertThrows(NoSuchElementException.class, () -> {
-            storeFacade.createStore("Dana", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120", openingHours, closingHours);
+            storeFacade.createStore("Dana", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120");
         });
 
         String expectedMessage = Error.makeMemberUserDoesntExistError("Dana");
@@ -215,14 +184,8 @@ class StoreFacadeTest {
 
     @Test
     void createStoreUserNotLoggedIn() {
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(15, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.createStore("Alice", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120", openingHours, closingHours);
+            storeFacade.createStore("Alice", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120");
         });
 
         String expectedMessage = Error.makeStoreUserHasToBeLoggedInError("Alice");
@@ -231,14 +194,8 @@ class StoreFacadeTest {
 
     @Test
     void createStoreAlreadyExists() {
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(15, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.createStore("Mr. Krabs", "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
+            storeFacade.createStore("Mr. Krabs", "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
         });
 
         String expectedMessage = Error.makeStoreWithNameAlreadyExistsError("Chocolate Factory");
@@ -247,33 +204,11 @@ class StoreFacadeTest {
 
     @Test
     void createStoreParamsNotValid() {
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(9, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.createStore("Mr. Krabs", "", "", "", "", openingHours, closingHours);
+            storeFacade.createStore("Mr. Krabs", "", "", "", "");
         });
 
         String expectedMessage = Error.makeStoreNotValidAspectError("", "store name");
-        assertEquals(expectedMessage, expected.getMessage());
-    }
-
-    @Test
-    void createStoreHoursNotValid() {
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(8, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-
-        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            storeFacade.createStore("WillyTheChocolateDude", "Another Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
-        });
-
-        String expectedMessage = Error.makeStoreOpeningHoursNotValid();
         assertEquals(expectedMessage, expected.getMessage());
     }
 

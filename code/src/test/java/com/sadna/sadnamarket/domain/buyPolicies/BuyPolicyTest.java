@@ -78,12 +78,7 @@ class BuyPolicyTest {
     }
 
     private void generateStore() {
-        LocalTime openingHour = LocalTime.of(10, 0);
-        LocalTime closingHour = LocalTime.of(21, 0);
-        LocalTime fridayClosingHour = LocalTime.of(14, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        storeFacade.createStore("WillyTheChocolateDude", "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
+        storeFacade.createStore("WillyTheChocolateDude", "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
     }
 
     private void addProducts() {

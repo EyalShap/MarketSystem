@@ -102,10 +102,10 @@ public class MarketService {
             throw new IllegalArgumentException(Error.makeTokenInvalidError(username));
         }
     }
-    public Response createStore(String token, String founderUsername, String storeName, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours) {
+    public Response createStore(String token, String founderUsername, String storeName, String address, String email, String phoneNumber) {
         try {
             checkToken(token, founderUsername);
-            int newStoreId = storeFacade.createStore(founderUsername, storeName, address, email, phoneNumber, openingHours, closingHours); // will throw an exception if the store already exists
+            int newStoreId = storeFacade.createStore(founderUsername, storeName, address, email, phoneNumber); // will throw an exception if the store already exists
             //addBuyPolicy(token, founderUsername, newStoreId,"");
             logger.info(String.format("User %s created a store with id %d.", founderUsername, newStoreId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
