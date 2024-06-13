@@ -27,6 +27,7 @@ import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.payment.PaymentInterface;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
+import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
@@ -48,7 +49,8 @@ public class UserFacadeTest {
   
     @Mock
     private OrderFacade orderFacade;
-
+    @Mock
+    private StoreDTO storeDTO;
 
     private String testUsername1="idanasis";
     private String testUsername2="shavirmor";
@@ -141,6 +143,8 @@ public class UserFacadeTest {
         assertTrue(userFacade.getNotifications(testUsername2).size()>0);
         doNothing().when(storeFacade).addStoreManager(anyString(), anyInt());
         assertDoesNotThrow(()->userFacade.accept(testUsername2, 1));
+        when(storeFacade.getStoreInfo(any(), anyInt())).thenReturn(storeDTO);
+        when(storeDTO.getStoreName()).thenReturn("some name");
         assertTrue(userFacade.getMemberRoles(testUsername2).size()>0);
     }
     @Test
@@ -149,6 +153,8 @@ public class UserFacadeTest {
         userFacade.addOwnerRequest(testUsername1,testUsername2,testStoreId2);
         assertTrue(userFacade.getNotifications(testUsername2).size()>0);
         assertDoesNotThrow(()->userFacade.accept(testUsername2, 1));
+        when(storeFacade.getStoreInfo(any(), anyInt())).thenReturn(storeDTO);
+        when(storeDTO.getStoreName()).thenReturn("some name");
         assertTrue(userFacade.getMemberRoles(testUsername2).size()>0);
     }
     @Test
@@ -188,6 +194,8 @@ public class UserFacadeTest {
         userFacade.addManagerRequest(testUsername1,testUsername2,testStoreId2);
         doNothing().when(storeFacade).addStoreOwner(anyString(), anyInt());
         userFacade.accept(testUsername2, 1);
+        when(storeFacade.getStoreInfo(any(), anyInt())).thenReturn(storeDTO);
+        when(storeDTO.getStoreName()).thenReturn("some name");
         assertTrue(userFacade.getMemberRoles(testUsername2).size()>0);
         userFacade.leaveRole(testUsername2, testStoreId);
         assertTrue(userFacade.getMemberRoles(testUsername2).size()==0);
