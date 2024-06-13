@@ -66,7 +66,7 @@ class BuyPolicyFacadeTest {
         authFacade.register("Mr. Krabs", "654321", "Eugene", "Krabs", "eugene@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
         authFacade.register(ownerUsername, "123456", "Willy", "Wonka", "willy@gmail.com", "0541095600", LocalDate.of(1995, 12, 12));
         authFacade.login(ownerUsername, "123456");
-        authFacade.register("FourSeasonsOrlandoBaby", "654321", "Baby", "Orlando", "baby@gmail.com", "0528997287", LocalDate.of(2002, 8, 19));
+        authFacade.register("FourSeasonsOrlandoBaby", "654321", "Baby", "Orlando", "baby@gmail.com", "0528997287", LocalDate.of(2006, 8, 19));
         authFacade.login("FourSeasonsOrlandoBaby", "654321");
     }
 

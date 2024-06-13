@@ -7,6 +7,7 @@ import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,8 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
     @Override
     public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         if(policySubject.subjectAmount(cart, products) > 0) {
-            return (user != null) && isAgeInLimit(LocalDate.parse(user.getBirthDate()));
+             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return (user != null) && isAgeInLimit(LocalDate.parse(user.getBirthDate(), formatter));
         }
         
         return true;
