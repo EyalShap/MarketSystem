@@ -941,7 +941,17 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //From profile page, textbox
-
+    public Response setBirthDate(String username, LocalDate birthDate) {
+        try {
+            logger.info("user {} tries to set birth date= {}", username,birthDate);
+            userFacade.setBirthDate(username, birthDate);
+            logger.info("user {} set birth date= {}", username,birthDate);
+            return Response.createResponse();
+        } catch (Exception e) {
+            logger.error("error in setBirthDate: "+e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    } //From profile page, textbox
     public Response addProductToCart(String username, int storeId, int productId, int amount) {
         logger.info("Adding product to cart for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
         try {

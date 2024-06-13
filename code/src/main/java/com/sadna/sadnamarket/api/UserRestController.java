@@ -170,49 +170,60 @@ public class UserRestController {
     }
 
     @PatchMapping("/setFirstName")
-    public Response setFirstName(@RequestParam String username, @RequestParam String firstName,HttpServletRequest request) {
+    public Response setFirstName(@RequestParam String username, @RequestBody SetRequest req,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         marketService.checkToken(token,username);
-        return marketService.setFirstName(username, firstName);
+        return marketService.setFirstName(username, req.getField());
     }
 
     @PatchMapping("/setLastName")
-    public Response setLastName(@RequestParam String username, @RequestParam String lastName,HttpServletRequest request) {
+    public Response setLastName(@RequestParam String username, @RequestBody SetRequest req,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         marketService.checkToken(token,username);
-        return marketService.setLastName(username, lastName);
+        return marketService.setLastName(username, req.getField());
     }
 
     @PatchMapping("/setEmailAddress")
-    public Response setEmailAddress(@RequestParam String username, @RequestParam String emailAddress,HttpServletRequest request) {
+    public Response setEmailAddress(@RequestParam String username,@RequestBody SetRequest req,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         marketService.checkToken(token,username);
-        return marketService.setEmailAddress(username, emailAddress);
+        return marketService.setEmailAddress(username, req.getField());
     }
 
     @PatchMapping("/setPhoneNumber")
-    public Response setPhoneNumber(@RequestParam String username, @RequestParam String phoneNumber,HttpServletRequest request) {
+    public Response setPhoneNumber(@RequestParam String username, @RequestBody SetRequest req,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         marketService.checkToken(token,username);
-        return marketService.setPhoneNumber(username, phoneNumber);
+        return marketService.setPhoneNumber(username, req.getField());
     }
-
+    @PatchMapping("/setBirthday")
+    public Response setBirthday(@RequestParam String username, @RequestBody SetRequest req,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,username);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate birthDate = LocalDate.parse(req.getField(), formatter);
+        return marketService.setBirthDate(username, birthDate);
+    }
     @GetMapping("/getOrderHistory")
     public Response getOrderHistory(@RequestParam String username,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
@@ -282,7 +293,7 @@ public class UserRestController {
     public Response getUserCart(@RequestParam int guestId) {
         return marketService.getUserCart(guestId);
     }
-    @GetMapping("/getUserDTO/username")
+    @GetMapping("/getUserDTO")
     public Response getMethodName(@RequestParam String username,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;

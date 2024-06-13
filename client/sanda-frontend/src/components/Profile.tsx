@@ -1,33 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../styles/profile.css';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { getMember } from '../API';
-import { useParams } from 'react-router-dom';
+import { getMember, loginUsingJwt, updateBirthday, updateEmail, updateFirstName, updateLastName, updatePhone } from '../API';
+import { useNavigate, useParams } from 'react-router-dom';
 import MemberModel from '../models/MemberModel';
+import { formatDate } from '../utils';
+import { AppContext } from '../App';
 
 
 const schema = yup.object().shape({
   username: yup.string().required("Username is required"),
   firstName: yup.string().required("First Name is required"),
   lastName: yup.string().required("Last Name is required"),
-  email: yup.string().email("Invalid email format").required("Email is required"),
+  emailAddress: yup.string().email("Invalid email format").required("Email is required"),
   phoneNumber: yup.string().required("Phone number is required"),
-  birthday: yup.string().required("Birthday is required")
+  birthDate: yup.string().required("Birthday is required")
 });
 
 const Profile = () => {
   const {username} = useParams();
-  const [defaultValues, setDefaultValues] = useState({username: '', firstName: '', lastName: '', email: '', phoneNumber: '', birthday: ''});  
-
+  const [defaultValues, setDefaultValues] = useState({username: '', firstName: '', lastName: '', emailAddress: '', phoneNumber: '', birthDate: ''});  
+  const {isloggedin , setIsloggedin } = useContext(AppContext);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchProfile = async () => {
+      if(!isloggedin){
+        const resp=await loginUsingJwt(localStorage.getItem("username") as string, localStorage.getItem("token") as string);
+            if(!resp.error){
+             setIsloggedin(true);
+            }
+            else{
+              localStorage.clear();
+              alert("Session over please login again");
+              navigate('/');
+            }
+      }
       const profileData = await getMember(username as string);
       setDefaultValues(profileData as MemberModel);
     };
-
+    try{
     fetchProfile();
+    }catch{
+      alert("Error occoured please try again later");
+      navigate('/');
+    }
   }, []);
 
   const {
@@ -46,9 +64,40 @@ const Profile = () => {
     }
   }, [defaultValues, reset]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     console.log('Profile Saved', data);
+    try{
+    if(data.firstName !== defaultValues.firstName) {
+      const response=await updateFirstName(data.firstName);
+      if(response.error)
+        alert(response.error);
+    }
+    if(data.lastName !== defaultValues.lastName) {
+      const response=await updateLastName(data.lastName);
+      if(response.error)
+        alert(response.error);
+    }
+    if(data.emailAddress !== defaultValues.emailAddress) {
+      const response=await updateEmail(data.emailAddress);
+      if(response.error)
+        alert(response.error);
+    }
+    if(data.phoneNumber !== defaultValues.phoneNumber) {
+      const response=await updatePhone(data.phoneNumber);
+      if(response.error)
+        alert(response.error);
+    }
+    if(data.birthDate!== defaultValues.birthDate) {
+      data.birthDate = formatDate(new Date(data.birthDate).toISOString());
+      const response=await updateBirthday(data.birthDate);
+      if(response.error)
+        alert(response.error);
+    }
+    setDefaultValues(data);
+  }catch(e){
+    alert("Error occoured please try again later");
   };
+};
 
   const handleReset = () => {
     reset();
@@ -97,10 +146,10 @@ const Profile = () => {
           <input
             type="email"
             id="email"
-            {...register("email", { onChange: () => trigger("email") })}
-            className={errors.email && touchedFields.email ? 'invalid' : ''}
+            {...register("emailAddress", { onChange: () => trigger("emailAddress") })}
+            className={errors.emailAddress && touchedFields.emailAddress ? 'invalid' : ''}
           />
-          {errors.email && <p className="error-message">{errors.email.message}</p>}
+          {errors.emailAddress && <p className="error-message">{errors.emailAddress.message}</p>}
         </div>
 
         <div className="form-group">
@@ -119,10 +168,10 @@ const Profile = () => {
           <input
             type="date"
             id="birthday"
-            {...register("birthday", { onChange: () => trigger("birthday") })}
-            className={errors.birthday && touchedFields.birthday ? 'invalid' : ''}
+            {...register("birthDate", { onChange: () => trigger("birthDate") })}
+            className={errors.birthDate && touchedFields.birthDate ? 'invalid' : ''}
           />
-          {errors.birthday && <p className="error-message">{errors.birthday.message}</p>}
+          {errors.birthDate && <p className="error-message">{errors.birthDate.message}</p>}
         </div>
 
         <div className="button-group">

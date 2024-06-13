@@ -344,6 +344,12 @@ public class UserFacade {
         member.setPhoneNumber(phoneNumber);
         logger.info("done set phone number for {}", userName);
     }
+    public void setBirthDate(String userName, LocalDate birthDate) {
+        logger.info("set birth date for {}={}", userName,birthDate);
+        Member member = iUserRepo.getMember(userName);
+        member.setBirthday(birthDate);
+        logger.info("done set birth date for {}", userName);
+    }
     private void isValid(String detail){
         logger.info("check if field is valid");
         if(detail==null||detail.trim().equals("")){

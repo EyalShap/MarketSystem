@@ -129,8 +129,8 @@ export const getPermissions = (storeId: string): Permission[] => {
 }
 
 export const getStoreManagers = (storeId: string): MemberModel[] => {
-    let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", email: "eric@excited.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
-    let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", email: "benny@sad.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
+    let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", emailAddress: "eric@excited.com", phoneNumber: "052-0520525",birthDate: "2024-06-06"}
+    let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", emailAddress: "benny@sad.com", phoneNumber: "052-0520525",birthDate: "2024-06-06"}
     let list: MemberModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
@@ -138,24 +138,33 @@ export const getStoreManagers = (storeId: string): MemberModel[] => {
 }
 
 export const getStoreOwners = (storeId: string): MemberModel[] => {
-    let defaultExample1: MemberModel = {username: "mrOwnerMan", firstName: "Owner", lastName: "Man", email: "man@store.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
-    let defaultExample2: MemberModel = {username: "GuyWhoOwnsStore", firstName: "Guy", lastName: "Store", email: "guy@store.com", phoneNumber: "052-0520525",birthday: "2024-06-06"}
+    let defaultExample1: MemberModel = {username: "mrOwnerMan", firstName: "Owner", lastName: "Man", emailAddress: "man@store.com", phoneNumber: "052-0520525",birthDate: "2024-06-06"}
+    let defaultExample2: MemberModel = {username: "GuyWhoOwnsStore", firstName: "Guy", lastName: "Store", emailAddress: "guy@store.com", phoneNumber: "052-0520525",birthDate: "2024-06-06"}
     let list: MemberModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
     return list;
 }
 export const getMember = async(username: string): Promise<MemberModel> => {
-    const profile= {
-        username: 'idanasis',
-        firstName: 'Idan',
-        lastName: 'Asis',
-        email: 'idanasis86@gmail.com',
-        phoneNumber: '0523072999',
-        birthday: '2024-06-06' // Default value for birthday
-      }
-    return profile;
+      const response = await fetch(
+        `http://127.0.0.1:8080/api/user/getUserDTO?username=${username}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data = await response.json();
+    
+    // Assuming the API returns the data in dataJson
+    const profileData = JSON.parse(data.dataJson) as MemberModel;
+    console.log(profileData);
+    // Validate the structure of profileData before returning
+
+    return profileData;
 }
+
 export const viewCart = (username:string): cartModel => {
     const cart: ProductCartModel[] = [
         { id: 1, amount: 5,storeId:1, originalPrice: 100, discountedPrice: 90, name: 'example1'  },
@@ -178,6 +187,71 @@ export const updateCart = (cart: cartModel) => {
 }
 export const removeFromCart = (cart: cartModel) => {
     console.log("Cart updated");
+}
+export const updateFirstName = async(firstName:string) => {
+    const response = await (await axios.patch(
+        `http://127.0.0.1:8080/api/user/setFirstName?username=${localStorage.getItem("username")}`,
+        {field: firstName},
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    )).data;
+    return response;
+}
+export const updateLastName = async (lastName:string) => {
+    const response = await (await axios.patch(
+        `http://127.0.0.1:8080/api/user/setLastName?username=${localStorage.getItem("username")}`,
+        {field: lastName},
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    )).data;
+    return response;
+}
+export const updateEmail = async(email:string) => {
+    const response = await (await axios.patch(
+        `http://127.0.0.1:8080/api/user/setEmailAddress?username=${localStorage.getItem("username")}`,
+        {field: email},
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    )).data;
+    return response
+}
+export const updatePhone = async(phone:string) => {
+    const response = await (await axios.patch(
+        `http://127.0.0.1:8080/api/user/setPhoneNumber?username=${localStorage.getItem("username")}`,
+        {field: phone},
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    )).data;
+    return response
+}
+export const updateBirthday = async(birthday:string) => {
+    const response = await (await axios.patch(
+        `http://127.0.0.1:8080/api/user/setBirthday?username=${localStorage.getItem("username")}`,
+        {field: birthday},
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    )).data;
+    return response
 }
 
 export const searchProducts = (term: string, category: string, minPrice: number, maxPrice: number): ProductModel[] => {

@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { registerMember } from '../API';
 import { useNavigate } from 'react-router-dom'; 
+import {formatDate}  from '../utils';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -15,17 +16,10 @@ const schema = yup.object().shape({
     firstName: yup.string().required("First Name is required"),
     lastName: yup.string().required("Last Name is required"),
     email: yup.string().email("Invalid email format").required("Email is required"),
-    phone: yup.string().matches(phoneRegExp, 'Phone number is not valid').required("Phone number is required"),
+    phoneNumber: yup.string().matches(phoneRegExp, 'Phone number is not valid').required("Phone number is required"),
     birthDate: yup.date().required("Birthday is required"),
     
 });
-const formatDate = (date: string): string => {
-    const d = new Date(date);
-    const month = ('0' + (d.getMonth() + 1)).slice(-2);
-    const day = ('0' + d.getDate()).slice(-2);
-    const year = d.getFullYear();
-    return `${year}-${month}-${day}`;
-};
 
 export const Register = () => {
     const { register, handleSubmit, formState: { errors, touchedFields }, trigger } = useForm({
@@ -124,10 +118,10 @@ export const Register = () => {
                         type="tel" 
                         id="phone" 
                         placeholder="Enter your phone number" 
-                        {...register("phone", { onChange: () => trigger("phone") })} 
-                        className={errors.phone && touchedFields.phone ? 'invalid' : ''}
+                        {...register("phoneNumber", { onChange: () => trigger("phoneNumber") })} 
+                        className={errors.phoneNumber && touchedFields.phoneNumber ? 'invalid' : ''}
                     />
-                    {errors.phone && <p className="error-message">{errors.phone.message}</p>}
+                    {errors.phoneNumber && <p className="error-message">{errors.phoneNumber.message}</p>}
                 </div>
                 <div className="form-group">
                     <label htmlFor="birthday">Birthday:</label>

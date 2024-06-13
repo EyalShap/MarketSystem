@@ -1,5 +1,4 @@
 package com.sadna.sadnamarket.domain.users;
-import java.time.LocalDate;
 
 
 public class MemberDTO {
@@ -8,7 +7,7 @@ public class MemberDTO {
     private String lastName;
     private String emailAddress;
     private String phoneNumber;
-    private LocalDate birthDate;
+    private String birthDate;
 
 
     public MemberDTO() {
@@ -19,10 +18,10 @@ public class MemberDTO {
         this.lastName = member.getLastName();
         this.emailAddress = member.getEmailAddress();
         this.phoneNumber = member.getPhoneNumber();
-        this.birthDate = member.getBirthday();
+        this.birthDate = member.getBirthday().toString();
     }
 
-    public MemberDTO(String username, String firstName, String lastName, String emailAddress, String phoneNumber, LocalDate birthDate) {
+    public MemberDTO(String username, String firstName, String lastName, String emailAddress, String phoneNumber, String birthDate) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -71,16 +70,12 @@ public class MemberDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public LocalDate getBirthDate() {
+    public String getBirthDate() {
         // proxy just for the test
-        if(username.equals("Mr. Krabs")) {
-            return LocalDate.of(1942, 11, 30);
-        }
-        else
-            return LocalDate.of(2022, 11, 30);
+        return birthDate;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
+    public void setBirthDate(String birthDate) {
         this.birthDate = birthDate;
     }
 }
