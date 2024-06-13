@@ -101,12 +101,7 @@ class BuyPolicyFacadeTest {
     }
 
     private void generateStore0() {
-        LocalTime openingHour = LocalTime.of(10, 0);
-        LocalTime closingHour = LocalTime.of(21, 0);
-        LocalTime fridayClosingHour = LocalTime.of(14, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        storeFacade.createStore(ownerUsername, "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
+        storeFacade.createStore(ownerUsername, "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
 
         storeFacade.addProductToStore(ownerUsername, 0, "Shokolad Parah", 1000, 5.5, "Chocolate", 4,2);
         storeFacade.addProductToStore(ownerUsername, 0, "Beer", 990, 15, "Alcohol", 4,0.3);
@@ -118,7 +113,7 @@ class BuyPolicyFacadeTest {
         LocalTime fridayClosingHour = LocalTime.of(14, 0);
         LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
         LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        storeFacade.createStore("FourSeasonsOrlandoBaby", "Shilav", "Beer Sheva", "shilav@gmail.com", "0541075403", openingHours, closingHours);
+        storeFacade.createStore("FourSeasonsOrlandoBaby", "Shilav", "Beer Sheva", "shilav@gmail.com", "0541075403");
 
         storeFacade.addProductToStore("FourSeasonsOrlandoBaby", 1, "P2", 1000, 5.5, "Chocolate", 4,2);
         storeFacade.addProductToStore("FourSeasonsOrlandoBaby", 1, "P3", 1000, 5.5, "Chocolate", 4,2);

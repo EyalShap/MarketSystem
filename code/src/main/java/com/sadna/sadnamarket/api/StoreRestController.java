@@ -36,7 +36,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.createStore(token,createStoreRequest.getFounderUsername(),createStoreRequest.getStoreName(),createStoreRequest.getAddress(),createStoreRequest.getEmail(),createStoreRequest.getPhoneNumber(),createStoreRequest.getOpeningHours(),createStoreRequest.getClosingHours());
+        return marketService.createStore(token,createStoreRequest.getFounderUsername(),createStoreRequest.getStoreName(),createStoreRequest.getAddress(),createStoreRequest.getEmail(),createStoreRequest.getPhoneNumber());
     }
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/addProductToStore" -Method POST -Body "userId=1&storeId=0&productName=Apple&productQuantity=10&productPrice=5"
