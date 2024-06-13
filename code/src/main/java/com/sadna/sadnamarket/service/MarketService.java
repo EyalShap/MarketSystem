@@ -824,9 +824,9 @@ public class MarketService {
     public Response logout(String username){
         try{
             logger.info(username, username);
-            userFacade.logout(username);
-            logger.info(username);
-            return Response.createResponse();
+            int guestId=userFacade.logout(username);
+            logger.info("{} logged out",username);
+            return Response.createResponse(guestId);
 
         }catch(Exception e){
             logger.error("error in logout: "+e.getMessage());

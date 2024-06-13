@@ -1,12 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import '../styles/memberNavbar.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { IconButton, Badge } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { enterAsGuest, logout } from '../API';
+import { AppContext } from '../App';
 
 
 const MemberNavbar = () => {
+  const {isloggedin , setIsloggedin } = useContext(AppContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([
@@ -14,6 +17,8 @@ const MemberNavbar = () => {
     "ask to ffffffffff",
     "ffff",
   ]);
+  const navigate = useNavigate();
+
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -22,8 +27,17 @@ const MemberNavbar = () => {
   const toggleNotifications = () => {
     setNotificationsOpen(!notificationsOpen);
   };
-  const handleLogout = () => {
-
+  const handleLogout = async () => {
+    try{
+    const response=await logout(localStorage.getItem('username') as string);
+    console.log(response);
+    localStorage.clear();
+    localStorage.setItem("guestId", `${response}`);
+    }catch(e){
+      alert("Error occoured");
+    }
+    setIsloggedin(false);
+    navigate('/');
   }
   const getProfileUrl = ():string => {
     return `/profile/${localStorage.getItem('username')}`;

@@ -139,8 +139,8 @@ public class UserRestController {
         return marketService.loginUsingToken(token,username);
     }
     @PostMapping("/logout")
-    public Response logout(@RequestParam String username) {
-        return marketService.logout(username);
+    public Response logout(@RequestBody SetRequest request) {
+        return marketService.logout(request.getField());
     }
 
     @PostMapping("/register")
