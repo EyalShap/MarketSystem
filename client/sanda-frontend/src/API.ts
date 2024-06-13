@@ -254,12 +254,49 @@ export const updateBirthday = async(birthday:string) => {
     return response
 }
 
-export const searchProducts = (term: string, category: string, minPrice: number, maxPrice: number): ProductModel[] => {
-    const products = [
-        { id:1,name: "sami 1",storeId:2, productDescription: "Description of Product 1", productCategory: "Category 1", productRank: 2.5, price: 20 },
-        { id:2,name: "Product 2",storeId:3, productDescription: "Description of Product 2", productCategory: "Category 2", productRank: 4.0, price: 2000 },
-        { id:3,name: "Product 3", storeId:4,productDescription: "Description of Product 3", productCategory: "Category 3", productRank: 4.8, price: 2500 }
-    ];
+// export const searchProducts = async(username: string,productName: string, productCategory: string, minProductPrice: number, maxProductPrice: number) => {
+ 
+//     const response=(await axios.post('http://127.0.0.1:8080/api/product/getFilteredProducts',{productName, productCategory, minProductPrice, maxProductPrice},{headers:{
+//         'Content-Type': 'application/json',
+//         //Authorization: `Bearer ${jwt_token}`
+//       }})).data
+//     return response;
+
+       
+// };
+
+export const searchProducts = async (
+    username: string,
+    productName: string,
+    productCategory: string,
+    minProductPrice: number,
+    maxProductPrice: number
+): Promise<ProductModel[]> => {
+    console.log("hi");
+
+    const response = (await axios.get('http://127.0.0.1:8080/api/product/getFilteredProducts', {
+        headers: {
+            'Content-Type': 'application/json',
+            // Authorization: `Bearer ${jwt_token}`
+        },
+        params: {
+            productName,
+            productCategory,
+            minProductPrice,
+            maxProductPrice
+        }
+    })).data;
+
+    // Transform the response into ProductModel[]
+    const products: ProductModel[] = response.map((product: any) => ({
+        id: product.productID,
+        name: product.productName,
+        storeId: product.productID, // Assuming storeId is same as productID
+        price: product.productPrice,
+        productCategory: product.productCategory,
+        productDescription: product.description,
+        productRank: product.productRank
+    }));
 
     return products;
 };

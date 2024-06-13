@@ -18,8 +18,8 @@ function SearchResults() {
   const [productsResults, setProductsResults] = useState<ProductModel[]>([]);
 
   useEffect(() => {
-    const results = searchProducts(searchTerm, searchCategory, minPrice, maxPrice);
-    setProductsResults(results);
+    const results = searchProducts("",searchTerm, searchCategory, minPrice, maxPrice);
+    //setProductsResults(results);
   }, [searchTerm, searchCategory, minPrice, maxPrice]);
 
   return (
