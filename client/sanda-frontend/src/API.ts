@@ -11,6 +11,7 @@ import ProductCartModel from "./models/ProductCartModel";
 import { OrderModel } from "./models/OrderModel"; // Adjust the path as needed
 import axios from "axios";
 import RoleModel from "./models/RoleModel";
+import CreateStoreModel from "./models/CreateStoreModel";
 
 export const login = async(username: string, password: string) => {
     ///request REST to login...
@@ -346,8 +347,13 @@ export const fetchUserStores = async (username: string): Promise<RoleModel[]> =>
     return roles
 };
 
-export const createNewStore = async (username: string, storeName: string): Promise<RoleModel> => {
-    const response = await axios.post(`http://127.0.0.1:8080/api/stores/createStore`, { storeName });
+export const createNewStore = async (storeModel: CreateStoreModel) => {
+    const response = await axios.post(`http://127.0.0.1:8080/api/stores/createStore`, storeModel,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
     return response.data;
-    return {storeId: 5,storeName:"aa",roleName:"Manager" }
 };
