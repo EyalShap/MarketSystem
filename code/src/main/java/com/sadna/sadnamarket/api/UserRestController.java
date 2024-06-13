@@ -303,7 +303,7 @@ public class UserRestController {
         marketService.checkToken(token,username);
         return marketService.getMemberDto(username);
     }  
-    @GetMapping("/getUserDTO")
+    @GetMapping("/getUserRoles")
     public Response getMemberRoles(@RequestParam String username,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;

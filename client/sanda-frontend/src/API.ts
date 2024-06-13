@@ -347,7 +347,7 @@ export const fetchUserStores = async (username: string): Promise<RoleModel[]> =>
 };
 
 export const createNewStore = async (username: string, storeName: string): Promise<RoleModel> => {
-    // const response = await axios.post(`http://127.0.0.1:8080/api/user/${username}/stores`, { storeName });
-    // return response.data;
+    const response = await axios.post(`http://127.0.0.1:8080/api/stores/createStore`, { storeName });
+    return response.data;
     return {storeId: 5,storeName:"aa",roleName:"Manager" }
 };

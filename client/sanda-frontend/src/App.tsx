@@ -13,6 +13,8 @@ import Staff from './components/Staff';
 import Cart from './components/Cart';
 import Orders from './components/Orders';
 import MyStores from './components/MyStores';
+import { Create } from '@mui/icons-material';
+import CreateStore from './components/CreateStore';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -44,6 +46,7 @@ function App() {
             <Route path="/store/:storeId" element={<Store />} />
             <Route path="/store/:storeId/staff" element={<Staff />} />
             <Route path="/memberStores/:username" element={<MyStores />} />
+            <Route path="/createStore" element={<CreateStore />}/>
             <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
           </Routes>
         </Router>
