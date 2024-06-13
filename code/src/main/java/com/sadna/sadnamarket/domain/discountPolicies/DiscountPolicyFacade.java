@@ -25,7 +25,6 @@ public class DiscountPolicyFacade {
     private IDiscountPolicyRepository discountPolicyRepository;
     private ProductFacade productFacade;
     private StoreFacade storeFacade;
-
     private static DiscountPolicyFacade instance;
 
     public DiscountPolicyFacade(IConditionRespository conditionRepository, IDiscountPolicyRepository discountPolicyRepository) {
