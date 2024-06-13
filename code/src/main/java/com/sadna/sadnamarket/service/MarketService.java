@@ -809,6 +809,18 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //Top right, choose "Login", new page
+    public Response login(String username, String password,int guestId){
+        try{
+            logger.info("user {} tries to login from guestId={}", username,guestId);
+            String token= authFacade.login(username, password,guestId);
+            logger.info("user {} logged in", username);
+            return Response.createResponse(false, token);
+
+        }catch(Exception e){
+            logger.error("error in login: "+e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    } //Top right, choose "Login", new page
     public Response logout(String username){
         try{
             logger.info(username, username);

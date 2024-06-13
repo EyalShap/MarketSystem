@@ -57,6 +57,10 @@ public class UserRestController {
     public Response login(@RequestBody LoginRequest loginRequest) {
         return marketService.login(loginRequest.getUsername(), loginRequest.getPassword());
     }
+    @PostMapping("/loginFromGuest")
+    public Response login(@RequestBody LoginFromGuestRequest loginRequest) {
+        return marketService.login(loginRequest.getUsername(), loginRequest.getPassword(),loginRequest.getGuestId());
+    }
 
     @PatchMapping("/addProductToCart")
     public Response addProductToCart(@RequestParam String username,@RequestBody StoreRequest storeRequest ,HttpServletRequest request) {

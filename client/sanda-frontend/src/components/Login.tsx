@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { login } from '../API';
+import { login, loginFromGuest } from '../API';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import '../styles/login.css';
 import { AppContext } from '../App';
@@ -22,7 +22,7 @@ export const Login = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const resp = await login(username, password); // Assuming login is an async function
+            const resp = await loginFromGuest(username, password,Number.parseInt(localStorage.getItem("guestId") as string)); // Assuming login is an async function
             if (resp.error) {
                 alert("Error: " + resp.errorString);
             } else {
