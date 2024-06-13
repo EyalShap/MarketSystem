@@ -8,8 +8,11 @@ public class ProductDataPrice {
     double oldPrice;
     double newPrice;
 
+    public ProductDataPrice() {
+    }
     public ProductDataPrice(int id,int storeId, String name, int amount, double oldPrice, double newPrice) {
         this.id = id;
+        this.storeId=storeId;
         this.name = name;
         this.amount = amount;
         this.oldPrice = oldPrice;
@@ -37,6 +40,14 @@ public class ProductDataPrice {
     }
     public int getStoreId() {
         return storeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setNewPrice(double newPrice) {
