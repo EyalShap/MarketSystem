@@ -35,7 +35,7 @@ class MemberTests {
     void memberLogoutTest() {
         Response resp = bridge.logout(username);
         Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("true", resp.getDataJson());
+        Assertions.assertEquals("2", resp.getDataJson());
     }
 
     @Test
