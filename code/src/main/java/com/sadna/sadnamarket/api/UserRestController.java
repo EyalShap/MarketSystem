@@ -326,9 +326,4 @@ public class UserRestController {
         marketService.checkToken(token,username);
         return marketService.getUserNotifications(username);
     }
-
-    @GetMapping("/testSendMessage")
-    public Response sendMessage(@RequestParam String username, @RequestParam String message) {
-        return marketService.sendMessage(username,message);
-    }
 }
