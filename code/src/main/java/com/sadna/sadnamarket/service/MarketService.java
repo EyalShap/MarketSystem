@@ -568,10 +568,10 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
-    public Response createMinProductCondition(String token, int minAmount, String productName, String username) {
+    public Response createMinProductCondition(String token, int minAmount, int productID, String username) {
         try {
             checkToken(token, username);
-            discountPolicyFacade.createMinProductCondition(minAmount, productName, username);
+            discountPolicyFacade.createMinProductCondition(minAmount, productID, username);
             logger.info(String.format("User %s added MinProduct Condition", username));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
@@ -640,11 +640,11 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
-    public Response createOnProductSimpleDiscountPolicy(String token, String username, double percentage, String ProductName, int conditionID) {
+    public Response createOnProductSimpleDiscountPolicy(String token, String username, double percentage, int ProductID, int conditionID) {
         try {
             checkToken(token, username);
-            discountPolicyFacade.createOnProductSimpleDiscountPolicy(percentage, ProductName, conditionID, username);
-            logger.info(String.format("User %s added OnProductSimple Discount policy: On product %s", username, ProductName));
+            discountPolicyFacade.createOnProductSimpleDiscountPolicy(percentage, ProductID, conditionID, username);
+            logger.info(String.format("User %s added OnProductSimple Discount policy: On product with ID <%s?", username, ProductID));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {

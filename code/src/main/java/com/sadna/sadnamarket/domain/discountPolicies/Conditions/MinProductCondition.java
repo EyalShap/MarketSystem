@@ -8,21 +8,21 @@ import java.util.Map;
 
 public class MinProductCondition extends Condition{
     private final int minAmount;
-    private String productName;
+    private Integer productID;
     private String categoryName;
     private boolean chosePath; // promise there is CategoryName Xor ProductName
 
     public MinProductCondition(int id, int minAmount){
         super(id);
         this.minAmount = minAmount;
-        productName = null;
+        productID = null;
         categoryName = null;
         chosePath = false;
     }
 
-    public void setOnProductName(String productName) {
+    public void setOnProductName(int productID) {
         if(!chosePath) {
-            this.productName = productName;
+            this.productID = productID;
         }
         chosePath = true;
     }
@@ -45,7 +45,7 @@ public class MinProductCondition extends Condition{
         if(!chosePath){
             return false;
         }
-        if(productName != null){
+        if(productID != null){
             totalAmount = countOnlyProduct(productDTOMap, listProductsPrice);
         }
         else if(categoryName != null){
@@ -74,13 +74,13 @@ public class MinProductCondition extends Condition{
 
     private int countOnlyProduct(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice){
         int itemID;
-        String thisProductName;
+        int thisProductID;
         int amount;
         int total = 0;
         for(ProductDataPrice item : listProductsPrice){
             itemID = item.getId();
-            thisProductName = productDTOMap.get(itemID).getProductName();
-            if(thisProductName.equals(productName)){
+            thisProductID = productDTOMap.get(itemID).getProductID();
+            if(thisProductID == productID){
                 amount = item.getAmount();
                 total = total + amount;
             }
@@ -100,8 +100,8 @@ public class MinProductCondition extends Condition{
 
     public String description() {
         String addEnding;
-        if(productName != null){
-            addEnding = productName;
+        if(productID != null){
+            addEnding = String.format("product with ID <%d>", productID);
         }
         else if(categoryName != null){
             addEnding = "products from category: " + categoryName;
