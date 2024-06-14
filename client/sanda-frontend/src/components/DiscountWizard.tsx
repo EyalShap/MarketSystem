@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import '../styles/Wizard.css';
 import Store from './Store';
 import Login from './Login';
 import Profile from './Profile';
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
+
+const ConditionContext = createContext({
+    condId: '-1',
+    setCondId: (cond: string) => {}
+});
 
 export const DiscountWizard = () => {
     const [currentElement, setCurrentElement] = useState(<SimpleDiscount />);
@@ -14,7 +19,8 @@ export const DiscountWizard = () => {
 
     let textToElement: Dictionary<JSX.Element> = {}
     textToElement["Simple Discount"] = <SimpleDiscount />
-    textToElement["Condition Discount"] = <ConditionDiscuont />
+    textToElement["Condition Discount"] = <ConditionDiscount />
+    textToElement["Composite Discount"] = <CompositeDiscount />
 
     return (
         <div className="wizard">
@@ -36,7 +42,7 @@ const SimpleDiscount = () => {
 
     return (
         <div className='discountEditor'>
-            <p>A simple discount simply applies a given percentage on a given product, category or entire store</p>
+            <h3>A simple discount simply applies a given percentage on a given product, category or entire store</h3>
             <FormControl>
                 <FormLabel id="group-label">Applies on:</FormLabel>
                 <RadioGroup
@@ -66,17 +72,24 @@ const SimpleDiscount = () => {
     );
 };
 
-const ConditionDiscuont = () => {
+const ConditionDiscount = () => {
     const [percentage, setPercentage] = useState("0");
     const [mode, setMode] = useState("store");
     const [category, setCategory] = useState("");
     const [product, setProduct] = useState("");
+    const [condId, setCondId] = useState("-1");
+    const value = { condId, setCondId };
 
     return (
         <div className='discountEditor'>
-            <p>A simple discount simply applies a given percentage on a given product, category or entire store only if a condition applies</p>
+            <h3>A conditioned discount applies a given percentage on a given product, category or entire store only if a condition applies</h3>
+            <h4>You can use the following sub-wizard to create and select a condition</h4>
+            <p>{(condId === "-1") ? "You have not selected a condition yet" : `You have selected condition with ID ${condId}`}</p>
+            <ConditionContext.Provider value={value}>
+                <ConditionWizard/>
+            </ConditionContext.Provider>
             <FormControl>
-                <FormLabel id="group-label">Applies on:</FormLabel>
+                <FormLabel id="group-label">Discount Applies on:</FormLabel>
                 <RadioGroup
                     aria-labelledby="group-label"
                     defaultValue={"store"}
@@ -98,7 +111,6 @@ const ConditionDiscuont = () => {
             }
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Percentage" variant="outlined" value={percentage} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setPercentage(event.target.value); }} />
-            <ConditionWizard/>
             <button className='editorButton'>Create</button>
             <button className='editorButton'>Create and add to store</button>
         </div>
@@ -133,6 +145,7 @@ const AmountCondition = () => {
     const [mode, setMode] = useState("store");
     const [category, setCategory] = useState("");
     const [product, setProduct] = useState("");
+    const { condId, setCondId } = useContext(ConditionContext);
 
     return (
         <div className='discountEditor'>
@@ -161,13 +174,14 @@ const AmountCondition = () => {
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Minimum Amount" variant="outlined" value={amount} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setAmount(event.target.value); }} />
             <button className='editorButton'>Create Condition</button>
-            <button className='editorButton'>Create Condition and use for discount</button>
+            <button onClick = {() => setCondId("1")}className='editorButton'>Create Condition and use for discount</button>
         </div>
     );
 };
 
 const BuyCondition = () => {
     const [buy, setBuy] = useState("0");
+    const { condId, setCondId } = useContext(ConditionContext);
 
     return (
         <div className='discountEditor'>
@@ -175,7 +189,41 @@ const BuyCondition = () => {
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Minimum" variant="outlined" value={buy} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setBuy(event.target.value); }} />
             <button className='editorButton'>Create Condition</button>
-            <button className='editorButton'>Create Condition and use for discount</button>
+            <button onClick = {() => setCondId("2")}className='editorButton'>Create Condition and use for discount</button>
+        </div>
+    );
+};
+
+const CompositeDiscount = () => {
+    const [condId, setCondId] = useState("-1");
+    const [logic, setLogic] = useState("OR");
+    const [id1, setId1] = useState("0");
+    const [id2, setId2] = useState("0");
+    const value = { condId, setCondId };
+
+    const logicList = ["OR", "AND", "XOR"]
+    return (
+        <div className='discountEditor'>
+            <h3>A composite discount applies a discount based on two existing discounts, based on various logical operators</h3>
+            <p>{(condId === "-1") ? "You have not selected a condition yet" : `You have selected condition with ID ${condId}`}</p>
+            <FormControl>
+                <FormLabel id="group-label">Applies on:</FormLabel>
+                <RadioGroup
+                    aria-labelledby="group-label"
+                    defaultValue={"store"}
+
+                    value={logic}
+                    onChange={(e,v) => setLogic(v)}
+                    name="radio-buttons-group"
+                >
+                    {logicList.map(logi => <FormControlLabel value={logi} control={<Radio />} label={logi} />)}
+                </RadioGroup>
+            </FormControl>
+            <h1/>
+            <TextField type='number' size='small' id="outlined-basic" label="ID of first discount" variant="outlined" value={id1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId1(event.target.value); }} />
+            <TextField type='number' size='small' id="outlined-basic" label="ID of second discount" variant="outlined" value={id2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId2(event.target.value); }} />
+            <button className='editorButton'>Create</button>
+            <button className='editorButton'>Create and add to store</button>
         </div>
     );
 };
