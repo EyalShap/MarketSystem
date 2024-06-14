@@ -11,6 +11,7 @@ import SearchResults from './components/SearchResults';
 import SearchBar from './components/Search';
 import Store from './components/Store';
 import Staff from './components/Staff';
+import DiscountWizard from './components/DiscountWizard';
 
 function App() {
   const [isloggedin,setIsloggedin] = useState(true);
@@ -26,6 +27,7 @@ function App() {
           <Route path="/search-results" element={<SearchResults />} />
           <Route path="/store/:storeId" element={<Store/>}/>
           <Route path="/store/:storeId/staff" element={<Staff/>}/>
+          <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>
           <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>}/>
         </Routes>
       

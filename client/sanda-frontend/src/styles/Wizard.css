@@ -1,0 +1,43 @@
+.wizard{
+    display: flex;
+    flex-direction: row;
+}
+
+.element{
+    flex-grow: 8;
+}
+
+.selector{
+    flex-grow: 2;
+}
+
+.selectorbutton{
+    width: 100%;
+}
+
+.discountEditor{
+    display: flex;
+    padding: 10px;
+    flex-direction: column;
+    align-items: center;
+    font-family: Roboto;
+}
+
+.editorButton{
+    background-color: white;
+    border-color: #000099;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 15px;
+    font-family: Roboto;
+    font-size: 18px;
+    color: #000099;
+    width: 20%;
+    margin: 5px;
+}
+
+.editorButton:hover{
+    background-color: #000099;
+    font-family: Roboto;
+    color: white;
+}

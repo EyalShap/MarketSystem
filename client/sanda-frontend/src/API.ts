@@ -135,3 +135,19 @@ export const getMember = async(username: string): Promise<MemberModel> => {
       }
     return profile;
 }
+
+export const sendManagerRequest = async(username: string, storeId: string): Promise<RestResponse> => {
+    return {error: false, dataJson: "true", errorString: ""};
+}
+
+export const sendOwnerRequest = async(username: string, storeId: string): Promise<RestResponse> => {
+    return {error: true, dataJson: "true", errorString: `user doesn't exist: ${username}`};
+}
+
+export const describeDiscountPolicy = async(policyId: string): Promise<String> => {
+    return "For users above 18, 20% discount on Beer applies";
+}
+
+export const describeBuyPolicy = async(policyId: string): Promise<String> => {
+    return "Must be 18 to purchase Alcohol category";
+}
