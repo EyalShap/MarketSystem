@@ -10,7 +10,6 @@ import Profile from './components/Profile';
 import SearchResults from './components/SearchResults';
 import Store from './components/Store';
 import Staff from './components/Staff';
-<<<<<<< HEAD
 import Cart from './components/Cart';
 import Orders from './components/Orders';
 import MyStores from './components/MyStores';
@@ -28,9 +27,7 @@ export const AppContext = createContext<AppContextProps>({
   setIsloggedin: () => {},
 });
 
-=======
 import DiscountWizard from './components/DiscountWizard';
->>>>>>> 9f17d04 (making progress)
 
 function App() {
   const [isloggedin, setIsloggedin] = useState(false);
