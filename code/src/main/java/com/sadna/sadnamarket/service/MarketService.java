@@ -17,7 +17,6 @@ import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
-import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;

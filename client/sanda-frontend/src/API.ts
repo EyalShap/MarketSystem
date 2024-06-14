@@ -353,10 +353,17 @@ export const getOrders = async (username: string): Promise<OrderModel[]> => {
     ];
 };
 export const fetchUserStores = async (username: string): Promise<RoleModel[]> => {
-    // const response = await axios.get(`${server}/api/user/${username}/stores`);
-    // return response.data;
-    const roles=[{storeId: 1,storeName:"aa",roleName:"Manager" },{storeId: 2,storeName:"bbbbbbbb",roleName:"Manager" },{storeId: 3,storeName:"gff",roleName:"Owner" },{storeId: 4,storeName:"jfk",roleName:"Manager" }];
-    return roles
+    const response = await fetch(`${server}/api/user/getUserRoles?username=${username}`,{
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    });
+    const res= await response.json() ; 
+    console.log(res);
+    const x= JSON.parse(res.dataJson) as RoleModel[];
+    console.log(x);
+    return x;
 };
 
 export const fetchNotifications = async (): Promise<NotificationModel[]> => {
@@ -378,7 +385,8 @@ export const fetchNotifications = async (): Promise<NotificationModel[]> => {
     return notifs
 };
 
-export const createNewStore = async (storeModel: CreateStoreModel) => {
+export const createNewStore = async (storeModel: CreateStoreModel,storeFounder :string=localStorage.getItem("username") as string) => {
+    storeModel.founderUsername=storeFounder;
     const response = await axios.post(`${server}/api/stores/createStore`, storeModel,{ 
         headers: {
             'Content-Type': 'application/json',
