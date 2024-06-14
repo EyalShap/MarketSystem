@@ -7,7 +7,7 @@ public class PolicyConditionRequest {
     double percentage;
     String CategoryName;
 
-    String ProductName;
+    int productId;
     public int getConditionAID() {
         return conditionAID;
     }
@@ -40,11 +40,11 @@ public class PolicyConditionRequest {
         CategoryName = categoryName;
     }
 
-    public String getProductName() {
-        return ProductName;
+    public int getProductId() {
+        return productId;
     }
 
-    public void setProductName(String productName) {
-        ProductName = productName;
+    public void setProductId(int productId) {
+        this.productId = productId;
     }
 }
