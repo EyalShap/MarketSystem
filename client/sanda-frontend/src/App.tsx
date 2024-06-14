@@ -10,6 +10,7 @@ import Profile from './components/Profile';
 import SearchResults from './components/SearchResults';
 import Store from './components/Store';
 import Staff from './components/Staff';
+<<<<<<< HEAD
 import Cart from './components/Cart';
 import Orders from './components/Orders';
 import MyStores from './components/MyStores';
@@ -27,6 +28,9 @@ export const AppContext = createContext<AppContextProps>({
   setIsloggedin: () => {},
 });
 
+=======
+import DiscountWizard from './components/DiscountWizard';
+>>>>>>> 9f17d04 (making progress)
 
 function App() {
   const [isloggedin, setIsloggedin] = useState(false);
@@ -46,8 +50,9 @@ function App() {
             <Route path="/orders/:username" element={<Orders />} />
             <Route path="/cart/:username" element={<Cart />} />
             <Route path="/search-results" element={<SearchResults />} />
-            <Route path="/store/:storeId" element={<Store />} />
-            <Route path="/store/:storeId/staff" element={<Staff />} />
+            <Route path="/store/:storeId" element={<Store/>}/>
+            <Route path="/store/:storeId/staff" element={<Staff/>}/>
+            <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>
             <Route path="/memberStores/:username" element={<MyStores />} />
             <Route path="/createStore" element={<CreateStore />}/>
             <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
