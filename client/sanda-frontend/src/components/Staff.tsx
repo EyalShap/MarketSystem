@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import StoreModel from '../models/StoreModel';
-import { getStoreInfo, getStoreManagers, getStoreOwners, getStoreProducts, isManager, isOwner, searchAndFilterStoreProducts, sendOwnerRequest,sendManagerRequest } from '../API';
-import { useParams } from 'react-router-dom';
+import { getStoreInfo, getStoreManagers, getStoreOwners, getStoreProducts, isManager, isOwner, searchAndFilterStoreProducts, sendOwnerRequest,sendManagerRequest, hasPermission } from '../API';
+import { useNavigate, useParams } from 'react-router-dom';
 import ProductModel from '../models/ProductModel';
 import { Rating } from 'react-simple-star-rating'
 import '../styles/Staff.css';
@@ -12,15 +12,30 @@ import RestResponse from "../models/RestResponse";
 import MemberModel from '../models/MemberModel';
 import { TextField } from '@mui/material';
 import StaffRow from './StaffRow';
+import Permission from '../models/Permission';
 
 export const Staff = () => {
     const {storeId} = useParams();
-    const managers: MemberModel[] = getStoreManagers(storeId!);
-    const owners: MemberModel[] = getStoreOwners(storeId!);
+    const [managers, setManagers] = useState<MemberModel[]>([]);
+    const [owners, setOwners] = useState<MemberModel[]>([]);
     const [appointManager, setAppointManager] = useState(false);
     const [appointOwner, setAppointOwner] = useState(false);
     const [managerUsername,setManagerUsername] = useState("");
     const [ownerUsername,setOwnerUsername] = useState("");
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const checkAllowed = async ()=> {
+            let canAccess: boolean = await hasPermission(storeId!, Permission.VIEW_ROLES);
+            if(!canAccess){
+                navigate('/permission-error', {state: "You do not have permission to view and edit roles in the given store"})
+            }else{
+                setManagers(await getStoreManagers(storeId!))
+                setOwners(await getStoreOwners(storeId!))
+            }
+        }
+        checkAllowed();
+    }, [])
 
     return (
         <div className='walled'>

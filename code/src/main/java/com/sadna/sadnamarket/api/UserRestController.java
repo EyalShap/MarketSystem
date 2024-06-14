@@ -24,6 +24,7 @@ public class UserRestController {
 
     @PostMapping("/enterAsGuest")
     public Response enterAsGuest() {
+        System.out.println("FUCK FUCK FUCK FUCK FUCK");
         return marketService.enterAsGuest();
     }
 
@@ -131,6 +132,18 @@ public class UserRestController {
         marketService.checkToken(token,acceptingName);
         return marketService.acceptRequest(acceptingName,requestID);
     }
+
+    @PostMapping("/rejectRequest")
+    public Response rejectRequest(@RequestParam String acceptingName,@RequestParam int requestID,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,acceptingName);
+        return marketService.rejectRequest(acceptingName,requestID);
+    }
+
     @PostMapping("/loginUsingJwt")
     public Response loginUsingJwt(@RequestParam String username,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");

@@ -13,9 +13,10 @@ import axios from "axios";
 import RoleModel from "./models/RoleModel";
 import CreateStoreModel from "./models/CreateStoreModel";
 import { NotificationModel } from "./models/NotificationModel";
+import StoreRequestModel from "./models/StoreRequestModel";
 
 
-const server: string = 'http://127.0.0.1:8080'; 
+const server: string = 'http://10.0.0.18:8080'; 
 
 export const login = async(username: string, password: string) => {
     ///request REST to login...
@@ -70,9 +71,30 @@ export const registerMember = async(registerModel: registerModel) => {
     return response;
 }
 
-export const getStoreInfo = (storeId: string): StoreModel => {
-    let defaultExample: StoreModel = {founderUsername: "mrOwnerMan", storeId: 0, storeName: "TestStore", email: "coolio@gmail.com", address: "Be'er Sheva, Reger Street 78", rank: 3, phoneNumber: "052-0520520", closingHours: 0, openingHours: 0}
-    return defaultExample;
+export const getStoreInfo = async (storeId: string): Promise<RestResponse> => {
+    if(localStorage.getItem('token') == null){
+        const response = await fetch(
+            `${server}/api/stores/getStoreInfo?storeId=${storeId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+        const data: RestResponse = await response.json();
+        return data;
+    }
+    const response = await fetch(
+        `${server}/api/stores/getStoreInfo?username=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return data;
 }
 
 export const getStoreProducts = (storeId: string): ProductModel[] => {
@@ -130,8 +152,18 @@ export const isManager = (storeId: string): boolean => {
     return true;
 }
 
-export const hasPermission = (storeId: string, permission: Permission): boolean => {
-    return true;
+export const hasPermission = async (storeId: string, permission: Permission): Promise<boolean> => {
+    const response = await fetch(
+        `${server}/api/stores/hasPermission?actorUsername=${localStorage.getItem("username")}&actionUsername=${localStorage.getItem("username")}&storeId=${storeId}&permission=${permission}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return (!data.error) && (data.dataJson === "true")
 }
 
 export const storeActive = (storeId: string): boolean => {
@@ -150,23 +182,48 @@ export const updateManagerPermissions = (storeId: string, managerUsername: strin
     return true;
 }
 
-export const getStoreManagers = (storeId: string): MemberModel[] => {
-    let defaultExample1: MemberModel = {username: "Eric", firstName: "Eric", lastName: "Einstein", emailAddress: "eric@excited.com", phoneNumber: "052-0520525",birthDate: "2024-06-06"}
-    let defaultExample2: MemberModel = {username: "Benny", firstName: "Benny", lastName: "Bobby", emailAddress: "benny@sad.com", phoneNumber: "052-0520525",birthDate: "2024-06-06"}
-    let list: MemberModel[] = []
-    list.push(defaultExample1)
-    list.push(defaultExample2)
-    return list;
+export const getStoreManagers = async (storeId: string): Promise<MemberModel[]> => {
+    const response = await fetch(
+        `${server}/api/stores/getManagers?username=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return (JSON.parse(data.dataJson) as MemberModel[]);
 }
 
-export const getStoreOwners = (storeId: string): MemberModel[] => {
-    let defaultExample1: MemberModel = {username: "mrOwnerMan", firstName: "Owner", lastName: "Man", emailAddress: "man@store.com", phoneNumber: "052-0520525",birthDate: "2024-06-06"}
-    let defaultExample2: MemberModel = {username: "GuyWhoOwnsStore", firstName: "Guy", lastName: "Store", emailAddress: "guy@store.com", phoneNumber: "052-0520525",birthDate: "2024-06-06"}
-    let list: MemberModel[] = []
-    list.push(defaultExample1)
-    list.push(defaultExample2)
-    return list;
+export const getStoreOwners = async (storeId: string): Promise<MemberModel[]> => {
+    const response = await fetch(
+        `${server}/api/stores/getOwners?username=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return (JSON.parse(data.dataJson) as MemberModel[]);
 }
+
+export const acceptRequest = async (requestId: number) => {
+    axios.post(`${server}/api/user/acceptRequest?acceptingName=${localStorage.getItem("username")}&requestID=${requestId}`,{},{headers:{
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }})
+}
+
+export const rejectRequest = async (requestId: number) => {
+    axios.post(`${server}/api/user/rejectRequest?acceptingName=${localStorage.getItem("username")}&requestID=${requestId}`,{},{headers:{
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }})
+}
+
 export const getMember = async(username: string): Promise<MemberModel> => {
       const response = await fetch(
         `${server}/api/user/getUserDTO?username=${username}`,
@@ -389,7 +446,8 @@ export const fetchNotifications = async (): Promise<NotificationModel[]> => {
         return [];
     }
     // Assuming the API returns the data in dataJson
-    const notifs = JSON.parse(data.dataJson) as NotificationModel[];
+    const notifs = JSON.parse(data.dataJson);
+    console.log(data.dataJson)
     return notifs
 };
 
@@ -407,11 +465,27 @@ export const createNewStore = async (storeModel: CreateStoreModel,storeFounder :
 
 
 export const sendManagerRequest = async(username: string, storeId: string): Promise<RestResponse> => {
-    return {error: false, dataJson: "true", errorString: ""};
+    let request: StoreRequestModel = {appointer: localStorage.getItem("username")!, appointee: username, storeId: parseInt(storeId)}
+    const response = await axios.post(`${server}/api/stores/sendStoreManagerRequest`, request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    return response.data;
 }
 
 export const sendOwnerRequest = async(username: string, storeId: string): Promise<RestResponse> => {
-    return {error: true, dataJson: "true", errorString: `user doesn't exist: ${username}`};
+    let request: StoreRequestModel = {appointer: localStorage.getItem("username")!, appointee: username, storeId: parseInt(storeId)}
+    const response = await axios.post(`${server}/api/stores/sendStoreOwnerRequest`, request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    return response.data;
 }
 
 export const describeDiscountPolicy = async(policyId: string): Promise<String> => {

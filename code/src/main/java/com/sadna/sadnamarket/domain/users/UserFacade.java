@@ -226,6 +226,7 @@ public class UserFacade {
         String role=request.getRole();
         String apointer=request.getSender();
         iUserRepo.getMember(apointer).addApointer(acceptingName, storeId);
+        notify(apointer, "User " + acceptingName + " accepted request for " + role + " in " + storeId);
         if(role.equals("Manager"))
             storeFacade.addStoreManager(acceptingName, storeId);
         else
@@ -236,7 +237,12 @@ public class UserFacade {
     public void reject(String rejectingName,int requestID){
         logger.info("{} reject request id: {}",rejectingName,requestID);
         Member rejecting=getMember(rejectingName);
-        rejecting.accept(requestID);
+        rejecting.reject(requestID);
+        Request request=rejecting.getRequest(requestID);
+        int storeId=request.getStoreId();
+        String role=request.getRole();
+        String apointer=request.getSender();
+        notify(apointer, "User " + rejectingName + " rejected request for " + role + " in " + storeId);
         logger.info("{} rejected request id: {}",rejectingName,requestID);
 
     }

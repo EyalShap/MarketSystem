@@ -200,6 +200,20 @@ public class MarketService {
         }
     } //From Store page, Actions menu, only for owner, popup
 
+    public Response reopenStore(String token, String username, int storeId) {
+        try {
+            checkToken(token, username);
+            boolean storeClosed = storeFacade.reopenStore(username, storeId);
+            logger.info(String.format("User %s reopened store %d.", username, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(storeClosed));
+        }
+        catch (Exception e) {
+            logger.error("reopenStore: " + e.getMessage());
+
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response getOwners(String token, String username, int storeId) {
         try {
             checkToken(token, username);

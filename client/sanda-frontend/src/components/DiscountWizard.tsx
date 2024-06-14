@@ -1,9 +1,12 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import '../styles/Wizard.css';
 import Store from './Store';
 import Login from './Login';
 import Profile from './Profile';
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import { hasPermission } from '../API';
+import Permission from '../models/Permission';
 
 const ConditionContext = createContext({
     condId: '-1',
@@ -12,10 +15,21 @@ const ConditionContext = createContext({
 
 export const DiscountWizard = () => {
     const [currentElement, setCurrentElement] = useState(<SimpleDiscount />);
-
+    const {storeId} = useParams();
+    const navigate = useNavigate();
     interface Dictionary<T> {
         [Key: string]: T;
     }
+
+    useEffect(() => {
+        const checkAllowed = async ()=> {
+            let canAccess: boolean = await hasPermission(storeId!, Permission.ADD_BUY_POLICY);
+            if(!canAccess){
+                navigate('/permission-error', {state: "You do not have Edit Buy Policies permission in the given store"})
+            }
+        }
+        checkAllowed();
+    }, [])
 
     let textToElement: Dictionary<JSX.Element> = {}
     textToElement["Simple Discount"] = <SimpleDiscount />

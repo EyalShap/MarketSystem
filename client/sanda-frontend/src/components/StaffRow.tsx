@@ -38,7 +38,7 @@ export const StaffRow = (props: any) => {
             {showDetails && 
             <div className = 'staffDetails'>
                 <p>Full Name: {member.firstName} {member.lastName}</p>
-                <p>Email: {member.email}</p>
+                <p>Email: {member.emailAddress}</p>
                 <p>Phone Number: {member.phoneNumber}</p>
                 {allPermissions.map((permission: Permission) => {
                     return <FormControlLabel control={<Checkbox onChange = 

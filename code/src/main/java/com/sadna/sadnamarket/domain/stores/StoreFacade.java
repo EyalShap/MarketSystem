@@ -253,6 +253,26 @@ public class StoreFacade {
         return true;
     }
 
+    public boolean reopenStore(String username, int storeId) {
+        if (!storeRepository.findStoreByID(storeId).getFounderUsername().equals(username))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotCloseStoreError(username, storeId));
+
+        storeRepository.findStoreByID(storeId).reopenStore();
+
+        String msg = String.format("The store \"%s\" was reopened.",
+                storeRepository.findStoreByID(storeId).getStoreInfo().getStoreName());
+        List<String> ownerUsernames = storeRepository.findStoreByID(storeId).getOwnerUsernames();
+        List<String> managerUsernames = storeRepository.findStoreByID(storeId).getManagerUsernames();
+        for (String ownerUsername : ownerUsernames) {
+            userFacade.notify(ownerUsername, msg);
+        }
+        for (String managerUsername : managerUsernames) {
+            userFacade.notify(managerUsername, msg);
+        }
+
+        return true;
+    }
+
     public boolean isStoreActive(int storeId) {
         return storeRepository.findStoreByID(storeId).getIsActive();
     }
@@ -511,6 +531,9 @@ public class StoreFacade {
             Set<String> error = store.updateStock(cartByStore.get(storeId));
                 if(error.size() != 0)
                     throw new IllegalArgumentException(String.join("\n", error));
+            for(String owner : store.getOwnerUsernames()){
+                userFacade.notify(owner, "User " + (username != null ? username : "") + " made a purchase in your store " + store.getStoreInfo().getStoreName());
+            }
         }
     }
 

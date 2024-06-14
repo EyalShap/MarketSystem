@@ -16,6 +16,8 @@ import MyStores from './components/MyStores';
 import { Create } from '@mui/icons-material';
 import CreateStore from './components/CreateStore';
 import { StompSessionProvider } from 'react-stomp-hooks';
+import DiscountWizard from './components/DiscountWizard';
+import PermissionError from './components/PermissionError';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -27,7 +29,6 @@ export const AppContext = createContext<AppContextProps>({
   setIsloggedin: () => {},
 });
 
-import DiscountWizard from './components/DiscountWizard';
 
 function App() {
   const [isloggedin, setIsloggedin] = useState(false);
@@ -37,7 +38,7 @@ function App() {
       <AppContext.Provider value={{ isloggedin, setIsloggedin }}>
         <Router>
           {isloggedin ? 
-          <StompSessionProvider url={'http://localhost:8080/ws'}><MemberNavbar /></StompSessionProvider>
+          <StompSessionProvider url={'http://10.0.0.18:8080/ws'}><MemberNavbar /></StompSessionProvider>
            : <Navbar />}
           <Routes>
             <Route path="/" element={<Home />} />
@@ -52,6 +53,7 @@ function App() {
             <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>
             <Route path="/memberStores/:username" element={<MyStores />} />
             <Route path="/createStore" element={<CreateStore />}/>
+            <Route path="/permission-error" element={<PermissionError />}/>
             <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
           </Routes>
         </Router>
