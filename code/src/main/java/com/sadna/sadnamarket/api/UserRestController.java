@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.logging.Log;
 
@@ -18,7 +19,8 @@ import org.apache.commons.logging.Log;
 @RequestMapping("/api/user")
 @CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
 public class UserRestController {
-    MarketService marketService = MarketService.getInstance();
+    @Autowired
+    MarketService marketService;
 
     @PostMapping("/enterAsGuest")
     public Response enterAsGuest() {
@@ -312,6 +314,16 @@ public class UserRestController {
         }   
         marketService.checkToken(token,username);
         return marketService.getUserRoles(username);
-    } 
+    }
 
+    @GetMapping("/getNotifications")
+    public Response getUserNotifications(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,username);
+        return marketService.getUserNotifications(username);
+    }
 }

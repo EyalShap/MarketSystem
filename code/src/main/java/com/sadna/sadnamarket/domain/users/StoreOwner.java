@@ -72,10 +72,11 @@ public class StoreOwner implements UserRole {
         logger.info("Exiting leaveRole");
     }
 
-    public void sendRequest(UserFacade userFacade, String senderName, String sentName, String reqType) {
+    public RequestDTO sendRequest(UserFacade userFacade, String senderName, String sentName, String reqType) {
         logger.info("Entering sendRequest with senderName={}, sentName={}, and reqType={}", senderName, sentName, reqType);
-        userFacade.getMember(sentName).getRequest(senderName, storeId, reqType);
+        RequestDTO requestDTO = userFacade.getMember(sentName).getRequest(senderName, storeId, reqType);
         logger.info("Exiting sendRequest");
+        return requestDTO;
     }
 
     @Override

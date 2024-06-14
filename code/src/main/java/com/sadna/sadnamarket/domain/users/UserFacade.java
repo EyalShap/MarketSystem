@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.sadna.sadnamarket.service.Error;
+import com.sadna.sadnamarket.service.RealtimeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +20,8 @@ import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.OrderDetailsDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
 public class UserFacade {
@@ -28,10 +30,22 @@ public class UserFacade {
     private static StoreFacade storeFacade;
     private static OrderFacade orderFacade;
     private static final Logger logger = LogManager.getLogger(UserFacade.class);
+    private RealtimeService realtime;
+
+    public UserFacade(RealtimeService realtime, IUserRepository userRepo, StoreFacade storeFacadeInstance,OrderFacade orderFacadeInsance) {
+        logger.info("initilize user fascade");
+        this.iUserRepo=userRepo;
+        this.realtime = realtime;
+        systemManagerUserName=null;
+        storeFacade=storeFacadeInstance;
+        orderFacade=orderFacadeInsance;
+        logger.info("finish initilize user fascade");
+    }
 
     public UserFacade(IUserRepository userRepo, StoreFacade storeFacadeInstance,OrderFacade orderFacadeInsance) {
         logger.info("initilize user fascade");
         this.iUserRepo=userRepo;
+        this.realtime = null;
         systemManagerUserName=null;
         storeFacade=storeFacadeInstance;
         orderFacade=orderFacadeInsance;
@@ -59,7 +73,13 @@ public class UserFacade {
 
     public void notify(String userName, String msg) {
         logger.info("{} got notification {}",userName,msg);
-        iUserRepo.getMember(userName).addNotification(msg);
+        NotificationDTO notificationDTO = iUserRepo.getMember(userName).addNotification(msg);
+        if(isLoggedIn(userName) && realtime != null){
+            realtime.sendNotification(userName, notificationDTO);
+        }
+        if(isLoggedIn(userName) && realtime == null){
+            logger.info("Did not send realtime notification as realtime service is null");
+        }
     }
 
     public List<NotificationDTO> getNotifications(String username){
@@ -176,16 +196,26 @@ public class UserFacade {
     public void addOwnerRequest(String senderName,String userName,int store_id){
         logger.info("{} try to add owner request to {} for store {}",senderName,userName,store_id);
         Member sender=getMember(senderName);
-        sender.addOwnerRequest(this,userName, store_id);
+        RequestDTO request = sender.addOwnerRequest(this,userName, store_id);
         logger.info("{} added owner request to {} for store {}",senderName,userName,store_id);
-
+        if(isLoggedIn(userName) && realtime != null){
+            realtime.sendNotification(userName, request);
+        }
+        if(isLoggedIn(userName) && realtime == null){
+            logger.info("Did not send realtime notification as realtime service is null");
+        }
     }
     public void addManagerRequest(String senderName,String userName,int store_id){
         logger.info("{} try to add manager request to {} for store {}",senderName,userName,store_id);
         Member sender=getMember(senderName);
-        sender.addManagerRequest(this,userName, store_id);
+        RequestDTO request = sender.addManagerRequest(this,userName, store_id);
         logger.info("{} added manager request to {} for store {}",senderName,userName,store_id);
-
+        if(isLoggedIn(userName) && realtime != null){
+            realtime.sendNotification(userName, request);
+        }
+        if(isLoggedIn(userName) && realtime == null){
+            logger.info("Did not send realtime notification as realtime service is null");
+        }
     }
 
     public void accept(String acceptingName,int requestID){

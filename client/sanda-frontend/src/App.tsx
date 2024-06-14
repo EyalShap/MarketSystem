@@ -15,6 +15,7 @@ import Orders from './components/Orders';
 import MyStores from './components/MyStores';
 import { Create } from '@mui/icons-material';
 import CreateStore from './components/CreateStore';
+import { StompSessionProvider } from 'react-stomp-hooks';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -34,7 +35,9 @@ function App() {
     <div className="App">
       <AppContext.Provider value={{ isloggedin, setIsloggedin }}>
         <Router>
-          {isloggedin ? <MemberNavbar /> : <Navbar />}
+          {isloggedin ? 
+          <StompSessionProvider url={'http://localhost:8080/ws'}><MemberNavbar /></StompSessionProvider>
+           : <Navbar />}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />

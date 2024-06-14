@@ -12,10 +12,14 @@ import { OrderModel } from "./models/OrderModel"; // Adjust the path as needed
 import axios from "axios";
 import RoleModel from "./models/RoleModel";
 import CreateStoreModel from "./models/CreateStoreModel";
+import { NotificationModel } from "./models/NotificationModel";
+
+
+const server: string = 'http://127.0.0.1:8080'; 
 
 export const login = async(username: string, password: string) => {
     ///request REST to login...
-    const response=(await axios.post('http://127.0.0.1:8080/api/user/login',{username: username, password: password},{headers:{
+    const response=(await axios.post(`${server}/api/user/login`,{username: username, password: password},{headers:{
         'Content-Type': 'application/json',
         //Authorization: `Bearer ${jwt_token}`
       }})).data
@@ -23,7 +27,7 @@ export const login = async(username: string, password: string) => {
 }
 export const loginFromGuest = async(username: string, password: string,guestId: number ) => {
     ///request REST to login...
-    const response=(await axios.post('http://127.0.0.1:8080/api/user/loginFromGuest',{username: username, password: password, guestId:guestId},{headers:{
+    const response=(await axios.post(`${server}/api/user/loginFromGuest`,{username: username, password: password, guestId:guestId},{headers:{
         'Content-Type': 'application/json',
         //Authorization: `Bearer ${jwt_token}`
       }})).data
@@ -31,7 +35,7 @@ export const loginFromGuest = async(username: string, password: string,guestId: 
 }
 export const loginUsingJwt = async(username: string, jwt: string) => {
     ///request REST to login...
-    const response=(await axios.post(`http://127.0.0.1:8080/api/user/loginUsingJwt?username=${username}`,{},{headers:{
+    const response=(await axios.post(`${server}/api/user/loginUsingJwt?username=${username}`,{},{headers:{
         'Content-Type': 'application/json',
         Authorization: `Bearer ${jwt}`
       }})).data
@@ -39,7 +43,7 @@ export const loginUsingJwt = async(username: string, jwt: string) => {
 }
 export const logout = async(username: string) => {
     ///request REST to login...
-    const response=(await axios.post(`http://127.0.0.1:8080/api/user/logout`,{field: username},{headers:{
+    const response=(await axios.post(`${server}/api/user/logout`,{field: username},{headers:{
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem("token")}`
       }})).data
@@ -47,14 +51,14 @@ export const logout = async(username: string) => {
 }
 export const enterAsGuest = async() => {
     ///request REST to login...
-    const response=(await axios.post('http://127.0.0.1:8080/api/user/enterAsGuest')).data
+    const response=(await axios.post(`${server}/api/user/enterAsGuest`)).data
     console.log(response);
     return Number.parseInt(response.dataJson);
 }
 export const registerMember = async(registerModel: registerModel) => {
     ///request REST to login...
     const response = await (await axios.post(
-        'http://127.0.0.1:8080/api/user/register',
+        `${server}/api/user/register`,
         registerModel,
         {
             headers: {
@@ -157,7 +161,7 @@ export const getStoreOwners = (storeId: string): MemberModel[] => {
 }
 export const getMember = async(username: string): Promise<MemberModel> => {
       const response = await fetch(
-        `http://127.0.0.1:8080/api/user/getUserDTO?username=${username}`,
+        `${server}/api/user/getUserDTO?username=${username}`,
         {
             headers: {
                 'Content-Type': 'application/json',
@@ -200,7 +204,7 @@ export const removeFromCart = (cart: cartModel) => {
 }
 export const updateFirstName = async(firstName:string) => {
     const response = await (await axios.patch(
-        `http://127.0.0.1:8080/api/user/setFirstName?username=${localStorage.getItem("username")}`,
+        `${server}/api/user/setFirstName?username=${localStorage.getItem("username")}`,
         {field: firstName},
         {
             headers: {
@@ -213,7 +217,7 @@ export const updateFirstName = async(firstName:string) => {
 }
 export const updateLastName = async (lastName:string) => {
     const response = await (await axios.patch(
-        `http://127.0.0.1:8080/api/user/setLastName?username=${localStorage.getItem("username")}`,
+        `${server}/api/user/setLastName?username=${localStorage.getItem("username")}`,
         {field: lastName},
         {
             headers: {
@@ -226,7 +230,7 @@ export const updateLastName = async (lastName:string) => {
 }
 export const updateEmail = async(email:string) => {
     const response = await (await axios.patch(
-        `http://127.0.0.1:8080/api/user/setEmailAddress?username=${localStorage.getItem("username")}`,
+        `${server}/api/user/setEmailAddress?username=${localStorage.getItem("username")}`,
         {field: email},
         {
             headers: {
@@ -239,7 +243,7 @@ export const updateEmail = async(email:string) => {
 }
 export const updatePhone = async(phone:string) => {
     const response = await (await axios.patch(
-        `http://127.0.0.1:8080/api/user/setPhoneNumber?username=${localStorage.getItem("username")}`,
+        `${server}/api/user/setPhoneNumber?username=${localStorage.getItem("username")}`,
         {field: phone},
         {
             headers: {
@@ -252,7 +256,7 @@ export const updatePhone = async(phone:string) => {
 }
 export const updateBirthday = async(birthday:string) => {
     const response = await (await axios.patch(
-        `http://127.0.0.1:8080/api/user/setBirthday?username=${localStorage.getItem("username")}`,
+        `${server}/api/user/setBirthday?username=${localStorage.getItem("username")}`,
         {field: birthday},
         {
             headers: {
@@ -266,7 +270,7 @@ export const updateBirthday = async(birthday:string) => {
 
 // export const searchProducts = async(username: string,productName: string, productCategory: string, minProductPrice: number, maxProductPrice: number) => {
  
-//     const response=(await axios.post('http://127.0.0.1:8080/api/product/getFilteredProducts',{productName, productCategory, minProductPrice, maxProductPrice},{headers:{
+//     const response=(await axios.post('${server}/api/product/getFilteredProducts',{productName, productCategory, minProductPrice, maxProductPrice},{headers:{
 //         'Content-Type': 'application/json',
 //         //Authorization: `Bearer ${jwt_token}`
 //       }})).data
@@ -284,7 +288,7 @@ export const searchProducts = async (
 ): Promise<ProductModel[]> => {
     console.log("hi");
 
-    const response = (await axios.get('http://127.0.0.1:8080/api/product/getFilteredProducts', {
+    const response = (await axios.get(`${server}/api/product/getFilteredProducts`, {
         headers: {
             'Content-Type': 'application/json',
             // Authorization: `Bearer ${jwt_token}`
@@ -349,14 +353,33 @@ export const getOrders = async (username: string): Promise<OrderModel[]> => {
     ];
 };
 export const fetchUserStores = async (username: string): Promise<RoleModel[]> => {
-    // const response = await axios.get(`http://127.0.0.1:8080/api/user/${username}/stores`);
+    // const response = await axios.get(`${server}/api/user/${username}/stores`);
     // return response.data;
     const roles=[{storeId: 1,storeName:"aa",roleName:"Manager" },{storeId: 2,storeName:"bbbbbbbb",roleName:"Manager" },{storeId: 3,storeName:"gff",roleName:"Owner" },{storeId: 4,storeName:"jfk",roleName:"Manager" }];
     return roles
 };
 
+export const fetchNotifications = async (): Promise<NotificationModel[]> => {
+    const response = await fetch(
+        `${server}/api/user/getNotifications?username=${localStorage.getItem("username")}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    if(data.error){
+        return [];
+    }
+    // Assuming the API returns the data in dataJson
+    const notifs = JSON.parse(data.dataJson) as NotificationModel[];
+    return notifs
+};
+
 export const createNewStore = async (storeModel: CreateStoreModel) => {
-    const response = await axios.post(`http://127.0.0.1:8080/api/stores/createStore`, storeModel,{ 
+    const response = await axios.post(`${server}/api/stores/createStore`, storeModel,{ 
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token

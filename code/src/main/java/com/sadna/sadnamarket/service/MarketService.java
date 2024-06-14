@@ -27,15 +27,14 @@ import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.users.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-//this is the main facade
-//there will be a function for every use case
-//have fun
-
+@Component
 public class MarketService {
     private static MarketService instance;
     private UserFacade userFacade;
@@ -48,13 +47,18 @@ public class MarketService {
     private static ObjectMapper objectMapper = new ObjectMapper();
     Logger logger = LoggerFactory.getLogger(MarketService.class);
 
-    public MarketService(IStoreRepository storeRepository) {
+
+    RealtimeService realtimeService;
+
+    @Autowired
+    public MarketService(RealtimeService realtimeService) {
+        this.realtimeService = realtimeService;
         this.productFacade = new ProductFacade();
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
-        this.storeFacade = new StoreFacade(storeRepository);
+        this.storeFacade = new StoreFacade(new MemoryStoreRepository());
         this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
         this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
-        this.userFacade = new UserFacade(new MemoryRepo(),storeFacade, orderFacade);
+        this.userFacade = new UserFacade(realtimeService, new MemoryRepo(),storeFacade, orderFacade);
         this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
         this.orderFacade.setStoreFacade(storeFacade);
         this.storeFacade.setUserFacade(userFacade);
@@ -71,17 +75,17 @@ public class MarketService {
 
     public static MarketService getInstance() {
         if (instance == null) {
-            instance = new MarketService(new MemoryStoreRepository());
+            instance = new MarketService(null);
         }
         return instance;
     }
 
     public static MarketService getNewInstance() {
-        instance =new MarketService(new MemoryStoreRepository());
+        instance =new MarketService(null);
         return instance;
     }
 
-    // ----------------------- Stores -----------------------
+    // ----------------------- Store -----------------------
 
     public Response loginUsingToken(String token, String username) {
         try{
@@ -1286,6 +1290,28 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(res));
         }catch(Exception e){
             logger.error("error get member roles {}", e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getUserNotifications(String username){
+        try{
+            logger.info("get user notifications for {}", username);
+            List<NotificationDTO> res = userFacade.getNotifications(username);
+            logger.info("finished get user notifications {}", res);
+            return Response.createResponse(false, objectMapper.writeValueAsString(res));
+        }catch(Exception e){
+            logger.error("error get member notifications {}", e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response sendMessage(String username, String message){
+        try{
+            userFacade.notify(username, message);
+            return Response.createResponse(false, "cool");
+        }catch(Exception e){
+            logger.error("error get member notifications {}", e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }

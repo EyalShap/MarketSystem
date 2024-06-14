@@ -24,7 +24,9 @@ public class StoreRestController {
     // don't need this for version 1
 
 
-    MarketService marketService = MarketService.getInstance();
+    @Autowired
+    MarketService marketService;
+
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/createStore" -Method POST -Body "founderId=0&storeName=MyStore"
