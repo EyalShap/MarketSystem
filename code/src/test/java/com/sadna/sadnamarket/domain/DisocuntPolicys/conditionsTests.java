@@ -58,7 +58,7 @@ public class conditionsTests extends DiscountPolicyTest{
     public void checkMinAmountConditionWhenTrue() throws Exception {
         int minBuyConditionID1 = conditionRepository.createMinProductCondition(3, 2);
         Condition minBuyCondition1 = conditionRepository.findConditionByID(minBuyConditionID1);
-        int minBuyConditionID2 = conditionRepository.createMinProductCondition(5, "dairy");
+        int minBuyConditionID2 = conditionRepository.createMinProductOnCategoryCondition(5, "dairy");
         Condition minBuyCondition2 = conditionRepository.findConditionByID(minBuyConditionID2);
         int minBuyConditionID3 = conditionRepository.createMinProductOnStoreCondition(6);
         Condition minBuyCondition3 = conditionRepository.findConditionByID(minBuyConditionID3);
@@ -83,7 +83,7 @@ public class conditionsTests extends DiscountPolicyTest{
     public void checkMinAmountConditionWhenFalse() throws Exception {
         int minBuyConditionID1 = conditionRepository.createMinProductCondition(4, 2);
         Condition minBuyCondition1 = conditionRepository.findConditionByID(minBuyConditionID1);
-        int minBuyConditionID2 = conditionRepository.createMinProductCondition(6, "dairy");
+        int minBuyConditionID2 = conditionRepository.createMinProductOnCategoryCondition(6, "dairy");
         Condition minBuyCondition2 = conditionRepository.findConditionByID(minBuyConditionID2);
         int minBuyConditionID3 = conditionRepository.createMinProductOnStoreCondition(7);
         Condition minBuyCondition3 = conditionRepository.findConditionByID(minBuyConditionID3);
