@@ -10,7 +10,7 @@ public interface IConditionRespository {
     public Condition findConditionByID(int condId) throws Exception;
 
     int createMinBuyCondition(int minBuy) throws JsonProcessingException;
-    int createMinProductCondition(int minAmount, String productName) throws JsonProcessingException;
+    int createMinProductCondition(int minAmount, int productID) throws JsonProcessingException;
     int createMinProductOnCategoryCondition(int minAmount, String categoryName) throws JsonProcessingException;
     int createMinProductOnStoreCondition(int minAmount) throws JsonProcessingException;
     int createTrueCondition()throws JsonProcessingException;

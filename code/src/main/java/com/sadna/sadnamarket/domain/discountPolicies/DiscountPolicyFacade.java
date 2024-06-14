@@ -154,12 +154,12 @@ public class DiscountPolicyFacade {
         return conditionRepository.createTrueCondition();
     }
 
-    public int createMinProductCondition(int minAmount, String productName, String username) throws Exception {
+    public int createMinProductCondition(int minAmount, int productID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(
                     String.format("User %s can not create discount policy", username));
 
-        return conditionRepository.createMinProductCondition(minAmount, productName);
+        return conditionRepository.createMinProductCondition(minAmount, productID);
     }
 
     public int createMinProductOnCategoryCondition(int minAmount, String categoryName, String username) throws Exception {

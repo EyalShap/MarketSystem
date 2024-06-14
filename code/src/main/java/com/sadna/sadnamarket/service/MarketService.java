@@ -542,10 +542,10 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
-    public Response createMinProductCondition(String token, int minAmount, String productName, String username) {
+    public Response createMinProductCondition(String token, int minAmount, int productID, String username) {
         try {
             checkToken(token, username);
-            discountPolicyFacade.createMinProductCondition(minAmount, productName, username);
+            discountPolicyFacade.createMinProductCondition(minAmount, productID, username);
             logger.info(String.format("User %s added MinProduct Condition", username));
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
