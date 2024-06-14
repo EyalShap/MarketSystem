@@ -5,7 +5,7 @@ import { getPermissions, hasPermission, isOwner, storeActive } from "../API";
 import { FaSkull } from "react-icons/fa6";
 import { FaDoorOpen } from "react-icons/fa";
 import Permission from "../models/Permission";
-import { FaPlusCircle, FaTrashAlt, FaEdit  } from "react-icons/fa";
+import { FaPlusCircle, FaTrashAlt, FaEdit,FaCreditCard  } from "react-icons/fa";
 import '../styles/ActionDropdown.css';
 import { IconType } from "react-icons";
 import { useNavigate } from "react-router-dom";
@@ -45,6 +45,9 @@ export const ActionDropdown = (props: any) => {
                 {permissions.map(permission => (permission in permissionToIcon) && <button className="optionButton">{permissionToIcon[permission]} {permissionToText[permission]}</button>)}
                 {isOwner(props.storeId) &&
                 <button className="optionButton" onClick={() => navigate("./staff")}><IoPerson /> View Staff</button>
+                }
+                {isOwner(props.storeId) &&
+                <button className="optionButton" ><FaCreditCard />  Update Bank Account</button>
                 }
                 {isOwner(props.storeId) && (storeActive(props.storeId) ? <button className="optionButton closeStore"><FaSkull /> Close Store</button> : <button className="optionButton reopenStore"><FaDoorOpen /> Reopen Store</button>)}
             </div>
