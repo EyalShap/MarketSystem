@@ -533,7 +533,17 @@ public class MarketService {
         }
     } //from Store window, Actions menu, new page
 
-
+    public Response getDiscountDescription(int discountID) {
+        try {
+            discountPolicyFacade.getDiscountDescription(discountID);
+            logger.info(String.format("got description for discount %d.", discountID));
+            return Response.createResponse(false, objectMapper.writeValueAsString(true));
+        }
+        catch (Exception e) {
+            logger.error("failed to get description" + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
     public Response createMinProductOnStoreCondition(String token, int minAmount, String username) {
         try {
             checkToken(token, username);

@@ -58,4 +58,13 @@ public class MaximumDiscount extends CompositeDiscount{
             return 0;
         }
     }
+
+    @Override
+    public String description() {
+        String description = "takes only one of two discounts based on if its condition is met and saves more money\n";
+        description = description + "discountA: " + discountA.description() + "\n";
+        description = description + "discountB: " + discountB.description() + "\n";
+        return description;
+    }
+
 }

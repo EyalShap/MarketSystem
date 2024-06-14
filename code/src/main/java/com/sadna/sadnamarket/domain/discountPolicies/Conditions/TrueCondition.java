@@ -16,4 +16,9 @@ public class TrueCondition extends Condition{
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice) {
         return true;
     }
+
+    @Override
+    public String description() {
+        return "true";
+    }
 }

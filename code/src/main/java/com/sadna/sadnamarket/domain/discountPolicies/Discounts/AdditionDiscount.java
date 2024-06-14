@@ -77,4 +77,12 @@ public class AdditionDiscount extends CompositeDiscount{
         return countTotalOldNewPrice - countTotalNewNewPrice;
     }
 
+    @Override
+    public String description() {
+        String description = "takes two discounts and apply both of the at the same time together\n";
+        description = description + "discountA: " + discountA.description() + "\n";
+        description = description + "discountB: " + discountB.description();
+        return description;
+    }
+
 }

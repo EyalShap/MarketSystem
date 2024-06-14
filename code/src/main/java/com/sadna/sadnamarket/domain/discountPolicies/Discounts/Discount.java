@@ -36,4 +36,7 @@ public abstract class Discount {
     public int getDiscountBID() {
         return -1;
     }
+
+    abstract public String description();
+
 }

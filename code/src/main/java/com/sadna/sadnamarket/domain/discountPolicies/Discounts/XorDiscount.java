@@ -83,4 +83,18 @@ public class XorDiscount extends CompositeDiscount{
     public boolean isMax() {
         return minOrMax == 1;
     }
+
+    @Override
+    public String description() {
+        String description = "takes only one of two discounts based on if its condition is met and ";
+        if(isMin()){
+            description = description + "it saves more money\n";
+        }
+        else{
+            description = description + "it saves less money\n";
+        }
+        description = description + "discountA: " + discountA.description() + "\n";
+        description = description + "discountB: " + discountB.description();
+        return description;
+    }
 }

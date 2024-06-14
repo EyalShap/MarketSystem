@@ -19,4 +19,5 @@ public abstract class CompositeCondition extends Condition{
     @Override
     public abstract boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice);
 
+
 }

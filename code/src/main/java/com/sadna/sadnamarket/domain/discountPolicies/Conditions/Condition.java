@@ -24,4 +24,6 @@ public abstract class Condition{
     public int getId() {
         return id;
     }
+
+    abstract public String description();
 }

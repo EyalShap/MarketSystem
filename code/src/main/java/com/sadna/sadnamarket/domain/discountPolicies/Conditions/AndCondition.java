@@ -18,4 +18,10 @@ public class AndCondition extends CompositeCondition{
         boolean condBisMet = conditionB.checkCond(productDTOMap, listProductsPrice);
         return condAisMet && condBisMet;
     }
+
+    @Override
+    public String description() {
+        return conditionA.description() + " and " + conditionB.description();
+    }
+
 }

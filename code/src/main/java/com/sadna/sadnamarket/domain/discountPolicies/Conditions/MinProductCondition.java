@@ -97,4 +97,18 @@ public class MinProductCondition extends Condition{
         }
         return total;
     }
+
+    public String description() {
+        String addEnding;
+        if(productName != null){
+            addEnding = productName;
+        }
+        else if(categoryName != null){
+            addEnding = "products from category: " + categoryName;
+        }
+        else{
+            addEnding = "products";
+        }
+        return "the cart has at least " + minAmount + " " +addEnding;
+    }
 }
