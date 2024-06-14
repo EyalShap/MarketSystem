@@ -39,9 +39,9 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
     }
 
     @Override
-    public int addOnProductSimpleDiscount(double percentage, String productName, Condition condition) throws JsonProcessingException {
+    public int addOnProductSimpleDiscount(double percentage, int productID, Condition condition) throws JsonProcessingException {
         SimpleDiscount newDiscountPolicy = new SimpleDiscount(nextId, percentage, condition);
-        newDiscountPolicy.setOnProductName(productName);
+        newDiscountPolicy.setOnProductID(productID);
         return addDiscountPolicyToMaps(newDiscountPolicy);
     }
 

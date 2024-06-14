@@ -120,13 +120,13 @@ public class DiscountPolicyFacade {
         return discountPolicyRepository.addOnCategorySimpleDiscount(percentage, categoryName, condition);
     }
 
-    public int createOnProductSimpleDiscountPolicy(double percentage, String productName, int ConditionID, String username) throws Exception {
+    public int createOnProductSimpleDiscountPolicy(double percentage, int productID, int ConditionID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(
                     String.format("User %s can not create discount policy", username));
 
         Condition condition = conditionRepository.findConditionByID(ConditionID);
-        return discountPolicyRepository.addOnProductSimpleDiscount(percentage, productName, condition);
+        return discountPolicyRepository.addOnProductSimpleDiscount(percentage, productID, condition);
     }
 
     public int createOnStoreSimpleDiscountPolicy(double percentage, int ConditionID, String username) throws Exception {
