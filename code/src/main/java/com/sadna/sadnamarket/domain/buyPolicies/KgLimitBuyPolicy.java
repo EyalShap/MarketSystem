@@ -8,6 +8,7 @@ import com.sadna.sadnamarket.service.Error;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class KgLimitBuyPolicy extends SimpleBuyPolicy{
     private double minKg;
@@ -71,5 +72,19 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
         if(maxKg == -1)
             return String.format("You can not buy more than %f Kg of %s.", maxKg, policySubject.getDesc());
         return String.format("%f - %f Kg of %s must be bought.", minKg, maxKg, policySubject.getDesc());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        KgLimitBuyPolicy that = (KgLimitBuyPolicy) o;
+        return Double.compare(that.minKg, minKg) == 0 && Double.compare(that.maxKg, maxKg) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(minKg, maxKg);
     }
 }

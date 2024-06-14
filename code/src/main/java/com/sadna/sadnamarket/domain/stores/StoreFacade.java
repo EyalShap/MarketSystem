@@ -83,7 +83,9 @@ public class StoreFacade {
             discountPolicyFacade.addDiscountPolicyToStore(storeId, discountPolicyID, founderUserName);
 
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) {
+            String msg = ignored.getMessage();
+        }
         return storeId;
     }
 
@@ -502,7 +504,7 @@ public class StoreFacade {
         return store.isStoreManager(infoUsername);
     }
 
-    public synchronized void buyCart(String username, List<CartItemDTO> cart) {
+    public synchronized void updateStock(String username, List<CartItemDTO> cart) {
         checkCart(username, cart);
 
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);

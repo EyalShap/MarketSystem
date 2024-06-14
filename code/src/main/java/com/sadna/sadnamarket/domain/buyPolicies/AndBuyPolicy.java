@@ -32,4 +32,5 @@ public class AndBuyPolicy extends CompositeBuyPolicy{
     public String getPolicyDesc() {
         return policy1.getPolicyDesc() + " AND " + policy2.getPolicyDesc();
     }
+
 }

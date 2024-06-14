@@ -15,17 +15,17 @@ import java.util.Set;
 
 public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     private Map<Integer, BuyPolicy> buyPolicies;
-    private Map<String, Integer> buyPoliciesDesc;
+    private Map<BuyPolicy, Integer> buyPoliciesDesc;
     private int nextId;
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private SimpleFilterProvider idFilter;
+    //private ObjectMapper objectMapper = new ObjectMapper();
+    //private SimpleFilterProvider idFilter;
 
     public MemoryBuyPolicyRepository() {
         this.buyPolicies = new HashMap<>();
         this.buyPoliciesDesc = new HashMap<>();
         this.nextId = 0;
-        this.idFilter = new SimpleFilterProvider().addFilter("idFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
-        objectMapper.registerModule(new JavaTimeModule());
+        //this.idFilter = new SimpleFilterProvider().addFilter("idFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
+        //objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
@@ -96,15 +96,15 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     private int addPolicyToMaps(BuyPolicy newPolicy) throws JsonProcessingException {
-        String policyDesc = newPolicy.getClass().getName() + "-" + objectMapper.writer(idFilter).writeValueAsString(newPolicy);
-        if(!buyPoliciesDesc.containsKey(policyDesc)) {
+        //String policyDesc = newPolicy.getClass().getName() + "-" + objectMapper.writer(idFilter).writeValueAsString(newPolicy);
+        if(!buyPoliciesDesc.containsKey(newPolicy)) {
             buyPolicies.put(nextId, newPolicy);
-            buyPoliciesDesc.put(policyDesc, nextId);
+            buyPoliciesDesc.put(newPolicy, nextId);
             nextId++;
             return nextId - 1;
         }
         else {
-            return buyPoliciesDesc.get(policyDesc);
+            return buyPoliciesDesc.get(newPolicy);
         }
     }
 

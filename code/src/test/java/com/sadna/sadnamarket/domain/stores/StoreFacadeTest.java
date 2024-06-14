@@ -8,21 +8,32 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
 import com.sadna.sadnamarket.domain.buyPolicies.*;
+import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
+import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MinProductCondition;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.Discount;
 import com.sadna.sadnamarket.domain.discountPolicies.Discounts.MemoryDiscountPolicyRepository;
-import com.sadna.sadnamarket.domain.orders.IOrderRepository;
-import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
-import com.sadna.sadnamarket.domain.orders.OrderFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.SimpleDiscount;
+import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
+import com.sadna.sadnamarket.domain.orders.*;
+import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
+import com.sadna.sadnamarket.domain.payment.PaymentInterface;
+import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.IProductRepository;
 import com.sadna.sadnamarket.domain.products.MemoryProductRepository;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.supply.AddressDTO;
+import com.sadna.sadnamarket.domain.supply.SupplyInterface;
+import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.domain.users.*;
 import com.sadna.sadnamarket.service.Error;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.security.access.method.P;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -38,8 +49,10 @@ class StoreFacadeTest {
     private ProductFacade productFacade;
     private BuyPolicyFacade buyPolicyFacade;
     private DiscountPolicyFacade discountPolicyFacade;
+    private OrderFacade orderFacade;
     ObjectMapper objectMapper = new ObjectMapper();
     private SimpleFilterProvider idFilter;
+    private IStoreRepository storeRepo;
 
     @BeforeEach
     public void setUp() {
@@ -55,9 +68,9 @@ class StoreFacadeTest {
 
     private void setUpFacades() {
         IOrderRepository orderRepo = new MemoryOrderRepository();
-        OrderFacade orderFacade = new OrderFacade(orderRepo);
+        this.orderFacade = new OrderFacade(orderRepo);
 
-        IStoreRepository storeRepo = new MemoryStoreRepository();
+        this.storeRepo = new MemoryStoreRepository();
         this.storeFacade = new StoreFacade(storeRepo);
 
         IUserRepository userRepo = new MemoryRepo();
@@ -79,6 +92,11 @@ class StoreFacadeTest {
         this.buyPolicyFacade.setStoreFacade(storeFacade);
         this.buyPolicyFacade.setUserFacade(userFacade);
         this.buyPolicyFacade.setProductFacade(productFacade);
+
+        this.discountPolicyFacade.setStoreFacade(storeFacade);
+        this.discountPolicyFacade.setProductFacade(productFacade);
+
+        this.orderFacade.setStoreFacade(storeFacade);
     }
 
     private void registerUsers() {
@@ -654,8 +672,6 @@ class StoreFacadeTest {
 
     @Test
     void getStoreOrderHistory() throws Exception {
-        // This will hopefully work on v2
-/*
         SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
@@ -671,9 +687,9 @@ class StoreFacadeTest {
         amounts.put(1, 15);
         amounts.put(2, 12);
         Map<Integer, String> products = new HashMap<>();
-        products.put(0, objectMapper.writeValueAsString(productFacade.getProductDTO(0)));
-        products.put(1, objectMapper.writeValueAsString(productFacade.getProductDTO(1)));
-        products.put(2, objectMapper.writeValueAsString(productFacade.getProductDTO(2)));
+        products.put(0, objectMapper.writeValueAsString(new ProductDataPrice(0, 0, "Shokolad Parah", 5, 5.5, 5.5)));
+        products.put(1, objectMapper.writeValueAsString(new ProductDataPrice(1, 0, "Kif Kef", 15, 4.2, 4.2)));
+        products.put(2, objectMapper.writeValueAsString(new ProductDataPrice(2, 0, "Klik Cariot", 12, 7, 7)));
         expected.add(new OrderDTO("Mr. Krabs", "Chocolate Factory", amounts, products));
 
         userFacade.addProductToCart("Mr. Krabs", 0, 0, 5);
@@ -685,7 +701,7 @@ class StoreFacadeTest {
         userFacade.purchaseCart("Mr. Krabs", creditCard, address);
 
         List<OrderDTO> history = storeFacade.getStoreOrderHistory("WillyTheChocolateDude", 0);
-        assertEquals(expected, history);*/
+        assertEquals(expected, history);
     }
 
     @Test
@@ -826,20 +842,27 @@ class StoreFacadeTest {
 
     @Test
     void addBuyPolicy() throws Exception {
-        List<BuyType> buyTypes = new ArrayList<>();
-        buyTypes.add(BuyType.immidiatePurchase);
-        int policyId = buyPolicyFacade.createCategoryHolidayBuyPolicy("Fruits", buyTypes, "WillyTheChocolateDude");
+        List<BuyType> buyTypes = List.of(BuyType.immidiatePurchase);
+        int policyId = buyPolicyFacade.createCategoryHolidayBuyPolicy("Fruits", List.of(BuyType.immidiatePurchase), "WillyTheChocolateDude");
         buyPolicyFacade.addBuyPolicyToStore("WillyTheChocolateDude", 0, policyId);
 
-        String res = objectMapper.writer(idFilter).writeValueAsString(buyPolicyFacade.getBuyPolicy(policyId));
-        String expected = objectMapper.writer(idFilter).writeValueAsString(new HolidayBuyPolicy(policyId, buyTypes, new CategorySubject("Fruits")));
+        BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
+        BuyPolicy expectedBuyPolicy = new HolidayBuyPolicy(policyId, buyTypes, new CategorySubject("Fruits"));
 
-        assertEquals(expected, res);
+        assertEquals(expectedBuyPolicy, resBuyPolicy);
     }
 
     @Test
-    void addDiscountPolicy() {
-        // in v2
+    void addDiscountPolicy() throws Exception {
+        int conditionId = discountPolicyFacade.createMinProductCondition(10, "Shokolad Parah", "WillyTheChocolateDude");
+        int policyId = discountPolicyFacade.createOnProductSimpleDiscountPolicy(50, "Shokolad Parah", conditionId, "WillyTheChocolateDude");
+
+        Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
+        Condition expectedCondition = new MinProductCondition(0, 10);
+        Discount expectedDiscount = new SimpleDiscount(policyId, 50, expectedCondition);
+        String discountJson = objectMapper.writeValueAsString(resDiscount);
+        String expectedJson = objectMapper.writeValueAsString(expectedDiscount);
+        assertEquals(expectedJson, discountJson);
     }
 
     @Test
@@ -1012,12 +1035,86 @@ class StoreFacadeTest {
     }
 
     @Test
-    void buyCart() {
-        // in v2
+    void updateStockSuccess() throws JsonProcessingException {
+        generateStore1();
+        List<CartItemDTO> cart = new ArrayList<>();
+        cart.add(new CartItemDTO(0, 0, 10));
+        cart.add(new CartItemDTO(0, 1, 30));
+        cart.add(new CartItemDTO(0, 2, 50));
+        cart.add(new CartItemDTO(1, 3, 10));
+        cart.add(new CartItemDTO(1, 4, 10));
+
+        Map<Integer, Integer> expectedProductAmountsBefore0 = Map.of(0, 1000, 1, 982, 2, 312);
+        Map<Integer, Integer> expectedProductAmountsAfter0 = Map.of(0, 990, 1, 952, 2, 262);
+        Map<Integer, Integer> expectedProductAmountsBefore1 = Map.of(3, 1000, 4, 1000);
+        Map<Integer, Integer> expectedProductAmountsAfter1 = Map.of(3, 990, 4, 990);
+
+        Store store0 = storeRepo.findStoreByID(0);
+        Store store1 = storeRepo.findStoreByID(1);
+
+        assertEquals(expectedProductAmountsBefore0, store0.getProductAmounts());
+        assertEquals(expectedProductAmountsBefore1, store1.getProductAmounts());
+
+        storeFacade.updateStock("WillyTheChocolateDude", cart);
+
+        assertEquals(expectedProductAmountsAfter0, store0.getProductAmounts());
+        assertEquals(expectedProductAmountsAfter1, store1.getProductAmounts());
     }
 
     @Test
-    void calculatePrice() {
-        // in v2
+    void updateStockFail() throws JsonProcessingException {
+        // only checking one fail case because all of them are checked in check cart
+        generateStore1();
+        List<CartItemDTO> cart = new ArrayList<>();
+        cart.add(new CartItemDTO(0, 0, 10000));
+        cart.add(new CartItemDTO(0, 1, 30));
+        cart.add(new CartItemDTO(0, 2, 50));
+        cart.add(new CartItemDTO(1, 3, 10000));
+        cart.add(new CartItemDTO(1, 4, 10));
+
+        Map<Integer, Integer> expectedProductAmounts0 = Map.of(0, 1000, 1, 982, 2, 312);
+        Map<Integer, Integer> expectedProductAmounts1 = Map.of(3, 1000, 4, 1000);
+
+        String expectedError = Error.makeNotEnoughInStcokError(0, 0, 10000, 1000) + "\n" +
+                Error.makeNotEnoughInStcokError(1, 3, 10000, 1000);
+
+        Store store0 = storeRepo.findStoreByID(0);
+        Store store1 = storeRepo.findStoreByID(1);
+
+        assertEquals(expectedProductAmounts0, store0.getProductAmounts());
+        assertEquals(expectedProductAmounts1, store1.getProductAmounts());
+
+        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
+            storeFacade.updateStock("WillyTheChocolateDude", cart);
+        });
+        assertEquals(expectedError, expected.getMessage());
+
+        assertEquals(expectedProductAmounts0, store0.getProductAmounts());
+        assertEquals(expectedProductAmounts1, store1.getProductAmounts());
+    }
+
+    @Test
+    void calculatePrice() throws Exception {
+        /*generateStore1();
+        List<CartItemDTO> cart = new ArrayList<>();
+        cart.add(new CartItemDTO(0, 0, 10));
+        cart.add(new CartItemDTO(0, 1, 30));
+        cart.add(new CartItemDTO(0, 2, 50));
+        cart.add(new CartItemDTO(1, 3, 10));
+        cart.add(new CartItemDTO(1, 4, 10));
+
+        int conditionId = discountPolicyFacade.createMinProductOnStoreCondition(30, "WillyTheChocolateDude");
+        int policyId = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(50, conditionId, "WillyTheChocolateDude");
+        discountPolicyFacade.addDiscountPolicyToStore(0, policyId, "WillyTheChocolateDude");
+
+        List<ProductDataPrice> res = storeFacade.calculatePrice("WillyTheChocolateDude", cart);
+        List<ProductDataPrice> expected = new ArrayList<>();
+        expected.add(new ProductDataPrice(0, 0, "Shokolad Parah", 10, 5.5, 2.25));
+        expected.add(new ProductDataPrice(1, 0, "Kif Kef", 30, 4.2, 2.1));
+        expected.add(new ProductDataPrice(2, 0, "Klik Cariot", 50, 7, 3.5));
+        expected.add(new ProductDataPrice(3, 1, "Beer", 10, 12, 12));
+        expected.add(new ProductDataPrice(4, 1, "Wine", 10, 50, 50));
+
+        assertEquals(expected, res);*/
     }
 }

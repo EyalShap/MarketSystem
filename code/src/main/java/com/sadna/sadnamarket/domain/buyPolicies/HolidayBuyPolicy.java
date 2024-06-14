@@ -53,4 +53,5 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
     public String getPolicyDesc() {
         return String.format("%s can not be bought on a holiday.", policySubject.getDesc());
     }
+
 }

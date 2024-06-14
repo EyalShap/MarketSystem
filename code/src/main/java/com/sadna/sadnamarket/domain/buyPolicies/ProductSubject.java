@@ -5,6 +5,7 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ProductSubject extends PolicySubject{
     private int productId;
@@ -49,4 +50,16 @@ public class ProductSubject extends PolicySubject{
         this.productId = productId;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductSubject that = (ProductSubject) o;
+        return productId == that.productId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(productId);
+    }
 }

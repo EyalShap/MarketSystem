@@ -23,9 +23,11 @@ public class DiscountPolicyManager {
     }
 
     public synchronized void removeDiscountPolicy(int discountPolicyId) throws Exception{
-        if(discountIds.contains(discountPolicyId))
+        /*if(discountIds.contains(discountPolicyId))
             throw new Exception();
-        discountIds.remove(discountPolicyId);
+        discountIds.remove(discountPolicyId);*/
+        if(discountIds.contains(discountPolicyId))
+            discountIds.remove(discountPolicyId);
     }
 
     // for now that function dosent do anything special
