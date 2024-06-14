@@ -407,7 +407,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.createMinProductCondition(token,policyAmountRequest.getMinAmount(),policyAmountRequest.getProductName(),username);
+        return marketService.createMinProductCondition(token,policyAmountRequest.getMinAmount(),policyAmountRequest.getProductId(),username);
     }
 
     @PostMapping("/createTrueCondition")
@@ -467,7 +467,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.createOnProductSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getProductName(),policyConditionRequest.getConditionAID());
+        return marketService.createOnProductSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getProductId(),policyConditionRequest.getConditionAID());
     }
     @PostMapping("/createOnCategorySimpleDiscountPolicy")
     public Response createOnCategorySimpleDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {

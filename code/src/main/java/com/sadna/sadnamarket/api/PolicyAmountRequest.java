@@ -12,7 +12,6 @@ public class PolicyAmountRequest {
     int maxAmount;
     String categoryName;
 
-    String productName;
     public int getProductId() {
         return productId;
     }
@@ -53,11 +52,4 @@ public class PolicyAmountRequest {
         this.categoryName = categoryName;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
 }
