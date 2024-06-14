@@ -17,4 +17,9 @@ public class XorCondition extends CompositeCondition{
         boolean condBisMet = conditionB.checkCond(productDTOMap, listProductsPrice);
         return (!(condAisMet && condBisMet) && (condAisMet || condBisMet));
     }
+
+    @Override
+    public String description() {
+        return conditionA.description() + " or " + conditionB.description()+ " but not both";
+    }
 }

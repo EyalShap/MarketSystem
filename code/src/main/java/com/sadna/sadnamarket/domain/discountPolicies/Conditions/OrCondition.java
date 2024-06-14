@@ -17,4 +17,9 @@ public class OrCondition extends CompositeCondition{
         boolean condBisMet = conditionB.checkCond(productDTOMap, listProductsPrice);
         return condAisMet || condBisMet;
     }
+
+    @Override
+    public String description() {
+        return conditionA.description() + " or " + conditionB.description();
+    }
 }

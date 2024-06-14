@@ -152,5 +152,19 @@ public class SimpleDiscount extends Discount{
         return total;
     }
 
+    @Override
+    public String description() {
+        String addEnding;
+        if(productName != null){
+            addEnding = productName;
+        }
+        else if(categoryName != null){
+            addEnding = "products from category: " + categoryName;
+        }
+        else{
+            addEnding ="all products";
+        }
+        return "If " + condition.description() + " then there is a " + percentage + "% discount on " + addEnding;
+    }
 
 }

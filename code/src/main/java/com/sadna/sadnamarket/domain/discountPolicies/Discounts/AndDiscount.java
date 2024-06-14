@@ -49,4 +49,12 @@ public class AndDiscount extends CompositeDiscount{
         }
         return countOldNewPrice - countNewNewPrice;
     }
+
+    @Override
+    public String description() {
+        String description = "takes two discounts and if both their condition is met then both discounts apply\n";
+        description = description + "discountA: " + discountA.description() + "\n";
+        description = description + "discountB: " + discountB.description();
+        return description;
+    }
 }

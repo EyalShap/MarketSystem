@@ -30,4 +30,8 @@ public class MinBuyCondition extends Condition{
         }
         return minBuy <= total;
     }
+
+    public String description() {
+        return "the cart original cost (before discounts) is at least " + minBuy;
+    }
 }

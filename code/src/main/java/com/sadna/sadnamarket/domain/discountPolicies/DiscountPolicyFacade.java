@@ -249,6 +249,11 @@ public class DiscountPolicyFacade {
         return discountManager.giveDiscount(cart, productDTOMap);
     }
 
+    public String getDiscountDescription(int discountID) throws Exception {
+        Discount discount = discountPolicyRepository.findDiscountPolicyByID(discountID);
+        return discount.description();
+    }
+
     private boolean hasPermission(String username, Permission permission) {
         for(int storeId : storeFacade.getAllStoreIds())
             if(storeFacade.hasPermission(username, storeId, permission))
