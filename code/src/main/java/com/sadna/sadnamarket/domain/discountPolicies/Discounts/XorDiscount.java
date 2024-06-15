@@ -23,24 +23,39 @@ public class XorDiscount extends CompositeDiscount{
 
         if(condDiscountA && condDiscountB){
             if((isMin() && totalDiscountA < totalDiscountB) || (isMax() && totalDiscountA > totalDiscountB) ){
-                discountA.giveDiscount(productDTOMap, ListProductsPrice);
+                discountA.giveDiscountWithoutCondition(productDTOMap, ListProductsPrice);
             }
             else{
-                discountB.giveDiscount(productDTOMap, ListProductsPrice);
+                discountB.giveDiscountWithoutCondition(productDTOMap, ListProductsPrice);
             }
         }
         else if(condDiscountA){
-            discountA.giveDiscount(productDTOMap, ListProductsPrice);
+            discountA.giveDiscountWithoutCondition(productDTOMap, ListProductsPrice);
         }
         else if(condDiscountB){
-            discountB.giveDiscount(productDTOMap, ListProductsPrice);
+            discountB.giveDiscountWithoutCondition(productDTOMap, ListProductsPrice);
+        }
+    }
+
+    //decide according to the decideing factor
+    @Override
+    public void giveDiscountWithoutCondition(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice) {
+        boolean condDiscountA =discountA.checkCond(productDTOMap,ListProductsPrice);
+        boolean condDiscountB =discountB.checkCond(productDTOMap,ListProductsPrice);
+        double totalDiscountA = discountA.giveTotalPriceDiscount(productDTOMap,ListProductsPrice);
+        double totalDiscountB = discountB.giveTotalPriceDiscount(productDTOMap,ListProductsPrice);
+        if((isMin() && totalDiscountA < totalDiscountB) || (isMax() && totalDiscountA > totalDiscountB) ){
+            discountA.giveDiscountWithoutCondition(productDTOMap, ListProductsPrice);
+        }
+        else{
+            discountB.giveDiscountWithoutCondition(productDTOMap, ListProductsPrice);
         }
 
     }
 
     @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice) {
-        return true;
+        return discountA.checkCond(productDTOMap, ListProductsPrice) || discountB.checkCond(productDTOMap, ListProductsPrice);
     }
 
     @Override

@@ -23,6 +23,8 @@ public class AdditionDiscount extends CompositeDiscount{
             oldNewPrices.add(productDataPrice.getNewPrice());
             newListProductsPrice.add(productDataPrice.deepCopy());
         }
+        //i kept giveDiscount and not giveDiscountWithoutCond on purpose
+
         discountA.giveDiscount(productDTOMap, listProductsPrice);
         discountB.giveDiscount(productDTOMap, newListProductsPrice);
         //loop over every item and merge both discounts
@@ -37,9 +39,35 @@ public class AdditionDiscount extends CompositeDiscount{
         }
     }
 
+    //gives both of them
+    @Override
+    public void giveDiscountWithoutCondition(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
+        List<ProductDataPrice> newListProductsPrice= new ArrayList<>();
+        double NewPriceA;
+        double NewPriceB;
+        ProductDataPrice currentProduct;
+        List<Double> oldNewPrices = new ArrayList<>();
+        for(ProductDataPrice productDataPrice : listProductsPrice){
+            oldNewPrices.add(productDataPrice.getNewPrice());
+            newListProductsPrice.add(productDataPrice.deepCopy());
+        }
+        discountA.giveDiscountWithoutCondition(productDTOMap, listProductsPrice);
+        discountB.giveDiscountWithoutCondition(productDTOMap, newListProductsPrice);
+        //loop over every item and merge both discounts
+        for(int i = 0; i <listProductsPrice.size(); i++){
+            currentProduct = listProductsPrice.get(i);
+            NewPriceA  = currentProduct.getNewPrice();
+            NewPriceB  = newListProductsPrice.get(i).getNewPrice();
+            //NewPriceA = oldNewPrice - discountA; NewPriceB = oldNewPrice - discountB;
+            //NewPriceA - (oldNewPrice - NewPriceB) = oldNewPrice - discountA - discountB
+            currentProduct.setNewPrice(NewPriceA - (oldNewPrices.get(i) - NewPriceB));
+
+        }
+    }
+
     @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
-        return true;
+        return discountA.checkCond(productDTOMap, listProductsPrice) || discountB.checkCond(productDTOMap, listProductsPrice);
     }
 
     @Override

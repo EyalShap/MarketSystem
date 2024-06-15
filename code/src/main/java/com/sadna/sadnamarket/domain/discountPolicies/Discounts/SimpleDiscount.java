@@ -58,6 +58,19 @@ public class SimpleDiscount extends Discount{
     }
 
     @Override
+    public void giveDiscountWithoutCondition(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
+        if(productID != null){
+            discountOnlyProduct(productDTOMap, listProductsPrice);
+        }
+        else if(categoryName != null){
+            discountOnlyCategory(productDTOMap, listProductsPrice);
+        }
+        else if(chosePath){
+            discountAll(listProductsPrice);
+        }
+    }
+
+    @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
         return condition.checkCond(productDTOMap, listProductsPrice);
     }
