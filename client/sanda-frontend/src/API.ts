@@ -14,6 +14,7 @@ import RoleModel from "./models/RoleModel";
 import CreateStoreModel from "./models/CreateStoreModel";
 import { NotificationModel } from "./models/NotificationModel";
 import { ProductOrderModel } from "./models/ProductOrderModel";
+import ProductDataPrice from "./models/ProductDataPrice";
 
 
 const server: string = 'http://127.0.0.1:8080'; 

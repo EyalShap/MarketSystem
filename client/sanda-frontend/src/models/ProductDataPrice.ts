@@ -1,4 +1,4 @@
-interface ProductDataPrice {
+export default interface ProductDataPrice {
     id: number;
     storeId: number;
     name: string;
