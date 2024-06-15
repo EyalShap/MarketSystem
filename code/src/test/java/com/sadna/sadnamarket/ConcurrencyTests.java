@@ -65,7 +65,7 @@ class ConcurrencyTests {
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
         Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
-                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true));
+                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true,storeId));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 1);
         resp = bridge.guestEnterSystem();
@@ -153,7 +153,7 @@ class ConcurrencyTests {
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
         Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
-                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2, true));
+                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2, true,storeId));
         int productId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 5);
         resp = bridge.guestEnterSystem();

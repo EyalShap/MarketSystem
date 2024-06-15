@@ -13,7 +13,7 @@ public class ProductDTO {
     private String description;
 
     public ProductDTO(int productID, String productName, double productPrice, String productCategory,
-            double productRank, double productWeight, boolean isActive, String description) {
+            double productRank, double productWeight, boolean isActive, String description, int storeId) {
         this.productID = productID;
         this.productName = productName;
         this.productPrice = productPrice;
@@ -24,7 +24,7 @@ public class ProductDTO {
         this.description = description;
     }
      public ProductDTO(int productID, String productName, double productPrice, String productCategory,
-            double productRank, double productWeight, boolean isActive) {
+            double productRank, double productWeight, boolean isActive, int storeId) {
         this.productID = productID;
         this.productName = productName;
         this.productPrice = productPrice;
