@@ -29,13 +29,6 @@ public abstract class Discount {
     public int getId() {
         return id;
     }
-    public int getDiscountAID() {
-        return -1;
-    }
-
-    public int getDiscountBID() {
-        return -1;
-    }
 
     abstract public String description();
 
