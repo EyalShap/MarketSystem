@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sadna.sadnamarket.domain.discountPolicies.Discounts.DiscountPolicy;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.Discount;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
@@ -42,7 +42,7 @@ public class DiscountPolicyManager {
             listProductDataPrice.add(productDataPrice);
         }
         for(Integer discountID : discountIds){
-            DiscountPolicy discount = discountPolicyFacade.getDiscountPolicy(discountID);
+            Discount discount = discountPolicyFacade.getDiscountPolicy(discountID);
             discount.giveDiscount(productDTOMap, listProductDataPrice);
         }
         return listProductDataPrice;

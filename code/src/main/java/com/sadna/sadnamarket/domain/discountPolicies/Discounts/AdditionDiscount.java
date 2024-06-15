@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AdditionDiscountPolicy extends CompositeDiscount{
-    public AdditionDiscountPolicy(int id, DiscountPolicy discountA, DiscountPolicy discountB) {
+public class AdditionDiscount extends CompositeDiscount{
+    public AdditionDiscount(int id, Discount discountA, Discount discountB) {
         super(id, discountA, discountB);
     }
 

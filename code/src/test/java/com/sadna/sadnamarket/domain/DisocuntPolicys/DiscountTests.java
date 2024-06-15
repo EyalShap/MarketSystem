@@ -2,7 +2,7 @@ package com.sadna.sadnamarket.domain.DisocuntPolicys;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
-import com.sadna.sadnamarket.domain.discountPolicies.Discounts.DiscountPolicy;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.Discount;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import org.junit.Test;
@@ -25,10 +25,10 @@ public class DiscountTests extends DiscountPolicyTest{
     Condition conditionFalse1;
     Condition conditionFalse2;
 
-    DiscountPolicy onStore10DiscountTrue1;
-    DiscountPolicy onCategoryDairy10DiscountTrue1;
-    DiscountPolicy onStore10DiscountFalse1;
-    DiscountPolicy onCategoryDairy10DiscountFalse1;
+    Discount onStore10DiscountTrue1;
+    Discount onCategoryDairy10DiscountTrue1;
+    Discount onStore10DiscountFalse1;
+    Discount onCategoryDairy10DiscountFalse1;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -87,7 +87,7 @@ public class DiscountTests extends DiscountPolicyTest{
     public void checkSimpleDiscountOnProduct() throws Exception {
         //condition is true
         int simpleDiscountID1 = discountPolicyRepository.addOnProductSimpleDiscount(50, 0, conditionTrue1);
-        DiscountPolicy simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
+        Discount simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
         simpleDiscount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(50 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -96,7 +96,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //condition is false now
         int simpleDiscountID2 = discountPolicyRepository.addOnProductSimpleDiscount(50, 0, conditionFalse1);
-        DiscountPolicy simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -108,7 +108,7 @@ public class DiscountTests extends DiscountPolicyTest{
     public void checkSimpleDiscountOnCategory() throws Exception {
         //condition is true
         int simpleDiscountID1 = discountPolicyRepository.addOnCategorySimpleDiscount(50, "dairy", conditionTrue1);
-        DiscountPolicy simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
+        Discount simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
         simpleDiscount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(10 , listProductDataPrices.get(1).getNewPrice());
@@ -117,7 +117,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //condition is false now
         int simpleDiscountID2 = discountPolicyRepository.addOnCategorySimpleDiscount(50, "dairy", conditionFalse1);
-        DiscountPolicy simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -130,7 +130,7 @@ public class DiscountTests extends DiscountPolicyTest{
 
         //condition is true
         int simpleDiscountID1 = discountPolicyRepository.addOnStoreSimpleDiscount(50, conditionTrue1);
-        DiscountPolicy simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
+        Discount simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
         simpleDiscount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(50 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(10 , listProductDataPrices.get(1).getNewPrice());
@@ -139,7 +139,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //condition is false now
         int simpleDiscountID2 = discountPolicyRepository.addOnStoreSimpleDiscount(50, conditionFalse1);
-        DiscountPolicy simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -150,7 +150,7 @@ public class DiscountTests extends DiscountPolicyTest{
     public void checkMaximumDiscount() throws Exception {
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addMaximumDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        DiscountPolicy Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
+        Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
@@ -159,7 +159,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addMaximumDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
@@ -168,7 +168,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addMaximumDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
+        Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -180,7 +180,7 @@ public class DiscountTests extends DiscountPolicyTest{
     public void checkAdditionDiscount() throws Exception {
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addAdditionDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        DiscountPolicy Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
+        Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(16 , listProductDataPrices.get(1).getNewPrice());
@@ -189,7 +189,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addAdditionDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
@@ -198,7 +198,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addAdditionDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
+        Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -209,7 +209,7 @@ public class DiscountTests extends DiscountPolicyTest{
     public void checkOrDiscount() throws Exception {
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addOrDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        DiscountPolicy Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
+        Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(16.2 , listProductDataPrices.get(1).getNewPrice());
@@ -218,7 +218,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addOrDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(16.2 , listProductDataPrices.get(1).getNewPrice());
@@ -227,7 +227,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addOrDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
+        Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -238,7 +238,7 @@ public class DiscountTests extends DiscountPolicyTest{
     public void checkMaxXorDiscount() throws Exception {
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addTakeMaxXorDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        DiscountPolicy Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
+        Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
@@ -247,7 +247,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addTakeMaxXorDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
@@ -256,7 +256,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addTakeMaxXorDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
+        Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -267,7 +267,7 @@ public class DiscountTests extends DiscountPolicyTest{
     public void checkMinXorDiscount() throws Exception {
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addTakeMinXorDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        DiscountPolicy Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
+        Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
@@ -276,7 +276,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addTakeMinXorDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountTrue1);
-        DiscountPolicy simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
@@ -285,7 +285,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addTakeMinXorDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
-        DiscountPolicy simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
+        Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -297,7 +297,7 @@ public class DiscountTests extends DiscountPolicyTest{
     public void checkAndDiscount() throws Exception {
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        DiscountPolicy Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
+        Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(16.2 , listProductDataPrices.get(1).getNewPrice());
@@ -306,7 +306,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //one condition is false, one is true
         int Discount2ID2 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
-        DiscountPolicy Discount2 = discountPolicyRepository.findDiscountPolicyByID(Discount2ID2);
+        Discount Discount2 = discountPolicyRepository.findDiscountPolicyByID(Discount2ID2);
         Discount2.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
@@ -315,7 +315,7 @@ public class DiscountTests extends DiscountPolicyTest{
         resetListProductDataPrices();
         //two conditions are false,
         int DiscountID3 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
-        DiscountPolicy Discount3 = discountPolicyRepository.findDiscountPolicyByID(DiscountID3);
+        Discount Discount3 = discountPolicyRepository.findDiscountPolicyByID(DiscountID3);
         Discount3.giveDiscount(productDTOMap, listProductDataPrices);
         assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(20 , listProductDataPrices.get(1).getNewPrice());

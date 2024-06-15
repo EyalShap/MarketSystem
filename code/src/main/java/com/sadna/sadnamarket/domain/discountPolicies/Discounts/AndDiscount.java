@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class AndDiscount extends CompositeDiscount{
 
-    public AndDiscount(int id, DiscountPolicy discountA, DiscountPolicy discountB) {
+    public AndDiscount(int id, Discount discountA, Discount discountB) {
         super(id, discountA, discountB);
     }
 

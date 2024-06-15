@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository{
-    private Map<Integer, DiscountPolicy> discountPolicies;
+    private Map<Integer, Discount> discountPolicies;
     private Map<String, Integer> discountPoliciesDesc;
     private int nextId;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -20,14 +20,14 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
         nextId = 0;
     }
     @Override
-    public int addMaximumDiscount(DiscountPolicy discountA, DiscountPolicy discountB) throws JsonProcessingException {
-        DiscountPolicy newDiscountPolicy = new MaximumDiscount(nextId, discountA, discountB);
+    public int addMaximumDiscount(Discount discountA, Discount discountB) throws JsonProcessingException {
+        Discount newDiscountPolicy = new MaximumDiscount(nextId, discountA, discountB);
         return addDiscountPolicyToMaps(newDiscountPolicy);
     }
 
     @Override
-    public int addOrDiscount(DiscountPolicy discountA, DiscountPolicy discountB) throws JsonProcessingException {
-        DiscountPolicy newDiscountPolicy = new OrDiscount(nextId, discountA, discountB);
+    public int addOrDiscount(Discount discountA, Discount discountB) throws JsonProcessingException {
+        Discount newDiscountPolicy = new OrDiscount(nextId, discountA, discountB);
         return addDiscountPolicyToMaps(newDiscountPolicy);
     }
 
@@ -53,32 +53,32 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
     }
 
     @Override
-    public int addTakeMaxXorDiscount(DiscountPolicy discountA, DiscountPolicy discountB) throws JsonProcessingException {
+    public int addTakeMaxXorDiscount(Discount discountA, Discount discountB) throws JsonProcessingException {
         XorDiscount newDiscountPolicy = new XorDiscount(nextId, discountA, discountB);
         newDiscountPolicy.setMax();
         return addDiscountPolicyToMaps(newDiscountPolicy);
     }
 
     @Override
-    public int addTakeMinXorDiscount(DiscountPolicy discountA, DiscountPolicy discountB) throws JsonProcessingException {
+    public int addTakeMinXorDiscount(Discount discountA, Discount discountB) throws JsonProcessingException {
         XorDiscount newDiscountPolicy = new XorDiscount(nextId, discountA, discountB);
         newDiscountPolicy.setMin();
         return addDiscountPolicyToMaps(newDiscountPolicy);
     }
 
     @Override
-    public int addAdditionDiscount(DiscountPolicy discountA, DiscountPolicy discountB) throws JsonProcessingException {
-        DiscountPolicy newDiscountPolicy = new AdditionDiscountPolicy(nextId, discountA, discountB);
+    public int addAdditionDiscount(Discount discountA, Discount discountB) throws JsonProcessingException {
+        Discount newDiscountPolicy = new AdditionDiscount(nextId, discountA, discountB);
         return addDiscountPolicyToMaps(newDiscountPolicy);
     }
 
     @Override
-    public int addAndDiscount(DiscountPolicy discountA, DiscountPolicy discountB) throws JsonProcessingException {
-        DiscountPolicy newDiscountPolicy = new AndDiscount(nextId, discountA, discountB);
+    public int addAndDiscount(Discount discountA, Discount discountB) throws JsonProcessingException {
+        Discount newDiscountPolicy = new AndDiscount(nextId, discountA, discountB);
         return addDiscountPolicyToMaps(newDiscountPolicy);
     }
 
-    private int addDiscountPolicyToMaps(DiscountPolicy newDiscountPolicy) throws JsonProcessingException {
+    private int addDiscountPolicyToMaps(Discount newDiscountPolicy) throws JsonProcessingException {
         String newConditionDesc = newDiscountPolicy.getClass().getName() + "-" + objectMapper.writeValueAsString(newDiscountPolicy);
         if(!discountPoliciesDesc.containsKey(newConditionDesc)) {
             discountPolicies.put(nextId, newDiscountPolicy);
@@ -97,7 +97,7 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
         return discountPolicies.keySet();
     }
 
-    public DiscountPolicy findDiscountPolicyByID(int discountPolicyID) throws Exception {
+    public Discount findDiscountPolicyByID(int discountPolicyID) throws Exception {
         if(!discountPolicyExists(discountPolicyID)) {
             throw new Exception();
         }

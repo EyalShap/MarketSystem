@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MaximumDiscount extends CompositeDiscount{
-    public MaximumDiscount(int id, DiscountPolicy discountA, DiscountPolicy discountB) {
+    public MaximumDiscount(int id, Discount discountA, Discount discountB) {
         super(id, discountA, discountB);
     }
 

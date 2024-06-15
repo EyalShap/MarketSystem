@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 @JsonIgnoreProperties(value = { "id" })
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public abstract class DiscountPolicy {
+public abstract class Discount {
     protected int id;
 
-    DiscountPolicy(int id){
+    Discount(int id){
         this.id = id;
     }
 
