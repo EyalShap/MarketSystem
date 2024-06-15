@@ -179,25 +179,25 @@ export const getMember = async(username: string): Promise<MemberModel> => {
     return profileData;
 }
 
-export const viewCart = (username:string): cartModel => {
-    const cart: ProductCartModel[] = [
-        { id: 1, amount: 5,storeId:1, originalPrice: 100, discountedPrice: 90, name: 'example1'  },
-        { id: 2, amount: 3,storeId:1, originalPrice: 50, discountedPrice: 45, name: 'example2'}
-    ];
-    let totalPrice = 150;
-    let totalDiscountedPrice = 135;
-    return {
-        products: cart,
-        totalPrice: totalPrice,
-        discountedPrice: totalDiscountedPrice
-    };
+export const viewMemberCart = async(username:string): Promise<string> => {
+    const response= await fetch(`${server}/api/user/getCart?username=${username}`,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    })
+    const data= await response.json();
+    return data;
+}
+
+export const viewGuestCart = async(guestId:number): Promise<string> => {
+const response= await fetch(`${server}/api/guest/getCart?guestId=${guestId}`);
+const data= await response.json();
+return data;
 }
 
 export const getProductDetails = (productId: number): ProductModel => {
     return {id:2,storeId:4, name: "Example1", price: 123.3 };
-}
-export const updateCart = (cart: cartModel) => {
-    console.log("Cart updated");
 }
 export const removeFromCart = (cart: cartModel) => {
     console.log("Cart updated");
@@ -360,10 +360,8 @@ export const fetchUserStores = async (username: string): Promise<RoleModel[]> =>
         }
     });
     const res= await response.json() ; 
-    console.log(res);
-    const x= JSON.parse(res.dataJson) as RoleModel[];
-    console.log(x);
-    return x;
+    const stores= JSON.parse(res.dataJson) as RoleModel[];
+    return stores;
 };
 
 export const fetchNotifications = async (): Promise<NotificationModel[]> => {
@@ -396,3 +394,64 @@ export const createNewStore = async (storeModel: CreateStoreModel,storeFounder :
     );
     return response.data;
 };
+export const addProductToCartMember = async (productId:number,storeId:number, amount:number) => {
+    const response = await axios.patch(`${server}/api/user/addProductToCart?username=${localStorage.getItem("username")}`,{storeId: storeId, productId:productId,amount:amount},{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    return response.data;
+}
+export const addProductToCartGuest = async (productId:number,storeId:number, amount:number) => {
+    const response = await axios.patch(`${server}/api/user/addProductToCart?guestId=${localStorage.getItem("guestId")}`,{storeId: storeId, productId:productId,amount:amount}
+    );
+    return response.data;
+}
+
+export const changeProductAmountInCart = async (productId:number,storeId:number, amount:number) => {
+    const response = await axios.patch(`${server}/api/user/changeQuantityCart?username=${localStorage.getItem("username")}`,{storeId: storeId, productId:productId,amount:amount,owner:localStorage.getItem("username") as string},{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    return response.data;
+}
+export const changeProductAmountInCartGuest = async (productId:number,storeId:number, amount:number) => {
+    const response = await axios.patch(`${server}/api/user/guest/changeQuantityCart?guestId=${localStorage.getItem("guestId")}`,{storeId: storeId, productId:productId,amount:amount}
+    );
+    return response.data;
+}
+
+export const removeProductFromCart = async (productId:number,storeId:number) => {
+    const response = await axios.patch(`${server}/api/user/removeProductFromCart?username=${localStorage.getItem("username")}`,{storeId: storeId, productId:productId},{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` 
+        }
+    }
+    );
+    return response.data;
+}
+export const removeProductFromCartGuest = async (productId:number,storeId:number) => {
+    const response = await axios.patch(`${server}/api/user/guest/removeProductFromCart?guestId=${localStorage.getItem("guestId")}`,{storeId: storeId, productId:productId}
+    );
+    return response.data;
+}
+export const checkCart= async (username:string) => {
+    const response = await axios.post(`${server}/api/user/checkMemberCart?username=${localStorage.getItem("username")}`,{},{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` 
+        }
+    }
+    );
+    return response.data;
+}
+export const checkCartGuest= async (guestId:number) => {
+    const response = await axios.post(`${server}/api/user/checkGuestCart?guestId=${guestId}`,{});
+    return response.data;
+}
