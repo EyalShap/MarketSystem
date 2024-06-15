@@ -261,6 +261,16 @@ public class StoreRestController {
         return marketService.getManagerPermissions(token,currentOwnerUsername,managerUsername,storeId);
     }
 
+    @GetMapping("/getManagerPermissionsInt")
+    public Response getManagerPermissionsInt(@RequestParam String currentOwnerUsername,@RequestParam String managerUsername,@RequestParam  int storeId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getManagerPermissionsInt(token,currentOwnerUsername,managerUsername,storeId);
+    }
+
     @GetMapping("/hasPermission")
     public Response hasPermission(@RequestParam String actorUsername,@RequestParam String actionUsername,@RequestParam  int storeId,@RequestParam int permission, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
@@ -269,6 +279,36 @@ public class StoreRestController {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         return marketService.hasPermission(token, actorUsername, storeId, actionUsername, permission);
+    }
+
+    @GetMapping("/isManager")
+    public Response isManager(@RequestParam String actorUsername,@RequestParam  int storeId, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getIsManager(token, actorUsername, storeId, actorUsername);
+    }
+
+    @GetMapping("/isOwner")
+    public Response isOwner(@RequestParam String actorUsername,@RequestParam  int storeId, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getIsOwner(token, actorUsername, storeId, actorUsername);
+    }
+
+    @GetMapping("/isFounder")
+    public Response isFounder(@RequestParam String actorUsername,@RequestParam  int storeId, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getIsFounder(token, actorUsername, storeId, actorUsername);
     }
 
 

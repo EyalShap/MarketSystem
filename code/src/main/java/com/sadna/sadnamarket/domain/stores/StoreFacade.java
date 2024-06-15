@@ -508,6 +508,15 @@ public class StoreFacade {
         return store.isStoreOwner(infoUsername);
     }
 
+    public boolean getIsFounder(String actorUsername, int storeId, String infoUsername){
+        //if (!hasPermission(actorUsername, storeId, Permission.VIEW_ROLES) && !storeRepository.findStoreByID(storeId).isStoreOwner(actorUsername))
+        //    throw new IllegalArgumentException(Error.makeStoreUserCannotGetRolesInfoError(actorUsername, storeId));
+        if (!storeRepository.storeExists(storeId))
+            throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+        Store store = storeRepository.findStoreByID(storeId);
+        return store.isStoreOwner(infoUsername) && store.getFounderUsername().equals(actorUsername);
+    }
+
     public boolean hasProductInStock(int storeId, int productId, int amount){
         if (!storeRepository.storeExists(storeId))
             throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));

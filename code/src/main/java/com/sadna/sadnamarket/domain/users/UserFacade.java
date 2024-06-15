@@ -237,12 +237,12 @@ public class UserFacade {
     public void reject(String rejectingName,int requestID){
         logger.info("{} reject request id: {}",rejectingName,requestID);
         Member rejecting=getMember(rejectingName);
-        rejecting.reject(requestID);
         Request request=rejecting.getRequest(requestID);
         int storeId=request.getStoreId();
         String role=request.getRole();
         String apointer=request.getSender();
         notify(apointer, "User " + rejectingName + " rejected request for " + role + " in " + storeId);
+        rejecting.reject(requestID);
         logger.info("{} rejected request id: {}",rejectingName,requestID);
 
     }

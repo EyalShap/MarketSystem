@@ -824,6 +824,27 @@ public class MarketService {
         }
     } //Store window->Actions menu->get Managers->choose a manager->shows details and permissions
 
+    public Response getManagerPermissionsInt(String token, String currentOwnerUsername, String managerUsername, int storeId) {
+        try {
+            checkToken(token, currentOwnerUsername);
+            if(!storeFacade.getIsManager(currentOwnerUsername, storeId, managerUsername)){
+                logger.error("getManagerPermissions: User " + managerUsername + " isn't a manager");
+                return Response.createResponse(true, "User isn't a manager");
+            }
+            logger.info(String.format("User %s got permission of user %s in store %d", currentOwnerUsername, managerUsername, storeId));
+            List<Integer> enumInts = new LinkedList<>();
+            List<Permission> perms = userFacade.getManagerPermissions(currentOwnerUsername, managerUsername, storeId);
+            for(Permission perm : perms){
+                enumInts.add(perm.getValue());
+            }
+            return Response.createResponse(false, objectMapper.writeValueAsString(perms));
+        }
+        catch (Exception e) {
+            logger.error("getManagerPermissions: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response login(String username, String password){
         try{
             logger.info("user {} tries to login", username);
@@ -1220,6 +1241,15 @@ public class MarketService {
         }
     }
 
+    public Response getIsFounder(String token, String username, int storeId, String ownerUsername) {
+        checkToken(token, username);
+        try {
+            return Response.createResponse(false, String.valueOf(storeFacade.getIsFounder(username, storeId, ownerUsername)));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response getIsManager(String token, String username, int storeId, String managerUsername) {
         checkToken(token, username);
         try {
@@ -1284,17 +1314,6 @@ public class MarketService {
         }
     }
 
-    public Response getAllPermissions(String token, String actorUsername, int storeId, String actionUsername){
-        try{
-            checkToken(token, actorUsername);
-            logger.info(String.format("%s checked %s permissions in store %d.", actorUsername, actionUsername, storeId));
-            List<Permission> res = storeFacade.getUserPermissions(actorUsername, actionUsername, storeId);
-            return Response.createResponse(false, objectMapper.writeValueAsString(res));
-        }catch(Exception e){
-            logger.error("getAllPermissions failed for username: {}. Error: {}", actorUsername, e.getMessage());
-            return Response.createResponse(true, e.getMessage());
-        }
-    }
     public Response getUserRoles(String username){
         try{
             logger.info("get user roles for {}", username);
