@@ -87,6 +87,13 @@ public class BuyPolicyFacade {
         return buyPolicyRepository.addCategoryHolidayBuyPolicy(category, buytypes);
     }
 
+    public int createSpecificDateBuyPolicy(String category, List<BuyType> buytypes, int day, int month, int year, String username) throws JsonProcessingException {
+        if (!hasPermission(username, Permission.ADD_BUY_POLICY))
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
+
+        return buyPolicyRepository.addCategorySpecificDateBuyPolicy(category, buytypes, day, month, year);
+    }
+
     public int createAndBuyPolicy(int policyId1, int policyId2, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));

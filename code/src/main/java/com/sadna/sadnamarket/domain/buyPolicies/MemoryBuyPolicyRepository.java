@@ -78,6 +78,12 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
+    public int addCategorySpecificDateBuyPolicy(String category, List<BuyType> buytypes, int day, int month, int year) throws JsonProcessingException {
+        BuyPolicy newPolicy = new SpecificDateBuyPolicy(nextId, buytypes, new CategorySubject(category), day, month, year);
+        return addPolicyToMaps(newPolicy);
+    }
+
+    @Override
     public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
         BuyPolicy newPolicy = new AndBuyPolicy(nextId, policy1, policy2);
         return addPolicyToMaps(newPolicy);
