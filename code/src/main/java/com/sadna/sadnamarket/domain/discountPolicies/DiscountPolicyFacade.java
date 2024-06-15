@@ -25,7 +25,6 @@ public class DiscountPolicyFacade {
     private IDiscountPolicyRepository discountPolicyRepository;
     private ProductFacade productFacade;
     private StoreFacade storeFacade;
-
     private static DiscountPolicyFacade instance;
 
     public DiscountPolicyFacade(IConditionRespository conditionRepository, IDiscountPolicyRepository discountPolicyRepository) {
@@ -55,8 +54,8 @@ public class DiscountPolicyFacade {
     // ---DiscountsPolicy-Creations---------------------------------------------------------------
     public int createAdditionDiscountPolicy(int policyId1, int policyId2, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Discount policy1 = discountPolicyRepository.findDiscountPolicyByID(policyId1);
         Discount policy2 = discountPolicyRepository.findDiscountPolicyByID(policyId2);
@@ -65,8 +64,8 @@ public class DiscountPolicyFacade {
 
     public int createOrDiscountPolicy(int policyId1, int policyId2, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Discount policy1 = discountPolicyRepository.findDiscountPolicyByID(policyId1);
         Discount policy2 = discountPolicyRepository.findDiscountPolicyByID(policyId2);
@@ -75,8 +74,8 @@ public class DiscountPolicyFacade {
 
     public int createAndDiscountPolicy(int policyId1, int policyId2, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Discount policy1 = discountPolicyRepository.findDiscountPolicyByID(policyId1);
         Discount policy2 = discountPolicyRepository.findDiscountPolicyByID(policyId2);
@@ -85,8 +84,8 @@ public class DiscountPolicyFacade {
 
     public int createMaximumDiscountPolicy(int policyId1, int policyId2, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Discount policy1 = discountPolicyRepository.findDiscountPolicyByID(policyId1);
         Discount policy2 = discountPolicyRepository.findDiscountPolicyByID(policyId2);
@@ -95,8 +94,8 @@ public class DiscountPolicyFacade {
 
     public int createTakeMaxXorDiscountPolicy(int policyId1, int policyId2, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Discount policy1 = discountPolicyRepository.findDiscountPolicyByID(policyId1);
         Discount policy2 = discountPolicyRepository.findDiscountPolicyByID(policyId2);
@@ -105,8 +104,8 @@ public class DiscountPolicyFacade {
 
     public int createTakeMinXorDiscountPolicy(int policyId1, int policyId2, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Discount policy1 = discountPolicyRepository.findDiscountPolicyByID(policyId1);
         Discount policy2 = discountPolicyRepository.findDiscountPolicyByID(policyId2);
@@ -115,8 +114,8 @@ public class DiscountPolicyFacade {
 
     public int createOnCategorySimpleDiscountPolicy(double percentage, String categoryName, int ConditionID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Condition condition = conditionRepository.findConditionByID(ConditionID);
         return discountPolicyRepository.addOnCategorySimpleDiscount(percentage, categoryName, condition);
@@ -124,8 +123,8 @@ public class DiscountPolicyFacade {
 
     public int createOnProductSimpleDiscountPolicy(double percentage, int productID, int ConditionID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Condition condition = conditionRepository.findConditionByID(ConditionID);
         return discountPolicyRepository.addOnProductSimpleDiscount(percentage, productID, condition);
@@ -133,8 +132,8 @@ public class DiscountPolicyFacade {
 
     public int createOnStoreSimpleDiscountPolicy(double percentage, int ConditionID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
 
         Condition condition = conditionRepository.findConditionByID(ConditionID);
         return discountPolicyRepository.addOnStoreSimpleDiscount(percentage, condition);
@@ -142,46 +141,46 @@ public class DiscountPolicyFacade {
     // ---Conditions-Creations---------------------------------------------------------------
     public int createMinBuyCondition(int minBuy, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
+
 
         return conditionRepository.createMinBuyCondition(minBuy);
     }
 
     public int createTrueCondition(String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
+
 
         return conditionRepository.createTrueCondition();
     }
 
     public int createMinProductCondition(int minAmount, int productID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
+
 
         return conditionRepository.createMinProductCondition(minAmount, productID);
     }
 
     public int createMinProductOnCategoryCondition(int minAmount, String categoryName, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
+
 
         return conditionRepository.createMinProductOnCategoryCondition(minAmount, categoryName);
     }
     public int createMinProductOnStoreCondition(int minAmount, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
+
 
         return conditionRepository.createMinProductOnStoreCondition(minAmount);
     }
     public int createXorCondition(int conditionAId, int conditionBId, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
+
 
         Condition conditionA = conditionRepository.findConditionByID(conditionAId);
         Condition conditionB = conditionRepository.findConditionByID(conditionBId);
@@ -189,8 +188,8 @@ public class DiscountPolicyFacade {
     }
     public int createOrCondition(int conditionAId, int conditionBId, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
+
 
         Condition conditionA = conditionRepository.findConditionByID(conditionAId);
         Condition conditionB = conditionRepository.findConditionByID(conditionBId);
@@ -198,8 +197,8 @@ public class DiscountPolicyFacade {
     }
     public int createAndCondition(int conditionAId, int conditionBId, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(
-                    String.format("User %s can not create discount policy", username));
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
+
 
         Condition conditionA = conditionRepository.findConditionByID(conditionAId);
         Condition conditionB = conditionRepository.findConditionByID(conditionBId);

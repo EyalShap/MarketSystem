@@ -16,14 +16,19 @@ public class OrDiscount extends CompositeDiscount{
     @Override
     public void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
         if(checkCond(productDTOMap, listProductsPrice)){
-            discountA.giveDiscount(productDTOMap, listProductsPrice);
-            discountB.giveDiscount(productDTOMap, listProductsPrice);
+            discountA.giveDiscountWithoutCondition(productDTOMap, listProductsPrice);
+            discountB.giveDiscountWithoutCondition(productDTOMap, listProductsPrice);
         }
+    }
+    @Override
+    public void giveDiscountWithoutCondition(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
+        discountA.giveDiscountWithoutCondition(productDTOMap, listProductsPrice);
+        discountB.giveDiscountWithoutCondition(productDTOMap, listProductsPrice);
     }
 
     @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
-        return discountA.checkCond(productDTOMap, listProductsPrice) || discountA.checkCond(productDTOMap, listProductsPrice);
+        return discountA.checkCond(productDTOMap, listProductsPrice) || discountB.checkCond(productDTOMap, listProductsPrice);
     }
 
     @Override
