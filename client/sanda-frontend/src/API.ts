@@ -467,25 +467,15 @@ export const updateBirthday = async(birthday:string) => {
     return response
 }
 
-// export const searchProducts = async(username: string,productName: string, productCategory: string, minProductPrice: number, maxProductPrice: number) => {
- 
-//     const response=(await axios.post('${server}/api/product/getFilteredProducts',{productName, productCategory, minProductPrice, maxProductPrice},{headers:{
-//         'Content-Type': 'application/json',
-//         //Authorization: `Bearer ${jwt_token}`
-//       }})).data
-//     return response;
-
-       
-// };
-
 export const searchProducts = async (
     username: string,
     productName: string,
     productCategory: string,
     minProductPrice: number,
-    maxProductPrice: number
+    maxProductPrice: number,
+    minProductRank: number
 ): Promise<ProductModel[]> => {
-    console.log("hi");
+    const server = 'http://127.0.0.1:8080'; 
 
     const response = (await axios.get(`${server}/api/product/getFilteredProducts`, {
         headers: {
@@ -496,12 +486,14 @@ export const searchProducts = async (
             productName,
             productCategory,
             minProductPrice,
-            maxProductPrice
+            maxProductPrice,
+            minProductRank
         }
     })).data;
 
-    // Transform the response into ProductModel[]
-    const products: ProductModel[] = response.map((product: any) => ({
+    const dataJson = JSON.parse(response.dataJson);
+
+    const products: ProductModel[] = dataJson.map((product: any) => ({
         id: product.productID,
         name: product.productName,
         storeId: product.productID, // Assuming storeId is same as productID
@@ -510,6 +502,7 @@ export const searchProducts = async (
         productDescription: product.description,
         productRank: product.productRank
     }));
+   
 
     return products;
 };

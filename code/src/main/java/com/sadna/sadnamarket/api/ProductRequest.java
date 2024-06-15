@@ -7,9 +7,9 @@ import java.util.List;
 
 public class ProductRequest {
     String productName;
+    String productCategory;
     double minProductPrice;
     double maxProductPrice;
-    String productCategory;
     double minProductRank;
 
 

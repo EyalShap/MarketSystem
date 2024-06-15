@@ -1340,7 +1340,7 @@ public class MarketService {
 
             List<ProductDTO> productDTOs = productFacade.getAllFilteredProducts(productName, minProductPrice,
                     maxProductPrice, productCategory, minProductRank);
-            logger.info(String.format("User %s got all market products filtered", username));
+            logger.info(String.format("Usergot all market products filtered"));
             if(productDTOs.isEmpty()){
                 return Response.createResponse(true, "No results for products were found");
             }
