@@ -7,7 +7,7 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleDiscount extends Discount{
+public class SimpleDiscount extends DiscountPolicy {
     //percentage is (100-0)
     private final double percentage;
     private Integer productID;

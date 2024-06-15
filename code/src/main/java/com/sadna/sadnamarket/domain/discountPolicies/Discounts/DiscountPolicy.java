@@ -4,16 +4,15 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
-import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
 import java.util.List;
 import java.util.Map;
 @JsonIgnoreProperties(value = { "id" })
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public abstract class Discount {
+public abstract class DiscountPolicy {
     protected int id;
 
-    Discount(int id){
+    DiscountPolicy(int id){
         this.id = id;
     }
 
@@ -30,7 +29,6 @@ public abstract class Discount {
     public int getId() {
         return id;
     }
-
     public int getDiscountAID() {
         return -1;
     }

@@ -49,7 +49,7 @@ public class DiscountPolicyTest {
         this.storeFacade.setDiscountPolicyFacade(discountPolicyFacade);
 
 
-        authFacade.register("hila", "654321", "Eugene", "Krabs", "eugene@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
+        authFacade.register("hila", "654321", "Eugene", "Krabs", "hilala@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
         authFacade.login("hila", "654321");
 
         storeFacade.createStore("hila", "hila's bakery", "stips", "hilala@gmail.com", "0546661111");
@@ -57,6 +57,15 @@ public class DiscountPolicyTest {
         storeFacade.addProductToStore("hila", 0, "eyal", 312, 100, "kids", 5, 2);
         storeFacade.addProductToStore("hila", 0, "milk", 312, 20, "dairy", 5, 2);
         storeFacade.addProductToStore("hila", 0, "cheese", 312, 40, "dairy", 5, 2);
+
+        authFacade.register("maki", "654321", "Eugene", "Krabs", "maki@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
+        authFacade.login("maki", "654321");
+
+        storeFacade.createStore("maki", "maki's bakery", "stips", "maki@gmail.com", "0546661112");
+
+        storeFacade.addProductToStore("maki", 1, "eyal", 312, 100, "kids", 5, 2);
+        storeFacade.addProductToStore("maki", 1, "milk", 312, 20, "dairy", 5, 2);
+        storeFacade.addProductToStore("maki", 1, "cheese", 312, 40, "dairy", 5, 2);
 
     }
 }

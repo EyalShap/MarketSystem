@@ -254,6 +254,4 @@ public class conditionsTests extends DiscountPolicyTest{
         assertFalse(XorCondition2.checkCond(cartMap, listProductDataPrices));
 
     }
-
-
 }

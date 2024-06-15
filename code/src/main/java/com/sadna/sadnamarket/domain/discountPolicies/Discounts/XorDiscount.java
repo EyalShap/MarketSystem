@@ -10,7 +10,7 @@ public class XorDiscount extends CompositeDiscount{
     //0 = min, 1 = max
     int minOrMax;
 
-    public XorDiscount(int id, Discount discountA, Discount discountB){
+    public XorDiscount(int id, DiscountPolicy discountA, DiscountPolicy discountB){
         super(id, discountA, discountB);
     }
 
