@@ -1,8 +1,10 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyManager;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.stores.PolicyDescriptionDTO;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
@@ -39,6 +41,10 @@ public class BuyPolicyFacade {
 
     public BuyPolicy getBuyPolicy(int policyId) {
         return buyPolicyRepository.findBuyPolicyByID(policyId);
+    }
+
+    public String getPolicyDescription(int policyId) {
+        return buyPolicyRepository.findBuyPolicyByID(policyId).getPolicyDesc();
     }
 
     private void checkUserAndProduct(int productId, String username) {
@@ -186,6 +192,18 @@ public class BuyPolicyFacade {
             return false;
         BuyPolicyManager manager = mapper.get(storeId);
         return manager.hasPolicy(policyId);
+    }
+
+    public List<PolicyDescriptionDTO> getStorePolicyDescriptions(int storeId) throws Exception {
+        if(!mapper.containsKey(storeId)){
+            return new LinkedList<>();
+        }
+        BuyPolicyManager manager = mapper.get(storeId);
+        List<PolicyDescriptionDTO> descs = new LinkedList<>();
+        for(int id : manager.getAllPolicyIds()){
+            descs.add(new PolicyDescriptionDTO(id,getPolicyDescription(id)));
+        }
+        return descs;
     }
 
 }

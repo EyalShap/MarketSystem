@@ -14,6 +14,7 @@ import RoleModel from "./models/RoleModel";
 import CreateStoreModel from "./models/CreateStoreModel";
 import { NotificationModel } from "./models/NotificationModel";
 import StoreRequestModel from "./models/StoreRequestModel";
+import PolicyDescriptionModel from "./models/PolicyDescriptionModel";
 
 
 const server: string = 'http://10.0.0.18:8080'; 
@@ -97,9 +98,61 @@ export const getStoreInfo = async (storeId: string): Promise<RestResponse> => {
     return data;
 }
 
+export const getStoreDiscounts = async (storeId: string): Promise<PolicyDescriptionModel[]> => {
+    if(localStorage.getItem('token') == null){
+        const response = await fetch(
+            `${server}/api/stores/describeStoreDiscountPolicy?storeId=${storeId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+        const data: RestResponse = await response.json();
+        return JSON.parse(data.dataJson);
+    }
+    const response = await fetch(
+        `${server}/api/stores/describeStoreDiscountPolicy?username=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return JSON.parse(data.dataJson);
+}
+
+export const getStorePolicies = async (storeId: string): Promise<PolicyDescriptionModel[]> => {
+    if(localStorage.getItem('token') == null){
+        const response = await fetch(
+            `${server}/api/stores/describeStoreBuyPolicy?storeId=${storeId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+        const data: RestResponse = await response.json();
+        return JSON.parse(data.dataJson);
+    }
+    const response = await fetch(
+        `${server}/api/stores/describeStoreBuyPolicy?username=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return JSON.parse(data.dataJson);
+}
+
 export const getStoreProducts = (storeId: string): ProductModel[] => {
-    let defaultExample1: ProductModel = {id:1,storeId:2,name: "Example1", price: 123.3}
-    let defaultExample2: ProductModel = {id:1,storeId:2,name: "Example2", price: 3.5}
+    let defaultExample1: ProductModel = {productID:1,productName: "Example1", productPrice: 123.3}
+    let defaultExample2: ProductModel = {productID:1,productName: "Example2", productPrice: 3.5}
     let list: ProductModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
@@ -114,8 +167,8 @@ export const getStoreProducts = (storeId: string): ProductModel[] => {
 }
 
 export const searchAndFilterStoreProducts = (storeId: string, category: string, keywords: string, minprice: number, maxprice: number): ProductModel[] => {
-    let defaultExample1: ProductModel = {id:1,storeId:2,name: "Example1", price: 123.3}
-    let defaultExample2: ProductModel = {id:1,storeId:2,name: "Example2", price: 3.5}
+    let defaultExample1: ProductModel = {productID:1,productName: "Example1", productPrice: 123.3}
+    let defaultExample2: ProductModel = {productID:1,productName: "Example2", productPrice: 3.5}
     let list: ProductModel[] = []
     if(keywords === "Example1"){
         console.log("AAAAAAAAAAAAAA");
@@ -144,12 +197,46 @@ export const searchAndFilterStoreProducts = (storeId: string, category: string, 
     return list;
 }
 
-export const isOwner = (storeId: string): boolean => {
-    return true;
+export const isOwner = async (storeId: string): Promise<boolean> => {
+    const response = await fetch(
+        `${server}/api/stores/isOwner?actorUsername=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return (!data.error) && (data.dataJson === "true")
 }
 
-export const isManager = (storeId: string): boolean => {
-    return true;
+export const isFounder = async (storeId: string): Promise<boolean> => {
+    const response = await fetch(
+        `${server}/api/stores/isFounder?actorUsername=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return (!data.error) && (data.dataJson === "true")
+}
+
+export const isManager = async(storeId: string): Promise<boolean> => {
+    const response = await fetch(
+        `${server}/api/stores/isManager?actorUsername=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return (!data.error) && (data.dataJson === "true")
 }
 
 export const hasPermission = async (storeId: string, permission: Permission): Promise<boolean> => {
@@ -170,15 +257,55 @@ export const storeActive = (storeId: string): boolean => {
     return true;
 }
 
-export const getPermissions = (storeId: string): Permission[] => {
-    return [Permission.ADD_PRODUCTS, Permission.DELETE_PRODUCTS, Permission.UPDATE_PRODUCTS, Permission.ADD_BUY_POLICY, Permission.ADD_DISCOUNT_POLICY, Permission.ADD_MANAGER, Permission.ADD_OWNER, Permission.CLOSE_STORE, Permission.REOPEN_STORE];
+export const getPermissions = async (storeId: string): Promise<Permission[]> => {
+    const response = await fetch(
+        `${server}/api/stores/getManagerPermissionsInt?currentOwnerUsername=${localStorage.getItem("username")}&managerUsername=${localStorage.getItem("username")}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    const perms: number[] = JSON.parse(data.dataJson);
+    return perms;
 }
 
-export const getMangerPermissions = (storeId: string, managerUsername: string): Permission[] => {
-    return [Permission.ADD_PRODUCTS, Permission.DELETE_PRODUCTS, Permission.UPDATE_PRODUCTS];
+export const getMangerPermissions = async (storeId: string, managerUsername: string): Promise<Permission[]> => {
+    const response = await fetch(
+        `${server}/api/stores/getManagerPermissionsInt?currentOwnerUsername=${localStorage.getItem("username")}&managerUsername=${managerUsername}&storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    console.log(data)
+    const perms: number[] = JSON.parse(data.dataJson);
+    return perms;
 }
 
-export const updateManagerPermissions = (storeId: string, managerUsername: string, perms: Permission[]): boolean => {
+export const updateManagerPermissions = async (storeId: string, managerUsername: string, perms: Permission[]): Promise<boolean> => {
+    let permissionRequest = {
+        managerUsername: managerUsername,
+        storeId: parseInt(storeId),
+        permission: perms
+    }
+    const response = await axios.patch(`${server}/api/stores/changeManagerPermission?username=${localStorage.getItem("username")}`, permissionRequest,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    const data = await response.data;
+    if(data.error){
+        alert(data.errorString)
+        return false;
+    }
     return true;
 }
 
@@ -224,6 +351,13 @@ export const rejectRequest = async (requestId: number) => {
       }})
 }
 
+export const okNotification = async (notifId: number) => {
+    axios.post(`${server}/api/user/okNotification?username=${localStorage.getItem("username")}&notifID=${notifId}`,{},{headers:{
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+      }})
+}
+
 export const getMember = async(username: string): Promise<MemberModel> => {
       const response = await fetch(
         `${server}/api/user/getUserDTO?username=${username}`,
@@ -259,7 +393,7 @@ export const viewCart = (username:string): cartModel => {
 }
 
 export const getProductDetails = (productId: number): ProductModel => {
-    return {id:2,storeId:4, name: "Example1", price: 123.3 };
+    return {productID:2,productName: "Example1", productPrice: 123.3 };
 }
 export const updateCart = (cart: cartModel) => {
     console.log("Cart updated");
@@ -488,10 +622,82 @@ export const sendOwnerRequest = async(username: string, storeId: string): Promis
     return response.data;
 }
 
-export const describeDiscountPolicy = async(policyId: string): Promise<String> => {
-    return "For users above 18, 20% discount on Beer applies";
+export const describeDiscountPolicy = async(policyId: string): Promise<RestResponse> => {
+    const response = await fetch(
+        `${server}/api/stores/describeDiscountPolicy?username=${localStorage.getItem("username")}&policyId=${policyId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    return response.json();
 }
 
-export const describeBuyPolicy = async(policyId: string): Promise<String> => {
-    return "Must be 18 to purchase Alcohol category";
+export const describeBuyPolicy = async(policyId: string): Promise<RestResponse> => {
+    const response = await fetch(
+        `${server}/api/stores/describeBuyPolicy?username=${localStorage.getItem("username")}&policyId=${policyId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    return response.json();
+}
+
+export const describeCondition = async(policyId: string): Promise<RestResponse> => {
+    const response = await fetch(
+        `${server}/api/stores/describeDiscountCondition?username=${localStorage.getItem("username")}&condId=${policyId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    return response.json();
+}
+
+export const createMinAmountCondition = async(storeId: string, minAmount: number, applyOn: string, productId: number, categoryName: string): Promise<string> => {
+    if(applyOn === "store"){
+        const response = await axios.post(`${server}/api/stores/createMinProductOnStoreCondition?username=${localStorage.getItem("username")}&minAmount=${minAmount}`,{},{ 
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+        );
+        let data: RestResponse = await response.data;
+        return data.dataJson
+    }else if(applyOn === "categ"){
+        let request = {
+            minAmount: minAmount,
+            categoryName: categoryName
+        }
+        const response = await axios.post(`${server}/api/stores/createMinProductOnCategoryCondition?username=${localStorage.getItem("username")}`,request,{ 
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+        );
+        let data: RestResponse = await response.data;
+        return data.dataJson
+    }
+    let request = {
+        minAmount: minAmount,
+        productId: productId
+    }
+    const response = await axios.post(`${server}/api/stores/createMinProductCondition?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
 }

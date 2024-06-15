@@ -7,23 +7,18 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.Store;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
+import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.service.MarketService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/stores")
 @CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
 public class StoreRestController {
-
-    // don't need this for version 1
-
 
     @Autowired
     MarketService marketService;
@@ -247,7 +242,11 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.changeManagerPermission(token,username,managerPermissionRequest.getManagerUsername(),managerPermissionRequest.getStoreId(),managerPermissionRequest.getPermission());
+        Set<Permission> permissions = new HashSet<>();
+        for(int i : managerPermissionRequest.getPermission()){
+            permissions.add(Permission.getEnumByInt(i));
+        }
+        return marketService.changeManagerPermission(token,username,managerPermissionRequest.getManagerUsername(),managerPermissionRequest.getStoreId(),permissions);
     }
 
 
@@ -620,5 +619,62 @@ public class StoreRestController {
         return marketService.removeDiscountPolicyToStore(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
     }
 
+    @GetMapping("/describeDiscountPolicy")
+    public Response describeDiscountPolicy(@RequestParam String username,@RequestParam int policyId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token, username);
+        return marketService.getDiscountDescription(policyId);
+    }
 
+    @GetMapping("/describeBuyPolicy")
+    public Response describeBuyPolicy(@RequestParam String username,@RequestParam int policyId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token, username);
+        return marketService.getBuyPolicyDescription(policyId);
+    }
+
+    @GetMapping("/describeDiscountCondition")
+    public Response describeDiscountCondition(@RequestParam String username,@RequestParam int condId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token, username);
+        return marketService.getDiscountConditionDescription(condId);
+    }
+
+    @GetMapping("/describeStoreDiscountPolicy")
+    public Response describeStoreDiscountPolicy(@RequestParam String username,@RequestParam int storeId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        if(token != null) {
+            marketService.checkToken(token, username);
+        }
+        return marketService.getStoreDiscountDescriptions(username, storeId);
+    }
+
+    @GetMapping("/describeStoreBuyPolicy")
+    public Response describeStoreBuyPolicy(@RequestParam String username,@RequestParam int storeId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        if(token != null) {
+            marketService.checkToken(token, username);
+        }
+        return marketService.getStorePolicyDescriptions(username, storeId);
+    }
 }

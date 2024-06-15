@@ -165,6 +165,7 @@ h1{
 }
 
 .notvisible{
+    pointer-events: none;
     opacity: 0;
     transform: translateY(-150px);
     transition: opacity 1s ease, transform 1s ease;

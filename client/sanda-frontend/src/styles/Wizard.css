@@ -61,3 +61,10 @@
     font-family: Roboto;
     color: white;
 }
+
+.policyDescription{
+    font-family: Roboto;
+    font-size: 18px;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}

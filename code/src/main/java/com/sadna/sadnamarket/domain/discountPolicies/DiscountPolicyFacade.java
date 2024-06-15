@@ -8,12 +8,14 @@ import com.sadna.sadnamarket.domain.discountPolicies.Discounts.IDiscountPolicyRe
 import com.sadna.sadnamarket.domain.discountPolicies.Discounts.MemoryDiscountPolicyRepository;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.stores.PolicyDescriptionDTO;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.service.Error;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -252,6 +254,23 @@ public class DiscountPolicyFacade {
     public String getDiscountDescription(int discountID) throws Exception {
         Discount discount = discountPolicyRepository.findDiscountPolicyByID(discountID);
         return discount.description();
+    }
+
+    public String getConditionDescription(int condId) throws Exception {
+        Condition condition = conditionRepository.findConditionByID(condId);
+        return condition.description();
+    }
+
+    public List<PolicyDescriptionDTO> getStoreDiscountDescriptions(int storeId) throws Exception {
+        if(!mapper.containsKey(storeId)){
+            return new LinkedList<>();
+        }
+        DiscountPolicyManager manager = mapper.get(storeId);
+        List<PolicyDescriptionDTO> descs = new LinkedList<>();
+        for(int id : manager.getDiscountIds()){
+            descs.add(new PolicyDescriptionDTO(id,getDiscountDescription(id)));
+        }
+        return descs;
     }
 
     private boolean hasPermission(String username, Permission permission) {

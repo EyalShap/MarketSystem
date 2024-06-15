@@ -247,6 +247,13 @@ public class UserFacade {
 
     }
 
+    public void ok(String okayingName,int notifId){
+        logger.info("{} ok notification id: {}",okayingName,notifId);
+        Member okaying =getMember(okayingName);
+        okaying.reject(notifId);
+        logger.info("{} okayed notification id: {}",okayingName,notifId);
+    }
+
     public void login(String userName,String password, int guestId){//the cart of the guest
         logger.info("{} login from guest {}",userName,guestId);
         isValid(userName);

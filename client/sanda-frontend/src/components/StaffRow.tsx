@@ -14,7 +14,16 @@ export const StaffRow = (props: any) => {
     let isManager: boolean = props.isManager;
     const [showDetails,setShowDetails] = useState(false);
     const [changesMade,setChangesMade] = useState(false);
-    const [permissions,setPermissions] = useState(getMangerPermissions(props.storeId,member.username));
+    const [permissions,setPermissions] = useState<Permission[]>([]);
+
+    useEffect(() => {
+        const fetchPermissions = async () =>{
+            setPermissions(await getMangerPermissions(props.storeId, member.username))
+        }
+        if(isManager){
+            fetchPermissions();
+        }
+    },[])
 
     interface Dictionary<T> {
         [Key: number]: T;
@@ -24,10 +33,12 @@ export const StaffRow = (props: any) => {
     permissionToText[Permission.ADD_PRODUCTS] = "Add Products"
     permissionToText[Permission.DELETE_PRODUCTS] = "Delete Products"
     permissionToText[Permission.UPDATE_PRODUCTS] = "Edit Products"
-    permissionToText[Permission.ADD_BUY_POLICY] = "Edit Buy Policies"
-    permissionToText[Permission.ADD_DISCOUNT_POLICY] = "Edit Discount Policies"
+    permissionToText[Permission.ADD_BUY_POLICY] = "Add Buy Policies"
+    permissionToText[Permission.ADD_DISCOUNT_POLICY] = "Add Discount Policies"
+    permissionToText[Permission.REMOVE_BUY_POLICY] = "Remove Buy Policies"
+    permissionToText[Permission.REMOVE_DISCOUNT_POLICY] = "Remove Discount Policies"
 
-    const allPermissions: Permission[] = [Permission.ADD_PRODUCTS,Permission.DELETE_PRODUCTS,Permission.UPDATE_PRODUCTS,Permission.ADD_BUY_POLICY,Permission.ADD_DISCOUNT_POLICY]
+    const allPermissions: Permission[] = [Permission.ADD_PRODUCTS,Permission.DELETE_PRODUCTS,Permission.UPDATE_PRODUCTS,Permission.ADD_BUY_POLICY,Permission.ADD_DISCOUNT_POLICY,Permission.REMOVE_BUY_POLICY,Permission.REMOVE_DISCOUNT_POLICY]
 
     return (
         <div className={isManager ? 'bigStaffRowDivManager' : 'bigStaffRowDivOwner'}>
@@ -40,7 +51,7 @@ export const StaffRow = (props: any) => {
                 <p>Full Name: {member.firstName} {member.lastName}</p>
                 <p>Email: {member.emailAddress}</p>
                 <p>Phone Number: {member.phoneNumber}</p>
-                {allPermissions.map((permission: Permission) => {
+                {isManager && allPermissions.map((permission: Permission) => {
                     return <FormControlLabel control={<Checkbox onChange = 
                         {
                             () => {
@@ -55,7 +66,7 @@ export const StaffRow = (props: any) => {
                         }
                     checked={permissions.includes(permission)}/> } label={permissionToText[permission]}/>
                 })}
-                <button className='updatePerms' onClick={() => updateManagerPermissions(props.storeId, member.username, permissions) ? alert("Permissions updated successfully") : alert("Error in changing permissions")} disabled={!changesMade}>Update Permissions</button>
+                {isManager && <button className='updatePerms' onClick={async () => await updateManagerPermissions(props.storeId, member.username, permissions) ? alert("Permissions updated successfully") : alert("Error in changing permissions")} disabled={!changesMade}>Update Permissions</button>}
             </div>
             }
         </div>

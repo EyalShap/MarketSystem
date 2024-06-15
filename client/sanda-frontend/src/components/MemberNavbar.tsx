@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IconButton, Badge } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { acceptRequest, enterAsGuest, fetchNotifications, logout, rejectRequest } from '../API';
+import { acceptRequest, enterAsGuest, fetchNotifications, logout, okNotification, rejectRequest } from '../API';
 import { AppContext } from '../App';
 import { NotificationModel, RequestModel } from '../models/NotificationModel';
 import { useSubscription } from 'react-stomp-hooks';
@@ -77,8 +77,18 @@ const MemberNavbar = () => {
               {notifications.map((notification, index) => (
                 <li key={index} className="notification-item">
                   <p>{notification.message}</p>
-                  {('storeId' in notification) && <button onClick={() => acceptRequest(notification.id)} className="">accept </button>}
-                  {('storeId' in notification) && <button onClick={() => rejectRequest(notification.id)} className="">reject </button>}
+                  {!('storeId' in notification) && <button onClick={() => {
+                    okNotification(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                  }} className="">OK </button>}
+                  {('storeId' in notification) && <button onClick={() => {
+                    acceptRequest(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                    }} className="">accept </button>}
+                  {('storeId' in notification) && <button onClick={() => {
+                    rejectRequest(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                  }} className="">reject </button>}
                 </li>
               ))}
             </ul>

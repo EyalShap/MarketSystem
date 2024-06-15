@@ -5,8 +5,9 @@ import Login from './Login';
 import Profile from './Profile';
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { hasPermission } from '../API';
+import { createMinAmountCondition, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
 import Permission from '../models/Permission';
+import RestResponse from '../models/RestResponse';
 
 const ConditionContext = createContext({
     condId: '-1',
@@ -141,6 +142,7 @@ const ConditionWizard = () => {
     let textToElement: Dictionary<JSX.Element> = {}
     textToElement["Minimum Product Amount"] = <AmountCondition />
     textToElement["Minumum Total Price"] = <BuyCondition />
+    textToElement["Composite Condition"] = <CompositeCondition />
 
     return (
         <div className="wizard">
@@ -160,6 +162,18 @@ const AmountCondition = () => {
     const [category, setCategory] = useState("");
     const [product, setProduct] = useState("");
     const { condId, setCondId } = useContext(ConditionContext);
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createMinAmountCondition(storeId!, parseInt(amount), mode, parseInt(amount), category)
+        alert(`Condition created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createMinAmountCondition(storeId!, parseInt(amount), mode, parseInt(amount), category)
+        alert(`Condition created with ID ${id}`)
+        setCondId(id)
+    }
 
     return (
         <div className='discountEditor'>
@@ -187,8 +201,8 @@ const AmountCondition = () => {
             }
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Minimum Amount" variant="outlined" value={amount} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setAmount(event.target.value); }} />
-            <button className='editorButton'>Create Condition</button>
-            <button onClick = {() => setCondId("1")}className='editorButton'>Create Condition and use for discount</button>
+            <button onClick = {onCreate} className='editorButton'>Create Condition</button>
+            <button onClick = {onCreateAndSave}className='editorButton'>Create Condition and use for discount</button>
         </div>
     );
 };
@@ -211,20 +225,39 @@ const BuyCondition = () => {
 const CompositeDiscount = () => {
     const [condId, setCondId] = useState("-1");
     const [logic, setLogic] = useState("OR");
+    const [decide, setDecide] = useState("MAX");
     const [id1, setId1] = useState("0");
     const [id2, setId2] = useState("0");
+    const [desc1, setDesc1] = useState("");
+    const [desc2, setDesc2] = useState("");
     const value = { condId, setCondId };
 
-    const logicList = ["OR", "AND", "XOR"]
+    useEffect(() => {
+        fetchDescriptions();
+      },[id1,id2])
+    const logicList = ["OR", "AND", "XOR", "Addition", "Maximum"]
+    const fetchDescriptions = async () =>{
+        let resp1: RestResponse = await describeDiscountPolicy(id1);
+        let resp2: RestResponse = await describeDiscountPolicy(id2);
+        if(resp1.error){
+            setDesc1(`Error: ${resp1.errorString}`)
+        }else{
+            setDesc1(resp1.dataJson)
+        }
+        if(resp2.error){
+            setDesc2(`Error: ${resp2.errorString}`)
+        }else{
+            setDesc2(resp2.dataJson)
+        }
+    }
     return (
         <div className='discountEditor'>
             <h3>A composite discount applies a discount based on two existing discounts, based on various logical operators</h3>
-            <p>{(condId === "-1") ? "You have not selected a condition yet" : `You have selected condition with ID ${condId}`}</p>
             <FormControl>
-                <FormLabel id="group-label">Applies on:</FormLabel>
+                <FormLabel id="group-label">Combination logic:</FormLabel>
                 <RadioGroup
                     aria-labelledby="group-label"
-                    defaultValue={"store"}
+                    defaultValue={"OR"}
 
                     value={logic}
                     onChange={(e,v) => setLogic(v)}
@@ -234,10 +267,82 @@ const CompositeDiscount = () => {
                 </RadioGroup>
             </FormControl>
             <h1/>
+            {logic === "XOR" && 
+            <FormControl>
+            <FormLabel id="group-label">Decision logic:</FormLabel>
+            <RadioGroup
+                aria-labelledby="group-label"
+                defaultValue={"MAX"}
+
+                value={logic}
+                onChange={(e,v) => setDecide(v)}
+                name="radio-buttons-group"
+            >
+                <FormControlLabel value={"MAX"} control={<Radio />} label={"MAX"} />
+                <FormControlLabel value={"MIN"} control={<Radio />} label={"MIN"} />
+            </RadioGroup>
+        </FormControl>}
+            <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="ID of first discount" variant="outlined" value={id1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId1(event.target.value); }} />
+            <p className='policyDescription'>Description: {desc1}</p>
             <TextField type='number' size='small' id="outlined-basic" label="ID of second discount" variant="outlined" value={id2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId2(event.target.value); }} />
+            <p className='policyDescription'>Description: {desc2}</p>
             <button className='editorButton'>Create</button>
             <button className='editorButton'>Create and add to store</button>
+        </div>
+    );
+};
+
+const CompositeCondition = () => {
+    const { condId, setCondId } = useContext(ConditionContext);
+    const [logic, setLogic] = useState("OR");
+    const [id1, setId1] = useState("0");
+    const [id2, setId2] = useState("0");
+    const [desc1, setDesc1] = useState("");
+    const [desc2, setDesc2] = useState("");
+    const value = { condId, setCondId };
+
+    useEffect(() => {
+        fetchDescriptions();
+      },[id1,id2])
+    const logicList = ["OR", "AND", "XOR"]
+    const fetchDescriptions = async () =>{
+        let resp1: RestResponse = await describeCondition(id1);
+        let resp2: RestResponse = await describeCondition(id2);
+        if(resp1.error){
+            setDesc1(`Error: ${resp1.errorString}`)
+        }else{
+            setDesc1(resp1.dataJson)
+        }
+        if(resp2.error){
+            setDesc2(`Error: ${resp2.errorString}`)
+        }else{
+            setDesc2(resp2.dataJson)
+        }
+    }
+    return (
+        <div className='discountEditor'>
+            <h3>A composite condition is a combination of two existing conditions based on XOR, OR or AND logic</h3>
+            <FormControl>
+                <FormLabel id="group-label">Combination logic:</FormLabel>
+                <RadioGroup
+                    aria-labelledby="group-label"
+                    defaultValue={"OR"}
+
+                    value={logic}
+                    onChange={(e,v) => setLogic(v)}
+                    name="radio-buttons-group"
+                >
+                    {logicList.map(logi => <FormControlLabel value={logi} control={<Radio />} label={logi} />)}
+                </RadioGroup>
+            </FormControl>
+            <h1/>
+            <TextField type='number' size='small' id="outlined-basic" label="ID of first condition" variant="outlined" value={id1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId1(event.target.value); }} />
+            <p className='policyDescription'>Description: {desc1}</p>
+            <TextField type='number' size='small' id="outlined-basic" label="ID of second condition" variant="outlined" value={id2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId2(event.target.value); }} />
+            <p className='policyDescription'>Description: {desc2}</p>
+            <button className='editorButton'>Create Condition</button>
+            <button onClick = {() => setCondId("2")}className='editorButton'>Create Condition and use for discount</button>
         </div>
     );
 };

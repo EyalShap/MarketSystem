@@ -5,7 +5,7 @@ import Register from './components/Register';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
 import MemberNavbar from './components/MemberNavbar';
-import { useState, createContext } from 'react';
+import { useState, createContext, useEffect, useRef } from 'react';
 import Profile from './components/Profile';
 import SearchResults from './components/SearchResults';
 import Store from './components/Store';
@@ -18,6 +18,7 @@ import CreateStore from './components/CreateStore';
 import { StompSessionProvider } from 'react-stomp-hooks';
 import DiscountWizard from './components/DiscountWizard';
 import PermissionError from './components/PermissionError';
+import { enterAsGuest, loginUsingJwt } from './API';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -32,7 +33,32 @@ export const AppContext = createContext<AppContextProps>({
 
 function App() {
   const [isloggedin, setIsloggedin] = useState(false);
-  
+  const effectRan = useRef(false);;
+  useEffect(() => {
+    const fetchData = async () => {
+      if (effectRan.current) return;          
+      if(localStorage.getItem("guestId")||isloggedin) return;
+      if(localStorage.getItem("token") !== null&& localStorage.getItem("username") !== "null"){
+        const resp=await loginUsingJwt(localStorage.getItem("username") as string, localStorage.getItem("token") as string);
+        if(!resp.error){
+         setIsloggedin(true);
+         return;
+        }
+        else{
+          localStorage.clear();
+          alert("Session over please login again");
+        }
+      }
+      try{
+      const guestId = await enterAsGuest();
+      localStorage.setItem("guestId", `${guestId}`);
+      }catch(e){
+        alert("Error occoured please try again later");
+      }
+    };
+    fetchData();
+    effectRan.current = true;
+  }, [isloggedin, setIsloggedin]);
   return (
     <div className="App">
       <AppContext.Provider value={{ isloggedin, setIsloggedin }}>

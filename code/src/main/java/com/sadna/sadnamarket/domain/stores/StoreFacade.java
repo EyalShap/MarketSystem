@@ -200,7 +200,10 @@ public class StoreFacade {
             if (!isStoreActive(storeId))
                 throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
 
-            Set<Permission> currPermissions = new HashSet(userFacade.getMemberPermissions(newManagerUsername, storeId));
+            Set<Permission> currPermissions = new HashSet<>();
+            for(int i : userFacade.getMemberPermissions(newManagerUsername, storeId)){
+                currPermissions.add(Permission.getEnumByInt(i));
+            }
             Set<Permission> toRemove = new HashSet(currPermissions);
             toRemove.removeAll(permission);
 
@@ -213,6 +216,7 @@ public class StoreFacade {
             for (Permission p : toAdd) {
                 userFacade.addPremssionToStore(currentOwnerUsername, newManagerUsername, storeId, p);
             }
+            userFacade.notify(newManagerUsername, "Your permissions in store with ID " + storeId + " have been altered");
         }
     }
 
@@ -380,6 +384,30 @@ public class StoreFacade {
             }
 
             return store.getStoreDTO();
+        }
+    }
+
+    public List<PolicyDescriptionDTO> getStoreDiscountDescriptions(String username, int storeId) throws Exception {
+        Store store = storeRepository.findStoreByID(storeId);
+        synchronized (store) {
+            if (!isStoreActive(storeId)) {
+                if (!store.isStoreOwner(username) && !userFacade.isSystemManager(username))
+                    throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+            }
+
+            return discountPolicyFacade.getStoreDiscountDescriptions(storeId);
+        }
+    }
+
+    public List<PolicyDescriptionDTO> getStoreBuyPolicyDescriptions(String username, int storeId) throws Exception {
+        Store store = storeRepository.findStoreByID(storeId);
+        synchronized (store) {
+            if (!isStoreActive(storeId)) {
+                if (!store.isStoreOwner(username) && !userFacade.isSystemManager(username))
+                    throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+            }
+
+            return buyPolicyFacade.getStorePolicyDescriptions(storeId);
         }
     }
   
