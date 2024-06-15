@@ -496,7 +496,6 @@ public class UserFacade {
     public UserOrderDTO viewCart(String username) throws Exception {
         logger.info("view cart for user {}",username);
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
-        storeFacade.checkCart(username, items);
         List<ProductDataPrice> storePriceData=storeFacade.calculatePrice(username, items);
         logger.info("finished view cart for user {}",username);
         return new UserOrderDTO(storePriceData,calculateOldPrice(username, storePriceData),calculateFinalPrice(username, storePriceData)); 
@@ -505,11 +504,24 @@ public class UserFacade {
     public UserOrderDTO viewCart(int guestId) throws Exception {
         logger.info("view cart for guest {}",guestId);
         List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
-        storeFacade.checkCart(null, items);
         List<ProductDataPrice> storeApriceData=storeFacade.calculatePrice(null, items);
         logger.info("finished view cart for guest {}",guestId);
         return new UserOrderDTO(storeApriceData,calculateOldPrice(null, storeApriceData),calculateFinalPrice(null, storeApriceData));    
     }
+
+    public void checkCart(String username){
+        logger.info("check cart for user {}",username);
+        List<CartItemDTO> items=iUserRepo.getUserCart(username);
+        storeFacade.checkCart(username, items);
+        logger.info("finished check cart for user {} without errors",username);
+    }
+    public void checkCart(int guestId){
+        logger.info("check cart for guest {}",guestId);
+        List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
+        storeFacade.checkCart(null, items);
+        logger.info("finished check cart for guest {} without errors",guestId);
+    }
+
     public void purchaseCart(String username,CreditCardDTO creditCard,AddressDTO addressDTO) throws Exception {
         logger.info("purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
         List<CartItemDTO> items=iUserRepo.getUserCart(username);

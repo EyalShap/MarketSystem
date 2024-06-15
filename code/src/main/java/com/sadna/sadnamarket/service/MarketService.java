@@ -1409,4 +1409,26 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+    public Response checkMemberCart(String username){
+        try{
+            logger.info("check member cart for {}", username);
+            userFacade.checkCart(username);
+            logger.info("finished check member cart {} without errors",username);
+            return Response.createResponse();    
+    }catch(Exception e){
+        logger.error("error check member {} cart {}",username ,e.getMessage());
+        return Response.createResponse(true, e.getMessage());
+    }
+    }
+    public Response checkGuestCart(int guestId){
+        try{
+            logger.info("check guest cart for {}", guestId);
+            userFacade.checkCart(guestId);
+            logger.info("finished check guest cart {} without errors",guestId);
+            return Response.createResponse();
+        }catch(Exception e){
+            logger.error("error check guest {} cart {}",guestId ,e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }

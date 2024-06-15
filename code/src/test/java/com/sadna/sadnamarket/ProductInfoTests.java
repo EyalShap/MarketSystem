@@ -37,14 +37,14 @@ public class ProductInfoTests {
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         storeId = Integer.parseInt(resp.getDataJson());
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
-                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true));
+                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true,storeId));
         productId = Integer.parseInt(resp.getDataJson());
         bridge.addProductToStore(ownerToken, ownerUsername, storeId,
-                new ProductDTO(-1, "TestProduct", 200, "NotProduct", 3.5, 2,true));
+                new ProductDTO(-1, "TestProduct", 200, "NotProduct", 3.5, 2,true,storeId));
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore2 Boogaloo");
         int storeId2 = Integer.parseInt(resp.getDataJson());
         bridge.addProductToStore(ownerToken, ownerUsername, storeId2,
-                new ProductDTO(-1, "TestProduct", 500.5, "Product", 3.5, 2,true));
+                new ProductDTO(-1, "TestProduct", 500.5, "Product", 3.5, 2,true,storeId2));
     }
 
     @Test

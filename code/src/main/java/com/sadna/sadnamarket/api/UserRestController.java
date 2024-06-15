@@ -13,6 +13,9 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.logging.Log;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -65,7 +68,7 @@ public class UserRestController {
     }
 
     @PatchMapping("/addProductToCart")
-    public Response addProductToCart(@RequestParam String username,@RequestBody StoreRequest storeRequest ,HttpServletRequest request) {
+    public Response addProductToCart(@RequestParam String username,@RequestBody ChangeCartRequest storeRequest ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -76,11 +79,11 @@ public class UserRestController {
     }
 
     @PatchMapping("/guest/addProductToCart")
-    public Response addProductToCartForGuest(@RequestParam int guestId,@RequestBody StoreRequest storeRequest) {
+    public Response addProductToCartForGuest(@RequestParam int guestId,@RequestBody ChangeCartRequest storeRequest) {
         return marketService.addProductToCart(guestId,storeRequest.storeId,storeRequest.productId,storeRequest.amount);
     }
     @PatchMapping("/removeProductFromCart")
-    public Response removeProductFromCart(@RequestParam String username,@RequestBody StoreRequest storeRequest,HttpServletRequest request) {
+    public Response removeProductFromCart(@RequestParam String username,@RequestBody ChangeCartRequest storeRequest,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -91,12 +94,12 @@ public class UserRestController {
     }
 
     @PatchMapping("/guest/removeProductFromCart")
-    public Response removeProductFromCartForGuest(@RequestParam int guestId,@RequestBody StoreRequest storeRequest) {
+    public Response removeProductFromCartForGuest(@RequestParam int guestId,@RequestBody ChangeCartRequest storeRequest) {
         return marketService.removeProductFromCart(guestId,storeRequest.getStoreId(),storeRequest.getProductId());
     }
 
     @PatchMapping("/changeQuantityCart")
-    public Response changeQuantityCart(@RequestParam String username, @RequestBody StoreRequest storeRequest,HttpServletRequest request) {
+    public Response changeQuantityCart(@RequestParam String username, @RequestBody ChangeCartRequest storeRequest,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -349,4 +352,21 @@ public class UserRestController {
         marketService.checkToken(token,username);
         return marketService.getUserNotifications(username);
     }
+
+    @PostMapping("/checkMemberCart")
+    public Response checkMemberCart(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,username);
+        return marketService.checkMemberCart(username);
+    }
+    @PostMapping("/checkGuestCart")
+    public Response checkGuestCart(@RequestParam int guestId) {
+        return marketService.checkGuestCart(guestId);
+    }
+    
+    
 }
