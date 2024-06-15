@@ -17,10 +17,7 @@ import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
-import com.sadna.sadnamarket.domain.stores.IStoreRepository;
-import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
-import com.sadna.sadnamarket.domain.stores.StoreFacade;
-import com.sadna.sadnamarket.domain.stores.StoreDTO;
+import com.sadna.sadnamarket.domain.stores.*;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
@@ -544,6 +541,31 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    public Response getStoreDiscountDescriptions(String username, int storeId) {
+        try {
+            List<PolicyDescriptionDTO> descs = storeFacade.getStoreDiscountDescriptions(username, storeId);
+            logger.info(String.format("got discount descriptions for store %d.", storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(descs));
+        }
+        catch (Exception e) {
+            logger.error("failed to get descriptions" + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response getStorePolicyDescriptions(String username, int storeId) {
+        try {
+            List<PolicyDescriptionDTO> descs = storeFacade.getStoreBuyPolicyDescriptions(username, storeId);
+            logger.info(String.format("got buy policy descriptions for store %d.", storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(descs));
+        }
+        catch (Exception e) {
+            logger.error("failed to get descriptions" + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response createMinProductOnStoreCondition(String token, int minAmount, String username) {
         try {
             checkToken(token, username);
