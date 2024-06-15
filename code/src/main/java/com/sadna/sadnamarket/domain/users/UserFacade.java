@@ -459,6 +459,21 @@ public class UserFacade {
         return ordersString;
     }
 
+     public List<String> getUserOrdersV2(String username){
+        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List <String> ordersString=new ArrayList<>();
+        for (Integer orderId : ordersIds) {
+            Map<Integer,OrderDTO> orders=orderFacade.getOrderByOrderId(orderId);
+            for (Integer store_id : orders.keySet()) {
+                Map<Integer,String> ordersProducts=orders.get(store_id).getOrderProductsJsons();
+                for (Integer product_id : ordersProducts.keySet()) {
+                    ordersString.add(ordersProducts.get(product_id));
+                }
+            }
+        }
+        return ordersString;
+    }
+
     public List<OrderDTO> getUserOrderDTOs(String username){
         logger.info("get orders for {}",username);
         List<Integer> ordersIds=getMember(username).getOrdersHistory();

@@ -13,6 +13,8 @@ import axios from "axios";
 import RoleModel from "./models/RoleModel";
 import CreateStoreModel from "./models/CreateStoreModel";
 import { NotificationModel } from "./models/NotificationModel";
+import { ProductOrderModel } from "./models/ProductOrderModel";
+import ProductDataPrice from "./models/ProductDataPrice";
 import StoreRequestModel from "./models/StoreRequestModel";
 import PolicyDescriptionModel from "./models/PolicyDescriptionModel";
 
@@ -507,40 +509,42 @@ export const searchProducts = async (
 
 
 export const getOrders = async (username: string): Promise<OrderModel[]> => {
-    return [
-        {
-            id: '27cba69d-4c3d-4098-b42d-ac7fa62b7664',
-            date: 'August 12',
-            total: 35.06,
-            products: [
-                {
-                    id: 1,
-                    name: 'Black and Gray Athletic Cotton Socks - 6 Pairs',
-                    storeId: 1,
-                    quantity: 1
-                },
-                {
-                    id: 2,
-                    name: 'Adults Plain Cotton T-Shirt - 2 Pack',
-                    storeId: 1,
-                    quantity: 2
-                }
-            ]
-        },
-        {
-            id: 'b6b6c212-d30e-4d4a-805d-90b52ce6b37d',
-            date: 'June 10',
-            total: 41.90,
-            products: [
-                {
-                    id: 3,
-                    name: 'Intermediate Size Basketball',
-                    storeId: 2,
-                    quantity: 2
-                }
-            ]
-        }
-    ];
+    try {
+        const response = (await axios.get(`${server}/api/getOrderHistory`, {
+            headers: {
+                'Content-Type': 'application/json',
+                // Add Authorization header if required
+                // Authorization: `Bearer ${jwt_token}`
+            },
+            params: {
+                username: username
+            }
+        })).data;
+
+        // Parse the JSON response
+        const ordersData: { [key: number]: ProductDataPrice[] } = JSON.parse(response.dataJson);
+        const orders: OrderModel[] = Object.entries(ordersData).map(([orderId, products], index) => {
+            const total = products.reduce((acc, product) => acc + product.newPrice * product.amount, 0);
+            const orderProducts: ProductOrderModel[] = products.map(product => ({
+                id: product.id,
+                name: product.name,
+                quantity: product.amount,
+                storeId: product.storeId
+            }));
+            return {
+                id: orderId,
+                date: `Date ${index + 1}`, // Adjust this to get the actual date if available
+                total: total,
+                products: orderProducts
+            };
+        });
+
+        return orders;
+        
+    } catch (error) {
+        console.error("Failed to fetch orders:", error);
+        return [];
+    }
 };
 export const fetchUserStores = async (username: string): Promise<RoleModel[]> => {
     const response = await fetch(`${server}/api/user/getUserRoles?username=${username}`,{
