@@ -8,8 +8,8 @@ export const ProductInStore = (props: any) => {
 
     return (
         <div className = "productbox">
-            <h3 className = "product">{props.product.name}</h3>
-            <h4 className = "product">${props.product.price}</h4>
+            <h3 className = "product">{props.product.productName}</h3>
+            <h4 className = "product">${props.product.productPrice}</h4>
         </div>
     );
 };

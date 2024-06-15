@@ -22,11 +22,11 @@ const SearchedProduct: React.FC<SearchedProductProps> = ({ product }) => {
   return (
     <div className="product-container">
       <div className="product-name limit-text-to-2-lines">
-        {product.name}
+        {product.productName}
       </div>
 
       <div className="product-description">
-        {product.productDescription}
+        {product.description}
       </div>
 
       <div className="product-rating-container">
@@ -37,7 +37,7 @@ const SearchedProduct: React.FC<SearchedProductProps> = ({ product }) => {
       </div>
 
       <div className="product-price">
-        ${(product.price / 100).toFixed(2)}
+        ${(product.productPrice / 100).toFixed(2)}
       </div>
 
       <div className="product-quantity-container">
