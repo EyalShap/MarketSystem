@@ -56,13 +56,18 @@ export const ActionDropdown = (props: any) => {
     permissionToIcon[Permission.ADD_BUY_POLICY] = <IoBagAddOutline/>
     permissionToIcon[Permission.ADD_DISCOUNT_POLICY] = <IoBagAdd />
 
+    let permissionToPath: Dictionary<string> = {}
+    permissionToPath[Permission.ADD_PRODUCTS] = "./"
+    permissionToPath[Permission.ADD_BUY_POLICY] = "./policy"
+    permissionToPath[Permission.ADD_DISCOUNT_POLICY] = "./discount"
+
 
     return (
         <div className = "dropdown">
             <button onClick={toggleShowMenu} className="dropdownButton">Actions <IoIosArrowDown className = {showMenu ? "arrowrotate" : "arrowdefault"}/></button>
             {showMenu && 
             <div className="options">
-                {permissions.map(permission => (permission in permissionToIcon) && <button className="optionButton">{permissionToIcon[permission]} {permissionToText[permission]}</button>)}
+                {permissions.map(permission => (permission in permissionToIcon) && <button className="optionButton" onClick={() => navigate(permissionToPath[permission])} >{permissionToIcon[permission]} {permissionToText[permission]}</button>)}
                 {isOwnerBool &&
                 <button className="optionButton" onClick={() => navigate("./staff")}><IoPerson /> View Staff</button>
                 }

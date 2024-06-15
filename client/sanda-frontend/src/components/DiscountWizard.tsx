@@ -5,7 +5,7 @@ import Login from './Login';
 import Profile from './Profile';
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createMinAmountCondition, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
+import { createCompositeCondition, createMinAmountCondition, createMinBuyCondition, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
 import Permission from '../models/Permission';
 import RestResponse from '../models/RestResponse';
 
@@ -165,12 +165,12 @@ const AmountCondition = () => {
     const {storeId} = useParams();
 
     const onCreate = async () => {
-        let id: string = await createMinAmountCondition(storeId!, parseInt(amount), mode, parseInt(amount), category)
+        let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(amount), category)
         alert(`Condition created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
-        let id: string = await createMinAmountCondition(storeId!, parseInt(amount), mode, parseInt(amount), category)
+        let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(amount), category)
         alert(`Condition created with ID ${id}`)
         setCondId(id)
     }
@@ -211,13 +211,24 @@ const BuyCondition = () => {
     const [buy, setBuy] = useState("0");
     const { condId, setCondId } = useContext(ConditionContext);
 
+    const onCreate = async () => {
+        let id: string = await createMinBuyCondition(parseInt(buy))
+        alert(`Condition created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createMinBuyCondition(parseInt(buy))
+        alert(`Condition created with ID ${id}`)
+        setCondId(id)
+    }
+
     return (
         <div className='discountEditor'>
             <p>A discount with this condition will only apply if the total price of a purchase is above a minimum</p>
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Minimum" variant="outlined" value={buy} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setBuy(event.target.value); }} />
-            <button className='editorButton'>Create Condition</button>
-            <button onClick = {() => setCondId("2")}className='editorButton'>Create Condition and use for discount</button>
+            <button onClick = {onCreate} className='editorButton'>Create Condition</button>
+            <button onClick = {onCreateAndSave}className='editorButton'>Create Condition and use for discount</button>
         </div>
     );
 };
@@ -250,6 +261,7 @@ const CompositeDiscount = () => {
             setDesc2(resp2.dataJson)
         }
     }
+
     return (
         <div className='discountEditor'>
             <h3>A composite discount applies a discount based on two existing discounts, based on various logical operators</h3>
@@ -320,6 +332,18 @@ const CompositeCondition = () => {
             setDesc2(resp2.dataJson)
         }
     }
+
+    const onCreate = async () => {
+        let id: string = await createCompositeCondition(parseInt(id1), parseInt(id2), logic)
+        alert(`Condition created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createCompositeCondition(parseInt(id1), parseInt(id2), logic)
+        alert(`Condition created with ID ${id}`)
+        setCondId(id)
+    }
+
     return (
         <div className='discountEditor'>
             <h3>A composite condition is a combination of two existing conditions based on XOR, OR or AND logic</h3>
@@ -341,8 +365,8 @@ const CompositeCondition = () => {
             <p className='policyDescription'>Description: {desc1}</p>
             <TextField type='number' size='small' id="outlined-basic" label="ID of second condition" variant="outlined" value={id2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId2(event.target.value); }} />
             <p className='policyDescription'>Description: {desc2}</p>
-            <button className='editorButton'>Create Condition</button>
-            <button onClick = {() => setCondId("2")}className='editorButton'>Create Condition and use for discount</button>
+            <button onClick = {onCreate} className='editorButton'>Create Condition</button>
+            <button onClick = {onCreateAndSave} className='editorButton'>Create Condition and use for discount</button>
         </div>
     );
 };

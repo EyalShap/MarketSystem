@@ -661,7 +661,7 @@ export const describeCondition = async(policyId: string): Promise<RestResponse> 
     return response.json();
 }
 
-export const createMinAmountCondition = async(storeId: string, minAmount: number, applyOn: string, productId: number, categoryName: string): Promise<string> => {
+export const createMinAmountCondition = async(minAmount: number, applyOn: string, productId: number, categoryName: string): Promise<string> => {
     if(applyOn === "store"){
         const response = await axios.post(`${server}/api/stores/createMinProductOnStoreCondition?username=${localStorage.getItem("username")}&minAmount=${minAmount}`,{},{ 
             headers: {
@@ -692,6 +692,35 @@ export const createMinAmountCondition = async(storeId: string, minAmount: number
         productId: productId
     }
     const response = await axios.post(`${server}/api/stores/createMinProductCondition?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createMinBuyCondition = async(minBuy: number): Promise<string> => {
+    const response = await axios.post(`${server}/api/stores/createMinBuyCondition?username=${localStorage.getItem("username")}&minBuy=${minBuy}`,{},{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createCompositeCondition = async(id1: number, id2: number, logic: string): Promise<string> => {
+    let type: string = logic.charAt(0) + logic.substring(1).toLowerCase();
+    let request = {
+        conditionAID: id1,
+        conditionBID: id2
+    }
+    const response = await axios.post(`${server}/api/stores/create${type}Condition?username=${localStorage.getItem("username")}`,request,{ 
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token

@@ -19,6 +19,7 @@ import { StompSessionProvider } from 'react-stomp-hooks';
 import DiscountWizard from './components/DiscountWizard';
 import PermissionError from './components/PermissionError';
 import { enterAsGuest, loginUsingJwt } from './API';
+import BuyPolicyWizard from './components/BuyPolicyWizard';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -76,6 +77,7 @@ function App() {
             <Route path="/search-results" element={<SearchResults />} />
             <Route path="/store/:storeId" element={<Store/>}/>
             <Route path="/store/:storeId/staff" element={<Staff/>}/>
+            <Route path="/store/:storeId/policy" element={<BuyPolicyWizard/>}/>
             <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>
             <Route path="/memberStores/:username" element={<MyStores />} />
             <Route path="/createStore" element={<CreateStore />}/>
