@@ -65,7 +65,7 @@ function App() {
       <AppContext.Provider value={{ isloggedin, setIsloggedin }}>
         <Router>
           {isloggedin ? 
-          <StompSessionProvider url={'http://10.0.0.18:8080/ws'}><MemberNavbar /></StompSessionProvider>
+          <StompSessionProvider url={'http://127.0.0.1:8080/ws'}><MemberNavbar /></StompSessionProvider>
            : <Navbar />}
           <Routes>
             <Route path="/" element={<Home />} />

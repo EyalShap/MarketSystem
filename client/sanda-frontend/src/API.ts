@@ -17,7 +17,7 @@ import StoreRequestModel from "./models/StoreRequestModel";
 import PolicyDescriptionModel from "./models/PolicyDescriptionModel";
 
 
-const server: string = 'http://10.0.0.18:8080'; 
+const server: string = 'http://127.0.0.1:8080'; 
 
 export const login = async(username: string, password: string) => {
     ///request REST to login...
@@ -475,8 +475,6 @@ export const searchProducts = async (
     maxProductPrice: number,
     minProductRank: number
 ): Promise<ProductModel[]> => {
-    const server = 'http://127.0.0.1:8080'; 
-
     const response = (await axios.get(`${server}/api/product/getFilteredProducts`, {
         headers: {
             'Content-Type': 'application/json',
