@@ -7,7 +7,7 @@ import java.util.Set;
 public class ManagerPermissionRequest {
     String ManagerUsername;
     int storeId;
-    Set<Permission> permission;
+    Set<Integer> permission;
 
     public String getManagerUsername() {
         return ManagerUsername;
@@ -25,11 +25,11 @@ public class ManagerPermissionRequest {
         this.storeId = storeId;
     }
 
-    public Set<Permission> getPermission() {
+    public Set<Integer> getPermission() {
         return permission;
     }
 
-    public void setPermission(Set<Permission> permission) {
+    public void setPermission(Set<Integer> permission) {
         this.permission = permission;
     }
 }

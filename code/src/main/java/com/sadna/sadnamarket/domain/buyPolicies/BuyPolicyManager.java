@@ -22,6 +22,12 @@ public class BuyPolicyManager {
         return buyPolicyIds.contains(policyId) || lawsBuyPolicyIds.contains(policyId);
     }
 
+    public List<Integer> getAllPolicyIds(){
+        List<Integer> allIds = new LinkedList<>();
+        allIds.addAll(buyPolicyIds);
+        allIds.addAll(lawsBuyPolicyIds);
+        return allIds;
+    }
 
     public void addBuyPolicy(int buyPolicyId) {
         synchronized (buyPolicyIds) {

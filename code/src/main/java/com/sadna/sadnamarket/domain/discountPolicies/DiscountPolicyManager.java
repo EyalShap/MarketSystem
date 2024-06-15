@@ -16,6 +16,10 @@ public class DiscountPolicyManager {
         this.discountPolicyFacade = discountPolicyFacade;
     }
 
+    public List<Integer> getDiscountIds() {
+        return discountIds;
+    }
+
     public synchronized void addDiscountPolicy(int discountPolicyId) throws Exception{
         if(discountIds.contains(discountPolicyId))
             throw new Exception();
