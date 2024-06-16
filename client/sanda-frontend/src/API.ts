@@ -955,7 +955,7 @@ export const checkCartGuest= async (guestId:number) => {
     return response.data;
 }
 
-export const setStoreBankAccount = async(storeId: number, bank: BankAccountModel): Promise<string> => {
+export const setStoreBankAccount = async(storeId: number, bank: BankAccountModel): Promise<RestResponse> => {
     const response = await axios.post(`${server}/api/stores/setStoreBankAccount?username=${localStorage.getItem("username")}&storeId=${storeId}`,bank,{ 
         headers: {
             'Content-Type': 'application/json',
@@ -963,6 +963,5 @@ export const setStoreBankAccount = async(storeId: number, bank: BankAccountModel
         }
     }
     );
-    let data: RestResponse = await response.data;
-    return data.dataJson
+    return response.data;
 }
