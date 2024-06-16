@@ -143,19 +143,27 @@ public class Store {
     }
 
     public boolean productExists(int productId) {
-        return productAmounts.containsKey(productId);
+        synchronized (productAmounts) {
+            return productAmounts.containsKey(productId);
+        }
     }
 
     public boolean hasProductInAmount(int productId, int amount) {
-        return productAmounts.containsKey(productId) && amount <= productAmounts.get(productId);
+        synchronized (productAmounts) {
+            return productAmounts.containsKey(productId) && amount <= productAmounts.get(productId);
+        }
     }
 
     public boolean isStoreOwner(String username) {
-        return ownerUsernames.contains(username);
+        synchronized (ownerUsernames) {
+            return ownerUsernames.contains(username);
+        }
     }
 
     public boolean isStoreManager(String username) {
-        return managerUsernames.contains(username);
+        synchronized (managerUsernames) {
+            return managerUsernames.contains(username);
+        }
     }
 
     /*public boolean isSeller(String username) {
