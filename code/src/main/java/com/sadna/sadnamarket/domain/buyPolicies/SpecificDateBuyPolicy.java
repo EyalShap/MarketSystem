@@ -7,10 +7,7 @@ import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
     private int day;
@@ -118,5 +115,19 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
             case 3: return "rd";
             default: return "th";
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SpecificDateBuyPolicy that = (SpecificDateBuyPolicy) o;
+        return day == that.day && month == that.month && year == that.year;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(day, month, year);
     }
 }

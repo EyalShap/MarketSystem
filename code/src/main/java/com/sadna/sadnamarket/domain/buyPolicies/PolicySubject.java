@@ -15,4 +15,5 @@ public abstract class PolicySubject {
     public abstract String getSubject();
     public abstract String getDesc();
     public abstract int getProductId();
+    public abstract boolean equals(Object other);
 }

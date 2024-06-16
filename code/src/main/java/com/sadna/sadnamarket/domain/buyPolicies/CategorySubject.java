@@ -6,6 +6,7 @@ import com.sadna.sadnamarket.service.Error;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class CategorySubject extends PolicySubject{
     private String category;
@@ -59,5 +60,16 @@ public class CategorySubject extends PolicySubject{
         this.category = category;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CategorySubject that = (CategorySubject) o;
+        return Objects.equals(category, that.category);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(category);
+    }
 }

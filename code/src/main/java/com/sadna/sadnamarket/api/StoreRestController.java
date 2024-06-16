@@ -374,6 +374,16 @@ public class StoreRestController {
         return marketService.createCategoryHolidayBuyPolicy(token,username,policyAgeRequest.getCategory(),policyAgeRequest.getBuyTypes());
     }
 
+    @PostMapping("/createCategorySpecificDateBuyPolicy")
+    public Response createCategorySpecificDateBuyPolicy(@RequestParam String username,@RequestBody PolicyDateRequest policyDateRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createCategorySpecificDatePolicy(token, username, policyDateRequest.getCategory(), policyDateRequest.getBuyTypes(), policyDateRequest.getDay(), policyDateRequest.getMonth(), policyDateRequest.getYear());
+    }
+
     @PostMapping("/createAndBuyPolicy")
     public Response createAndBuyPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");

@@ -83,7 +83,9 @@ public class StoreFacade {
             discountPolicyFacade.addDiscountPolicyToStore(storeId, discountPolicyID, founderUserName);
 
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) {
+            String msg = ignored.getMessage();
+        }
         return storeId;
     }
 
@@ -132,7 +134,7 @@ public class StoreFacade {
         if (!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
             throw new IllegalArgumentException(Error.makeStoreUserCannotUpdateProductError(username, storeId));
         Store store = storeRepository.findStoreByID(storeId);
-        synchronized (store) {
+        synchronized (store.getProductAmounts()) {
             if (!store.productExists(productId))
                 throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
 
@@ -411,14 +413,17 @@ public class StoreFacade {
         }
     }
   
-  public synchronized ProductDTO getProductInfo(String username, int productId) {
+  public ProductDTO getProductInfo(String username, int productId) {
         int storeId = getStoreOfProduct(productId);
         if(storeId < 0){
             throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
         }
-        if (!isStoreActive(storeId)) {
-            if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.isSystemManager(username))
-                throw new IllegalArgumentException(Error.makeStoreOfProductIsNotActiveError(productId));
+        Store store = storeRepository.findStoreByID(storeId);
+        synchronized (store) {
+            if (!isStoreActive(storeId)) {
+                if (!store.isStoreOwner(username) && !userFacade.isSystemManager(username))
+                    throw new IllegalArgumentException(Error.makeStoreOfProductIsNotActiveError(productId));
+            }
         }
 
         return productFacade.getProductDTO(productId);
@@ -436,25 +441,27 @@ public class StoreFacade {
     public Map<ProductDTO, Integer> getProductsInfoAndFilter(String username, int storeId, String productName, String category,
                                                              double price, double minProductRank) throws JsonProcessingException {
         Store store = storeRepository.findStoreByID(storeId);
-        synchronized (store) {
+        List<Integer> storeProductIds;
+        synchronized (store.getProductAmounts()) {
             if (!isStoreActive(storeId)) {
                 if (!store.isStoreOwner(username) && !store.isStoreManager(username)) {
                     throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
                 }
             }
 
-            List<Integer> storeProductIds = new ArrayList<>(store.getProductAmounts().keySet());
+            storeProductIds = new ArrayList<>(store.getProductAmounts().keySet());
+        }
             List<ProductDTO> filteredProducts = productFacade.getFilteredProducts(storeProductIds, productName, price, category, minProductRank);
             Map<ProductDTO, Integer> res = new HashMap<>();
             for (ProductDTO product : filteredProducts)
                 res.put(product, store.getProductAmounts().get(product.getProductID()));
             return res;
-        }
+
     }
 
     public void setStoreBankAccount(String ownerUsername, int storeId, BankAccountDTO bankAccount) {
         Store store = storeRepository.findStoreByID(storeId);
-        synchronized (store) {
+        synchronized (store.getBankAccount()) {
             if (!store.isStoreOwner(ownerUsername))
                 throw new IllegalArgumentException(Error.makeStoreUserCannotSetBankAccountError(ownerUsername, storeId));
 
@@ -462,7 +469,7 @@ public class StoreFacade {
         }
     }
 
-    public synchronized BankAccountDTO getStoreBankAccount(int storeId) {
+    public BankAccountDTO getStoreBankAccount(int storeId) {
         Store store = storeRepository.findStoreByID(storeId);
         return store.getBankAccount();
     }
@@ -559,7 +566,7 @@ public class StoreFacade {
         return store.isStoreManager(infoUsername);
     }
 
-    public synchronized void buyCart(String username, List<CartItemDTO> cart) {
+    public synchronized void updateStock(String username, List<CartItemDTO> cart) {
         checkCart(username, cart);
 
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
@@ -580,7 +587,7 @@ public class StoreFacade {
         List<ProductDataPrice> res = new ArrayList<>();
         Map<Integer, List<CartItemDTO>> cartByStore = getCartByStore(cart);
         for (int storeId : cartByStore.keySet()) {
-        res.addAll(discountPolicyFacade.calculatePrice(storeId, cartByStore.get(storeId)));
+            res.addAll(discountPolicyFacade.calculatePrice(storeId, cartByStore.get(storeId)));
         }
         return res;
         }

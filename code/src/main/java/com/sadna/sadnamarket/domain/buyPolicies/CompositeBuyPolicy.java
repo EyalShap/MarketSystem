@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class CompositeBuyPolicy extends BuyPolicy{
@@ -35,5 +36,18 @@ public abstract class CompositeBuyPolicy extends BuyPolicy{
         Set<Integer> policyIds = policy1.getPolicyProductIds();
         policyIds.addAll(policy2.getPolicyProductIds());
         return policyIds;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompositeBuyPolicy that = (CompositeBuyPolicy) o;
+        return Objects.equals(policy1, that.policy1) && Objects.equals(policy2, that.policy2);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(policy1, policy2);
     }
 }

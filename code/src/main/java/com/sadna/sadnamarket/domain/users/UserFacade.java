@@ -547,7 +547,7 @@ public class UserFacade {
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,username);
-        storeFacade.buyCart(username, items);
+        storeFacade.updateStock(username, items);
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
     }
 
@@ -561,7 +561,7 @@ public class UserFacade {
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,null);
-        storeFacade.buyCart(null, items);
+        storeFacade.updateStock(null, items);
         logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
     }
     private void validateAddress(AddressDTO address){

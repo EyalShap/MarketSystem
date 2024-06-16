@@ -399,9 +399,9 @@ public class MarketService {
     public Response createProductKgBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, double min, double max) {
         try {
             checkToken(token, username);
-            int id = buyPolicyFacade.createProductKgBuyPolicy(productId, buytypes, min, max, username);
+            int policyId = buyPolicyFacade.createProductKgBuyPolicy(productId, buytypes, min, max, username);
             logger.info(String.format("User %s added product kg limit buy policy: product %d, weight range %d - %d.", username, productId, min, max));
-            return Response.createResponse(false, objectMapper.writeValueAsString(id));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
             logger.error("createProductKgBuyPolicy: " + e.getMessage());
@@ -412,9 +412,9 @@ public class MarketService {
     public Response createProductAmountBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, int min, int max) {
         try {
             checkToken(token, username);
-            int id = buyPolicyFacade.createProductAmountBuyPolicy(productId, buytypes, min, max, username);
+            int policyId = buyPolicyFacade.createProductAmountBuyPolicy(productId, buytypes, min, max, username);
             logger.info(String.format("User %s added product amount limit buy policy: product %d, amount %d - %d.", username, productId, min, max));
-            return Response.createResponse(false, objectMapper.writeValueAsString(id));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
             logger.error("createProductAmountBuyPolicy: " + e.getMessage());
@@ -425,9 +425,9 @@ public class MarketService {
     public Response createCategoryAgeLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, int min, int max) {
         try {
             checkToken(token, username);
-            int id = buyPolicyFacade.createCategoryAgeLimitBuyPolicy(category, buytypes, min, max, username);
+            int policyId = buyPolicyFacade.createCategoryAgeLimitBuyPolicy(category, buytypes, min, max, username);
             logger.info(String.format("User %s added category age limit buy policy : category %s, age %d - %d.", username, category, min, max));
-            return Response.createResponse(false, objectMapper.writeValueAsString(id));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
             logger.error("createCategoryAgeLimitBuyPolicy: " + e.getMessage());
@@ -438,9 +438,9 @@ public class MarketService {
     public Response createCategoryHourLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, LocalTime from, LocalTime to) {
         try {
             checkToken(token, username);
-            int id = buyPolicyFacade.createCategoryHourLimitBuyPolicy(category, buytypes, from, to, username);
+            int policyId = buyPolicyFacade.createCategoryHourLimitBuyPolicy(category, buytypes, from, to, username);
             logger.info(String.format("User %s added category hour limit buy policy : category %s, hour %s - %s.", username, category, from.toString(), to.toString()));
-            return Response.createResponse(false, objectMapper.writeValueAsString(id));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
             logger.error("createCategoryHourLimitBuyPolicy: " + e.getMessage());
@@ -451,9 +451,9 @@ public class MarketService {
     public Response createCategoryRoshChodeshBuyPolicy(String token, String username, String category, List<BuyType> buytypes) {
         try {
             checkToken(token, username);
-            int id = buyPolicyFacade.createCategoryRoshChodeshBuyPolicy(category, buytypes, username);
+            int policyId = buyPolicyFacade.createCategoryRoshChodeshBuyPolicy(category, buytypes, username);
             logger.info(String.format("User %s added category rosh chodesh limit buy policy: category %s.", username, category));
-            return Response.createResponse(false, objectMapper.writeValueAsString(id));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
             logger.error("createCategoryRoshChodeshBuyPolicy: " + e.getMessage());
@@ -464,12 +464,25 @@ public class MarketService {
     public Response createCategoryHolidayBuyPolicy(String token, String username,  String category, List<BuyType> buytypes) {
         try {
             checkToken(token, username);
-            int id = buyPolicyFacade.createCategoryHolidayBuyPolicy(category, buytypes, username);
+            int policyId = buyPolicyFacade.createCategoryHolidayBuyPolicy(category, buytypes, username);
             logger.info(String.format("User %s added category holiday limit buy policy: category %s.", username, category));
-            return Response.createResponse(false, objectMapper.writeValueAsString(id));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
             logger.error("createCategoryHolidayBuyPolicy: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
+    public Response createCategorySpecificDatePolicy(String token, String username, String category, List<BuyType> buytypes, int day, int month, int year) {
+        try {
+            checkToken(token, username);
+            int policyId = buyPolicyFacade.createSpecificDateBuyPolicy(category, buytypes, day, month, year, username);
+            logger.info(String.format("User %s added category specific date buy policy: category %s, day %d, month %d, year %d.", username, category, day, month, year));
+            return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
+        }
+        catch (Exception e) {
+            logger.error("createCategorySpecificDatePolicy: " + e.getMessage());
             return Response.createResponse(true, e.getMessage());
         }
     }
