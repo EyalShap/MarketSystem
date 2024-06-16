@@ -5,6 +5,9 @@ import com.sadna.sadnamarket.service.MarketService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
@@ -35,4 +38,9 @@ public class ProductRestController {
             minProductRank
         );
     }
+    @GetMapping("/getTopProducts")
+    public Response getTopProducts() {
+        return marketService.getTopProducts();
+    }
+    
 }

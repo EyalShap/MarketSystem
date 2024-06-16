@@ -121,4 +121,9 @@ public class MemoryProductRepository implements IProductRepository {
                     .collect(Collectors.toList());
         }
     }
+
+    @Override
+    public List<Product> getTopProducts() {
+        return products.values().stream().collect(Collectors.toList());
+    }
 }

@@ -326,7 +326,9 @@ public class ProductFacade {
             throw e;
         }
     }
-
+    public List<ProductDTO> getTopProducts(){
+        return ProductMapper.toProductDTOList(productRepository.getTopProducts());
+    }
     public boolean productExists(int productId) {
         return productRepository.isExistProduct(productId);
     }
