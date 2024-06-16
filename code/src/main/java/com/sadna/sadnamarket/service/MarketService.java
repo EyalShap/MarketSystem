@@ -1343,8 +1343,8 @@ public class MarketService {
     
 
     public Response getIsOwner(String token, String username, int storeId, String ownerUsername) {
-        checkToken(token, username);
         try {
+            checkToken(token, username);
             return Response.createResponse(false, String.valueOf(storeFacade.getIsOwner(username, storeId, ownerUsername)));
         } catch (Exception e) {
             return Response.createResponse(true, e.getMessage());
@@ -1352,8 +1352,8 @@ public class MarketService {
     }
 
     public Response getIsFounder(String token, String username, int storeId, String ownerUsername) {
-        checkToken(token, username);
         try {
+            checkToken(token, username);
             return Response.createResponse(false, String.valueOf(storeFacade.getIsFounder(username, storeId, ownerUsername)));
         } catch (Exception e) {
             return Response.createResponse(true, e.getMessage());
@@ -1361,8 +1361,8 @@ public class MarketService {
     }
 
     public Response getIsManager(String token, String username, int storeId, String managerUsername) {
-        checkToken(token, username);
         try {
+            checkToken(token, username);
             return Response.createResponse(false, String.valueOf(storeFacade.getIsManager(username, storeId, managerUsername)));
         } catch (Exception e) {
             return Response.createResponse(true, e.getMessage());

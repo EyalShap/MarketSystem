@@ -58,17 +58,19 @@ export const Store = () => {
     setRemoveDis(await hasPermission(storeId!, Permission.REMOVE_DISCOUNT_POLICY))
     let allProducts: ProductModel[] = await searchAndFilterStoreProducts(storeId!, "", "", -1, -1);
     let categs: string[] = []
+    let max: number = 0;
     allProducts.forEach(product => {
       console.log(product)
-      if(product.productPrice > actualMax){
-        setActMax(product.productPrice)
-        setMaxPrice(product.productPrice)
+      if(product.productPrice > max){
+        max = product.productPrice;
       }
       if(!(product.productCategory in categs)){
         categs.push(product.productCategory)
       }
     })
-    setAllCategs(categs)
+    setAllCategs(categs);
+    setActMax(Math.ceil(max));
+    setMaxPrice(Math.ceil(max));
   }
   const handleInputChange = (event:any) => {
     setSearchTerm(event.target.value);

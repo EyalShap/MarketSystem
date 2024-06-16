@@ -114,6 +114,9 @@ export const getStoreDiscounts = async (storeId: string): Promise<PolicyDescript
             }
         );
         const data: RestResponse = await response.json();
+        if(data.error){
+            return [];
+        }
         return JSON.parse(data.dataJson);
     }
     const response = await fetch(
@@ -126,6 +129,9 @@ export const getStoreDiscounts = async (storeId: string): Promise<PolicyDescript
         }
     );
     const data: RestResponse = await response.json();
+    if(data.error){
+        return [];
+    }
     return JSON.parse(data.dataJson);
 }
 
@@ -140,6 +146,9 @@ export const getStorePolicies = async (storeId: string): Promise<PolicyDescripti
             }
         );
         const data: RestResponse = await response.json();
+        if(data.error){
+            return [];
+        }
         return JSON.parse(data.dataJson);
     }
     const response = await fetch(
@@ -152,6 +161,9 @@ export const getStorePolicies = async (storeId: string): Promise<PolicyDescripti
         }
     );
     const data: RestResponse = await response.json();
+    if(data.error){
+        return [];
+    }
     return JSON.parse(data.dataJson);
 }
 
@@ -200,15 +212,10 @@ export const searchAndFilterStoreProducts = async (storeId: string, category: st
 
     const dataJson = JSON.parse(response.dataJson);
 
-    const products: ProductModel[] = dataJson.map((product: any) => ({
-        id: product.productID,
-        name: product.productName,
-        storeId: product.storeId,
-        price: product.productPrice,
-        productCategory: product.productCategory,
-        productDescription: product.description,
-        productRank: product.productRank
-    }));
+    console.log(dataJson)
+    const products: ProductModel[] = Object.entries(dataJson).map(([key, value]) => {
+        let product: ProductModel = JSON.parse(key)
+        return product});
    
 
     return products;
