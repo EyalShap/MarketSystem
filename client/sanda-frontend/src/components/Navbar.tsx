@@ -22,7 +22,7 @@ export const Navbar = () => {
         <nav>
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    <img src={logo} width={397} height={250} alt="Logo"></img>
+                    <img src={logo} width={160} height={100} alt="Logo"></img>
                 </Link>
                 <SearchBar />
                 <ul className="navbar-menu">

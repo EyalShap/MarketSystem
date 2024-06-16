@@ -9,6 +9,7 @@ import { AppContext } from '../App';
 import { NotificationModel, RequestModel } from '../models/NotificationModel';
 import { useSubscription } from 'react-stomp-hooks';
 import SearchBar from './Search';
+import logo from '../images/la_sadna.png';
 
 
 const MemberNavbar = () => {
@@ -74,7 +75,7 @@ const MemberNavbar = () => {
   return (
     <nav className="membernavbar" onClick={()=>{menuOpen&&toggleMenu();notificationsOpen&&toggleNotifications();}}>
       <Link to="/" className="navbar-logo">
-        Your Logo
+        <img src={logo} width={160} height={100} alt="Logo"></img>
       </Link>
       <SearchBar />
       <div className="navbar-right">

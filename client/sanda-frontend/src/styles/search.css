@@ -1,11 +1,11 @@
-.search {
+.searcharea {
     padding: 10px 20px;
     background-color: #232F3E;
-    color:  #232F3E; /* Amazon's dark blue color */
+    width: 100%;
+    color:  white; /* Amazon's dark blue color */
     align-items: center;
+    align-self: center;
     text-align: center;
-    margin-right: 100px;
-     
   }
   
   .search-inputs {
