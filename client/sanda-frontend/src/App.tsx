@@ -23,6 +23,7 @@ import BuyPolicyWizard from './components/BuyPolicyWizard';
 import AddProduct from './components/AddProduct';
 import { Product } from './components/Product';
 import SetBankAccount from './components/SetBankAccount';
+import Purchase from './components/Purchase';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -87,6 +88,7 @@ function App() {
             <Route path="/store/:storeId/bank" element={<SetBankAccount />}/>
             <Route path="/memberStores/:username" element={<MyStores />} />
             <Route path="/createStore" element={<CreateStore />}/>
+            <Route path="/purchase" element={<Purchase />}/>
             <Route path="/permission-error" element={<PermissionError />}/>
             <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
           </Routes>
