@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import org.apache.commons.logging.Log;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -259,7 +262,7 @@ public class UserRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        marketService.checkToken(token,username);
+        marketService.checkTokenSystemManager(token, username);;
         return marketService.getOrderHistory(username);
     }
 
@@ -367,6 +370,17 @@ public class UserRestController {
     public Response checkGuestCart(@RequestParam int guestId) {
         return marketService.checkGuestCart(guestId);
     }
+    @PostMapping("/checkIfSystemManager")
+    public Response checkIfSystemManager(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,username);
+        return marketService.checkIfSystemManager(username);
+    }
+    
     
     
 }
