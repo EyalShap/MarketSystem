@@ -444,4 +444,12 @@ public class Error {
     public static String percentageForDiscountIsNotInRange(double percentage) {
         return String.format("percentage discount is supposed to be between 100 and 0, yours is %f.", percentage);
     }
+
+    public static String makeDiscountPolicyWithIdDoesNotExistError(int discountId) {
+        return String.format("A Discount policy with id %d does not exist.", discountId);
+    }
+
+    public static String makeConditionWithIdDoesNotExistError(int condId) {
+        return String.format("A Condition with id %d does not exist.", condId);
+    }
 }

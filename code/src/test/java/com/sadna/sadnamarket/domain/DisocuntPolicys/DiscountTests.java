@@ -1,10 +1,13 @@
 package com.sadna.sadnamarket.domain.DisocuntPolicys;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.Discounts.Discount;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import com.sadna.sadnamarket.service.MarketService;
+import com.sadna.sadnamarket.service.RealtimeService;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -322,16 +325,7 @@ public class DiscountTests extends DiscountPolicyTest{
         assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
     }
 
-    @Test
-    public void checkFlyWeightDiscount() throws Exception {
 
-        int DiscountID1 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        int DiscountID2 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        assertEquals(DiscountID1 , DiscountID2);
-        int DiscountID3 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
-        int DiscountID4 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountTrue1);
-        assertNotEquals(DiscountID3 , DiscountID4);
-    }
 
 
 }

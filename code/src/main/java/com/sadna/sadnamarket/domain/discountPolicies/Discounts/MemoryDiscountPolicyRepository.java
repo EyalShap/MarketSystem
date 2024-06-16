@@ -109,7 +109,7 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
 
     public Discount findDiscountPolicyByID(int discountPolicyID) throws Exception {
         if(!discountPolicyExists(discountPolicyID)) {
-            throw new Exception();
+            throw new IllegalArgumentException(Error.makeDiscountPolicyWithIdDoesNotExistError(discountPolicyID));
         }
         return discountPolicies.get(discountPolicyID);
     }
