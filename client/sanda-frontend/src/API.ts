@@ -874,7 +874,180 @@ export const createCompositeDiscount = async(id1: number, id2: number, logic: st
         policyId1: id1,
         policyId2: id2
     }
-    const response = await axios.post(`${server}/api/stores/create${type === 'Xor' ? desc : ''}${type}Condition?username=${localStorage.getItem("username")}`,request,{ 
+    const response = await axios.post(`${server}/api/stores/create${type === 'Xor' ? desc : ''}${type}DiscountPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createCompositePolicy = async(id1: number, id2: number, logic: string): Promise<string> => {
+    let type: string = logic.charAt(0) + logic.substring(1).toLowerCase();
+    let request = {
+        policyId1: id1,
+        policyId2: id2
+    }
+    const response = await axios.post(`${server}/api/stores/create${type}BuyPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createKgPolicy = async(productId: number, maxWeight: number, minWeight: number): Promise<string> => {
+    let request = {
+        productId: productId,
+        minWeight: minWeight,
+        maxWeight: maxWeight,
+        buyTypes: []
+    }
+    const response = await axios.post(`${server}/api/stores/createProductKgBuyPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createAmountPolicy = async(productId: number, minAmount: number, maxAmount: number): Promise<string> => {
+    let request = {
+        productId: productId,
+        minAmount: minAmount,
+        maxAmount: maxAmount,
+        buyTypes: []
+    }
+    const response = await axios.post(`${server}/api/stores/createProductAmountBuyPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createAgePolicy = async(category: string, minAge: number, maxAge: number): Promise<string> => {
+    let request = {
+        category: category,
+        minAge: minAge,
+        maxAge: maxAge,
+        buyTypes: []
+    }
+    const response = await axios.post(`${server}/api/stores/createCategoryAgeLimitBuyPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createHourPolicy = async(category: string, fromHour: number, fromMinute: number, toHour: number, toMinute: number): Promise<string> => {
+    let request = {
+        category: category,
+        fromHour: [fromHour, fromMinute, 0,0],
+        toHour: [toHour, toMinute, 0, 0,],
+        buyTypes: []
+    }
+    const response = await axios.post(`${server}/api/stores/createCategoryHourLimitBuyPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createMonthPolicy = async(category: string): Promise<string> => {
+    let request = {
+        category: category,
+        buyTypes: []
+    }
+    const response = await axios.post(`${server}/api/stores/createCategoryRoshChodeshBuyPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createHolidayPolicy = async(category: string): Promise<string> => {
+    let request = {
+        category: category,
+        buyTypes: []
+    }
+    const response = await axios.post(`${server}/api/stores/createCategoryHolidayBuyPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const createDatePolicy = async(category: string, day: number, month: number, year: number): Promise<string> => {
+    let request = {
+        category: category,
+        day: day,
+        month: month,
+        year: year,
+        buyTypes: []
+    }
+    const response = await axios.post(`${server}/api/stores/createCategorySpecificDateBuyPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+export const addPolicyToStore = async(storeId: number, policyId: number): Promise<string> => {
+    let request = {
+        storeId: storeId,
+        policyId1: policyId
+    }
+    const response = await axios.post(`${server}/api/stores/addBuyPolicyToStore?username=${localStorage.getItem("username")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    let data: RestResponse = await response.data;
+    return data.dataJson
+}
+
+
+export const removePolicyFromStore = async(storeId: number, policyId: number): Promise<string> => {
+    let request = {
+        policyId1: storeId,
+        policyId2: policyId
+    }
+    const response = await axios.patch(`${server}/api/stores/removeBuyPolicyFromStore?username=${localStorage.getItem("username")}`,request,{ 
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
