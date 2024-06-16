@@ -363,17 +363,11 @@ public class StoreFacade {
      * }
      */
 
-    public List<OrderDTO> getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
+    public List<ProductDataPrice> getStoreOrderHistory(String username, int storeId) throws JsonProcessingException {
         if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.isSystemManager(username))
             throw new IllegalArgumentException(Error.makeStoreUserCannotStoreHistoryError(username, storeId));
-
-        List<OrderDTO> orderDTOS = new LinkedList<>();
-        for (int orderId : storeRepository.findStoreByID(storeId).getOrderIds()) {
-            OrderDTO order = orderFacade.getOrderByOrderId(orderId).get(storeId);
-            orderDTOS.add(order);
-        }
-
-        return orderDTOS;
+        List<ProductDataPrice> order = orderFacade.getOrders(storeId);
+        return order;
     }
 
     public StoreDTO getStoreInfo(String username, int storeId) {

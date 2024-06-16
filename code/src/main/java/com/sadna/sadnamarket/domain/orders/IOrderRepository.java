@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface IOrderRepository {
     int createOrder(Map<Integer, OrderDTO> storeOrdersDTO);
-    List<OrderDTO> getOrders(int storeId);
+    List<ProductDataPrice> getOrders(int storeId);
 
     Map<Integer,List<ProductDataPrice>> getProductDataPriceByMember(String nameMember);
     Map<Integer,OrderDTO> getOrderByOrderId(int orderId);

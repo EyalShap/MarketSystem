@@ -61,19 +61,21 @@ public class MemoryOrderRepository implements IOrderRepository {
     }
 
     @Override
-    public List<OrderDTO> getOrders(int storeId) {
-        LinkedList<OrderDTO> ordersStore = new LinkedList<OrderDTO>();
+    public List<ProductDataPrice> getOrders(int storeId) {
+        List<ProductDataPrice> productDataPrices=new LinkedList<>();
         for (int orderId : orders.keySet()) {
             if(orders.get(orderId).containsKey(storeId)){
                 Order order = orders.get(orderId).get(storeId);
-                OrderDTO orderDTO = orderToDTO(order);
-                ordersStore.add(orderDTO);
+                Map<Integer, String> orderProductsJsons=order.getOrderProductsJsons();
+                for (String productsJsons: orderProductsJsons.values() ) {
+                        productDataPrices.add(fromJson(productsJsons));
+                }
             }
         }
-        if(ordersStore.isEmpty()){
+        if(productDataPrices.isEmpty()){
             throw new IllegalArgumentException(Error.makeOrderStoreNoOrdersError(storeId));
         }
-        return ordersStore;
+        return productDataPrices;
     }
 
     private OrderDTO orderToDTO(Order order){
