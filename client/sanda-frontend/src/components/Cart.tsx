@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import '../styles/cart.css';
 // Assuming these interfaces and functions are imported correctly
-import { viewMemberCart, viewGuestCart, changeProductAmountInCart, changeProductAmountInCartGuest, removeProductFromCart, removeProductFromCartGuest, checkCart, checkCartGuest } from '../API'; // Add necessary API functions
+import { viewMemberCart, viewGuestCart, changeProductAmountInCart, changeProductAmountInCartGuest, removeProductFromCart, removeProductFromCartGuest, checkCart, checkCartGuest, loginUsingJwt } from '../API'; // Add necessary API functions
 import cartModel from '../models/CartModel';
 import { useNavigate, useParams } from 'react-router-dom';
 import { number } from 'yup';
@@ -10,55 +10,71 @@ import CustomizedDialogs from './CartError';
 
 const Cart = () => {
     const {isloggedin , setIsloggedin } = useContext(AppContext);
-    const { user } = useParams();
-    const [cart, setCart] = useState({ products: [], totalPrice: 0, discountedPrice: 0 } as cartModel);
+    const { username } = useParams<{ username: string }>();
+    const [cart, setCart] = useState({ productsData: [], oldPrice: 0, newPrice: 0 } as cartModel);
     const navigate = useNavigate();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [error, setError] = useState("");
     useEffect(() => {
-        const fetchCart = async () =>{ 
+        const checkLogin = async () => {
+            if(!isloggedin&&localStorage.getItem("guestId")==null){
+              const resp=await loginUsingJwt(localStorage.getItem("username") as string, localStorage.getItem("token") as string);
+                  if(!resp.error){
+                   setIsloggedin(true);
+                  }
+                  else{
+                    localStorage.clear();
+                    alert("Session over please login again");
+                    navigate('/');
+                  }
+            }
+          };   
+    const checkCart=async()=>{
+        await validate();
+    }
+    checkLogin()
+    fetchCart();
+    checkCart();
+    }, []);
+    const fetchCart = async () =>{ 
         try{
         let response;
         if(isloggedin){
-            response = await viewMemberCart(user as string);
+            response = await viewMemberCart(username as string);
         }
         else{
-            response = await viewGuestCart(Number.parseInt(user as string)); 
+            response = await viewGuestCart(Number.parseInt(username as string)); 
         }
-        const res=JSON.parse(response);
-        if(res.isError){
-            alert(res.message);
+        console.log(response);
+        const res=JSON.parse(response.dataJson);
+        if(res.error){
+            alert(res.errorString);
         }
-        setCart(res.dataJson as cartModel);
-    }catch{
+        setCart(res as cartModel);
+    }catch(e: any){
         alert("Error occoured please try again later");
         navigate('/');
     }
     }
-    const checkCart=async()=>{
-        await validate();
-    }
-    fetchCart();
-    checkCart();
-    }, [user]);
-
     const handleQuantityChange = async(index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
         try{
         const updatedCart = { ...cart };
-        updatedCart.products[index].amount = parseInt(event.target.value, 10);
+        updatedCart.productsData[index].amount = parseInt(event.target.value, 10);
         let res;
         if(isloggedin)
-            res=await changeProductAmountInCart(updatedCart.products[index].id,updatedCart.products[index].storeId, updatedCart.products[index].amount)
+            res=await changeProductAmountInCart(updatedCart.productsData[index].id,updatedCart.productsData[index].storeId, updatedCart.productsData[index].amount)
         else{
-            res=await changeProductAmountInCartGuest(updatedCart.products[index].id,updatedCart.products[index].storeId, updatedCart.products[index].amount)
+            res=await changeProductAmountInCartGuest(updatedCart.productsData[index].id,updatedCart.productsData[index].storeId, updatedCart.productsData[index].amount)
         }
-        if (res.isError){
-            alert(res.message);
+        validate()
+        if (res.error){
+            alert(res.errorString);
         }
         else{
-        setCart(updatedCart);
+            await fetchCart()
         }
-    }catch{
+    }catch(e: any){
+        console.log(e);
         alert("Error occoured please try again later");
     }
     };
@@ -68,17 +84,18 @@ const Cart = () => {
         const updatedCart = { ...cart };
         let res;
         if(isloggedin)
-            res=await removeProductFromCart(updatedCart.products[index].id,updatedCart.products[index].storeId);
+            res=await removeProductFromCart(updatedCart.productsData[index].id,updatedCart.productsData[index].storeId);
         else
-            res=await removeProductFromCartGuest(updatedCart.products[index].id,updatedCart.products[index].storeId);
-            if (res.isError){
-                alert(res.message);
+            res=await removeProductFromCartGuest(updatedCart.productsData[index].id,updatedCart.productsData[index].storeId);
+            if (res.error){
+                alert(res.errorString);
             }
             else{
-            setCart(updatedCart);
+                await fetchCart()
             }
         }
-    catch{
+    catch(e: any){
+        console.log(e);
         alert("Error occoured please try again later");
     }
     };
@@ -86,16 +103,17 @@ const Cart = () => {
         try{
             let response;
             if(isloggedin){
-                response = await checkCart(user as string);
+                response = await checkCart(username as string);
             }
             else{
-                response = await checkCartGuest(Number.parseInt(user as string));  
+                response = await checkCartGuest(Number.parseInt(username as string));  
         }
-        if(response.isError){
-            setError(response.message);
+        if(response.error){
+            setError(response.errorString);
     }
 }
-        catch{
+        catch(e: any){
+            console.log(e);
             alert("Error occoured please try again later");
         
         }
@@ -109,7 +127,7 @@ const Cart = () => {
         <div className="cart-container">
             <h2>Shopping Cart</h2>
             <div className="cart-items">
-                {cart.products.map((product, index) => (
+                {cart.productsData.map((product, index) => (
                     <div key={index} className="cart-item">
                         <div className="item-details">
                             <h3>{product.name}</h3>
@@ -127,8 +145,8 @@ const Cart = () => {
                                     ))}
                                 </select>
                             </div>
-                            <p>Price: ${product.originalPrice}</p>
-                            <p>Discounted Price: ${product.discountedPrice}</p>
+                            <p>Price: ${product.oldPrice}</p>
+                            <p>Discounted Price: ${product.newPrice}</p>
                         </div>
                         <button className="button remove" onClick={() => handleRemoveProduct(index)}>X</button>
                     </div>
@@ -136,8 +154,11 @@ const Cart = () => {
             </div>
             <div className="cart-summary">
                 <h3>Cart Summary</h3>
-                <p>Total Price: ${cart.totalPrice}</p>
-                <p>Discounted Price: ${cart.discountedPrice}</p>
+                <p>Total Price: ${cart.oldPrice}</p>
+                <p>Discounted Price: ${cart.newPrice}</p>
+            </div>
+            <div className="cart-summary">
+            <button className="purchase-button" disabled={!error &&cart.productsData.length>0} >Purchase</button>
             </div>
             <CustomizedDialogs open={dialogOpen} onClose={handleDialogClose} text={error} /> 
         </div>

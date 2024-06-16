@@ -154,8 +154,8 @@ export const getStorePolicies = async (storeId: string): Promise<PolicyDescripti
 }
 
 export const getStoreProducts = (storeId: string): ProductModel[] => {
-    let defaultExample1: ProductModel = {productID:1,productName: "Example1", productPrice: 123.3}
-    let defaultExample2: ProductModel = {productID:1,productName: "Example2", productPrice: 3.5}
+    let defaultExample1: ProductModel = {productID:1,productName: "Example1", productPrice: 123.3, productCategory: "Example1", description: "Example1", productWeight: 1}
+    let defaultExample2: ProductModel = {productID:1,productName: "Example2", productPrice: 3.5,productCategory: "Example1", description: "Example1", productWeight: 1}
     let list: ProductModel[] = []
     list.push(defaultExample1)
     list.push(defaultExample2)
@@ -170,8 +170,8 @@ export const getStoreProducts = (storeId: string): ProductModel[] => {
 }
 
 export const searchAndFilterStoreProducts = (storeId: string, category: string, keywords: string, minprice: number, maxprice: number): ProductModel[] => {
-    let defaultExample1: ProductModel = {productID:1,productName: "Example1", productPrice: 123.3}
-    let defaultExample2: ProductModel = {productID:1,productName: "Example2", productPrice: 3.5}
+    let defaultExample1: ProductModel = {productID:1,productName: "Example1", productPrice: 123.3, productCategory: "Example1", description: "Example1", productWeight: 1}
+    let defaultExample2: ProductModel = {productID:1,productName: "Example2", productPrice: 3.5,productCategory: "Example1", description: "Example1", productWeight: 1}
     let list: ProductModel[] = []
     if(keywords === "Example1"){
         console.log("AAAAAAAAAAAAAA");
@@ -382,7 +382,7 @@ export const getMember = async(username: string): Promise<MemberModel> => {
 }
 
 export const viewMemberCart = async(username:string): Promise<string> => {
-    const response= await fetch(`${server}/api/user/getCart?username=${username}`,{ 
+    const response= await fetch(`${server}/api/user/viewCart?username=${username}`,{ 
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
@@ -392,8 +392,8 @@ export const viewMemberCart = async(username:string): Promise<string> => {
     return data;
 }
 
-export const viewGuestCart = async(guestId:number): Promise<string> => {
-const response= await fetch(`${server}/api/guest/getCart?guestId=${guestId}`);
+export const viewGuestCart = async(guestId:number): Promise<any> => {
+const response= await fetch(`${server}/api/user/guest/viewCart?guestId=${guestId}`);
 const data= await response.json();
 return data;
 }

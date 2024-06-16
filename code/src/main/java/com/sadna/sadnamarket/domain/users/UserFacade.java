@@ -493,7 +493,7 @@ public class UserFacade {
         logger.info("calculate final price for user {} with items {}",username,storePriceData);
         double sum=0;
         for(ProductDataPrice productDataPrice: storePriceData){
-            sum=sum+productDataPrice.getNewPrice();
+            sum=sum+productDataPrice.getAmount()* productDataPrice.getNewPrice();
         }
         logger.info("finished calculate final price for user {} with items {} and got {}",username,storePriceData, sum);
         return sum;
@@ -502,7 +502,7 @@ public class UserFacade {
         logger.info("calculate old price for user {} with items {}",username,storePriceData);
         double sum=0;
         for(ProductDataPrice productDataPrice: storePriceData){
-                sum=sum+productDataPrice.getOldPrice();
+                sum=sum+productDataPrice.getAmount()*productDataPrice.getOldPrice();
         }
         logger.info("finished calculate old price for user {} with items {} and got {}",username,storePriceData, sum);
         return sum;
@@ -628,9 +628,9 @@ public class UserFacade {
         Map<Integer,Double> productAmounts=new HashMap<>();
         for(ProductDataPrice productDataPrice: storeBag){
             if(productAmounts.containsKey(productDataPrice.getStoreId())){
-                productAmounts.put(productDataPrice.getStoreId(), productAmounts.get(productDataPrice.getStoreId())+productDataPrice.getNewPrice());
+                productAmounts.put(productDataPrice.getStoreId(), productAmounts.get(productDataPrice.getStoreId())+productDataPrice.getAmount()*productDataPrice.getNewPrice());
             }else{
-                productAmounts.put(productDataPrice.getStoreId(), productDataPrice.getNewPrice());
+                productAmounts.put(productDataPrice.getStoreId(), productDataPrice.getAmount()*productDataPrice.getNewPrice());
             }
         }
         logger.info("finish get store price");
