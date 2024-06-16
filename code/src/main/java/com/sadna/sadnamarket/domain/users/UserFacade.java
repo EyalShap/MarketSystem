@@ -547,8 +547,15 @@ public class UserFacade {
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,username);
-        storeFacade.updateStock(username, items);
+        storeFacade.updateStock(null, items);
+        clearCart(username);
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
+    }
+
+    public void clearCart(String username){
+        logger.info("clear cart for user {}",username);
+        iUserRepo.getMember(username).clearCart();
+        logger.info("done clear cart for user {}",username);
     }
 
     public void purchaseCart(int guestId,CreditCardDTO creditCard,AddressDTO addressDTO) throws Exception {
@@ -562,6 +569,7 @@ public class UserFacade {
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,null);
         storeFacade.updateStock(null, items);
+        iUserRepo.getGuest(guestId).getCart().clear();
         logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
     }
     private void validateAddress(AddressDTO address){

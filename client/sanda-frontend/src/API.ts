@@ -546,37 +546,41 @@ export const searchProducts = async (
 
 export const getOrders = async (username: string): Promise<OrderModel[]> => {
     try {
-        const response = (await axios.get(`${server}/api/getOrderHistory`, {
+        
+        const response = (await axios.get(`${server}/api/user/getOrderHistory?username=${username}`, {
             headers: {
-                'Content-Type': 'application/json',
-                // Add Authorization header if required
-                // Authorization: `Bearer ${jwt_token}`
-            },
-            params: {
-                username: username
-            }
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` 
+        }
         })).data;
 
-        // Parse the JSON response
+
         const ordersData: { [key: number]: ProductDataPrice[] } = JSON.parse(response.dataJson);
-        const orders: OrderModel[] = Object.entries(ordersData).map(([orderId, products], index) => {
+
+        const orders: OrderModel[] = Object.entries(ordersData).map(([orderId, products]) => {
             const total = products.reduce((acc, product) => acc + product.newPrice * product.amount, 0);
             const orderProducts: ProductOrderModel[] = products.map(product => ({
                 id: product.id,
                 name: product.name,
                 quantity: product.amount,
-                storeId: product.storeId
+                storeId: product.storeId,
+                oldPrice: product.oldPrice,
+                newPrice: product.newPrice
             }));
+
+            const date = new Date().toLocaleDateString(); 
+
             return {
                 id: orderId,
-                date: `Date ${index + 1}`, // Adjust this to get the actual date if available
+                date: date, 
                 total: total,
                 products: orderProducts
             };
         });
 
         return orders;
-        
+
+
     } catch (error) {
         console.error("Failed to fetch orders:", error);
         return [];

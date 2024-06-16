@@ -6,7 +6,7 @@ import '../styles/orders.css';
 
 export const Orders = () => {
     const { username } = useParams<{ username: string }>() 
-    const [orders, setOrders] = useState<OrderModel[]>([]);
+   const [orders, setOrders] = useState<OrderModel[]>([]);
 
     useEffect(() => {
         async function fetchOrders() {
@@ -17,6 +17,8 @@ export const Orders = () => {
         }
         fetchOrders();
     }, []);
+
+  
 
     return (
         <div className="main">
@@ -48,12 +50,13 @@ export const Orders = () => {
                                     </div>
                                     <div className="product-details">
                                         <div className="product-name">{product.name}</div>
+                                        <div className="store-name">Store ID: {product.storeId}</div>
                                         <div className="product-quantity">Quantity: {product.quantity}</div>
-
                                     </div>
+
                                     <div className="product-actions">
-                                        
-                                            
+                                        <div className="product-price">Price Before: ${product.oldPrice}</div>
+                                        <div className="product-price">Price After: ${product.newPrice}</div>
                                     </div>
                                 </React.Fragment>
                             ))}

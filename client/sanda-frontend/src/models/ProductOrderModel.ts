@@ -3,5 +3,6 @@ export interface ProductOrderModel {
     name: string;
     quantity: number;
     storeId: number;
-   
+    oldPrice: number;
+    newPrice: number;
 }

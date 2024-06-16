@@ -341,4 +341,10 @@ public class Member extends IUser {
         this.birthDate = birthDate;
         logger.info("Exiting setBirthday");
     }
+
+    public void clearCart() {
+        logger.info("Entering clearCart");
+        cart=new Cart();
+        logger.info("Exiting clearCart");
+    }
 }

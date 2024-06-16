@@ -31,6 +31,12 @@ public class Cart {
         logger.info("Exiting addProduct");
     }
 
+    public void clear(){
+        logger.info("clearing cart");
+        baskets.clear();
+        logger.info("cart cleared");
+    }
+
     public void removeProduct(int storeId, int productId) {
         logger.info("Entering removeProduct with storeId={} and productId={}", storeId, productId);
         if (!hasStore(storeId)) {
