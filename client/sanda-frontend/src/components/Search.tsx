@@ -27,7 +27,7 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
   };
   const handleCategoryChange = (event:any) => {
     setSearchCategory(event.target.value);
-    // Add your search logic here
+    // Add your search logic herex  
   };
 
     const handleMinPriceChange = (event:any) =>{

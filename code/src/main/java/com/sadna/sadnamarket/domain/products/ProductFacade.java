@@ -155,7 +155,8 @@ public class ProductFacade {
                 "Filtering all products with product name: {}, min price: {}, max price: {}, category: {}, min rank: {}",
                 productName, minProductPrice, maxProductPrice, productCategory, minProductRank);
         try {
-            List<Product> products = productRepository.getAllProducts();
+            List<Product> products = productRepository.getAllProducts();    
+            
 
             if (productName != null) {
                 if (isValidProductName(productName)) {
@@ -166,7 +167,7 @@ public class ProductFacade {
                     throw new IllegalArgumentException(Error.makeProductAspectCannotBeNullOrEmptyError("name"));
                 }
             }
-
+           
             if (productCategory != null) {
                 if (isValidProductName(productCategory)) {
                     products = products.stream()
@@ -182,7 +183,9 @@ public class ProductFacade {
                     throw new IllegalArgumentException(Error.makeProductMinimumPriceMustBeBelowMaximumError());
                 }
             }
-
+               
+                 System.out.println("ah sheli"  );
+            System.out.println(products);
             if (minProductPrice != -1) {
                 if (isValidProductPrice(minProductPrice)) {
                     products = products.stream()
@@ -192,7 +195,7 @@ public class ProductFacade {
                     throw new IllegalArgumentException(Error.makeProductValuePriceCannotBeNegativeError("Min"));
                 }
             }
-
+              
             if (maxProductPrice != -1) {
                 if (isValidProductPrice(maxProductPrice)) {
                     products = products.stream()
