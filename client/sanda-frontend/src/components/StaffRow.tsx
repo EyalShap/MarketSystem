@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StoreModel from '../models/StoreModel';
-import { getMangerPermissions, getStoreInfo, getStoreManagers, getStoreOwners, getStoreProducts, isManager, isOwner, searchAndFilterStoreProducts, updateManagerPermissions } from '../API';
+import { getMangerPermissions, getStoreInfo, getStoreManagers, getStoreOwners, isManager, isOwner, searchAndFilterStoreProducts, updateManagerPermissions } from '../API';
 import { useParams } from 'react-router-dom';
 import '../styles/Staff.css';
 import MemberModel from '../models/MemberModel';

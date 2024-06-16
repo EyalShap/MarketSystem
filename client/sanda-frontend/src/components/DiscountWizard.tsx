@@ -5,7 +5,7 @@ import Login from './Login';
 import Profile from './Profile';
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createCompositeCondition, createMinAmountCondition, createMinBuyCondition, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
+import { addDiscountToStore, createCompositeCondition, createCompositeDiscount, createConditionDiscount, createMinAmountCondition, createMinBuyCondition, createSimpleDiscount, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
 import Permission from '../models/Permission';
 import RestResponse from '../models/RestResponse';
 
@@ -54,6 +54,18 @@ const SimpleDiscount = () => {
     const [mode, setMode] = useState("store");
     const [category, setCategory] = useState("");
     const [product, setProduct] = useState("");
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createSimpleDiscount(parseFloat(percentage), mode, parseInt(product), category)
+        alert(`Discount created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createSimpleDiscount(parseFloat(percentage), mode, parseInt(product), category)
+        await addDiscountToStore(parseInt(storeId!), parseInt(id))
+        alert(`Discount created with ID ${id} and added to store`)
+    }
 
     return (
         <div className='discountEditor'>
@@ -81,8 +93,8 @@ const SimpleDiscount = () => {
             }
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Percentage" variant="outlined" value={percentage} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setPercentage(event.target.value); }} />
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
@@ -94,6 +106,18 @@ const ConditionDiscount = () => {
     const [product, setProduct] = useState("");
     const [condId, setCondId] = useState("-1");
     const value = { condId, setCondId };
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createConditionDiscount(parseInt(condId), parseFloat(percentage), mode, parseInt(product), category)
+        alert(`Discount created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createConditionDiscount(parseInt(condId), parseFloat(percentage), mode, parseInt(product), category)
+        await addDiscountToStore(parseInt(storeId!), parseInt(id))
+        alert(`Discount created with ID ${id} and added to store`)
+    }
 
     return (
         <div className='discountEditor'>
@@ -126,8 +150,8 @@ const ConditionDiscount = () => {
             }
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Percentage" variant="outlined" value={percentage} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setPercentage(event.target.value); }} />
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <button onClick = {onCreate} className='editorButton'>Create</button>
+            <button onClick = {onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
@@ -162,7 +186,6 @@ const AmountCondition = () => {
     const [category, setCategory] = useState("");
     const [product, setProduct] = useState("");
     const { condId, setCondId } = useContext(ConditionContext);
-    const {storeId} = useParams();
 
     const onCreate = async () => {
         let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(product), category)
@@ -241,7 +264,18 @@ const CompositeDiscount = () => {
     const [id2, setId2] = useState("0");
     const [desc1, setDesc1] = useState("");
     const [desc2, setDesc2] = useState("");
-    const value = { condId, setCondId };
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createCompositeDiscount(parseInt(id1),parseInt(id2),logic,decide)
+        alert(`Discount created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createCompositeDiscount(parseInt(id1),parseInt(id2),logic,decide)
+        await addDiscountToStore(parseInt(storeId!), parseInt(id))
+        alert(`Discount created with ID ${id} and added to store`)
+    }
 
     useEffect(() => {
         fetchDescriptions();
@@ -299,8 +333,8 @@ const CompositeDiscount = () => {
             <p className='policyDescription'>Description: {desc1}</p>
             <TextField type='number' size='small' id="outlined-basic" label="ID of second discount" variant="outlined" value={id2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId2(event.target.value); }} />
             <p className='policyDescription'>Description: {desc2}</p>
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <button onClick = {onCreate} className='editorButton'>Create</button>
+            <button onClick = {onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };

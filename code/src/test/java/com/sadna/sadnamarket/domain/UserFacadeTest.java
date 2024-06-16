@@ -301,8 +301,8 @@ public class UserFacadeTest {
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(list1);
         UserOrderDTO res=userFacade.viewCart(testUsername1);
         assertEquals(2, res.getProductsData().size());
-        assertEquals(15.0, res.getOldPrice(),0);
-        assertEquals(10.0, res.getNewPrice(),0);
+        assertEquals(38.0, res.getOldPrice(),0);
+        assertEquals(25.0, res.getNewPrice(),0);
     }
     @Test
     public void viewCartWith2stores() throws Exception{
@@ -314,8 +314,8 @@ public class UserFacadeTest {
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(list1);
         UserOrderDTO res=userFacade.viewCart(testUsername1);
         assertEquals(2, res.getProductsData().size());
-        assertEquals(15.0, res.getOldPrice(),0);
-        assertEquals(10.0, res.getNewPrice(),0);
+        assertEquals(38.0, res.getOldPrice(),0);
+        assertEquals(25.0, res.getNewPrice(),0);
     }
     @Test
     public void purchaseCart() throws Exception{

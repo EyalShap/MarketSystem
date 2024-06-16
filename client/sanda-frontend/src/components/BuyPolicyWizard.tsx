@@ -1,13 +1,19 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import '../styles/Wizard.css';
+import dayjs, { Dayjs } from 'dayjs';
 import Store from './Store';
 import Login from './Login';
 import Profile from './Profile';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
+
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createCompositeCondition, createMinAmountCondition, createMinBuyCondition, describeBuyPolicy, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
+import { addPolicyToStore, createAgePolicy, createAmountPolicy, createCompositeCondition, createCompositePolicy, createDatePolicy, createHolidayPolicy, createHourPolicy, createKgPolicy, createMinAmountCondition, createMinBuyCondition, createMonthPolicy, describeBuyPolicy, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
 import Permission from '../models/Permission';
 import RestResponse from '../models/RestResponse';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 
 export const BuyPolicyWizard = () => {
     const [currentElement, setCurrentElement] = useState(<WeightPolicy />);
@@ -34,6 +40,7 @@ export const BuyPolicyWizard = () => {
     textToElement["Restrict By Hour"] = <HourPolicy />
     textToElement["Restrict By Jewish Customs"] = <RoshKodeshPolicy />
     textToElement["Restrict On Holiday"] = <HolidayPolicy />
+    textToElement["Restrict By Date"] = <DatePolicy />
     textToElement["Composite Policy"] = <CompositePolicy />
 
     return (
@@ -52,6 +59,18 @@ const WeightPolicy = () => {
     const [product, setProduct] = useState("");
     const [minWeight, setMin] = useState("");
     const [maxWeight, setMax] = useState("");
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createKgPolicy(parseInt(product), parseFloat(maxWeight), parseFloat(minWeight))
+        alert(`Buy policy created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createKgPolicy(parseInt(product), parseFloat(maxWeight), parseFloat(minWeight))
+        alert(`Buy policy created with ID ${id}`)
+        await addPolicyToStore(parseInt(storeId!), parseInt(id));
+    }
 
     return (
         <div className='discountEditor'>
@@ -61,8 +80,8 @@ const WeightPolicy = () => {
             <TextField type='number' size='small' id="outlined-basic" label="Minimum Weight" variant="outlined" value={minWeight} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMin(event.target.value); }} />
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Maximum Weight" variant="outlined" value={maxWeight} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMax(event.target.value); }} />
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
@@ -71,6 +90,18 @@ const AmountPolicy = () => {
     const [product, setProduct] = useState("");
     const [minAmount, setMin] = useState("");
     const [maxAmount, setMax] = useState("");
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createAmountPolicy(parseInt(product), parseInt(minAmount), parseInt(maxAmount))
+        alert(`Buy policy created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createAmountPolicy(parseInt(product), parseInt(minAmount), parseInt(maxAmount))
+        alert(`Buy policy created with ID ${id}`)
+        await addPolicyToStore(parseInt(storeId!), parseInt(id));
+    }
 
     return (
         <div className='discountEditor'>
@@ -80,8 +111,8 @@ const AmountPolicy = () => {
             <TextField type='number' size='small' id="outlined-basic" label="Minimum amount" variant="outlined" value={minAmount} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMin(event.target.value); }} />
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Maximum amount" variant="outlined" value={maxAmount} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMax(event.target.value); }} />
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
@@ -90,62 +121,149 @@ const AgePolicy = () => {
     const [category, setCategory] = useState("");
     const [minAge, setMin] = useState("");
     const [maxAge, setMax] = useState("");
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createAgePolicy(category, parseInt(minAge), parseInt(maxAge))
+        alert(`Buy policy created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createAgePolicy(category, parseInt(minAge), parseInt(maxAge))
+        alert(`Buy policy created with ID ${id}`)
+        await addPolicyToStore(parseInt(storeId!), parseInt(id));
+    }
 
     return (
         <div className='discountEditor'>
             <h3>A certain category will only be allowed to be purchased within a range of the buyer's age</h3>
-            <TextField type='number' size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Minimum age" variant="outlined" value={minAge} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMin(event.target.value); }} />
             <h1/>
             <TextField type='number' size='small' id="outlined-basic" label="Maximum age" variant="outlined" value={maxAge} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMax(event.target.value); }} />
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
 
 const HourPolicy = () => {
     const [category, setCategory] = useState("");
-    const [fromTime, setMin] = useState("");
-    const [toTime, setMax] = useState("");
+    const [fromTime, setMin] = useState(dayjs('2024-04-17T12:00'));
+    const [toTime, setMax] = useState(dayjs('2024-04-17T12:00'));
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createHourPolicy(category, fromTime.hour(), fromTime.minute(), toTime.hour(), toTime.minute())
+        alert(`Buy policy created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createHourPolicy(category, fromTime.hour(), fromTime.minute(), toTime.hour(), toTime.minute())
+        alert(`Buy policy created with ID ${id}`)
+        await addPolicyToStore(parseInt(storeId!), parseInt(id));
+    }
 
     return (
         <div className='discountEditor'>
             <h3>A certain category will only be allowed to be purchased at a certain time of day</h3>
-            <TextField type='number' size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="From" variant="outlined" value={fromTime} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMin(event.target.value); }} />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker label="From" value={fromTime} onChange={(newValue) => setMin(newValue!)}/>
+            </LocalizationProvider>
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="To" variant="outlined" value={toTime} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMax(event.target.value); }} />
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker label="To" value={toTime} onChange={(newValue) => setMax(newValue!)}/>
+            </LocalizationProvider>
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
 
 const RoshKodeshPolicy = () => {
     const [category, setCategory] = useState("");
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createMonthPolicy(category)
+        alert(`Buy policy created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createMonthPolicy(category)
+        alert(`Buy policy created with ID ${id}`)
+        await addPolicyToStore(parseInt(storeId!), parseInt(id));
+    }
 
     return (
         <div className='discountEditor'>
             <h3>A certain category will not be sold at the start of the hebrew month</h3>
-            <TextField type='number' size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
 
 const HolidayPolicy = () => {
     const [category, setCategory] = useState("");
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createHolidayPolicy(category)
+        alert(`Buy policy created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createHolidayPolicy(category)
+        alert(`Buy policy created with ID ${id}`)
+        await addPolicyToStore(parseInt(storeId!), parseInt(id));
+    }
 
     return (
         <div className='discountEditor'>
             <h3>A certain category will not be sold during holidays</h3>
-            <TextField type='number' size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
+        </div>
+    );
+};
+
+const DatePolicy = () => {
+    const [category, setCategory] = useState("");
+    const [day, setDay] = useState("-1");
+    const [month, setMonth] = useState("-1");
+    const [year, setYear] = useState("-1");
+    const {storeId} = useParams();
+
+
+    const onCreate = async () => {
+        let id: string = await createDatePolicy(category, parseInt(day), parseInt(month), parseInt(year))
+        alert(`Buy policy created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createDatePolicy(category, parseInt(day), parseInt(month), parseInt(year))
+        alert(`Buy policy created with ID ${id}`)
+        await addPolicyToStore(parseInt(storeId!), parseInt(id));
+    }
+
+    return (
+        <div className='discountEditor'>
+            <h3>A certain category will not be sold during a specified day, month or year</h3>
+            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <h1/>
+            <TextField type='number' size='small' id="outlined-basic" label="Day" variant="outlined" value={day} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setDay(event.target.value);}} />
+            <h1/>
+            <TextField type='number' size='small' id="outlined-basic" label="Month" variant="outlined" value={month} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMonth(event.target.value);}} />
+            <h1/>
+            <TextField type='number' size='small' id="outlined-basic" label="Year" variant="outlined" value={year} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setYear(event.target.value);}} />
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
@@ -157,6 +275,18 @@ const CompositePolicy = () => {
     const [id2, setId2] = useState("0");
     const [desc1, setDesc1] = useState("");
     const [desc2, setDesc2] = useState("");
+    const {storeId} = useParams();
+
+    const onCreate = async () => {
+        let id: string = await createCompositePolicy(parseInt(id1), parseInt(id2), logic);
+        alert(`Buy policy created with ID ${id}`)
+    }
+
+    const onCreateAndSave = async () => {
+        let id: string = await createCompositePolicy(parseInt(id1), parseInt(id2), logic);
+        alert(`Buy policy created with ID ${id}`)
+        await addPolicyToStore(parseInt(storeId!), parseInt(id));
+    }
 
     useEffect(() => {
         fetchDescriptions();
@@ -198,8 +328,8 @@ const CompositePolicy = () => {
             <p className='policyDescription'>Description: {desc1}</p>
             <TextField type='number' size='small' id="outlined-basic" label="ID of second discount" variant="outlined" value={id2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId2(event.target.value); }} />
             <p className='policyDescription'>Description: {desc2}</p>
-            <button className='editorButton'>Create</button>
-            <button className='editorButton'>Create and add to store</button>
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };

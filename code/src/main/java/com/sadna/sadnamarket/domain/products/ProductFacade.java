@@ -118,7 +118,7 @@ public class ProductFacade {
 
             if (productName != null && isValidProductName(productName)) {
                 storeProducts = storeProducts.stream()
-                        .filter(product -> product.getProductName().equals(productName))
+                        .filter(product -> product.getProductName().contains(productName))
                         .collect(Collectors.toList());
             }
 
