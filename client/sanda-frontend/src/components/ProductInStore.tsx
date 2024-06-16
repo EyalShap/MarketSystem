@@ -1,5 +1,5 @@
 import StoreModel from '../models/StoreModel';
-import { getStoreInfo, getStoreProducts } from '../API';
+import { getStoreInfo } from '../API';
 import ProductModel from '../models/ProductModel';
 import '../styles/Store.css';
 import { useEffect } from 'react';

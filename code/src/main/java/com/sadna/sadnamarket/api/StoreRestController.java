@@ -214,7 +214,7 @@ public class StoreRestController {
         return marketService.getProductInfo(token,username,productId);
     }
 
-    @GetMapping("/getStoreProductsInfo")
+    @PatchMapping("/getStoreProductsInfo")
     public Response getStoreProductsInfo(@RequestParam(value = "username", required = false) String username, @RequestBody ProductStoreRequest productStoreRequest ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;

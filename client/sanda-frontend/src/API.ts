@@ -154,51 +154,63 @@ export const getStorePolicies = async (storeId: string): Promise<PolicyDescripti
     return JSON.parse(data.dataJson);
 }
 
-export const getStoreProducts = (storeId: string): ProductModel[] => {
-    let defaultExample1: ProductModel = {productID:1,productName: "Example1", productPrice: 123.3, productCategory: "Example1", description: "Example1", productWeight: 1}
-    let defaultExample2: ProductModel = {productID:1,productName: "Example2", productPrice: 3.5,productCategory: "Example1", description: "Example1", productWeight: 1}
-    let list: ProductModel[] = []
-    list.push(defaultExample1)
-    list.push(defaultExample2)
-    list.push(defaultExample1)
-    list.push(defaultExample2)
-    list.push(defaultExample1)
-    list.push(defaultExample2)
-    list.push(defaultExample1)
-    list.push(defaultExample2)
-    list.push(defaultExample1)
-    return list;
-}
 
-export const searchAndFilterStoreProducts = (storeId: string, category: string, keywords: string, minprice: number, maxprice: number): ProductModel[] => {
-    let defaultExample1: ProductModel = {productID:1,productName: "Example1", productPrice: 123.3, productCategory: "Example1", description: "Example1", productWeight: 1}
-    let defaultExample2: ProductModel = {productID:1,productName: "Example2", productPrice: 3.5,productCategory: "Example1", description: "Example1", productWeight: 1}
-    let list: ProductModel[] = []
-    if(keywords === "Example1"){
-        console.log("AAAAAAAAAAAAAA");
-        list.push(defaultExample1)
-        list.push(defaultExample1)
-        list.push(defaultExample1)
-        list.push(defaultExample1)
-        list.push(defaultExample1)
-    }else if(keywords === "Example2"){
-        list.push(defaultExample2)
-        list.push(defaultExample2)
-        list.push(defaultExample2)
-        list.push(defaultExample2)
-    }else{
-        list.push(defaultExample1)
-        list.push(defaultExample2)
-        list.push(defaultExample1)
-        list.push(defaultExample2)
-        list.push(defaultExample1)
-        list.push(defaultExample2)
-        list.push(defaultExample1)
-        list.push(defaultExample2)
-        list.push(defaultExample1)
+export const searchAndFilterStoreProducts = async (storeId: string, category: string, keywords: string, minprice: number, maxprice: number): Promise<ProductModel[]> => {
+    let request = {
+        storeId: parseInt(storeId),
+        productName: keywords,
+        productPrice: maxprice,
+        category: category.toLowerCase() === "all" ? null : category,
+        rank: 3
     }
-    
-    return list;
+    if(localStorage.getItem('token') != null){
+        const response = (await axios.patch(`${server}/api/stores/getStoreProductsInfo?username=${localStorage.getItem("username")}`,request, 
+    {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    })).data;
+
+    if(response.error){
+        return []
+    }
+    const dataJson = JSON.parse(response.dataJson);
+
+    console.log(dataJson)
+    const products: ProductModel[] = Object.entries(dataJson).map(([key, value]) => {
+        let product: ProductModel = JSON.parse(key)
+        return product});
+   
+
+    return products;
+    }
+    const response = (await axios.patch(`${server}/api/stores/getStoreProductsInfo`,request, 
+    {
+        headers: {
+            'Content-Type': 'application/json',
+            // Authorization: `Bearer ${jwt_token}`
+        }
+    })).data;
+
+    if(response.error){
+        return []
+    }
+
+    const dataJson = JSON.parse(response.dataJson);
+
+    const products: ProductModel[] = dataJson.map((product: any) => ({
+        id: product.productID,
+        name: product.productName,
+        storeId: product.storeId,
+        price: product.productPrice,
+        productCategory: product.productCategory,
+        productDescription: product.description,
+        productRank: product.productRank
+    }));
+   
+
+    return products;
 }
 
 export const isOwner = async (storeId: string): Promise<boolean> => {

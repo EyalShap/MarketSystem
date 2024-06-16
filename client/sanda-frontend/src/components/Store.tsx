@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StoreModel from '../models/StoreModel';
-import { getStoreDiscounts, getStoreInfo, getStorePolicies, getStoreProducts, hasPermission, isManager, isOwner, searchAndFilterStoreProducts } from '../API';
+import { getStoreDiscounts, getStoreInfo, getStorePolicies, hasPermission, isManager, isOwner, searchAndFilterStoreProducts } from '../API';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProductModel from '../models/ProductModel';
 import { Rating } from 'react-simple-star-rating'
@@ -20,7 +20,7 @@ export const Store = () => {
     const [searchCategory, setSearchCategory] = useState('all');
     const [minPrice, setMinPrice] = useState(0); // Default price
   const [maxPrice, setMaxPrice] = useState(100); // Default price
-  const [products, setProducts] = useState<ProductModel[]>(getStoreProducts(storeId!))
+  const [products, setProducts] = useState<ProductModel[]>([])
   const [isOwnerBool, setIsOwner] = useState(false)
     const [isManagerBool, setIsManager] = useState(false)
     const [buyPolicies, setBuyPolicies] = useState<PolicyDescriptionModel[]>([])
@@ -32,8 +32,12 @@ export const Store = () => {
     loadStore();
   }, [])
   useEffect(() => {
-    setProducts(searchAndFilterStoreProducts(storeId!, searchCategory, searchTerm, minPrice, maxPrice))
+    loadProducts()
   },[searchTerm,searchCategory,minPrice,maxPrice])
+
+  const loadProducts = async () => {
+    setProducts(await searchAndFilterStoreProducts(storeId!, searchCategory, searchTerm, minPrice, maxPrice))
+  }
 
   const loadStore = async () => {
     var storeResponse: RestResponse = await getStoreInfo(storeId!);

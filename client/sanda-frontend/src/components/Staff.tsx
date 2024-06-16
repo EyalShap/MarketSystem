@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StoreModel from '../models/StoreModel';
-import { getStoreInfo, getStoreManagers, getStoreOwners, getStoreProducts, isManager, isOwner, searchAndFilterStoreProducts, sendOwnerRequest,sendManagerRequest, hasPermission } from '../API';
+import { getStoreInfo, getStoreManagers, getStoreOwners, isManager, isOwner, searchAndFilterStoreProducts, sendOwnerRequest,sendManagerRequest, hasPermission } from '../API';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProductModel from '../models/ProductModel';
 import { Rating } from 'react-simple-star-rating'

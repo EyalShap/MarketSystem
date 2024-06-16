@@ -855,7 +855,7 @@ class StoreFacadeTest {
     @Test
     void addDiscountPolicy() throws Exception {
         int conditionId = discountPolicyFacade.createMinProductCondition(10, 0, "WillyTheChocolateDude");
-        int policyId = discountPolicyFacade.createOnProductSimpleDiscountPolicy(50, 0, conditionId, "WillyTheChocolateDude");
+        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(50, 0, conditionId,"WillyTheChocolateDude");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
         MinProductCondition expectedCondition = new MinProductCondition(conditionId, 10);
@@ -1106,7 +1106,7 @@ class StoreFacadeTest {
         cart.add(new CartItemDTO(1, 4, 10));
 
         int conditionId = discountPolicyFacade.createMinProductOnStoreCondition(30, "WillyTheChocolateDude");
-        int policyId = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(50, conditionId, "WillyTheChocolateDude");
+        int policyId = discountPolicyFacade.createOnStoreConditionDiscountPolicy(50, conditionId, "WillyTheChocolateDude");
         discountPolicyFacade.addDiscountPolicyToStore(0, policyId, "WillyTheChocolateDude");
 
         List<ProductDataPrice> res = storeFacade.calculatePrice("WillyTheChocolateDude", cart);
