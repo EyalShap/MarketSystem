@@ -17,6 +17,7 @@ import { ProductOrderModel } from "./models/ProductOrderModel";
 import ProductDataPrice from "./models/ProductDataPrice";
 import StoreRequestModel from "./models/StoreRequestModel";
 import PolicyDescriptionModel from "./models/PolicyDescriptionModel";
+import AddProductModel from "./models/AddProductModel";
 
 
 const server: string = 'http://127.0.0.1:8080'; 
@@ -397,8 +398,30 @@ const data= await response.json();
 return data;
 }
 
-export const getProductDetails = (productId: number): ProductModel => {
-    return {productID:2,productName: "Example1", productPrice: 123.3 };
+export const getProductDetails = async (productId: number): Promise<RestResponse> => {
+    if(localStorage.getItem('token') == null){
+        const response = await fetch(
+            `${server}/api/stores/getProductInfo?productId=${productId}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }
+        );
+        const data: RestResponse = await response.json();
+        return data;
+    }
+    const response = await fetch(
+        `${server}/api/stores/getProductInfo?username=${localStorage.getItem("username")}&productId=${productId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return data;
 }
 export const removeFromCart = (cart: cartModel) => {
     console.log("Cart updated");
@@ -581,6 +604,19 @@ export const fetchNotifications = async (): Promise<NotificationModel[]> => {
 export const createNewStore = async (storeModel: CreateStoreModel,storeFounder :string=localStorage.getItem("username") as string) => {
     storeModel.founderUsername=storeFounder;
     const response = await axios.post(`${server}/api/stores/createStore`, storeModel,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    return response.data;
+};
+
+export const addProduct = async (productModel: AddProductModel,storeId: number) => {
+    productModel.storeId = storeId;
+    productModel.rank = 3;
+    const response = await axios.post(`${server}/api/stores/addProductToStore?username=${localStorage.getItem("username")}`, productModel,{ 
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token

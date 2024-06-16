@@ -20,6 +20,8 @@ import DiscountWizard from './components/DiscountWizard';
 import PermissionError from './components/PermissionError';
 import { enterAsGuest, loginUsingJwt } from './API';
 import BuyPolicyWizard from './components/BuyPolicyWizard';
+import AddProduct from './components/AddProduct';
+import { Product } from './components/Product';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -76,9 +78,11 @@ function App() {
             <Route path="/cart/:username" element={<Cart />} />
             <Route path="/search-results" element={<SearchResults />} />
             <Route path="/store/:storeId" element={<Store/>}/>
+            <Route path="/product/:productId" element={<Product/>}/>
             <Route path="/store/:storeId/staff" element={<Staff/>}/>
             <Route path="/store/:storeId/policy" element={<BuyPolicyWizard/>}/>
             <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>
+            <Route path="/store/:storeId/addProduct" element={<AddProduct />}/>
             <Route path="/memberStores/:username" element={<MyStores />} />
             <Route path="/createStore" element={<CreateStore />}/>
             <Route path="/permission-error" element={<PermissionError />}/>

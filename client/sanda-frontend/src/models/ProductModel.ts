@@ -6,4 +6,5 @@ export default interface ProductModel {
     productCatogory?: string,
     description?: string,
     productRank?: number
+    storeId?: number
 }

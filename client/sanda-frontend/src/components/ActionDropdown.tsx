@@ -57,7 +57,7 @@ export const ActionDropdown = (props: any) => {
     permissionToIcon[Permission.ADD_DISCOUNT_POLICY] = <IoBagAdd />
 
     let permissionToPath: Dictionary<string> = {}
-    permissionToPath[Permission.ADD_PRODUCTS] = "./"
+    permissionToPath[Permission.ADD_PRODUCTS] = "./addProduct"
     permissionToPath[Permission.ADD_BUY_POLICY] = "./policy"
     permissionToPath[Permission.ADD_DISCOUNT_POLICY] = "./discount"
 
