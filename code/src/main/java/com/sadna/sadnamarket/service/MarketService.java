@@ -107,6 +107,12 @@ public class MarketService {
             throw new IllegalArgumentException(Error.makeTokenInvalidError(username));
         }
     }
+    public void checkTokenSystemManager(String token, String username) {
+        if(!authFacade.login(token).equals(userFacade.getSystemManagerUserName())&&!authFacade.login(token).equals(username)){
+            logger.error(String.format("failed to verify token for user %s", username));
+            throw new IllegalArgumentException(Error.makeTokenInvalidError(username));
+        }
+    }
     public Response createStore(String token, String founderUsername, String storeName, String address, String email, String phoneNumber) {
         try {
             checkToken(token, founderUsername);
@@ -298,7 +304,7 @@ public class MarketService {
     public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
             checkToken(token, username);
-            List<OrderDTO> history = storeFacade.getStoreOrderHistory(username, storeId);
+            List<ProductDataPrice> history = storeFacade.getStoreOrderHistory(username, storeId);
             logger.info(String.format("User %s got order history from store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
         }
@@ -1470,6 +1476,17 @@ public class MarketService {
             return Response.createResponse();
         }catch(Exception e){
             logger.error("error check guest {} cart {}",guestId ,e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+    public Response checkIfSystemManager(String username){
+        try{
+            logger.info("check if {} is system manager", username);
+            boolean res = userFacade.isSystemManager(username);
+            logger.info("finished check if {} is system manager", username);
+            return Response.createResponse(false, objectMapper.writeValueAsString(res));
+        }catch(Exception e){
+            logger.error("error check if {} is system manager", username);
             return Response.createResponse(true, e.getMessage());
         }
     }

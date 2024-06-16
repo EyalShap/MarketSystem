@@ -56,7 +56,7 @@ public class OrderFacade {
         }
     }
 
-    public List<OrderDTO> getOrders(int storeId) {
+    public List<ProductDataPrice> getOrders(int storeId) {
         return orderRepository.getOrders(storeId);
     }
 

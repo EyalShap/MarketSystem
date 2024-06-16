@@ -87,7 +87,7 @@ public class OrderTest {
         OrderDTO orderDTO = new OrderDTO("name","store",productAmounts,orderProductsJsons);
         storeOrder.put(1,orderDTO);
         memoryOrderRepository.createOrder(storeOrder);
-        List<OrderDTO> orders= memoryOrderRepository.getOrders(1);
+        List<ProductDataPrice> orders= memoryOrderRepository.getOrders(1);
 
         assertEquals(orders.size(), 1);
     }

@@ -19,6 +19,7 @@ import StoreRequestModel from "./models/StoreRequestModel";
 import PolicyDescriptionModel from "./models/PolicyDescriptionModel";
 import AddProductModel from "./models/AddProductModel";
 import { BankAccountModel } from "./models/BankAccountModel";
+import { PurchaseInfoModel } from "./models/PurchaseInfoModel";
 
 
 const server: string = 'http://127.0.0.1:8080'; 
@@ -780,7 +781,7 @@ export const createConditionDiscount = async(conditionId: number, percentage: nu
         percentage: percentage
     }
     if(applyOn === "store"){
-        const response = await axios.post(`${server}/api/stores/createOnStoreSimpleDiscountPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        const response = await axios.post(`${server}/api/stores/createOnStoreConditionDiscountPolicy?username=${localStorage.getItem("username")}`,request,{ 
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
@@ -791,7 +792,7 @@ export const createConditionDiscount = async(conditionId: number, percentage: nu
         return data.dataJson
     }else if(applyOn === "categ"){
         request.categoryName = categoryName
-        const response = await axios.post(`${server}/api/stores/createOnCategorySimpleDiscountPolicy?username=${localStorage.getItem("username")}`,request,{ 
+        const response = await axios.post(`${server}/api/stores/createOnCategoryConditionDiscountPolicy?username=${localStorage.getItem("username")}`,request,{ 
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
@@ -802,7 +803,7 @@ export const createConditionDiscount = async(conditionId: number, percentage: nu
         return data.dataJson
     }
     request.productId = productId;
-    const response = await axios.post(`${server}/api/stores/createOnProductSimpleDiscountPolicy?username=${localStorage.getItem("username")}`,request,{ 
+    const response = await axios.post(`${server}/api/stores/createOnProductConditionDiscountPolicy?username=${localStorage.getItem("username")}`,request,{ 
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
@@ -1149,6 +1150,80 @@ export const setStoreBankAccount = async(storeId: number, bank: BankAccountModel
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    return response.data;
+}
+
+export const getStoreOrders=async( storeId: number,username: string): Promise<OrderModel[]> =>{
+    try {
+    const response= await (await axios.get(`${server}/api/stores/getStoreOrders?username=${username}&storeId=${storeId}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    })).data;
+    const ordersData: { [key: number]: ProductDataPrice[] } = JSON.parse(response.dataJson);
+    const orders: OrderModel[] = Object.entries(ordersData).map(([orderId, products]) => {
+        const total = products.reduce((acc, product) => acc + product.newPrice * product.amount, 0);
+        const orderProducts: ProductOrderModel[] = products.map(product => ({
+            id: product.id,
+            name: product.name,
+            quantity: product.amount,
+            storeId: product.storeId,
+            oldPrice: product.oldPrice,
+            newPrice: product.newPrice
+        }));
+        const date = new Date().toLocaleDateString(); 
+        return {
+            id: orderId,
+            date: date, 
+            total: total,
+            products: orderProducts
+        };
+    });
+
+    return orders;
+}catch (error) {
+    console.error("Failed to fetch orders:", error);
+    return [];
+}
+}
+export const buyCart = async(purchase: PurchaseInfoModel): Promise<RestResponse> => {
+    let request = {
+        creditCard: {
+            creditCardNumber: purchase.creditCard,
+            digitsOnTheBack: purchase.digitsOnBack,
+            expirationDate: purchase.expirationDate,
+            ownerId: purchase.ownerId,
+          },
+          addressDTO: {
+            country: purchase.country,
+            city: purchase.city,
+            addressLine1: purchase.addressLine1,
+            addressLine2: purchase.addressLine2,
+            zipCode: purchase.zipCode,
+            ordererName: purchase.ordererName,
+            contactPhone: purchase.contactPhone,
+            contactEmail: purchase.contactEmail,
+            ordererId: purchase.ordererId,
+          }
+    }
+    if(localStorage.getItem("token") != null){
+        const response = await axios.post(`${server}/api/user/purchaseCart?username=${localStorage.getItem("username")}`,request,{ 
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+            }
+        }
+        );
+        return response.data;
+    }
+    const response = await axios.post(`${server}/api/user/guest/purchaseCart?guestId=${localStorage.getItem("guestId")}`,request,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            //Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
         }
     }
     );

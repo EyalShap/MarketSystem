@@ -659,5 +659,11 @@ public class UserFacade {
         logger.info("get guest cart");
         return iUserRepo.getGuestCart(guest_id);
     }
+    public boolean checkIfSystemManager(String username){
+        logger.info("check if user is system manager {}",username);
+        boolean res= systemManagerUserName.equals(username);
+        logger.info("checked if user is system manager {} and got {}",username,res);
+        return res;
+    }
 
 }

@@ -1,17 +1,18 @@
 .search {
     padding: 10px 20px;
     background-color: #232F3E;
-    color: white;
+    color:  #232F3E; /* Amazon's dark blue color */
     align-items: center;
     text-align: center;
     margin-right: 100px;
-    
+     
   }
   
   .search-inputs {
     width: 70%;
     height: 28px;
     font-size: medium;
+    
   }
   
   .search-inputs input {
@@ -23,6 +24,7 @@
     font-size: 40px;
     text-align: center;
     text-size-adjust: 40px;
+    
   }
   .category {
     border: none;
@@ -38,6 +40,8 @@
     display: flex;
     justify-content: space-between;;
     margin-bottom: 1rem;
+    background-color: #232F3E;
+
   }
   
   .filters select,
@@ -47,6 +51,8 @@
     border-radius: 4px;
     margin-right: 0.5rem;
     flex: 1;
+        background-color: #232F3E;
+
   }
   
   .price-value {
