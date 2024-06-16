@@ -112,7 +112,36 @@ public class DiscountPolicyFacade {
         return discountPolicyRepository.addTakeMinXorDiscount(policy1, policy2);
     }
 
-    public int createOnCategorySimpleDiscountPolicy(double percentage, String categoryName, int ConditionID, String username) throws Exception {
+    public int createOnCategorySimpleDiscountPolicy(double percentage, String categoryName, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
+
+        int conditionTrueId = conditionRepository.createTrueCondition();
+        Condition condition = conditionRepository.findConditionByID(conditionTrueId);
+        return discountPolicyRepository.addOnCategorySimpleDiscount(percentage, categoryName, condition);
+    }
+
+    public int createOnProductSimpleDiscountPolicy(double percentage, int productID, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
+        int conditionTrueId = conditionRepository.createTrueCondition();
+        Condition condition = conditionRepository.findConditionByID(conditionTrueId);
+        return discountPolicyRepository.addOnProductSimpleDiscount(percentage, productID, condition);
+    }
+
+    public int createOnStoreSimpleDiscountPolicy(double percentage, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
+
+        int conditionTrueId = conditionRepository.createTrueCondition();
+        Condition condition = conditionRepository.findConditionByID(conditionTrueId);
+        return discountPolicyRepository.addOnStoreSimpleDiscount(percentage, condition);
+    }
+
+    public int createOnCategoryConditionDiscountPolicy(double percentage, String categoryName, int ConditionID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
 
@@ -121,7 +150,7 @@ public class DiscountPolicyFacade {
         return discountPolicyRepository.addOnCategorySimpleDiscount(percentage, categoryName, condition);
     }
 
-    public int createOnProductSimpleDiscountPolicy(double percentage, int productID, int ConditionID, String username) throws Exception {
+    public int createOnProductConditionDiscountPolicy(double percentage, int productID, int ConditionID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
 
@@ -130,7 +159,7 @@ public class DiscountPolicyFacade {
         return discountPolicyRepository.addOnProductSimpleDiscount(percentage, productID, condition);
     }
 
-    public int createOnStoreSimpleDiscountPolicy(double percentage, int ConditionID, String username) throws Exception {
+    public int createOnStoreConditionDiscountPolicy(double percentage, int ConditionID, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
 
@@ -145,14 +174,6 @@ public class DiscountPolicyFacade {
 
 
         return conditionRepository.createMinBuyCondition(minBuy);
-    }
-
-    public int createTrueCondition(String username) throws Exception {
-        if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
-            throw new IllegalArgumentException(Error.makeUserCanNotCreateConditionForDiscountPolicyError(username));
-
-
-        return conditionRepository.createTrueCondition();
     }
 
     public int createMinProductCondition(int minAmount, int productID, String username) throws Exception {

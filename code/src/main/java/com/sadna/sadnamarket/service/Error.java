@@ -440,4 +440,8 @@ public class Error {
     public static String makeUserCanNotCreateConditionForDiscountPolicyError(String username){
         return String.format("%s can not create condition for discounts policies.", username);
     }
+
+    public static String percentageForDiscountIsNotInRange(double percentage) {
+        return String.format("percentage discount is supposed to be between 100 and 0, yours is %f.", percentage);
+    }
 }

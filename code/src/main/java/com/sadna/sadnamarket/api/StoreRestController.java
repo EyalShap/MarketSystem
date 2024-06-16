@@ -467,15 +467,6 @@ public class StoreRestController {
         return marketService.createMinProductCondition(token,policyAmountRequest.getMinAmount(),policyAmountRequest.getProductId(),username);
     }
 
-    @PostMapping("/createTrueCondition")
-    public Response createTrueCondition(@RequestParam String username,HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        String token = null;
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
-        }
-        return marketService.createTrueCondition(token,username);
-    }
 
     @PostMapping("/createMinBuyCondition")
     public Response createMinBuyCondition(@RequestParam String username,@RequestParam int minBuy,HttpServletRequest request) {
@@ -524,7 +515,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.createOnProductSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getProductId(),policyConditionRequest.getConditionAID());
+        return marketService.createOnProductSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getProductId());
     }
     @PostMapping("/createOnCategorySimpleDiscountPolicy")
     public Response createOnCategorySimpleDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
@@ -533,7 +524,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.createOnCategorySimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getCategoryName(),policyConditionRequest.getConditionAID());
+        return marketService.createOnCategorySimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getCategoryName());
     }
 
 
@@ -544,8 +535,39 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.createOnStoreSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getConditionAID());
+        return marketService.createOnStoreSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage());
     }
+
+    @PostMapping("/createOnProductConditionDiscountPolicy")
+    public Response createOnProductConditionDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOnProductConditionDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getProductId(),policyConditionRequest.getConditionAID());
+    }
+    @PostMapping("/createOnCategoryConditionDiscountPolicy")
+    public Response createOnCategoryConditionDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOnCategoryConditionDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getCategoryName(),policyConditionRequest.getConditionAID());
+    }
+
+
+    @PostMapping("/createOnStoreConditionDiscountPolicy")
+    public Response createOnStoreConditionDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.createOnStoreConditionDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getConditionAID());
+    }
+
 
     @PostMapping("/createTakeMaxXorDiscountPolicy")
     public Response createTakeMaxXorDiscountPolicy(@RequestParam String username,@RequestBody PolicyIdRequest policyIdRequest,HttpServletRequest request) {
