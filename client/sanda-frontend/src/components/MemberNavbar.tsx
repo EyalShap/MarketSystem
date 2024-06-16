@@ -62,6 +62,8 @@ const MemberNavbar = () => {
   }
   const getOrdersUrl = ():string => {
     return `/orders/${localStorage.getItem('username')}`;
+  }
+  
   const handleCartClick = () => {
     if(isloggedin){
       navigate(`/cart/${localStorage.getItem('username')}`);
@@ -69,6 +71,7 @@ const MemberNavbar = () => {
       navigate(`/cart/${localStorage.getItem('guestId')}`);
     }
   }
+  
   return (
     <nav className="membernavbar" onClick={()=>{menuOpen&&toggleMenu();notificationsOpen&&toggleNotifications();}}>
       <Link to="/" className="navbar-logo">
