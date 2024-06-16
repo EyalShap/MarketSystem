@@ -130,24 +130,13 @@
   margin-bottom: 3px;
 }
 
-.buy-again-button {
-  font-size: 15px;
-  width: 140px;
-  height: 36px;
-  border-radius: 8px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.buy-again-icon {
-  width: 25px;
-  margin-right: 15px;
-}
 
 .product-actions {
-  align-self: start;
+    align-items: center;
+    justify-content: center;
+
 }
 
 .track-package-button {

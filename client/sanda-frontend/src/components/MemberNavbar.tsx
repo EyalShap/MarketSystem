@@ -59,6 +59,9 @@ const MemberNavbar = () => {
   const getStoresUrl = ():string => {
     return `/memberStores/${localStorage.getItem('username')}`;
   }
+  const getOrdersUrl = ():string => {
+    return `/orders/${localStorage.getItem('username')}`;
+  }
   return (
     <nav className="membernavbar" onClick={()=>{menuOpen&&toggleMenu();notificationsOpen&&toggleNotifications();}}>
       <Link to="/" className="navbar-logo">
@@ -89,8 +92,8 @@ const MemberNavbar = () => {
           </button>
           {menuOpen && (
             <ul className="options-menu">
-              <li className="menu-item">My orders</li>
-              <li className="menu-item"><Link to={getStoresUrl()} className="navbar-link">My stores</Link></li>
+              <li className="menu-item"><Link to={getOrdersUrl()} className="navbar-link">My Orders</Link></li>
+              <li className="menu-item"><Link to={getStoresUrl()} className="navbar-link">My Stores</Link></li>
               <li className="menu-item"><Link to={getProfileUrl()} className="navbar-link">Profile</Link></li>
               <li className="menu-item"onClick={handleLogout}>logout</li>
             </ul>
