@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class TrueCondition extends Condition{
 
-    TrueCondition(int id) {
+    public TrueCondition(int id) {
         super(id);
     }
 

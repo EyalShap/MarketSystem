@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicy;
+import com.sadna.sadnamarket.service.Error;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +90,7 @@ public class MemoryConditionRepository implements IConditionRespository{
     }
     public Condition findConditionByID(int condId) throws Exception {
         if(!conditionExists(condId)) {
-            throw new Exception();
+            throw new IllegalArgumentException(Error.makeConditionWithIdDoesNotExistError(condId));
         }
         return conditions.get(condId);
     }
