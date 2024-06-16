@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StoreModel from '../models/StoreModel';
-import { getStoreDiscounts, getStoreInfo, getStorePolicies, hasPermission, isManager, isOwner, searchAndFilterStoreProducts } from '../API';
+import { getStoreDiscounts, getStoreInfo, getStorePolicies, hasPermission, isManager, isOwner, removeDiscountFromStore, removePolicyFromStore, searchAndFilterStoreProducts } from '../API';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProductModel from '../models/ProductModel';
 import { Rating } from 'react-simple-star-rating'
@@ -87,12 +87,12 @@ export const Store = () => {
               <div className="listPolicies">
                 <h4>Purchase Policies:</h4>
                 {buyPolicies.map(policy => <div><p>{policy.description}</p>
-                {canRemoveBuyPolicy && <button><TiDelete /></button>}</div>)}
+                {canRemoveBuyPolicy && <button onClick = {async () => await removePolicyFromStore(parseInt(storeId!), policy.policyId)}><TiDelete /></button>}</div>)}
               </div>
               <div className="listPolicies">
                 <h4>Discount Policies:</h4>
                 {discountPolicies.map(policy => <div><p>{policy.description}</p>
-                {canRemoveDisPolicy && <button><TiDelete /></button>}</div>)}
+                {canRemoveDisPolicy && <button onClick={async () => await removeDiscountFromStore(parseInt(storeId!), policy.policyId)}><TiDelete /></button>}</div>)}
               </div>
             </div>
             <div className='dropdownDiv'>

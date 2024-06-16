@@ -161,7 +161,7 @@ const Cart = () => {
                 <h3>Cart Summary</h3>
                 <p>Total Price: ${cart.oldPrice}</p>
                 <p>Discounted Price: ${cart.newPrice}</p>
-                <button className="purchase-button" disabled={!error &&cart.productsData.length>0} >Purchase</button>
+                <button onClick = {() => navigate('/purchase')} className="purchase-button" disabled={error != "" &&cart.productsData.length>0} >Purchase</button>
             </div>
             <CustomizedDialogs open={dialogOpen} onClose={handleDialogClose} text={error} /> 
         </div>
