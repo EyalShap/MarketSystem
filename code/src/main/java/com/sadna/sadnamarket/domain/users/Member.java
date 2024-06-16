@@ -231,6 +231,12 @@ public class Member extends IUser {
         logger.info("Exiting accept");
     }
 
+    public void reject(int requestID) {
+        logger.info("Entering reject with requestID={}", requestID);
+        notifes.remove(requestID);
+        logger.info("Exiting reject");
+    }
+
 
 
     public Request getRequest(int request_id) {

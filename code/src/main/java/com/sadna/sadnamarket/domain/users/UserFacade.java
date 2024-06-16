@@ -226,6 +226,7 @@ public class UserFacade {
         String role=request.getRole();
         String apointer=request.getSender();
         iUserRepo.getMember(apointer).addApointer(acceptingName, storeId);
+        notify(apointer, "User " + acceptingName + " accepted request for " + role + " in " + storeId);
         if(role.equals("Manager"))
             storeFacade.addStoreManager(acceptingName, storeId);
         else
@@ -236,9 +237,21 @@ public class UserFacade {
     public void reject(String rejectingName,int requestID){
         logger.info("{} reject request id: {}",rejectingName,requestID);
         Member rejecting=getMember(rejectingName);
-        rejecting.accept(requestID);
+        Request request=rejecting.getRequest(requestID);
+        int storeId=request.getStoreId();
+        String role=request.getRole();
+        String apointer=request.getSender();
+        notify(apointer, "User " + rejectingName + " rejected request for " + role + " in " + storeId);
+        rejecting.reject(requestID);
         logger.info("{} rejected request id: {}",rejectingName,requestID);
 
+    }
+
+    public void ok(String okayingName,int notifId){
+        logger.info("{} ok notification id: {}",okayingName,notifId);
+        Member okaying =getMember(okayingName);
+        okaying.reject(notifId);
+        logger.info("{} okayed notification id: {}",okayingName,notifId);
     }
 
     public void login(String userName,String password, int guestId){//the cart of the guest
@@ -480,7 +493,7 @@ public class UserFacade {
         logger.info("calculate final price for user {} with items {}",username,storePriceData);
         double sum=0;
         for(ProductDataPrice productDataPrice: storePriceData){
-            sum=sum+productDataPrice.getNewPrice();
+            sum=sum+productDataPrice.getAmount()* productDataPrice.getNewPrice();
         }
         logger.info("finished calculate final price for user {} with items {} and got {}",username,storePriceData, sum);
         return sum;
@@ -489,7 +502,7 @@ public class UserFacade {
         logger.info("calculate old price for user {} with items {}",username,storePriceData);
         double sum=0;
         for(ProductDataPrice productDataPrice: storePriceData){
-                sum=sum+productDataPrice.getOldPrice();
+                sum=sum+productDataPrice.getAmount()*productDataPrice.getOldPrice();
         }
         logger.info("finished calculate old price for user {} with items {} and got {}",username,storePriceData, sum);
         return sum;
@@ -534,7 +547,7 @@ public class UserFacade {
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,username);
-        storeFacade.buyCart(username, items);
+        storeFacade.updateStock(null, items);
         clearCart(username);
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
     }
@@ -555,7 +568,7 @@ public class UserFacade {
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,null);
-        storeFacade.buyCart(null, items);
+        storeFacade.updateStock(null, items);
         iUserRepo.getGuest(guestId).getCart().clear();
         logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
     }
@@ -623,9 +636,9 @@ public class UserFacade {
         Map<Integer,Double> productAmounts=new HashMap<>();
         for(ProductDataPrice productDataPrice: storeBag){
             if(productAmounts.containsKey(productDataPrice.getStoreId())){
-                productAmounts.put(productDataPrice.getStoreId(), productAmounts.get(productDataPrice.getStoreId())+productDataPrice.getNewPrice());
+                productAmounts.put(productDataPrice.getStoreId(), productAmounts.get(productDataPrice.getStoreId())+productDataPrice.getAmount()*productDataPrice.getNewPrice());
             }else{
-                productAmounts.put(productDataPrice.getStoreId(), productDataPrice.getNewPrice());
+                productAmounts.put(productDataPrice.getStoreId(), productDataPrice.getAmount()*productDataPrice.getNewPrice());
             }
         }
         logger.info("finish get store price");

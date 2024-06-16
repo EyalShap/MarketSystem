@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IconButton, Badge } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { enterAsGuest, fetchNotifications, logout } from '../API';
+import { acceptRequest, enterAsGuest, fetchNotifications, logout, okNotification, rejectRequest } from '../API';
 import { AppContext } from '../App';
 import { NotificationModel, RequestModel } from '../models/NotificationModel';
 import { useSubscription } from 'react-stomp-hooks';
@@ -21,6 +21,7 @@ const MemberNavbar = () => {
   useSubscription(`/topic/notifications/${localStorage.getItem('username')}`, (message) => {
     let notif: NotificationModel = JSON.parse(message.body);
     alert(`New Notification: ${notif.message}`);
+    console.log(notif);
     reloadNotifs();
   })
 
@@ -61,6 +62,12 @@ const MemberNavbar = () => {
   }
   const getOrdersUrl = ():string => {
     return `/orders/${localStorage.getItem('username')}`;
+  const handleCartClick = () => {
+    if(isloggedin){
+      navigate(`/cart/${localStorage.getItem('username')}`);
+    }else{
+      navigate(`/cart/${localStorage.getItem('guestId')}`);
+    }
   }
   return (
     <nav className="membernavbar" onClick={()=>{menuOpen&&toggleMenu();notificationsOpen&&toggleNotifications();}}>
@@ -79,8 +86,18 @@ const MemberNavbar = () => {
               {notifications.map((notification, index) => (
                 <li key={index} className="notification-item">
                   <p>{notification.message}</p>
-                  {Object.hasOwn(notification, 'storeId') && <button className="">accept </button>}
-                  {Object.hasOwn(notification, 'storeId') && <button className="">reject </button>}
+                  {!('storeId' in notification) && <button onClick={() => {
+                    okNotification(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                  }} className="">OK </button>}
+                  {('storeId' in notification) && <button onClick={() => {
+                    acceptRequest(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                    }} className="">accept </button>}
+                  {('storeId' in notification) && <button onClick={() => {
+                    rejectRequest(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                  }} className="">reject </button>}
                 </li>
               ))}
             </ul>
@@ -99,7 +116,7 @@ const MemberNavbar = () => {
             </ul>
           )}
         </div>
-        <IconButton size="small" color="inherit">
+        <IconButton size="small" color="inherit" onClick={handleCartClick}>
           <ShoppingCartIcon />
         </IconButton>
       </div>

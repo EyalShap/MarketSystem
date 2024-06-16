@@ -19,9 +19,19 @@ public class BuyPolicyManager {
     }
 
     public boolean hasPolicy(int policyId) {
-        return buyPolicyIds.contains(policyId) || lawsBuyPolicyIds.contains(policyId);
+        synchronized (buyPolicyIds) {
+            synchronized (lawsBuyPolicyIds) {
+                return buyPolicyIds.contains(policyId) || lawsBuyPolicyIds.contains(policyId);
+            }
+        }
     }
 
+    public List<Integer> getAllPolicyIds(){
+        List<Integer> allIds = new LinkedList<>();
+        allIds.addAll(buyPolicyIds);
+        allIds.addAll(lawsBuyPolicyIds);
+        return allIds;
+    }
 
     public void addBuyPolicy(int buyPolicyId) {
         synchronized (buyPolicyIds) {
@@ -45,29 +55,35 @@ public class BuyPolicyManager {
 
     public void removeBuyPolicy(int buyPolicyId) {
         synchronized (buyPolicyIds) {
-            if(lawsBuyPolicyIds.contains(buyPolicyId)) {
-                throw new IllegalArgumentException(Error.makeCanNotRemoveLawBuyPolicyError(buyPolicyId));
+            synchronized (lawsBuyPolicyIds) {
+                if (lawsBuyPolicyIds.contains(buyPolicyId)) {
+                    throw new IllegalArgumentException(Error.makeCanNotRemoveLawBuyPolicyError(buyPolicyId));
+                }
+                if (!hasPolicy(buyPolicyId)) {
+                    throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(buyPolicyId));
+                }
+                buyPolicyIds.removeIf(id -> id == buyPolicyId);
             }
-            if(!hasPolicy(buyPolicyId)) {
-                throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(buyPolicyId));
-            }
-            buyPolicyIds.removeIf(id -> id == buyPolicyId);
         }
     }
 
     public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         Set<String> error = new HashSet<>();
         // if one policy says that you cant buy return false;
-        for (Integer policyId : buyPolicyIds) {
-            BuyPolicy policy = facade.getBuyPolicy(policyId);
-            if (!policy.canBuy(cart, products, user)) {
-                error.add(policy.getErrorDescription());
+        synchronized (buyPolicyIds) {
+            for (Integer policyId : buyPolicyIds) {
+                BuyPolicy policy = facade.getBuyPolicy(policyId);
+                if (!policy.canBuy(cart, products, user)) {
+                    error.add(policy.getErrorDescription());
+                }
             }
         }
-        for (Integer policyId : lawsBuyPolicyIds) {
-            BuyPolicy policy = facade.getBuyPolicy(policyId);
-            if (!policy.canBuy(cart, products, user)) {
-                error.add(policy.getErrorDescription());
+        synchronized (lawsBuyPolicyIds) {
+            for (Integer policyId : lawsBuyPolicyIds) {
+                BuyPolicy policy = facade.getBuyPolicy(policyId);
+                if (!policy.canBuy(cart, products, user)) {
+                    error.add(policy.getErrorDescription());
+                }
             }
         }
         return error;

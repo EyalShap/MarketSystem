@@ -7,7 +7,7 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleDiscount extends Discount{
+public class SimpleDiscount extends Discount {
     //percentage is (100-0)
     private final double percentage;
     private Integer productID;
@@ -54,6 +54,19 @@ public class SimpleDiscount extends Discount{
             else if(chosePath){
                 discountAll(listProductsPrice);
             }
+        }
+    }
+
+    @Override
+    public void giveDiscountWithoutCondition(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
+        if(productID != null){
+            discountOnlyProduct(productDTOMap, listProductsPrice);
+        }
+        else if(categoryName != null){
+            discountOnlyCategory(productDTOMap, listProductsPrice);
+        }
+        else if(chosePath){
+            discountAll(listProductsPrice);
         }
     }
 

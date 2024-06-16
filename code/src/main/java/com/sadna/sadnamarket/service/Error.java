@@ -432,4 +432,16 @@ public class Error {
         Set<Integer> sortedSet = new TreeSet<>(productIds);
         return String.format("Policy %d can not be added to store %d because the store does not have all of the policy products: %s.", policyId, storeId, sortedSet.toString());
     }
+
+    public static String makeUserCanNotCreateDiscountPolicyError(String username){
+        return String.format("%s can not create discounts policies.", username);
+    }
+
+    public static String makeUserCanNotCreateConditionForDiscountPolicyError(String username){
+        return String.format("%s can not create condition for discounts policies.", username);
+    }
+
+    public static String percentageForDiscountIsNotInRange(double percentage) {
+        return String.format("percentage discount is supposed to be between 100 and 0, yours is %f.", percentage);
+    }
 }

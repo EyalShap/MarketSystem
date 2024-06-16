@@ -10,6 +10,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
     private int minAge;
@@ -48,6 +49,21 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
         if(maxAge == -1)
             return String.format("Buying %s is allowed only for users older than %d.", policySubject.getDesc(), minAge);
         return String.format("Buying %s is allowed only for users at ages %d - %d.", policySubject.getDesc(), minAge, maxAge);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!super.equals(o))
+            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AgeLimitBuyPolicy that = (AgeLimitBuyPolicy) o;
+        return minAge == that.minAge && maxAge == that.maxAge;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(minAge, maxAge);
     }
 
     private boolean isAgeInLimit(LocalDate birthDate) {

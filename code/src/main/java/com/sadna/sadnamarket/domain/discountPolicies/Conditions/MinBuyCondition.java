@@ -6,7 +6,8 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
 import java.util.List;
 import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class MinBuyCondition extends Condition{
 
     private final int minBuy;
@@ -34,4 +35,6 @@ public class MinBuyCondition extends Condition{
     public String description() {
         return "the cart original cost (before discounts) is at least " + minBuy;
     }
+
+
 }

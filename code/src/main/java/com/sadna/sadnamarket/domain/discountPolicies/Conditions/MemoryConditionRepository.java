@@ -1,7 +1,11 @@
 package com.sadna.sadnamarket.domain.discountPolicies.Conditions;
 
+
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicy;
 
 import java.util.HashMap;
@@ -31,7 +35,8 @@ public class MemoryConditionRepository implements IConditionRespository{
     public int createMinProductCondition(int minAmount, int productID)throws JsonProcessingException {
         MinProductCondition newCondition = new MinProductCondition(nextId, minAmount);
         newCondition.setOnProductName(productID);
-        return addConditionToMaps(newCondition);        }
+        return addConditionToMaps(newCondition);
+    }
 
     @Override
     public int createMinProductOnCategoryCondition(int minAmount, String categoryName)throws JsonProcessingException {

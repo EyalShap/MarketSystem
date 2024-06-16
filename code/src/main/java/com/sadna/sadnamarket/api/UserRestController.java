@@ -134,6 +134,29 @@ public class UserRestController {
         marketService.checkToken(token,acceptingName);
         return marketService.acceptRequest(acceptingName,requestID);
     }
+
+    @PostMapping("/rejectRequest")
+    public Response rejectRequest(@RequestParam String acceptingName,@RequestParam int requestID,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,acceptingName);
+        return marketService.rejectRequest(acceptingName,requestID);
+    }
+
+    @PostMapping("/okNotification")
+    public Response okNotification(@RequestParam String username,@RequestParam int notifID,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,username);
+        return marketService.okNotification(username,notifID);
+    }
+
     @PostMapping("/loginUsingJwt")
     public Response loginUsingJwt(@RequestParam String username,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");

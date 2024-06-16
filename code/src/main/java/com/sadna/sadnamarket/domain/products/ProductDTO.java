@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.products;
 import java.util.Objects;
 
 public class ProductDTO {
+    private int storeId;
     private int productID;
     private String productName;
     private double productPrice;
@@ -22,6 +23,7 @@ public class ProductDTO {
         this.productWeight = productWeight;
         this.isActive = isActive;
         this.description = description;
+        this.storeId = storeId;
     }
      public ProductDTO(int productID, String productName, double productPrice, String productCategory,
             double productRank, double productWeight, boolean isActive, int storeId) {
@@ -32,6 +34,7 @@ public class ProductDTO {
         this.productRank = productRank;
         this.productWeight = productWeight;
         this.isActive = isActive;
+        this.storeId = storeId;
     }
 
 
@@ -87,5 +90,13 @@ public class ProductDTO {
     @Override
     public int hashCode() {
         return Objects.hash(productID, productName, productPrice, productCategory, productRank, isActive, productWeight, description);
+    }
+
+    public int getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
     }
 }

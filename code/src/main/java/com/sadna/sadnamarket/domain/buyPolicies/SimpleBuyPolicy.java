@@ -39,4 +39,11 @@ public abstract class SimpleBuyPolicy extends BuyPolicy{
         return ids;
     }
 
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SimpleBuyPolicy)) return false;
+        SimpleBuyPolicy that = (SimpleBuyPolicy) o;
+        return buytypes.equals(that.buytypes) && policySubject.equals(that.policySubject);
+    }
+
 }

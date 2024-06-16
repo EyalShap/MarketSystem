@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
+import com.sadna.sadnamarket.service.Error;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,9 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
 
     @Override
     public int addOnCategorySimpleDiscount(double percentage, String categoryName, Condition condition) throws JsonProcessingException {
+        if(percentage >100 || percentage <0){
+            throw new IllegalArgumentException(Error.percentageForDiscountIsNotInRange(percentage));
+        }
         SimpleDiscount newDiscountPolicy = new SimpleDiscount(nextId, percentage, condition);
         newDiscountPolicy.setOnCategoryName(categoryName);
         return addDiscountPolicyToMaps(newDiscountPolicy);
@@ -40,6 +44,9 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
 
     @Override
     public int addOnProductSimpleDiscount(double percentage, int productID, Condition condition) throws JsonProcessingException {
+        if(percentage >100 || percentage <0){
+            throw new IllegalArgumentException(Error.percentageForDiscountIsNotInRange(percentage));
+        }
         SimpleDiscount newDiscountPolicy = new SimpleDiscount(nextId, percentage, condition);
         newDiscountPolicy.setOnProductID(productID);
         return addDiscountPolicyToMaps(newDiscountPolicy);
@@ -47,6 +54,9 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
 
     @Override
     public int addOnStoreSimpleDiscount(double percentage, Condition condition) throws JsonProcessingException {
+        if(percentage >100 || percentage <0){
+            throw new IllegalArgumentException(Error.percentageForDiscountIsNotInRange(percentage));
+        }
         SimpleDiscount newDiscountPolicy = new SimpleDiscount(nextId, percentage, condition);
         newDiscountPolicy.setOnStore();
         return addDiscountPolicyToMaps(newDiscountPolicy);

@@ -45,4 +45,6 @@ public abstract class BuyPolicy {
     public abstract String getPolicyDesc();
 
     public abstract Set<Integer> getPolicyProductIds();
+
+    public abstract boolean equals(Object other);
 }

@@ -15,30 +15,34 @@ import java.util.Set;
 
 public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     private Map<Integer, BuyPolicy> buyPolicies;
-    private Map<String, Integer> buyPoliciesDesc;
+    private Map<BuyPolicy, Integer> buyPoliciesDesc;
     private int nextId;
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private SimpleFilterProvider idFilter;
+    //private ObjectMapper objectMapper = new ObjectMapper();
+    //private SimpleFilterProvider idFilter;
 
     public MemoryBuyPolicyRepository() {
         this.buyPolicies = new HashMap<>();
         this.buyPoliciesDesc = new HashMap<>();
         this.nextId = 0;
-        this.idFilter = new SimpleFilterProvider().addFilter("idFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
-        objectMapper.registerModule(new JavaTimeModule());
+        //this.idFilter = new SimpleFilterProvider().addFilter("idFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
+        //objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
     public BuyPolicy findBuyPolicyByID(int policyId) {
-        if(!buyPolicyExists(policyId))
-            throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
+        synchronized (buyPolicies) {
+            if (!buyPolicyExists(policyId))
+                throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
 
-        return buyPolicies.get(policyId);
+            return buyPolicies.get(policyId);
+        }
     }
 
     @Override
     public Set<Integer> getAllPolicyIds() {
-        return buyPolicies.keySet();
+        synchronized (buyPolicies) {
+            return buyPolicies.keySet();
+        }
     }
 
     @Override
@@ -78,6 +82,12 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
+    public int addCategorySpecificDateBuyPolicy(String category, List<BuyType> buytypes, int day, int month, int year) throws JsonProcessingException {
+        BuyPolicy newPolicy = new SpecificDateBuyPolicy(nextId, buytypes, new CategorySubject(category), day, month, year);
+        return addPolicyToMaps(newPolicy);
+    }
+
+    @Override
     public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
         BuyPolicy newPolicy = new AndBuyPolicy(nextId, policy1, policy2);
         return addPolicyToMaps(newPolicy);
@@ -96,21 +106,24 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     private int addPolicyToMaps(BuyPolicy newPolicy) throws JsonProcessingException {
-        String policyDesc = newPolicy.getClass().getName() + "-" + objectMapper.writer(idFilter).writeValueAsString(newPolicy);
-        if(!buyPoliciesDesc.containsKey(policyDesc)) {
-            buyPolicies.put(nextId, newPolicy);
-            buyPoliciesDesc.put(policyDesc, nextId);
-            nextId++;
-            return nextId - 1;
-        }
-        else {
-            return buyPoliciesDesc.get(policyDesc);
+        //String policyDesc = newPolicy.getClass().getName() + "-" + objectMapper.writer(idFilter).writeValueAsString(newPolicy);
+        synchronized (buyPolicies) {
+            if (!buyPoliciesDesc.containsKey(newPolicy)) {
+                buyPolicies.put(nextId, newPolicy);
+                buyPoliciesDesc.put(newPolicy, nextId);
+                nextId++;
+                return nextId - 1;
+            } else {
+                return buyPoliciesDesc.get(newPolicy);
+            }
         }
     }
 
     @Override
     public boolean buyPolicyExists(int policyId) {
-        return buyPolicies.containsKey(policyId);
+        synchronized (buyPolicies) {
+            return buyPolicies.containsKey(policyId);
+        }
     }
 
 }

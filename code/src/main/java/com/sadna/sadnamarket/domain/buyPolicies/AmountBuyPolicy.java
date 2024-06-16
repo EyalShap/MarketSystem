@@ -7,6 +7,7 @@ import com.sadna.sadnamarket.service.Error;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AmountBuyPolicy extends SimpleBuyPolicy {
     private int from;
@@ -58,5 +59,20 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
         if(to == -1)
             return String.format("Less than %d units of %s must be bought.", to, policySubject.getDesc());
         return String.format("%d - %d units of %s must be bought.", from, to, policySubject.getDesc());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!super.equals(o))
+            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AmountBuyPolicy that = (AmountBuyPolicy) o;
+        return from == that.from && to == that.to;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(from, to);
     }
 }

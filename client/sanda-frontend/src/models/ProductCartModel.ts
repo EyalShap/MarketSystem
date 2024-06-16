@@ -3,6 +3,6 @@ export default interface ProductCartModel {
     storeId: number,
     name: string,
     amount: number
-    originalPrice: number
-    discountedPrice: number
+    oldPrice: number
+    newPrice: number
 }

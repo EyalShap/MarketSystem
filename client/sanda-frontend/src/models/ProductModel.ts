@@ -1,9 +1,10 @@
 export default interface ProductModel {
-    id: number,
-    name: string,
-    storeId: number,
-    price: number
-    productCatogory?: string
-    productDescription?: string
+    productID: number,
+    productName: string,
+    productPrice: number,
+    productWeight: number,
+    productCategory: string,
+    description: string,
     productRank?: number
+    storeId?: number
 }
