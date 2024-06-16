@@ -2,6 +2,8 @@ package com.sadna.sadnamarket.domain.DisocuntPolicys;
 
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
+import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.IConditionRespository;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
@@ -47,7 +49,11 @@ public class DiscountPolicyTest {
         this.storeFacade.setOrderFacade(orderFacade);
         this.storeFacade.setProductFacade(productFacade);
         this.storeFacade.setDiscountPolicyFacade(discountPolicyFacade);
-
+        BuyPolicyFacade buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
+        buyPolicyFacade.setStoreFacade(storeFacade);
+        buyPolicyFacade.setUserFacade(userFacade);
+        buyPolicyFacade.setProductFacade(productFacade);
+        this.storeFacade.setBuyPolicyFacade(buyPolicyFacade);
 
         authFacade.register("hila", "654321", "Eugene", "Krabs", "hilala@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
         authFacade.login("hila", "654321");

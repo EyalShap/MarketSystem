@@ -78,8 +78,7 @@ public class StoreFacade {
             buyPolicyFacade.addLawBuyPolicyToStore(founderUserName, storeId, policyId2);
 
             //adding kind of null discount
-            int condID = discountPolicyFacade.createTrueCondition(founderUserName);
-            int discountPolicyID = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(0, condID, founderUserName);
+            int discountPolicyID = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(0, founderUserName);
             discountPolicyFacade.addDiscountPolicyToStore(storeId, discountPolicyID, founderUserName);
 
         }
