@@ -72,7 +72,7 @@ export const ActionDropdown = (props: any) => {
                 <button className="optionButton" onClick={() => navigate("./staff")}><IoPerson /> View Staff</button>
                 }
                 {isOwnerBool &&
-                <button className="optionButton" ><FaCreditCard />  Update Bank Account</button>
+                <button className="optionButton" onClick={() => navigate("./bank")}><FaCreditCard />  Update Bank Account</button>
                 }
                 {isFounderBool && (storeActive(props.storeId) ? <button className="optionButton closeStore"><FaSkull /> Close Store</button> : <button className="optionButton reopenStore"><FaDoorOpen /> Reopen Store</button>)}
             </div>

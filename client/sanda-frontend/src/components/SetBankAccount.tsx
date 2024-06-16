@@ -49,54 +49,44 @@ const SetBankAccount = () => {
       <h2>Add New Product</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="create-store-form">
         <div className="form-group">
-          <label htmlFor="productName" className='label'>Product Name</label>
+          <label htmlFor="productName" className='label'>Bank Code</label>
           <input
-            id="productName"
-            placeholder='Enter product name'
-            {...register('productName', { onChange: () => trigger("productName") })}
-            className={errors.productName && touchedFields.productName ? 'invalid' : ''}
+            id="bankCode"
+            placeholder='Enter bank code'
+            {...register('bankCode', { onChange: () => trigger("bankCode") })}
+            className={errors.bankCode && touchedFields.bankCode ? 'invalid' : ''}
           />
-          {errors.productName && <p className="error-message">{errors.productName.message}</p>}
+          {errors.bankCode && <p className="error-message">{errors.bankCode.message}</p>}
         </div>
         <div className="form-group">
-          <label htmlFor="productPrice" className='label'>Product Price</label>
+          <label htmlFor="bankBranchCode" className='label'>Bank Branch Code</label>
           <input
-            id="productPrice"
-            placeholder='Enter product price'
-            {...register('productPrice', { onChange: () => trigger("productPrice") })}
-            className={errors.productPrice && touchedFields.productPrice ? 'invalid' : ''}
+            id="bankBranchCode"
+            placeholder='Enter branch code'
+            {...register('bankBranchCode', { onChange: () => trigger("bankBranchCode") })}
+            className={errors.bankBranchCode && touchedFields.bankBranchCode ? 'invalid' : ''}
           />
-          {errors.productPrice && <p className="error-message">{errors.productPrice.message}</p>}
+          {errors.bankBranchCode && <p className="error-message">{errors.bankBranchCode.message}</p>}
         </div>
         <div className="form-group">
-          <label htmlFor="category" className='label'>Product Category</label>
+          <label htmlFor="accountCode" className='label'>Bank Account Code</label>
           <input
-            id="category"
-            placeholder='Enter product category'
-            {...register('category', { onChange: () => trigger("category") })}
-            className={errors.category && touchedFields.category ? 'invalid' : ''}
+            id="accountCode"
+            placeholder='Enter account code'
+            {...register('accountCode', { onChange: () => trigger("accountCode") })}
+            className={errors.accountCode && touchedFields.accountCode ? 'invalid' : ''}
           />
-          {errors.category && <p className="error-message">{errors.category.message}</p>}
+          {errors.accountCode && <p className="error-message">{errors.accountCode.message}</p>}
         </div>
         <div className="form-group">
-          <label htmlFor="productWeight" className='label'>Product Weight</label>
+          <label htmlFor="ownerId" className='label'>Account Owner's ID</label>
           <input
-            id="productWeight"
-            placeholder='Enter product weight'
-            {...register('productWeight', { onChange: () => trigger("productWeight") })}
-            className={errors.productWeight && touchedFields.productWeight ? 'invalid' : ''}
+            id="ownerId"
+            placeholder='Enter ID'
+            {...register('ownerId', { onChange: () => trigger("ownerId") })}
+            className={errors.ownerId && touchedFields.ownerId ? 'invalid' : ''}
           />
-          {errors.productWeight && <p className="error-message">{errors.productWeight.message}</p>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="productQuantity" className='label'>Initial Amount</label>
-          <input
-            id="productQuantity"
-            placeholder='Enter initial amount'
-            {...register('productQuantity', { onChange: () => trigger("productQuantity") })}
-            className={errors.productQuantity && touchedFields.productQuantity ? 'invalid' : ''}
-          />
-          {errors.productQuantity && <p className="error-message">{errors.productQuantity.message}</p>}
+          {errors.ownerId && <p className="error-message">{errors.ownerId.message}</p>}
         </div>
         <button type="submit" className='button'>Change Bank Account</button>
       </form>
