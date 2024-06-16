@@ -1229,3 +1229,9 @@ export const buyCart = async(purchase: PurchaseInfoModel): Promise<RestResponse>
     );
     return response.data;
 }
+
+export const getTopProducts=async():Promise<RestResponse>=>{
+    const res=await fetch(`${server}/api/product/getTopProducts`);
+    const data: RestResponse = await res.json();
+    return data;
+}

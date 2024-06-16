@@ -22,5 +22,5 @@ public interface IProductRepository {
     public List<Product> filterByName(String productName);
 
     public List<Product> filterByCategory(String category);
-
+    public List <Product> getTopProducts();
 }

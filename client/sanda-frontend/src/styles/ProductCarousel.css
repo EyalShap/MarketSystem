@@ -21,6 +21,7 @@
   padding: 1rem; /* Inner padding */
   text-align: center; /* Center-aligned text */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  cursor: pointer;
 }
 
 .product-item img {

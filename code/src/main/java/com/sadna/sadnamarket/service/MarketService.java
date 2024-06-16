@@ -1490,4 +1490,15 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+    public Response getTopProducts(){
+        try{
+            logger.info("get top products");
+            List<ProductDTO> res = productFacade.getTopProducts();
+            logger.info("finished get top products");
+            return Response.createResponse(false, objectMapper.writeValueAsString(res));
+        }catch(Exception e){
+            logger.error("error get top products");
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 }
