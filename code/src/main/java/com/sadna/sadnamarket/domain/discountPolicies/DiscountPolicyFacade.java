@@ -217,11 +217,7 @@ public class DiscountPolicyFacade {
             mapper.put(storeId, new DiscountPolicyManager(this));
         DiscountPolicyManager manager = mapper.get(storeId);
         manager.addDiscountPolicy(policyId);
-        Discount discount = discountPolicyRepository.findDiscountPolicyByID(policyId);
-        //if the discount is composite it will return the discountsAB IDs and remove them
-        // (if not composit it will return -1 thus won't remove anything
-        manager.removeDiscountPolicy(discount.getDiscountAID());
-        manager.removeDiscountPolicy(discount.getDiscountBID());
+
     }
     public void removeDiscountPolicyFromStore(int storeId, int policyId, String username) throws Exception{
         if (!storeFacade.isStoreActive(storeId))
