@@ -47,8 +47,8 @@ public class StoreRestController {
         return marketService.addProductToStore(token,username,productStoreRequest.getStoreId(),productStoreRequest.getProductName(),productStoreRequest.getProductQuantity(),productStoreRequest.getProductPrice(),productStoreRequest.getCategory(),productStoreRequest.getRank(),productStoreRequest.getProductWeight());
     }
 
-    @PatchMapping("/setStoreBankAccount")
-    public Response setStoreBankAccount(@RequestParam  String username, @RequestParam int storeId, @RequestParam BankAccountDTO bankAccoun , HttpServletRequest request) {
+    @PostMapping("/setStoreBankAccount")
+    public Response setStoreBankAccount(@RequestParam  String username, @RequestParam int storeId, @RequestBody BankAccountDTO bankAccoun , HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
