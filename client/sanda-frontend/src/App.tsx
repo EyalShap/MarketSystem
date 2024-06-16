@@ -24,6 +24,7 @@ import AddProduct from './components/AddProduct';
 import { Product } from './components/Product';
 import SetBankAccount from './components/SetBankAccount';
 import StoreOrders from './components/StoreOrders';
+import SearchOrdersByUsername from './components/OrderHistoryByUser';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -90,6 +91,7 @@ function App() {
             <Route path="/createStore" element={<CreateStore />}/>
             <Route path="/permission-error" element={<PermissionError />}/>
             <Route path="/managerStoreHistory" element={<StoreOrders />}/>
+            <Route path="/managerUserHistory" element={<SearchOrdersByUsername />}/>
             <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
           </Routes>
         </Router>
