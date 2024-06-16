@@ -8,6 +8,7 @@ import { acceptRequest, enterAsGuest, fetchNotifications, logout, okNotification
 import { AppContext } from '../App';
 import { NotificationModel, RequestModel } from '../models/NotificationModel';
 import { useSubscription } from 'react-stomp-hooks';
+import SearchBar from './Search';
 
 
 const MemberNavbar = () => {
@@ -62,6 +63,7 @@ const MemberNavbar = () => {
   }
   const getOrdersUrl = ():string => {
     return `/orders/${localStorage.getItem('username')}`;
+    }
   const handleCartClick = () => {
     if(isloggedin){
       navigate(`/cart/${localStorage.getItem('username')}`);
@@ -74,6 +76,7 @@ const MemberNavbar = () => {
       <Link to="/" className="navbar-logo">
         Your Logo
       </Link>
+      <SearchBar />
       <div className="navbar-right">
         <div className="notifications-navbar-items">
           <IconButton size="small" color="inherit" onClick={toggleNotifications}>

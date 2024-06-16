@@ -531,9 +531,9 @@ export const searchProducts = async (
 
     const products: ProductModel[] = dataJson.map((product: any) => ({
         id: product.productID,
-        name: product.productName,
-        storeId: product.productID, // Assuming storeId is same as productID
-        price: product.productPrice,
+        productName: product.productName,
+        storeId: product.storeId, // Assuming storeId is same as productID
+        productPrice: product.productPrice,
         productCategory: product.productCategory,
         productDescription: product.description,
         productRank: product.productRank
@@ -679,7 +679,7 @@ export const sendOwnerRequest = async(username: string, storeId: string): Promis
 }
 
 export const addProductToCartGuest = async (productId:number,storeId:number, amount:number) => {
-    const response = await axios.patch(`${server}/api/user/addProductToCart?guestId=${localStorage.getItem("guestId")}`,{storeId: storeId, productId:productId,amount:amount}
+    const response = await axios.patch(`${server}/api/user/guest/addProductToCart?guestId=${localStorage.getItem("guestId")}`,{storeId: storeId, productId:productId,amount:amount}
     );
     return response.data;
 }
