@@ -7,29 +7,26 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.Store;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
+import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.service.MarketService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/stores")
+@CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
 public class StoreRestController {
 
-    // don't need this for version 1
+    @Autowired
+    MarketService marketService;
 
-
-    MarketService marketService = MarketService.getInstance();
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/createStore" -Method POST -Body "founderId=0&storeName=MyStore"
     @PostMapping("/createStore")
-    @CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
     public Response createStore(@RequestBody CreateStoreRequest createStoreRequest, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
@@ -96,25 +93,25 @@ public class StoreRestController {
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/sendStoreOwnerRequest" -Method POST -Body "currentOwnerId=0&newOwnerId=1&storeId=0"
     @PostMapping("/sendStoreOwnerRequest")
-    public Response sendStoreOwnerRequest(@RequestParam String currentOwnerUsername, @RequestBody StoreRequest storeRequest, HttpServletRequest request) {
+    public Response sendStoreOwnerRequest(@RequestBody StoreAppointmentRequest appointment, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.sendStoreOwnerRequest(token,currentOwnerUsername, storeRequest.getOwner(), storeRequest.getStoreId());
+        return marketService.sendStoreOwnerRequest(token, appointment.getAppointer(), appointment.getAppointee(), appointment.getStoreId());
     }
 
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/sendStoreManagerRequest" -Method POST -Body "currentOwnerId=0&newOwnerId=1&managerPermissions=0&managerPermissions=1&managerPermissions=2"
     @PostMapping("/sendStoreManagerRequest")
-    public Response sendStoreManagerRequest(@RequestParam String currentOwnerUsername,@RequestParam String newManagerUsername,@RequestBody int storeId,HttpServletRequest request) {
+    public Response sendStoreManagerRequest(@RequestBody StoreAppointmentRequest appointment ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.sendStoreManagerRequest(token,currentOwnerUsername,newManagerUsername,storeId);
+        return marketService.sendStoreManagerRequest(token, appointment.getAppointer(), appointment.getAppointee(), appointment.getStoreId());
     }
 
     /*
@@ -142,6 +139,16 @@ public class StoreRestController {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         return marketService.closeStore(token,username, storeId);
+    }
+
+    @PutMapping("/reopenStore")
+    public Response reopenStore(@RequestParam String username, @RequestParam int storeId ,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.reopenStore(token,username, storeId);
     }
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreOrderHistory?userId=0&storeId=0" -Method GET
@@ -188,31 +195,17 @@ public class StoreRestController {
 
     //Invoke-WebRequest -Uri "http://localhost:8080/api/stores/getStoreInfo?storeId=0" -Method GET
     @GetMapping("/getStoreInfo")
-    public Response getStoreInfo(@RequestParam String username,@RequestParam int storeId,HttpServletRequest request) {
+    public Response getStoreInfo(@RequestParam(value = "username", required = false) String username,@RequestParam int storeId,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        Response response = marketService.getStoreInfo(token,username,storeId);
-        if(response.getError()) {
-            return response;
-        }
-
-        Response res;
-        try {
-            StoreDTO storeDTO = objectMapper.readValue(response.getDataJson(), StoreDTO.class);
-            res = Response.createResponse(false, objectMapper.writeValueAsString(String.format("Store id: %d, Store name: %s", storeDTO.getStoreId(), storeDTO.getStoreName())));
-        }
-        catch(Exception e) {
-            res = Response.createResponse(true, e.getMessage());
-        }
-
-        return res;
+        return marketService.getStoreInfo(token,username,storeId);
     }
 
     @GetMapping("/getProductInfo")
-    public Response getProductInfo(@RequestParam String username, @RequestParam int  productId ,HttpServletRequest request) {
+    public Response getProductInfo(@RequestParam(value = "username", required = false) String username, @RequestParam int  productId ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -222,7 +215,7 @@ public class StoreRestController {
     }
 
     @GetMapping("/getStoreProductsInfo")
-    public Response getStoreProductsInfo(@RequestParam String username, @RequestBody ProductStoreRequest productStoreRequest ,HttpServletRequest request) {
+    public Response getStoreProductsInfo(@RequestParam(value = "username", required = false) String username, @RequestBody ProductStoreRequest productStoreRequest ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -233,7 +226,7 @@ public class StoreRestController {
 
 
     @GetMapping("/getStoreProductAmount")
-    public Response getStoreProductAmount(@RequestParam String username, @RequestBody ProductStoreRequest productStoreRequest ,HttpServletRequest request) {
+    public Response getStoreProductAmount(@RequestParam(value = "username", required = false) String username, @RequestBody ProductStoreRequest productStoreRequest ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -249,7 +242,11 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.changeManagerPermission(token,username,managerPermissionRequest.getManagerUsername(),managerPermissionRequest.getStoreId(),managerPermissionRequest.getPermission());
+        Set<Permission> permissions = new HashSet<>();
+        for(int i : managerPermissionRequest.getPermission()){
+            permissions.add(Permission.getEnumByInt(i));
+        }
+        return marketService.changeManagerPermission(token,username,managerPermissionRequest.getManagerUsername(),managerPermissionRequest.getStoreId(),permissions);
     }
 
 
@@ -261,6 +258,56 @@ public class StoreRestController {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         return marketService.getManagerPermissions(token,currentOwnerUsername,managerUsername,storeId);
+    }
+
+    @GetMapping("/getManagerPermissionsInt")
+    public Response getManagerPermissionsInt(@RequestParam String currentOwnerUsername,@RequestParam String managerUsername,@RequestParam  int storeId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getManagerPermissionsInt(token,currentOwnerUsername,managerUsername,storeId);
+    }
+
+    @GetMapping("/hasPermission")
+    public Response hasPermission(@RequestParam String actorUsername,@RequestParam String actionUsername,@RequestParam  int storeId,@RequestParam int permission, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.hasPermission(token, actorUsername, storeId, actionUsername, permission);
+    }
+
+    @GetMapping("/isManager")
+    public Response isManager(@RequestParam String actorUsername,@RequestParam  int storeId, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getIsManager(token, actorUsername, storeId, actorUsername);
+    }
+
+    @GetMapping("/isOwner")
+    public Response isOwner(@RequestParam String actorUsername,@RequestParam  int storeId, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getIsOwner(token, actorUsername, storeId, actorUsername);
+    }
+
+    @GetMapping("/isFounder")
+    public Response isFounder(@RequestParam String actorUsername,@RequestParam  int storeId, HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getIsFounder(token, actorUsername, storeId, actorUsername);
     }
 
 
@@ -417,7 +464,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.createMinProductCondition(token,policyAmountRequest.getMinAmount(),policyAmountRequest.getProductName(),username);
+        return marketService.createMinProductCondition(token,policyAmountRequest.getMinAmount(),policyAmountRequest.getProductId(),username);
     }
 
     @PostMapping("/createTrueCondition")
@@ -477,7 +524,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.createOnProductSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getProductName(),policyConditionRequest.getConditionAID());
+        return marketService.createOnProductSimpleDiscountPolicy(token,username,policyConditionRequest.getPercentage(),policyConditionRequest.getProductId(),policyConditionRequest.getConditionAID());
     }
     @PostMapping("/createOnCategorySimpleDiscountPolicy")
     public Response createOnCategorySimpleDiscountPolicy(@RequestParam String username,@RequestBody PolicyConditionRequest policyConditionRequest,HttpServletRequest request) {
@@ -582,5 +629,62 @@ public class StoreRestController {
         return marketService.removeDiscountPolicyToStore(token,username,policyIdRequest.getPolicyId1(),policyIdRequest.getPolicyId2());
     }
 
+    @GetMapping("/describeDiscountPolicy")
+    public Response describeDiscountPolicy(@RequestParam String username,@RequestParam int policyId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token, username);
+        return marketService.getDiscountDescription(policyId);
+    }
 
+    @GetMapping("/describeBuyPolicy")
+    public Response describeBuyPolicy(@RequestParam String username,@RequestParam int policyId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token, username);
+        return marketService.getBuyPolicyDescription(policyId);
+    }
+
+    @GetMapping("/describeDiscountCondition")
+    public Response describeDiscountCondition(@RequestParam String username,@RequestParam int condId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token, username);
+        return marketService.getDiscountConditionDescription(condId);
+    }
+
+    @GetMapping("/describeStoreDiscountPolicy")
+    public Response describeStoreDiscountPolicy(@RequestParam String username,@RequestParam int storeId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        if(token != null) {
+            marketService.checkToken(token, username);
+        }
+        return marketService.getStoreDiscountDescriptions(username, storeId);
+    }
+
+    @GetMapping("/describeStoreBuyPolicy")
+    public Response describeStoreBuyPolicy(@RequestParam String username,@RequestParam int storeId,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        if(token != null) {
+            marketService.checkToken(token, username);
+        }
+        return marketService.getStorePolicyDescriptions(username, storeId);
+    }
 }

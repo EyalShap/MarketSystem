@@ -1,24 +1,39 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import '../styles/memberNavbar.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { IconButton, Badge } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { enterAsGuest, logout } from '../API';
+import { acceptRequest, enterAsGuest, fetchNotifications, logout, okNotification, rejectRequest } from '../API';
 import { AppContext } from '../App';
+import { NotificationModel, RequestModel } from '../models/NotificationModel';
+import { useSubscription } from 'react-stomp-hooks';
 
 
 const MemberNavbar = () => {
   const {isloggedin , setIsloggedin } = useContext(AppContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    "got one message",
-    "ask to ffffffffff",
-    "ffff",
-  ]);
+  const [notifications, setNotifications] = useState<NotificationModel[]>([]);
+  
   const navigate = useNavigate();
 
+  useSubscription(`/topic/notifications/${localStorage.getItem('username')}`, (message) => {
+    let notif: NotificationModel = JSON.parse(message.body);
+    alert(`New Notification: ${notif.message}`);
+    console.log(notif);
+    reloadNotifs();
+  })
+
+  useEffect(() => {
+    reloadNotifs()
+  }, [])
+
+
+  const reloadNotifs = async () => {
+    setNotifications(await fetchNotifications())
+    {console.log(notifications)}
+  }
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -61,9 +76,19 @@ const MemberNavbar = () => {
             <ul className="menu">
               {notifications.map((notification, index) => (
                 <li key={index} className="notification-item">
-                  {notification}
-                  <button className="">accept </button>
-                  <button className="">reject </button>
+                  <p>{notification.message}</p>
+                  {!('storeId' in notification) && <button onClick={() => {
+                    okNotification(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                  }} className="">OK </button>}
+                  {('storeId' in notification) && <button onClick={() => {
+                    acceptRequest(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                    }} className="">accept </button>}
+                  {('storeId' in notification) && <button onClick={() => {
+                    rejectRequest(notification.id)
+                    setNotifications(notifications.filter(notif => notif.id != notification.id))
+                  }} className="">reject </button>}
                 </li>
               ))}
             </ul>

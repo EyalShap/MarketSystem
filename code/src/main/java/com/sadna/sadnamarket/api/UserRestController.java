@@ -10,15 +10,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.logging.Log;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
 public class UserRestController {
-    MarketService marketService = MarketService.getInstance();
+    @Autowired
+    MarketService marketService;
 
     @PostMapping("/enterAsGuest")
     public Response enterAsGuest() {
@@ -63,7 +68,7 @@ public class UserRestController {
     }
 
     @PatchMapping("/addProductToCart")
-    public Response addProductToCart(@RequestParam String username,@RequestBody StoreRequest storeRequest ,HttpServletRequest request) {
+    public Response addProductToCart(@RequestParam String username,@RequestBody ChangeCartRequest storeRequest ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -74,11 +79,11 @@ public class UserRestController {
     }
 
     @PatchMapping("/guest/addProductToCart")
-    public Response addProductToCartForGuest(@RequestParam int guestId,@RequestBody StoreRequest storeRequest) {
+    public Response addProductToCartForGuest(@RequestParam int guestId,@RequestBody ChangeCartRequest storeRequest) {
         return marketService.addProductToCart(guestId,storeRequest.storeId,storeRequest.productId,storeRequest.amount);
     }
     @PatchMapping("/removeProductFromCart")
-    public Response removeProductFromCart(@RequestParam String username,@RequestBody StoreRequest storeRequest,HttpServletRequest request) {
+    public Response removeProductFromCart(@RequestParam String username,@RequestBody ChangeCartRequest storeRequest,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -89,12 +94,12 @@ public class UserRestController {
     }
 
     @PatchMapping("/guest/removeProductFromCart")
-    public Response removeProductFromCartForGuest(@RequestParam int guestId,@RequestBody StoreRequest storeRequest) {
+    public Response removeProductFromCartForGuest(@RequestParam int guestId,@RequestBody ChangeCartRequest storeRequest) {
         return marketService.removeProductFromCart(guestId,storeRequest.getStoreId(),storeRequest.getProductId());
     }
 
     @PatchMapping("/changeQuantityCart")
-    public Response changeQuantityCart(@RequestParam String username, @RequestBody StoreRequest storeRequest,HttpServletRequest request) {
+    public Response changeQuantityCart(@RequestParam String username, @RequestBody ChangeCartRequest storeRequest,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -129,6 +134,29 @@ public class UserRestController {
         marketService.checkToken(token,acceptingName);
         return marketService.acceptRequest(acceptingName,requestID);
     }
+
+    @PostMapping("/rejectRequest")
+    public Response rejectRequest(@RequestParam String acceptingName,@RequestParam int requestID,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,acceptingName);
+        return marketService.rejectRequest(acceptingName,requestID);
+    }
+
+    @PostMapping("/okNotification")
+    public Response okNotification(@RequestParam String username,@RequestParam int notifID,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,username);
+        return marketService.okNotification(username,notifID);
+    }
+
     @PostMapping("/loginUsingJwt")
     public Response loginUsingJwt(@RequestParam String username,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
@@ -312,6 +340,33 @@ public class UserRestController {
         }   
         marketService.checkToken(token,username);
         return marketService.getUserRoles(username);
-    } 
+    }
 
+    @GetMapping("/getNotifications")
+    public Response getUserNotifications(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,username);
+        return marketService.getUserNotifications(username);
+    }
+
+    @PostMapping("/checkMemberCart")
+    public Response checkMemberCart(@RequestParam String username,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        marketService.checkToken(token,username);
+        return marketService.checkMemberCart(username);
+    }
+    @PostMapping("/checkGuestCart")
+    public Response checkGuestCart(@RequestParam int guestId) {
+        return marketService.checkGuestCart(guestId);
+    }
+    
+    
 }

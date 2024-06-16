@@ -1,15 +1,11 @@
 package com.sadna.sadnamarket.api;
 
-import java.time.LocalTime;
-
 public class CreateStoreRequest {
     String founderUsername;
     String storeName;
     String address;
     String email;
     String phoneNumber;
-    LocalTime[] openingHours;
-    LocalTime[] closingHours;
 
     public String getFounderUsername() {
         return founderUsername;
@@ -51,19 +47,4 @@ public class CreateStoreRequest {
         this.phoneNumber = phoneNumber;
     }
 
-    public LocalTime[] getOpeningHours() {
-        return openingHours;
-    }
-
-    public void setOpeningHours(LocalTime[] openingHours) {
-        this.openingHours = openingHours;
-    }
-
-    public LocalTime[] getClosingHours() {
-        return closingHours;
-    }
-
-    public void setClosingHours(LocalTime[] closingHours) {
-        this.closingHours = closingHours;
-    }
 }

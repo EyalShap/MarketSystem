@@ -213,6 +213,15 @@ public class Store {
         }
     }
 
+    public void reopenStore() {
+        synchronized (lock) {
+            if (this.isActive)
+                throw new IllegalArgumentException(Error.makeStoreAlreadyClosedError(storeId));
+
+            this.isActive = true;
+        }
+    }
+
     public StoreDTO getStoreDTO() {
         return new StoreDTO(this);
     }

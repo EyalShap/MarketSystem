@@ -5,7 +5,6 @@ public class StoreRequest {
     int storeId;
     int productId;
     int amount;
-
     String owner;
     public int getStoreId() {
         return storeId;

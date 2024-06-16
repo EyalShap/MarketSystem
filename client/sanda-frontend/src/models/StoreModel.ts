@@ -5,7 +5,5 @@ export default interface StoreModel {
     address: string,
     email: string,
     phoneNumber: string,
-    openingHours: number,
-    closingHours: number,
     founderUsername: string
 }

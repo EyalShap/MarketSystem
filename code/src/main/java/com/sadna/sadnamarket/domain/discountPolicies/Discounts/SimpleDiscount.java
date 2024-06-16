@@ -7,10 +7,10 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleDiscount extends Discount{
+public class SimpleDiscount extends Discount {
     //percentage is (100-0)
     private final double percentage;
-    private String productName;
+    private Integer productID;
     private String categoryName;
     private boolean chosePath; // promise there is CategoryName Xor ProductName
     private final Condition condition;
@@ -18,15 +18,15 @@ public class SimpleDiscount extends Discount{
     public SimpleDiscount(int id, double percentage, Condition condition){
         super(id);
         this.percentage = percentage;
-        productName = null;
+        productID = null;
         categoryName = null;
         chosePath = false;
         this.condition = condition;
     }
 
-    public void setOnProductName(String productName) {
+    public void setOnProductID(int productID) {
         if(!chosePath) {
-            this.productName = productName;
+            this.productID = productID;
         }
         chosePath = true;
     }
@@ -45,7 +45,7 @@ public class SimpleDiscount extends Discount{
     @Override
     public void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
         if(checkCond(productDTOMap,listProductsPrice)){
-            if(productName != null){
+            if(productID != null){
                 discountOnlyProduct(productDTOMap, listProductsPrice);
             }
             else if(categoryName != null){
@@ -58,13 +58,26 @@ public class SimpleDiscount extends Discount{
     }
 
     @Override
+    public void giveDiscountWithoutCondition(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
+        if(productID != null){
+            discountOnlyProduct(productDTOMap, listProductsPrice);
+        }
+        else if(categoryName != null){
+            discountOnlyCategory(productDTOMap, listProductsPrice);
+        }
+        else if(chosePath){
+            discountAll(listProductsPrice);
+        }
+    }
+
+    @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
         return condition.checkCond(productDTOMap, listProductsPrice);
     }
 
     @Override
     public double giveTotalPriceDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
-        if(productName != null){
+        if(productID != null){
             return checkTotalDiscountOnlyProduct(productDTOMap, listProductsPrice);
         }
         else if(categoryName != null){
@@ -78,11 +91,11 @@ public class SimpleDiscount extends Discount{
 
     private void discountOnlyProduct(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice){
         int itemID;
-        String thisProductName;
+        int thisProductID;
         for(ProductDataPrice item : listProductsPrice){
             itemID = item.getId();
-            thisProductName = productDTOMap.get(itemID).getProductCategory();
-            if(thisProductName.equals(productName)) {
+            thisProductID = productDTOMap.get(itemID).getProductID();
+            if(thisProductID == productID) {
                 setNewPrice(item);
             }
         }
@@ -116,11 +129,11 @@ public class SimpleDiscount extends Discount{
         int itemID;
         double total = 0;
         double oldNewPrice;
-        String thisProductName;
+        int thisProductID;
         for(ProductDataPrice item : listProductsPrice){
             itemID = item.getId();
-            thisProductName = productDTOMap.get(itemID).getProductCategory();
-            if(thisProductName.equals(productName)) {
+            thisProductID = productDTOMap.get(itemID).getProductID();
+            if(thisProductID == productID) {
                 oldNewPrice = item.getNewPrice();
                 total = total + oldNewPrice*(percentage/100);
             }
@@ -155,8 +168,8 @@ public class SimpleDiscount extends Discount{
     @Override
     public String description() {
         String addEnding;
-        if(productName != null){
-            addEnding = productName;
+        if(productID != null){
+            addEnding = String.format("product with ID <%d>", productID);
         }
         else if(categoryName != null){
             addEnding = "products from category: " + categoryName;

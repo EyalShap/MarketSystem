@@ -58,6 +58,11 @@ public class Request extends Notification {
     }
 
     @Override
+    public NotificationDTO toDTO(){
+        return new RequestDTO(this);
+    }
+
+    @Override
     public String toString() {
         logger.info("Entering toString");
         String result = super.toString() + " from store " + storeId + " from user: " + senderName + " as " + role;

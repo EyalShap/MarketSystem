@@ -1,21 +1,22 @@
 package com.sadna.sadnamarket.domain.users;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class NotificationDTO {
     private String message;
     private int id;
-    private LocalDateTime date;
+    private String date;
 
     public NotificationDTO(String message,LocalDateTime date,int id) {
         this.message=message;
-        this.date=date;
+        this.date=date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.id=id;
     }
 
     public NotificationDTO(Notification notific) {
         this.message = notific.getMessage();
-        this.date = notific.getDate();
+        this.date = notific.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.id=notific.getId();
     }
 
@@ -28,11 +29,11 @@ public class NotificationDTO {
     }
 
 
-    public LocalDateTime getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(String date) {
         this.date = date;
     }
     public int getId() {

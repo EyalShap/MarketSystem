@@ -80,7 +80,7 @@ public class StoreManager implements UserRole {
     }
 
     @Override
-    public void sendRequest(UserFacade userFacade, String senderName, String sentName, String reqType) {
+    public RequestDTO sendRequest(UserFacade userFacade, String senderName, String sentName, String reqType) {
         logger.info("Entering sendRequest with userFacade={}, senderName={}, sentName={}, reqType={}", userFacade, senderName, sentName, reqType);
         logger.error("You are not authorized to perform this action");
         throw new IllegalAccessError(Error.makeManagerYouAreNotAuthorizedError());

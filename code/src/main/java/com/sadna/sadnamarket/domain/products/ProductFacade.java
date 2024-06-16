@@ -41,7 +41,7 @@ public class ProductFacade {
 
         try {
             checkProductAttributes(productName, productPrice, productCategory, productRank);
-            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank, productWeight);
+            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank, productWeight,storeId);
             Product createdProduct = productRepository.getProduct(productId);
             logger.info("Product added with ID: {}", productId);
             return productId;
