@@ -854,12 +854,14 @@ class StoreFacadeTest {
 
     @Test
     void addDiscountPolicy() throws Exception {
-        int conditionId = discountPolicyFacade.createMinProductCondition(10, "Shokolad Parah", "WillyTheChocolateDude");
-        int policyId = discountPolicyFacade.createOnProductSimpleDiscountPolicy(50, "Shokolad Parah", conditionId, "WillyTheChocolateDude");
+        int conditionId = discountPolicyFacade.createMinProductCondition(10, 0, "WillyTheChocolateDude");
+        int policyId = discountPolicyFacade.createOnProductSimpleDiscountPolicy(50, 0, conditionId, "WillyTheChocolateDude");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
-        Condition expectedCondition = new MinProductCondition(0, 10);
-        Discount expectedDiscount = new SimpleDiscount(policyId, 50, expectedCondition);
+        MinProductCondition expectedCondition = new MinProductCondition(conditionId, 10);
+        expectedCondition.setOnProductName(0); // set product id
+        SimpleDiscount expectedDiscount = new SimpleDiscount(resDiscount.getId(), 50, expectedCondition);
+        expectedDiscount.setOnProductID(0);
         String discountJson = objectMapper.writeValueAsString(resDiscount);
         String expectedJson = objectMapper.writeValueAsString(expectedDiscount);
         assertEquals(expectedJson, discountJson);
@@ -1095,7 +1097,7 @@ class StoreFacadeTest {
 
     @Test
     void calculatePrice() throws Exception {
-        /*generateStore1();
+        generateStore1();
         List<CartItemDTO> cart = new ArrayList<>();
         cart.add(new CartItemDTO(0, 0, 10));
         cart.add(new CartItemDTO(0, 1, 30));
@@ -1108,13 +1110,13 @@ class StoreFacadeTest {
         discountPolicyFacade.addDiscountPolicyToStore(0, policyId, "WillyTheChocolateDude");
 
         List<ProductDataPrice> res = storeFacade.calculatePrice("WillyTheChocolateDude", cart);
-        List<ProductDataPrice> expected = new ArrayList<>();
-        expected.add(new ProductDataPrice(0, 0, "Shokolad Parah", 10, 5.5, 2.25));
+        Set<ProductDataPrice> expected = new HashSet<>();
+        expected.add(new ProductDataPrice(0, 0, "Shokolad Parah", 10, 5.5, 2.75));
         expected.add(new ProductDataPrice(1, 0, "Kif Kef", 30, 4.2, 2.1));
         expected.add(new ProductDataPrice(2, 0, "Klik Cariot", 50, 7, 3.5));
         expected.add(new ProductDataPrice(3, 1, "Beer", 10, 12, 12));
         expected.add(new ProductDataPrice(4, 1, "Wine", 10, 50, 50));
 
-        assertEquals(expected, res);*/
+        assertEquals(expected, new HashSet<>(res));
     }
 }

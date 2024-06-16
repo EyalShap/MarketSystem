@@ -35,7 +35,8 @@ public class MemoryConditionRepository implements IConditionRespository{
     public int createMinProductCondition(int minAmount, int productID)throws JsonProcessingException {
         MinProductCondition newCondition = new MinProductCondition(nextId, minAmount);
         newCondition.setOnProductName(productID);
-        return addConditionToMaps(newCondition);        }
+        return addConditionToMaps(newCondition);
+    }
 
     @Override
     public int createMinProductOnCategoryCondition(int minAmount, String categoryName)throws JsonProcessingException {

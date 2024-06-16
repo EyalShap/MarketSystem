@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.discountPolicies;
 
+import java.util.Objects;
+
 public class ProductDataPrice {
     int id;
     int storeId;
@@ -61,5 +63,18 @@ public class ProductDataPrice {
 
     public ProductDataPrice deepCopy(){
         return new ProductDataPrice(this.id,this.storeId, this.name, this.amount,this.oldPrice,this.newPrice);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductDataPrice that = (ProductDataPrice) o;
+        return id == that.id && storeId == that.storeId && amount == that.amount && Double.compare(that.oldPrice, oldPrice) == 0 && Double.compare(that.newPrice, newPrice) == 0 && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, storeId, name, amount, oldPrice, newPrice);
     }
 }
