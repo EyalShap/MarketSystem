@@ -60,6 +60,13 @@ const MemberNavbar = () => {
   const getStoresUrl = ():string => {
     return `/memberStores/${localStorage.getItem('username')}`;
   }
+  const handleCartClick = () => {
+    if(isloggedin){
+      navigate(`/cart/${localStorage.getItem('username')}`);
+    }else{
+      navigate(`/cart/${localStorage.getItem('guestId')}`);
+    }
+  }
   return (
     <nav className="membernavbar" onClick={()=>{menuOpen&&toggleMenu();notificationsOpen&&toggleNotifications();}}>
       <Link to="/" className="navbar-logo">
@@ -107,7 +114,7 @@ const MemberNavbar = () => {
             </ul>
           )}
         </div>
-        <IconButton size="small" color="inherit">
+        <IconButton size="small" color="inherit" onClick={handleCartClick}>
           <ShoppingCartIcon />
         </IconButton>
       </div>
