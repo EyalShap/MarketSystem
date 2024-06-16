@@ -4,7 +4,6 @@ import '../styles/cart.css';
 import { viewMemberCart, viewGuestCart, changeProductAmountInCart, changeProductAmountInCartGuest, removeProductFromCart, removeProductFromCartGuest, checkCart, checkCartGuest, loginUsingJwt } from '../API'; // Add necessary API functions
 import cartModel from '../models/CartModel';
 import { useNavigate, useParams } from 'react-router-dom';
-import { number } from 'yup';
 import { AppContext } from '../App';
 import CustomizedDialogs from './CartError';
 
@@ -17,10 +16,13 @@ const Cart = () => {
     const [error, setError] = useState("");
     useEffect(() => {
         const checkLogin = async () => {
-            if(!isloggedin&&localStorage.getItem("guestId")==null){
+            if(!isloggedin&&!localStorage.getItem("guestId")){
               const resp=await loginUsingJwt(localStorage.getItem("username") as string, localStorage.getItem("token") as string);
+              console.log(resp);
                   if(!resp.error){
                    setIsloggedin(true);
+                   await fetchCart(true);
+                await checkCart(true);
                   }
                   else{
                     localStorage.clear();
@@ -28,17 +30,20 @@ const Cart = () => {
                     navigate('/');
                   }
             }
+            else{
+                await fetchCart(isloggedin);
+                await checkCart(isloggedin);
+            }        
           };   
-    const checkCart=async()=>{
-        await validate();
+    const checkCart=async(isloggedin: boolean)=>{
+        await validate(isloggedin);
     }
     checkLogin()
-    fetchCart();
-    checkCart();
     }, []);
-    const fetchCart = async () =>{ 
+    const fetchCart = async (isloggedin: boolean ) =>{ 
         try{
         let response;
+        console.log(isloggedin);
         if(isloggedin){
             response = await viewMemberCart(username as string);
         }
@@ -66,12 +71,12 @@ const Cart = () => {
         else{
             res=await changeProductAmountInCartGuest(updatedCart.productsData[index].id,updatedCart.productsData[index].storeId, updatedCart.productsData[index].amount)
         }
-        validate()
+        validate(isloggedin)
         if (res.error){
             alert(res.errorString);
         }
         else{
-            await fetchCart()
+            await fetchCart(isloggedin)
         }
     }catch(e: any){
         console.log(e);
@@ -91,7 +96,7 @@ const Cart = () => {
                 alert(res.errorString);
             }
             else{
-                await fetchCart()
+                await fetchCart(isloggedin)
             }
         }
     catch(e: any){
@@ -99,7 +104,7 @@ const Cart = () => {
         alert("Error occoured please try again later");
     }
     };
-    const validate=async()=>{
+    const validate=async(isloggedin: boolean )=>{
         try{
             let response;
             if(isloggedin){
@@ -156,9 +161,7 @@ const Cart = () => {
                 <h3>Cart Summary</h3>
                 <p>Total Price: ${cart.oldPrice}</p>
                 <p>Discounted Price: ${cart.newPrice}</p>
-            </div>
-            <div className="cart-summary">
-            <button className="purchase-button" disabled={!error &&cart.productsData.length>0} >Purchase</button>
+                <button className="purchase-button" disabled={!error &&cart.productsData.length>0} >Purchase</button>
             </div>
             <CustomizedDialogs open={dialogOpen} onClose={handleDialogClose} text={error} /> 
         </div>
