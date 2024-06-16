@@ -1154,3 +1154,38 @@ export const setStoreBankAccount = async(storeId: number, bank: BankAccountModel
     );
     return response.data;
 }
+
+export const getStoreOrders=async( storeId: number,username: string): Promise<OrderModel[]> =>{
+    try {
+    const response= await (await axios.get(`${server}/api/stores/getStoreOrders?username=${username}&storeId=${storeId}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    })).data;
+    const ordersData: { [key: number]: ProductDataPrice[] } = JSON.parse(response.dataJson);
+    const orders: OrderModel[] = Object.entries(ordersData).map(([orderId, products]) => {
+        const total = products.reduce((acc, product) => acc + product.newPrice * product.amount, 0);
+        const orderProducts: ProductOrderModel[] = products.map(product => ({
+            id: product.id,
+            name: product.name,
+            quantity: product.amount,
+            storeId: product.storeId,
+            oldPrice: product.oldPrice,
+            newPrice: product.newPrice
+        }));
+        const date = new Date().toLocaleDateString(); 
+        return {
+            id: orderId,
+            date: date, 
+            total: total,
+            products: orderProducts
+        };
+    });
+
+    return orders;
+}catch (error) {
+    console.error("Failed to fetch orders:", error);
+    return [];
+}
+}
