@@ -165,12 +165,12 @@ const AmountCondition = () => {
     const {storeId} = useParams();
 
     const onCreate = async () => {
-        let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(amount), category)
+        let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(product), category)
         alert(`Condition created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
-        let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(amount), category)
+        let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(product), category)
         alert(`Condition created with ID ${id}`)
         setCondId(id)
     }
