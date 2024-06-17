@@ -406,7 +406,7 @@ public class MarketService {
         try {
             checkToken(token, username);
             int policyId = buyPolicyFacade.createProductKgBuyPolicy(productId, buytypes, min, max, username);
-            logger.info(String.format("User %s added product kg limit buy policy: product %d, weight range %d - %d.", username, productId, min, max));
+            logger.info(String.format("User %s added product kg limit buy policy: product %d, weight range %f - %f.", username, productId, min, max));
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {

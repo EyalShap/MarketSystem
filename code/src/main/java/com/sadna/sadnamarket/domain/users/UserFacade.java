@@ -258,6 +258,10 @@ public class UserFacade {
         logger.info("{} login from guest {}",userName,guestId);
         isValid(userName);
         Member member=iUserRepo.getMember(userName);
+        if(member.isLoggedIn()){
+            logger.error("user {} already logged in",userName);
+            throw new IllegalStateException(Error.makeUserLoggedInError());
+        }
         if(member.getCart().isEmpty()){
             member.setCart(iUserRepo.getGuest(guestId).getCart());
         }

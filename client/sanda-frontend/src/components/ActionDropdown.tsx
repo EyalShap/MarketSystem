@@ -5,7 +5,7 @@ import { getPermissions, hasPermission, isFounder, isManager, isOwner, storeActi
 import { FaSkull } from "react-icons/fa6";
 import { FaDoorOpen } from "react-icons/fa";
 import Permission from "../models/Permission";
-import { FaPlusCircle, FaTrashAlt, FaEdit,FaCreditCard  } from "react-icons/fa";
+import { FaPlusCircle, FaTrashAlt, FaEdit,FaCreditCard, FaHistory  } from "react-icons/fa";
 import '../styles/ActionDropdown.css';
 import { IconType } from "react-icons";
 import { useNavigate } from "react-router-dom";
@@ -73,6 +73,9 @@ export const ActionDropdown = (props: any) => {
                 }
                 {isOwnerBool &&
                 <button className="optionButton" onClick={() => navigate("./bank")}><FaCreditCard />  Update Bank Account</button>
+                }
+                {isOwnerBool &&
+                <button className="optionButton" onClick={() => navigate("./orders")}><FaHistory  />  View Store History</button>
                 }
                 {isFounderBool && (storeActive(props.storeId) ? <button className="optionButton closeStore"><FaSkull /> Close Store</button> : <button className="optionButton reopenStore"><FaDoorOpen /> Reopen Store</button>)}
             </div>

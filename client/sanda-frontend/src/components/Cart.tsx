@@ -14,6 +14,8 @@ const Cart = () => {
     const navigate = useNavigate();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [error, setError] = useState("");
+    const [showedError, setShowed] = useState(false)
+
     useEffect(() => {
         const checkLogin = async () => {
             if(!isloggedin&&!localStorage.getItem("guestId")){
@@ -40,15 +42,20 @@ const Cart = () => {
     }
     checkLogin()
     }, []);
+
+    useEffect(() => {
+        if(error != ""){setDialogOpen(true);}
+    }, [error])
+
     const fetchCart = async (isloggedin: boolean ) =>{ 
         try{
         let response;
         console.log(isloggedin);
         if(isloggedin){
-            response = await viewMemberCart(username as string);
+            response = await viewMemberCart(localStorage.getItem("username")!);
         }
         else{
-            response = await viewGuestCart(Number.parseInt(username as string)); 
+            response = await viewGuestCart(parseInt(localStorage.getItem("guestId")!)); 
         }
         console.log(response);
         const res=JSON.parse(response.dataJson);
@@ -115,7 +122,9 @@ const Cart = () => {
         }
         if(response.error){
             setError(response.errorString);
-    }
+        }else{
+            setError("")
+        }
 }
         catch(e: any){
             console.log(e);
@@ -161,6 +170,7 @@ const Cart = () => {
                 <h3>Cart Summary</h3>
                 <p>Total Price: ${cart.oldPrice}</p>
                 <p>Discounted Price: ${cart.newPrice}</p>
+                {error != "" && <p style={{color: 'red'}}>You cannot purchase the cart: {error}</p>}
                 <button onClick = {() => navigate('/purchase')} className="purchase-button" disabled={error != "" &&cart.productsData.length>0} >Purchase</button>
             </div>
             <CustomizedDialogs open={dialogOpen} onClose={handleDialogClose} text={error} /> 

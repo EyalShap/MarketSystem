@@ -26,6 +26,7 @@ import SetBankAccount from './components/SetBankAccount';
 import StoreOrders from './components/StoreOrders';
 import Purchase from './components/Purchase';
 import SearchOrdersByUsername from './components/OrderHistoryByUser';
+import StoreViewHistory from './components/StoreViewHistory';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -88,6 +89,7 @@ function App() {
             <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>
             <Route path="/store/:storeId/addProduct" element={<AddProduct />}/>
             <Route path="/store/:storeId/bank" element={<SetBankAccount />}/>
+            <Route path="/store/:storeId/orders" element={<StoreViewHistory />}/>
             <Route path="/memberStores/:username" element={<MyStores />} />
             <Route path="/createStore" element={<CreateStore />}/>
             <Route path="/purchase" element={<Purchase />}/>

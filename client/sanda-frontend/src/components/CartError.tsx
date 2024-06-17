@@ -23,10 +23,8 @@ interface CustomizedDialogsProps {
     text: string;
   }
 const CustomizedDialogs = (customized:CustomizedDialogsProps) =>{
-  const [open, setOpen] = React.useState(customized.open);
-
   const handleClose = () => {
-    handleClose();
+    customized.onClose();
   };
 
   return (
@@ -34,7 +32,7 @@ const CustomizedDialogs = (customized:CustomizedDialogsProps) =>{
       <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
-        open={open}
+        open={customized.open}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           Error in cart
