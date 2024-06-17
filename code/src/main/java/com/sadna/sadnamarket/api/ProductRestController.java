@@ -34,7 +34,7 @@ public class ProductRestController {
             productName, 
             minProductPrice, 
             maxProductPrice, 
-            productCategory, 
+            productCategory.equals("all") ? null : productCategory, 
             minProductRank
         );
     }

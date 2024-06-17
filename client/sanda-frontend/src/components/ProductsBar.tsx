@@ -26,7 +26,7 @@ const ProductsBar = () => {
         }
       }
       fetchProducts();
-    });
+    },[products]);
     const scrollLeft = () => {
         if(carouselRef>0){
             setcarouselRef(carouselRef-1);
