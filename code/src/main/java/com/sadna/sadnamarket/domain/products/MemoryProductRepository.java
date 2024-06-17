@@ -41,7 +41,13 @@ public class MemoryProductRepository implements IProductRepository {
                 logger.error(String.format("Product Id %d does not exist.", productId));
                 throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
             }
-            return products.get(productId);
+            Product product = products.get(productId);
+            if (!product.isActiveProduct()) {
+                logger.error(String.format("Product Id %d was already removed.", productId));
+                throw new IllegalArgumentException(Error.makeProductAlreadyRemovedError(productId));
+            }
+
+            return product;
         }
     }
 
@@ -88,7 +94,7 @@ public class MemoryProductRepository implements IProductRepository {
                 throw new IllegalArgumentException(Error.makeProductAlreadyRemovedError(productId));
             }
             product.disableProduct();
-            logger.error(String.format("Product Id %d was succesully removed.", productId));
+            logger.info(String.format("Product Id %d was succesully removed.", productId));
         }
     }
 
