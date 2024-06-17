@@ -18,8 +18,8 @@ export const Store = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
     const [searchCategory, setSearchCategory] = useState('all');
-    const [minPrice, setMinPrice] = useState(0); // Default price
-  const [maxPrice, setMaxPrice] = useState(100); // Default price
+    const [actualMax, setActMax] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0); // Default price
   const [products, setProducts] = useState<ProductModel[]>([])
   const [isOwnerBool, setIsOwner] = useState(false)
     const [isManagerBool, setIsManager] = useState(false)
@@ -27,16 +27,17 @@ export const Store = () => {
     const [discountPolicies, setDiscountPolicies] = useState<PolicyDescriptionModel[]>([])
     const [canRemoveDisPolicy, setRemoveDis] = useState(false)
     const [canRemoveBuyPolicy, setRemoveBuy] = useState(false)
+    const [allCategs, setAllCategs] = useState<string[]>([])
 
   useEffect(()=>{
     loadStore();
   }, [])
   useEffect(() => {
     loadProducts()
-  },[searchTerm,searchCategory,minPrice,maxPrice])
+  },[searchTerm,searchCategory,maxPrice])
 
   const loadProducts = async () => {
-    setProducts(await searchAndFilterStoreProducts(storeId!, searchCategory, searchTerm, minPrice, maxPrice))
+    setProducts(await searchAndFilterStoreProducts(storeId!, searchCategory, searchTerm, 0, maxPrice))
   }
 
   const loadStore = async () => {
@@ -55,6 +56,21 @@ export const Store = () => {
     setBuyPolicies(await getStorePolicies(storeId!))
     setRemoveBuy(await hasPermission(storeId!, Permission.REMOVE_BUY_POLICY))
     setRemoveDis(await hasPermission(storeId!, Permission.REMOVE_DISCOUNT_POLICY))
+    let allProducts: ProductModel[] = await searchAndFilterStoreProducts(storeId!, "", "", -1, -1);
+    let categs: string[] = []
+    let max: number = 0;
+    allProducts.forEach(product => {
+      console.log(product)
+      if(product.productPrice > max){
+        max = product.productPrice;
+      }
+      if(!(product.productCategory in categs)){
+        categs.push(product.productCategory)
+      }
+    })
+    setAllCategs(categs);
+    setActMax(Math.ceil(max));
+    setMaxPrice(Math.ceil(max));
   }
   const handleInputChange = (event:any) => {
     setSearchTerm(event.target.value);
@@ -63,10 +79,6 @@ export const Store = () => {
   const handleCategoryChange = (event:any) => {
     setSearchCategory(event.target.value);
   };
-
-    const handleMinPriceChange = (event:any) =>{
-       setMinPrice(event.target.value);
-    };
     const handleMaxPriceChange = (event:any) =>{
         setMaxPrice(event.target.value);
      };
@@ -103,13 +115,11 @@ export const Store = () => {
             </div>
             <div className="products">
                 <h1 className="products">Products:</h1>
-                <nav className="search">
+                <nav className="searcharea butinstore">
         <select className="category"  // Add this line
             value={searchCategory} onChange={handleCategoryChange}>
             <option value="all">All</option>
-            <option value="category1">Category 1</option>
-            <option value="category2">Category 2</option>
-            <option value="category3">Category 3</option>
+            {allCategs.map(categ => <option value={categ}>{categ}</option>)}
           </select>
         <input className='search-inputs'
           type="text"
@@ -120,21 +130,11 @@ export const Store = () => {
         
           <div className="price-range">
             <label>
-              Min Price: ${minPrice}
-              <input
-                type="range"
-                min="0"
-                max={maxPrice}
-                value={minPrice}
-                onChange={handleMinPriceChange}
-              />
-            </label>
-            <label>
               Max Price: ${maxPrice}
               <input
                 type="range"
-                min={minPrice}
-                max="100"
+                min={0}
+                max={actualMax}
                 value={maxPrice}
                 onChange={handleMaxPriceChange}
               />

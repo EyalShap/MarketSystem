@@ -37,7 +37,7 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
         setMaxPrice(event.target.value);
      };
   return (
-    <nav className="search">
+    <nav className="searcharea">
         <select className="category"  // Add this line
             value={searchCategory} onChange={handleCategoryChange}>
             <option value="all">All</option>

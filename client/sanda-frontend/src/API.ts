@@ -114,6 +114,9 @@ export const getStoreDiscounts = async (storeId: string): Promise<PolicyDescript
             }
         );
         const data: RestResponse = await response.json();
+        if(data.error){
+            return [];
+        }
         return JSON.parse(data.dataJson);
     }
     const response = await fetch(
@@ -126,6 +129,9 @@ export const getStoreDiscounts = async (storeId: string): Promise<PolicyDescript
         }
     );
     const data: RestResponse = await response.json();
+    if(data.error){
+        return [];
+    }
     return JSON.parse(data.dataJson);
 }
 
@@ -140,6 +146,9 @@ export const getStorePolicies = async (storeId: string): Promise<PolicyDescripti
             }
         );
         const data: RestResponse = await response.json();
+        if(data.error){
+            return [];
+        }
         return JSON.parse(data.dataJson);
     }
     const response = await fetch(
@@ -152,6 +161,9 @@ export const getStorePolicies = async (storeId: string): Promise<PolicyDescripti
         }
     );
     const data: RestResponse = await response.json();
+    if(data.error){
+        return [];
+    }
     return JSON.parse(data.dataJson);
 }
 
@@ -200,15 +212,10 @@ export const searchAndFilterStoreProducts = async (storeId: string, category: st
 
     const dataJson = JSON.parse(response.dataJson);
 
-    const products: ProductModel[] = dataJson.map((product: any) => ({
-        id: product.productID,
-        name: product.productName,
-        storeId: product.storeId,
-        price: product.productPrice,
-        productCategory: product.productCategory,
-        productDescription: product.description,
-        productRank: product.productRank
-    }));
+    console.log(dataJson)
+    const products: ProductModel[] = Object.entries(dataJson).map(([key, value]) => {
+        let product: ProductModel = JSON.parse(key)
+        return product});
    
 
     return products;
@@ -587,6 +594,43 @@ export const getOrders = async (username: string): Promise<OrderModel[]> => {
         return [];
     }
 };
+
+export const getStoreOrderHistory = async (storeId: string): Promise<OrderModel[]> => {
+    try {
+        
+        const response = (await axios.get(`${server}/api/stores/getStoreOrderHistory?username=${localStorage.getItem("username")}&storeId=${storeId}`, {
+            headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` 
+        }
+        })).data;
+
+
+        const ordersData: ProductDataPrice[] = JSON.parse(response.dataJson);
+
+        console.log(ordersData)
+        const total = ordersData.reduce((acc, product) => acc + product.newPrice * product.amount, 0);
+        const orderProducts: ProductOrderModel[] = ordersData.map(product => ({
+            id: product.id,
+            name: product.name,
+            quantity: product.amount,
+            storeId: product.storeId,
+            oldPrice: product.oldPrice,
+            newPrice: product.newPrice
+        }));
+
+        return [{id: "0",
+            date: (new Date().toLocaleDateString()), 
+            total: total,
+            products: orderProducts}];
+
+
+    } catch (error) {
+        console.error("Failed to fetch orders:", error);
+        return [];
+    }
+};
+
 export const fetchUserStores = async (username: string): Promise<RoleModel[]> => {
     const response = await fetch(`${server}/api/user/getUserRoles?username=${username}`,{
         headers: {
