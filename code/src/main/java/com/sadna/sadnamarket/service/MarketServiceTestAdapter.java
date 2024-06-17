@@ -285,4 +285,10 @@ public class MarketServiceTestAdapter {
     public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
         return real.setStoreBankAccount(token, username, storeId, bankAccount);
     }
+
+    public Response addPolicyAgainst(String token, String username, int storeId, int productId){
+        Response resp = real.createProductAmountBuyPolicy(token, username, productId, new LinkedList<>(), 0, 0);
+        int id = Integer.parseInt(resp.getDataJson());
+        return real.addBuyPolicyToStore(token, username, storeId, id);
+    }
 }
