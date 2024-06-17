@@ -130,3 +130,26 @@ h4 {
     align-items: center;
     width: 100%;
 }
+
+.policDiv{
+    flex-direction: row;
+    display: flex;
+    font-family: Roboto;
+    width: 500px;
+    border-style: solid;
+    border-color: black;
+    background-color: white;
+    border-width: 1px;
+    margin: 2px;
+    border-radius: 3px;
+}
+
+.removeButton{
+    background-color: darkred;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    border-color: darkred;
+    border-width: 1px;
+    border-radius: 3px;
+}

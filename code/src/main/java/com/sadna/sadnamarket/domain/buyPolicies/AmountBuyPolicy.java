@@ -54,9 +54,9 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
 
     @Override
     public String getPolicyDesc() {
-        if(from == -1)
-            return String.format("More than %d units of %s must be bought.", from, policySubject.getDesc());
         if(to == -1)
+            return String.format("More than %d units of %s must be bought.", from, policySubject.getDesc());
+        if(from == -1)
             return String.format("Less than %d units of %s must be bought.", to, policySubject.getDesc());
         return String.format("%d - %d units of %s must be bought.", from, to, policySubject.getDesc());
     }

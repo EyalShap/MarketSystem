@@ -277,8 +277,17 @@ export const hasPermission = async (storeId: string, permission: Permission): Pr
     return (!data.error) && (data.dataJson === "true")
 }
 
-export const storeActive = (storeId: string): boolean => {
-    return true;
+export const storeActive = async (storeId: string): Promise<boolean> => {
+    const response = await fetch(
+        `${server}/api/stores/isActive?storeId=${storeId}`,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+    );
+    const data: RestResponse = await response.json();
+    return (!data.error) && (data.dataJson === "true")
 }
 
 export const getPermissions = async (storeId: string): Promise<Permission[]> => {
@@ -687,6 +696,38 @@ export const addProduct = async (productModel: AddProductModel,storeId: number) 
     );
     return response.data;
 };
+
+export const closeStore = async(storeId: string) => {
+    const response = await axios.put(`${server}/api/stores/closeStore?username=${localStorage.getItem("username")}&storeId=${storeId}`,{},{
+              headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    const data: RestResponse = response.data;
+    if(data.error){
+        alert(`Couldn't close store: ${data.errorString}`);
+    }else{
+        alert(`Store is now closed :(`)
+    }
+}
+
+export const reopenStore = async(storeId: string) => {
+    const response = await axios.put(`${server}/api/stores/reopenStore?username=${localStorage.getItem("username")}&storeId=${storeId}`,{},{
+        headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+    }
+}
+);
+const data: RestResponse = response.data;
+if(data.error){
+  alert(`Couldn't reopen store: ${data.errorString}`);
+}else{
+  alert(`Store is now open! :D`)
+}
+}
 
 export const sendManagerRequest = async(username: string, storeId: string): Promise<RestResponse> => {
     let request: StoreRequestModel = {appointer: localStorage.getItem("username")!, appointee: username, storeId: parseInt(storeId)}

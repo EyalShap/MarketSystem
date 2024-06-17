@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from "react";
 import { IoIosArrowDown  } from "react-icons/io";
 import { IoBagAddOutline, IoBagAdd, IoPerson  } from "react-icons/io5";
-import { getPermissions, hasPermission, isFounder, isManager, isOwner, storeActive } from "../API";
+import { closeStore, getPermissions, hasPermission, isFounder, isManager, isOwner, reopenStore, storeActive } from "../API";
 import { FaSkull } from "react-icons/fa6";
 import { FaDoorOpen } from "react-icons/fa";
 import Permission from "../models/Permission";
@@ -17,6 +17,7 @@ export const ActionDropdown = (props: any) => {
     const [isOwnerBool, setIsOwner] = useState(false)
     const [isManagerBool, setIsManager] = useState(false)
     const [isFounderBool, setIsFounder] = useState(false)
+    const [isActive, setIsActive] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -24,9 +25,11 @@ export const ActionDropdown = (props: any) => {
             let owner: boolean = await isOwner(props.storeId)
             let manager: boolean = await isManager(props.storeId)
             let founder: boolean = await isFounder(props.storeId)
+            let active: boolean = await storeActive(props.storeId)
             setIsOwner(owner);
             setIsManager(manager);
             setIsFounder(founder);
+            setIsActive(active)
             if(owner || founder){
                 setPermissions([Permission.ADD_PRODUCTS, Permission.DELETE_PRODUCTS, Permission.UPDATE_PRODUCTS, Permission.ADD_BUY_POLICY, Permission.ADD_DISCOUNT_POLICY, Permission.ADD_MANAGER, Permission.ADD_OWNER, Permission.CLOSE_STORE, Permission.REOPEN_STORE])
             }else if(manager){
@@ -35,6 +38,18 @@ export const ActionDropdown = (props: any) => {
         }
         fetchPermissions();
     },[])
+
+    const close = async () => {
+        await closeStore(props.storeId)
+        let active: boolean = await storeActive(props.storeId)
+        setIsActive(active)
+    }
+
+    const reopen = async () => {
+        await reopenStore(props.storeId)
+        let active: boolean = await storeActive(props.storeId)
+        setIsActive(active)
+    }
 
     const toggleShowMenu = () => {
         setShowMenu(!showMenu)
@@ -77,7 +92,7 @@ export const ActionDropdown = (props: any) => {
                 {isOwnerBool &&
                 <button className="optionButton" onClick={() => navigate("./orders")}><FaHistory  />  View Store History</button>
                 }
-                {isFounderBool && (storeActive(props.storeId) ? <button className="optionButton closeStore"><FaSkull /> Close Store</button> : <button className="optionButton reopenStore"><FaDoorOpen /> Reopen Store</button>)}
+                {isFounderBool && (isActive ? <button onClick={close} className="optionButton closeStore"><FaSkull /> Close Store</button> : <button onClick={reopen} className="optionButton reopenStore"><FaDoorOpen /> Reopen Store</button>)}
             </div>
             }
         </div>

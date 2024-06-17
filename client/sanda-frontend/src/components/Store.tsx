@@ -98,13 +98,13 @@ export const Store = () => {
             <div className="policies">
               <div className="listPolicies">
                 <h4>Purchase Policies:</h4>
-                {buyPolicies.map(policy => <div><p>{policy.description}</p>
-                {canRemoveBuyPolicy && <button onClick = {async () => await removePolicyFromStore(parseInt(storeId!), policy.policyId)}><TiDelete /></button>}</div>)}
+                {buyPolicies.map(policy => <div className='policDiv'><p>{policy.description}</p>
+                {canRemoveBuyPolicy && <button className='removeButton' onClick = {async () => await removePolicyFromStore(parseInt(storeId!), policy.policyId)}><TiDelete /></button>}</div>)}
               </div>
               <div className="listPolicies">
                 <h4>Discount Policies:</h4>
-                {discountPolicies.map(policy => <div><p>{policy.description}</p>
-                {canRemoveDisPolicy && <button onClick={async () => await removeDiscountFromStore(parseInt(storeId!), policy.policyId)}><TiDelete /></button>}</div>)}
+                {discountPolicies.map(policy => <div className='policDiv'><p>{policy.description}</p>
+                {canRemoveDisPolicy && <button className='removeButton' onClick={async () => await removeDiscountFromStore(parseInt(storeId!), policy.policyId)}><TiDelete /></button>}</div>)}
               </div>
             </div>
             <div className='dropdownDiv'>
