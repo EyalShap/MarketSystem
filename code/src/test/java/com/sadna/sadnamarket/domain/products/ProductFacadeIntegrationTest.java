@@ -17,7 +17,7 @@ public class ProductFacadeIntegrationTest {
     @BeforeEach
     public void setUp() {
         productRepository = new MemoryProductRepository(); // Utilisez une implémentation réelle ou un stub pour les
-                                                           // tests d'intégration
+        // tests d'intégration
         productFacade = new ProductFacade(productRepository);
 
         // Ajout de produits communs pour les tests
@@ -57,11 +57,7 @@ public class ProductFacadeIntegrationTest {
 
         productFacade.removeProduct(1, productId);
 
-        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            productRepository.getProduct(productId);
-        });
-        String expectedMessage = Error.makeProductAlreadyRemovedError(productId);
-        assertEquals(expectedMessage, expected.getMessage());
+        assertFalse(productRepository.getProduct(productId).isActiveProduct());
     }
 
     @Test

@@ -21,7 +21,7 @@ public class MemoryProductRepository implements IProductRepository {
 
     @Override
     public int addProduct(String productName, double productPrice,
-            String productCategory, double productRank, double productWeight, int storeId) {
+                          String productCategory, double productRank, double productWeight, int storeId) {
         synchronized (products) {
             Product createdProduct = new Product(nextProductId, productName, productPrice,
                     productCategory, productRank, productWeight, storeId);
@@ -42,10 +42,10 @@ public class MemoryProductRepository implements IProductRepository {
                 throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
             }
             Product product = products.get(productId);
-            if (!product.isActiveProduct()) {
-                logger.error(String.format("Product Id %d was already removed.", productId));
-                throw new IllegalArgumentException(Error.makeProductAlreadyRemovedError(productId));
-            }
+//            if (!product.isActiveProduct()) {
+//                logger.error(String.format("Product Id %d was already removed.", productId));
+//                throw new IllegalArgumentException(Error.makeProductAlreadyRemovedError(productId));
+//            }
 
             return product;
         }
