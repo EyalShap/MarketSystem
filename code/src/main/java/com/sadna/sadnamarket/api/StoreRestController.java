@@ -300,6 +300,11 @@ public class StoreRestController {
         return marketService.getIsOwner(token, actorUsername, storeId, actorUsername);
     }
 
+    @GetMapping("/isActive")
+    public Response isActive(@RequestParam  int storeId, HttpServletRequest request) {
+        return marketService.getIsActive(storeId);
+    }
+
     @GetMapping("/isFounder")
     public Response isFounder(@RequestParam String actorUsername,@RequestParam  int storeId, HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");

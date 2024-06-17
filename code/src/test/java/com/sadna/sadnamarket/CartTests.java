@@ -245,6 +245,7 @@ public class CartTests {
                     "+97254-989-4939", "jimjimmy@gmail.com");
             Response resp = bridge.buyCartGuest(uuid, cardDTO,addressDTO);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeAmountBuyPolicyError(""+productId,0,0), resp.getErrorString());
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "4");
             resp = bridge.getUserPurchaseHistory("", "", uuid);
             List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
@@ -277,6 +278,7 @@ public class CartTests {
                     "+97254-989-4939", "jimjimmy@gmail.com");
             Response resp = bridge.buyCartGuest(uuid, cardDTO,addressDTO);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeNotEnoughInStcokError(storeId, productId, 5, 4), resp.getErrorString());
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "4");
             resp = bridge.getUserPurchaseHistory("", "", uuid);
             List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {

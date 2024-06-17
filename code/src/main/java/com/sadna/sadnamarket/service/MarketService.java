@@ -1351,6 +1351,14 @@ public class MarketService {
         }
     }
 
+    public Response getIsActive(int storeId) {
+        try {
+            return Response.createResponse(false, String.valueOf(storeFacade.isStoreActive(storeId)));
+        } catch (Exception e) {
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
     public Response getIsFounder(String token, String username, int storeId, String ownerUsername) {
         try {
             checkToken(token, username);
