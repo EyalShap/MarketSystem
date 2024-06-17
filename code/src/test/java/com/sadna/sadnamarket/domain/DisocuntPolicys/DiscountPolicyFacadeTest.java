@@ -34,8 +34,8 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
 
     List<CartItemDTO> cart;
 
-    private String toJson(Discount discount) throws JsonProcessingException {
-        return discount.getClass().getName() + "-" + objectMapper.writeValueAsString(discount);
+    private String toJson(Object object) throws JsonProcessingException {
+        return object.getClass().getName() + "-" + objectMapper.writeValueAsString(object);
 
     }
 
@@ -353,6 +353,126 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
         SimpleDiscount simpleDiscount2 =  new SimpleDiscount(policyId, 10, new TrueCondition(0));
         simpleDiscount2.setOnStore();
         MaximumDiscount expected = new MaximumDiscount(0, simpleDiscount1,simpleDiscount2);
+        String expectedJson = toJson(expected);
+
+        assertEquals(expectedJson, resJson);
+    }
+
+    @Test
+    public void createMinBuyConditionSuccess() throws Exception {
+        //conditionId 1 is  MinBuyCondition(100);
+        int conditionId = discountPolicyFacade.createMinBuyCondition(10, "hila");
+
+        Condition resCondition = conditionRepository.findConditionByID(conditionId);
+
+        String resJson = toJson(resCondition);
+
+        MinBuyCondition expected = new MinBuyCondition(1, 10);
+        String expectedJson = toJson(expected);
+
+        assertEquals(expectedJson, resJson);
+    }
+
+    @Test
+    public void createOnProductConditionSuccess() throws Exception {
+        //conditionId 1 is  MinBuyCondition(100);
+        int conditionId = discountPolicyFacade.createMinProductCondition(10, 0, "hila");
+
+        Condition resCondition = conditionRepository.findConditionByID(conditionId);
+
+        String resJson = toJson(resCondition);
+
+        MinProductCondition expected = new MinProductCondition(1, 10);
+        expected.setOnProductName(0);
+        String expectedJson = toJson(expected);
+
+        assertEquals(expectedJson, resJson);
+    }
+
+    @Test
+    public void createMinProductOnCategoryConditionSuccess() throws Exception {
+        //conditionId 1 is  MinBuyCondition(100);
+        int conditionId = discountPolicyFacade.createMinProductOnCategoryCondition(10, "dairy", "hila");
+
+        Condition resCondition = conditionRepository.findConditionByID(conditionId);
+
+        String resJson = toJson(resCondition);
+
+        MinProductCondition expected = new MinProductCondition(1, 10);
+        expected.setOnCategoryName("dairy");
+        String expectedJson = toJson(expected);
+
+        assertEquals(expectedJson, resJson);
+    }
+
+    @Test
+    public void createMinProductOnStoreConditionSuccess() throws Exception {
+        //conditionId 1 is  MinBuyCondition(100);
+        int conditionId = discountPolicyFacade.createMinProductOnStoreCondition(10, "hila");
+
+        Condition resCondition = conditionRepository.findConditionByID(conditionId);
+
+        String resJson = toJson(resCondition);
+
+        MinProductCondition expected = new MinProductCondition(1, 10);
+        expected.setOnStore();
+        String expectedJson = toJson(expected);
+
+        assertEquals(expectedJson, resJson);
+    }
+
+    @Test
+    public void createAndConditionSuccess() throws Exception {
+        //conditionId 1 is  MinBuyCondition(100);
+        int conditionId1 = discountPolicyFacade.createMinProductOnStoreCondition(10, "hila");
+        int conditionId2 = discountPolicyFacade.createMinProductOnCategoryCondition(10, "dairy", "hila");
+        int conditionId3 = discountPolicyFacade.createAndCondition(conditionId1, conditionId2, "hila");
+        Condition resCondition = conditionRepository.findConditionByID(conditionId3);
+
+        String resJson = toJson(resCondition);
+        MinProductCondition cond1 = new MinProductCondition(1, 10);
+        cond1.setOnStore();
+        MinProductCondition cond2 = new MinProductCondition(1, 10);
+        cond2.setOnCategoryName("dairy");
+        AndCondition expected = new AndCondition(1,cond1, cond2);
+        String expectedJson = toJson(expected);
+
+        assertEquals(expectedJson, resJson);
+    }
+
+    @Test
+    public void createOrConditionSuccess() throws Exception {
+        //conditionId 1 is  MinBuyCondition(100);
+        int conditionId1 = discountPolicyFacade.createMinProductOnStoreCondition(10, "hila");
+        int conditionId2 = discountPolicyFacade.createMinProductOnCategoryCondition(10, "dairy", "hila");
+        int conditionId3 = discountPolicyFacade.createOrCondition(conditionId1, conditionId2, "hila");
+        Condition resCondition = conditionRepository.findConditionByID(conditionId3);
+
+        String resJson = toJson(resCondition);
+        MinProductCondition cond1 = new MinProductCondition(1, 10);
+        cond1.setOnStore();
+        MinProductCondition cond2 = new MinProductCondition(1, 10);
+        cond2.setOnCategoryName("dairy");
+        OrCondition expected = new OrCondition(1,cond1, cond2);
+        String expectedJson = toJson(expected);
+
+        assertEquals(expectedJson, resJson);
+    }
+
+    @Test
+    public void createXorConditionSuccess() throws Exception {
+        //conditionId 1 is  MinBuyCondition(100);
+        int conditionId1 = discountPolicyFacade.createMinProductOnStoreCondition(10, "hila");
+        int conditionId2 = discountPolicyFacade.createMinProductOnCategoryCondition(10, "dairy", "hila");
+        int conditionId3 = discountPolicyFacade.createXorCondition(conditionId1, conditionId2, "hila");
+        Condition resCondition = conditionRepository.findConditionByID(conditionId3);
+
+        String resJson = toJson(resCondition);
+        MinProductCondition cond1 = new MinProductCondition(1, 10);
+        cond1.setOnStore();
+        MinProductCondition cond2 = new MinProductCondition(1, 10);
+        cond2.setOnCategoryName("dairy");
+        XorCondition expected = new XorCondition(1,cond1, cond2);
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
