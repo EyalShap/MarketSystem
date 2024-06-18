@@ -44,29 +44,53 @@ public class SimpleDiscount extends Discount {
 
     @Override
     public void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
+        int itemID;
+        int thisProductID;
+        String thisCategoryName;
+        //if the item not under the specified category or the o=product id than contu=inue to the next loop
+        //without giving him the discount
         if(checkCond(productDTOMap,listProductsPrice)){
-            if(productID != null){
-                discountOnlyProduct(productDTOMap, listProductsPrice);
-            }
-            else if(categoryName != null){
-                discountOnlyCategory(productDTOMap, listProductsPrice);
-            }
-            else if(chosePath){
-                discountAll(listProductsPrice);
+            for(ProductDataPrice item : listProductsPrice){
+                itemID = item.getId();
+                if(productID != null){
+                    thisProductID = productDTOMap.get(itemID).getProductID();
+                    if(thisProductID != productID) {
+                        continue;
+                    }
+                }
+                else if(categoryName != null){
+                    thisCategoryName = productDTOMap.get(itemID).getProductCategory();
+                    if(!thisCategoryName.equals(categoryName)) {
+                        continue;
+                    }
+                }
+                setNewPrice(item);
             }
         }
     }
 
     @Override
     public void giveDiscountWithoutCondition(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
-        if(productID != null){
-            discountOnlyProduct(productDTOMap, listProductsPrice);
-        }
-        else if(categoryName != null){
-            discountOnlyCategory(productDTOMap, listProductsPrice);
-        }
-        else if(chosePath){
-            discountAll(listProductsPrice);
+        int itemID;
+        int thisProductID;
+        String thisCategoryName;
+        //if the item not under the specified category or the o=product id than contu=inue to the next loop
+        //without giving him the discount
+        for(ProductDataPrice item : listProductsPrice){
+            itemID = item.getId();
+            if(productID != null){
+                thisProductID = productDTOMap.get(itemID).getProductID();
+                if(thisProductID != productID) {
+                    continue;
+                }
+            }
+            else if(categoryName != null){
+                thisCategoryName = productDTOMap.get(itemID).getProductCategory();
+                if(!thisCategoryName.equals(categoryName)) {
+                    continue;
+                }
+            }
+            setNewPrice(item);
         }
     }
 
@@ -77,45 +101,34 @@ public class SimpleDiscount extends Discount {
 
     @Override
     public double giveTotalPriceDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
-        if(productID != null){
-            return checkTotalDiscountOnlyProduct(productDTOMap, listProductsPrice);
-        }
-        else if(categoryName != null){
-            return checkTotalDiscountOnlyCategory(productDTOMap, listProductsPrice);
-        }
-        else if(chosePath){
-            return checkTotalDiscountAll(listProductsPrice);
-        }
-        return  0;
-    }
-
-    private void discountOnlyProduct(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice){
         int itemID;
         int thisProductID;
-        for(ProductDataPrice item : listProductsPrice){
-            itemID = item.getId();
-            thisProductID = productDTOMap.get(itemID).getProductID();
-            if(thisProductID == productID) {
-                setNewPrice(item);
-            }
-        }
-    }
-    private void discountOnlyCategory(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice){
-        int itemID;
         String thisCategoryName;
+        double total = 0;
+        double oldNewPrice;
+        //if the item not under the specified category or the has the wanted product id than continue to the next loop
+        //without giving him the discount
         for(ProductDataPrice item : listProductsPrice){
             itemID = item.getId();
-            thisCategoryName = productDTOMap.get(itemID).getProductCategory();
-            if(thisCategoryName.equals(categoryName)) {
-                setNewPrice(item);
+            if(productID != null){
+                thisProductID = productDTOMap.get(itemID).getProductID();
+                if(thisProductID != productID) {
+                    continue;
+                }
             }
+            else if(categoryName != null){
+                thisCategoryName = productDTOMap.get(itemID).getProductCategory();
+                if(!thisCategoryName.equals(categoryName)) {
+                    continue;
+                }
+            }
+            oldNewPrice = item.getNewPrice();
+            total = total + oldNewPrice*(percentage/100);
         }
+        return  total;
     }
-    private void discountAll(List<ProductDataPrice> listProductsPrice){
-        for(ProductDataPrice item : listProductsPrice){
-            setNewPrice(item);
-        }
-    }
+
+
 
     private void setNewPrice(ProductDataPrice item){
         double oldNewPrice;
@@ -125,45 +138,6 @@ public class SimpleDiscount extends Discount {
         item.setNewPrice(newNewPrice);
     }
 
-    private double checkTotalDiscountOnlyProduct(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice){
-        int itemID;
-        double total = 0;
-        double oldNewPrice;
-        int thisProductID;
-        for(ProductDataPrice item : listProductsPrice){
-            itemID = item.getId();
-            thisProductID = productDTOMap.get(itemID).getProductID();
-            if(thisProductID == productID) {
-                oldNewPrice = item.getNewPrice();
-                total = total + oldNewPrice*(percentage/100);
-            }
-        }
-        return total;
-    }
-    private double checkTotalDiscountOnlyCategory(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice){
-        int itemID;
-        double total = 0;
-        double oldNewPrice;
-        String thisCategoryName;
-        for(ProductDataPrice item : listProductsPrice){
-            itemID = item.getId();
-            thisCategoryName = productDTOMap.get(itemID).getProductCategory();
-            if(thisCategoryName.equals(categoryName)) {
-                oldNewPrice = item.getNewPrice();
-                total = total + oldNewPrice*(percentage/100);
-            }
-        }
-        return total;
-    }
-    private double checkTotalDiscountAll(List<ProductDataPrice> listProductsPrice){
-        double total = 0;
-        double oldNewPrice;
-        for(ProductDataPrice item : listProductsPrice){
-            oldNewPrice = item.getNewPrice();
-            total = total + oldNewPrice*(percentage/100);
-        }
-        return total;
-    }
 
     @Override
     public String description() {
