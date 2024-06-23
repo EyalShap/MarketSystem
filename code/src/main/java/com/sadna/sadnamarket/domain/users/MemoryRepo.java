@@ -62,7 +62,8 @@ public class MemoryRepo implements IUserRepository {
 
     public int addGuest() {
         logger.info("Entering addGuest");
-        guests.put(++guestId, new Guest(guestId));
+        guestId=guestId+1;
+        guests.put(guestId, new Guest(guestId));
         logger.info("Exiting addGuest with result={}", guestId);
         return guestId;
     }

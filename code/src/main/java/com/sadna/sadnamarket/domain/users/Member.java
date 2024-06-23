@@ -1,9 +1,11 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.RealtimeService;
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,14 +19,18 @@ public class Member extends IUser {
     private String phoneNumber;
     private List<UserRole> roles;
     private List<Integer> orders;
+    private LocalDate birthDate;
     private HashMap<Integer, Notification> notifes;
     private static final Logger logger = LogManager.getLogger(Member.class);
     private boolean isLoggedIn;
     private int notifyID;
 
-    public Member(String username, String firstName, String lastName, String emailAddress, String phoneNumber) {
-        logger.info("Entering Member constructor with parameters: username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}",
-                username, firstName, lastName, emailAddress, phoneNumber);
+    private final RealtimeService realtime = new RealtimeService();
+
+
+    public Member(String username, String firstName, String lastName, String emailAddress, String phoneNumber,LocalDate birthDate) {
+        logger.info("Entering Member constructor with parameters: username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}, birthDate={}",
+                username, firstName, lastName, emailAddress, phoneNumber,birthDate);
         roles = new ArrayList<>();
         notifes = new HashMap<>();
         orders = new ArrayList<>();
@@ -35,6 +41,7 @@ public class Member extends IUser {
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
         logger.info("Exiting Member constructor");
     }
 
@@ -59,28 +66,33 @@ public class Member extends IUser {
         logger.info("Exiting setLogin");
     }
 
-    public void addNotification(String message) {
+    public NotificationDTO addNotification(String message) {
         logger.info("Entering addNotification with message={}", message);
-        notifes.put(++notifyID, new Notification(message,notifyID));
+        notifyID++;
+        Notification notification = new Notification(message,notifyID);
+        notifes.put(notifyID, notification);
         logger.info("Exiting addNotification");
+        return new NotificationDTO(notification);
     }
 
-    public void addOwnerRequest(UserFacade userFacade, String userName, int store_id) {
+    public RequestDTO addOwnerRequest(UserFacade userFacade, String userName, int store_id) {
         logger.info("Entering addOwnerRequest with userFacade={}, userName={}, store_id={}", userFacade, userName, store_id);
         UserRole role = getRoleOfStore(store_id);
         if (role.getApointee().equals(userName)) {
             logger.error("Exception in addOwnerRequest: You disallowed appoint the one who appointed you!");
             throw new IllegalStateException(Error.makeMemberDisallowedAppointError());
         }
-        role.sendRequest(userFacade, username, userName, "Owner");
+        RequestDTO requestDTO = role.sendRequest(userFacade, username, userName, "Owner");
         logger.info("Exiting addOwnerRequest");
+        return requestDTO;
     }
 
-    public void addManagerRequest(UserFacade userFacade, String userName, int store_id) {
+    public RequestDTO addManagerRequest(UserFacade userFacade, String userName, int store_id) {
         logger.info("Entering addManagerRequest with userFacade={}, userName={}, store_id={}", userFacade, userName, store_id);
         UserRole role = getRoleOfStore(store_id);
-        role.sendRequest(userFacade, username, userName, "Manager");
+        RequestDTO requestDTO = role.sendRequest(userFacade, username, userName, "Manager");
         logger.info("Exiting addManagerRequest");
+        return requestDTO;
     }
 
     public UserRole getRoleOfStore(int store_id) {
@@ -199,14 +211,17 @@ public class Member extends IUser {
         return result;
     }
 
-    public void getRequest(String senderName, int storeId, String reqType) {
+    public RequestDTO getRequest(String senderName, int storeId, String reqType) {
         logger.info("Entering getRequest with senderName={}, storeId={}, reqType={}", senderName, storeId, reqType);
         if (hasRoleInStore(storeId)) {
             logger.error("Exception in getRequest: member already has role in store");
             throw new IllegalStateException(Error.makeMemberUserAlreadyHasRoleError());
         }
-        notifes.put(++notifyID, new Request(senderName, "You got appointment request", storeId, reqType,notifyID));
+        notifyID++;
+        Request request = new Request(senderName, "You got appointment request", storeId, reqType,notifyID);
+        notifes.put(notifyID, request);
         logger.info("Exiting getRequest");
+        return new RequestDTO(request);
     }
 
     public void accept(int requestID) {
@@ -214,6 +229,12 @@ public class Member extends IUser {
         notifes.get(requestID).accept(this);
         notifes.remove(requestID);
         logger.info("Exiting accept");
+    }
+
+    public void reject(int requestID) {
+        logger.info("Entering reject with requestID={}", requestID);
+        notifes.remove(requestID);
+        logger.info("Exiting reject");
     }
 
 
@@ -292,11 +313,12 @@ public class Member extends IUser {
         return result;
     }
 
-    public List<String> getUserRolesString() {
+    public List<UserRoleDTO> getUserRolesString() {
         logger.info("Entering getUserRolesString");
-        List<String> rolesString = new ArrayList<>();
+        List<UserRoleDTO> rolesString = new ArrayList<>();
         for (UserRole role : roles) {
-            rolesString.add(role.toString());
+            UserRoleDTO roleDTO = new UserRoleDTO(role.getStoreId(), role.toString());
+            rolesString.add(roleDTO);
         }
         logger.info("Exiting getUserRolesString with result={}", rolesString);
         return rolesString;
@@ -307,5 +329,22 @@ public class Member extends IUser {
         List<UserRole> result = roles;
         logger.info("Exiting getUserRoles with result={}", result);
         return result;
+    }
+    public LocalDate getBirthday() {
+        logger.info("Entering getBirthday");
+        LocalDate result = birthDate;
+        logger.info("Exiting getBirthday with result={}", result);
+        return result;
+    }
+    public void setBirthday(LocalDate birthDate) {
+        logger.info("Entering setBirthday with birthDate={}", birthDate);
+        this.birthDate = birthDate;
+        logger.info("Exiting setBirthday");
+    }
+
+    public void clearCart() {
+        logger.info("Entering clearCart");
+        cart=new Cart();
+        logger.info("Exiting clearCart");
     }
 }

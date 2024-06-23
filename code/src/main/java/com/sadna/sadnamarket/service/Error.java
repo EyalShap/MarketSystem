@@ -1,5 +1,9 @@
 package com.sadna.sadnamarket.service;
 
+import java.time.LocalTime;
+import java.util.Set;
+import java.util.TreeSet;
+
 public class Error {
     public static String makeAuthPasswordIncorrectError(){
         return "password is incorrect";
@@ -212,8 +216,16 @@ public class Error {
         return String.format("User %s can not add buy policy to store with id %d.", username, storeId);
     }
 
+    public static String makeStoreUserCannotRemoveBuyPolicyError(String username, int storeId){
+        return String.format("User %s can not remove buy policy from store with id %d.", username, storeId);
+    }
+
     public static String makeStoreUserCannotAddDiscountPolicyError(String username, int storeId){
         return String.format("User %s can not add discount policy to store with id %d.", username, storeId);
+    }
+
+    public static String makeStoreUserCannotRemoveDiscountPolicyError(String username, int storeId){
+        return String.format("User %s can not remove discount policy to store with id %d.", username, storeId);
     }
 
     public static String makeStoreNotValidAspectError(String value, String aspect){
@@ -334,5 +346,110 @@ public class Error {
 
     public static String makeCartAmountDoesntExistError(){
         return "Amount doesn't exist in store";
+    }
+
+    public static String makeBuyPolicyWithIdDoesNotExistError(int buyPolicyId) {
+        return String.format("A buy policy with id %d does not exist.", buyPolicyId);
+    }
+
+    public static String makeBuyPolicyAlreadyExistsError(int buyPolicyId) {
+        return String.format("A buy policy with id %d already exists in store.", buyPolicyId);
+    }
+
+    public static String makeUserCanNotCreateBuyPolicyError(String username) {
+        return String.format("User %s can not create buy policies.", username);
+    }
+
+    public static String makeBuyPolicyParamsError(String policyType, String min, String max) {
+        return String.format("Invalid %s buy policy parameters: min: %s, max: %s.", policyType, min, max);
+    }
+
+    public static String makeBuyPolicyParamsError(String policyType, String params) {
+        return String.format("Invalid %s buy policy parameters: %s.", policyType, params);
+    }
+
+    public static String makeCanNotRemoveLawBuyPolicyError(int policyId) {
+        return String.format("%d is a law policy that can not be removed.", policyId);
+    }
+
+    public static String makeEmptyCategoryError() {
+        return "The entered category is empty.";
+    }
+
+    public static String makeAgeLimitBuyPolicyError(String subject, int min, int max) {
+        if(min == -1)
+            return String.format("The user can not buy %s because his age is above %d.", subject, max);
+        if(max == -1)
+            return String.format("The user can not buy %s because his age is below %d.", subject, min);
+        return String.format("The user can not buy %s because his age is not between %d and %d.", subject, min, max);
+    }
+
+    public static String makeAmountBuyPolicyError(String subject, int min, int max) {
+        return String.format("The user can not buy %s because the amount is not between %d and %d.", subject, min, max);
+    }
+
+    public static String makeHolidayBuyPolicyError(String subject) {
+        return "It is a holiday.";
+    }
+
+    public static String makeHourLimitBuyPolicyError(String subject, LocalTime from, LocalTime to) {
+        return String.format("The user can not buy %s because the hour is not between %s and %s.", subject, from.toString(), to.toString());
+    }
+
+    public static String makeKgLimitBuyPolicyError(String subject, String from, String to) {
+        return String.format("The user can not buy %s because the weight is not between %s and %s.", subject, from, to);
+    }
+
+    public static String makeRoshChodeshBuyPolicyError(String subject) {
+        return String.format("The user can not buy %s because it is Rosh Chodesh - WAKE UP. IT'S THE FIRST OF THE MONTH.", subject);
+    }
+
+    public static String makeSpecificDateBuyPolicyError(String subject) {
+        return String.format("The user can not buy %s on this specific date.", subject);
+    }
+
+    public static String makeAndBuyPolicyError(String policy1, String policy2) {
+        return policy1 + " OR " + policy2;
+    }
+
+    public static String makeOrBuyPolicyError(String policy1, String policy2) {
+        return policy1 + " AND " + policy2;
+    }
+
+    public static String makeConditioningBuyPolicyError(String policy1, String policy2) {
+        return policy1 + " AND NOT " + policy2;
+    }
+
+    public static String makePermissionError(int num) {
+        return String.format("No permission is associated with number %d.", num);
+    }
+
+    public static String makeUserCanNotCheckPermissionOfUserError(String actorUsername, String username, int storeId) {
+        return String.format("%s can not permissions of % in store %d.", actorUsername, username, storeId);
+    }
+
+    public static String makePolicyProductsNotInStore(int storeId, Set<Integer> productIds, int policyId) {
+        Set<Integer> sortedSet = new TreeSet<>(productIds);
+        return String.format("Policy %d can not be added to store %d because the store does not have all of the policy products: %s.", policyId, storeId, sortedSet.toString());
+    }
+
+    public static String makeUserCanNotCreateDiscountPolicyError(String username){
+        return String.format("%s can not create discounts policies.", username);
+    }
+
+    public static String makeUserCanNotCreateConditionForDiscountPolicyError(String username){
+        return String.format("%s can not create condition for discounts policies.", username);
+    }
+
+    public static String percentageForDiscountIsNotInRange(double percentage) {
+        return String.format("percentage discount is supposed to be between 100 and 0, yours is %f.", percentage);
+    }
+
+    public static String makeDiscountPolicyWithIdDoesNotExistError(int discountId) {
+        return String.format("A Discount policy with id %d does not exist.", discountId);
+    }
+
+    public static String makeConditionWithIdDoesNotExistError(int condId) {
+        return String.format("A Condition with id %d does not exist.", condId);
     }
 }

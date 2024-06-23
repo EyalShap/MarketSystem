@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,6 +27,7 @@ import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.payment.PaymentInterface;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
+import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
@@ -47,7 +49,8 @@ public class UserFacadeTest {
   
     @Mock
     private OrderFacade orderFacade;
-
+    @Mock
+    private StoreDTO storeDTO;
 
     private String testUsername1="idanasis";
     private String testUsername2="shavirmor";
@@ -55,6 +58,7 @@ public class UserFacadeTest {
     private String testPassword="12";
     private int testStoreId;
     private int testStoreId2;
+    private LocalDate testDate=LocalDate.of(1990, 11, 11);
 
     @Before
     public void setUp() {
@@ -65,16 +69,16 @@ public class UserFacadeTest {
         orderFacade=mock(OrderFacade.class);
         this.userFacade=new UserFacade(iUserRepo, storeFacade,orderFacade);
         this.authFacade=new AuthFacade(iAuthRepo,userFacade);
-        authFacade.register(testUsername1,testPassword,"Idan","Idan","idan@gmail.com","0501118121");
+        authFacade.register(testUsername1,testPassword,"Idan","Idan","idan@gmail.com","0501118121",testDate);
         authFacade.login(testUsername1,testPassword);
-        authFacade.register(testUsername2,testPassword,"Shavit","Mor","shavit@gmail.com","05033303030");
+        authFacade.register(testUsername2,testPassword,"Shavit","Mor","shavit@gmail.com","05033303030",testDate);
         authFacade.login(testUsername2, testPassword);
-        authFacade.register(testUsername3,testPassword,"Nir","Mor","nir@gmail.com","05033303030");
+        authFacade.register(testUsername3,testPassword,"Nir","Mor","nir@gmail.com","05033303030",testDate);
         authFacade.login(testUsername3, testPassword);
-        when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any())).thenReturn(1); // Return a predefined store ID  
-        testStoreId=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
-        when(storeFacade.createStore(anyString(), anyString(),  anyString(), anyString(), anyString(), any(), any())).thenReturn(2); // Return a predefined store ID 
-        testStoreId2=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
+        when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(1); // Return a predefined store ID
+        testStoreId=storeFacade.createStore(testUsername1, null, null, null, null);
+        when(storeFacade.createStore(anyString(), anyString(),  anyString(), anyString(), anyString())).thenReturn(2); // Return a predefined store ID
+        testStoreId2=storeFacade.createStore(testUsername1, null, null, null, null);
         doNothing().when(storeFacade).addStoreOwner(anyString(), anyInt());
         when(storeFacade.hasProductInStock(anyInt(), anyInt(), anyInt())).thenReturn(true);
         
@@ -104,7 +108,7 @@ public class UserFacadeTest {
 
     @Test
     public void testLogin() {    
-        authFacade.register("yosi",testPassword,"sami","hatuka","sami@gmail.com","0501118121");
+        authFacade.register("yosi",testPassword,"sami","hatuka","sami@gmail.com","0501118121",testDate);
         authFacade.login("yosi",testPassword);
         assertTrue(userFacade.isLoggedIn("yosi"));
     }
@@ -123,12 +127,12 @@ public class UserFacadeTest {
 
     @Test
     public void testRegister() {
-        authFacade.register("Jimi",testPassword,"Jimi","hatuka","Jimi@gmail.com","0501118121");
+        authFacade.register("Jimi",testPassword,"Jimi","hatuka","Jimi@gmail.com","0501118121",testDate);
         assertDoesNotThrow(()-> iUserRepo.getMember("Jimi"));
     }
     @Test
     public void testRegisterWithSameUsername() {
-        assertThrows(IllegalArgumentException.class,()->  authFacade.register(testUsername1,"12","Idan","Idan","idan@gmail.com","0501118121"));
+        assertThrows(IllegalArgumentException.class,()->  authFacade.register(testUsername1,"12","Idan","Idan","idan@gmail.com","0501118121",testDate));
     }
 
 
@@ -139,6 +143,8 @@ public class UserFacadeTest {
         assertTrue(userFacade.getNotifications(testUsername2).size()>0);
         doNothing().when(storeFacade).addStoreManager(anyString(), anyInt());
         assertDoesNotThrow(()->userFacade.accept(testUsername2, 1));
+        when(storeFacade.getStoreInfo(any(), anyInt())).thenReturn(storeDTO);
+        when(storeDTO.getStoreName()).thenReturn("some name");
         assertTrue(userFacade.getMemberRoles(testUsername2).size()>0);
     }
     @Test
@@ -147,12 +153,14 @@ public class UserFacadeTest {
         userFacade.addOwnerRequest(testUsername1,testUsername2,testStoreId2);
         assertTrue(userFacade.getNotifications(testUsername2).size()>0);
         assertDoesNotThrow(()->userFacade.accept(testUsername2, 1));
+        when(storeFacade.getStoreInfo(any(), anyInt())).thenReturn(storeDTO);
+        when(storeDTO.getStoreName()).thenReturn("some name");
         assertTrue(userFacade.getMemberRoles(testUsername2).size()>0);
     }
     @Test
     public void testAddStoreOwnerFailWhichIsntRelatedToStore() {    
-        when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString(), any(), any())).thenReturn(3);
-        int testStoreId3=storeFacade.createStore(testUsername1, null, null, null, null, null, null);
+        when(storeFacade.createStore(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(3);
+        int testStoreId3=storeFacade.createStore(testUsername1, null, null, null, null);
         assertThrows(IllegalArgumentException.class,()->userFacade.addOwnerRequest(testUsername1,testUsername2,testStoreId3));
         assertTrue(userFacade.getNotifications(testUsername2).size()==0);
     }
@@ -186,6 +194,8 @@ public class UserFacadeTest {
         userFacade.addManagerRequest(testUsername1,testUsername2,testStoreId2);
         doNothing().when(storeFacade).addStoreOwner(anyString(), anyInt());
         userFacade.accept(testUsername2, 1);
+        when(storeFacade.getStoreInfo(any(), anyInt())).thenReturn(storeDTO);
+        when(storeDTO.getStoreName()).thenReturn("some name");
         assertTrue(userFacade.getMemberRoles(testUsername2).size()>0);
         userFacade.leaveRole(testUsername2, testStoreId);
         assertTrue(userFacade.getMemberRoles(testUsername2).size()==0);
@@ -286,34 +296,34 @@ public class UserFacadeTest {
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.addProductToCart(testUsername1, testStoreId, 2, 3);
         List<ProductDataPrice> list1=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,1,2,7,5));
-        list1.add(new ProductDataPrice(2,1,3,8,5));
+        list1.add(new ProductDataPrice(1,1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,1,"eyal", 3,8,5));
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(list1);
         UserOrderDTO res=userFacade.viewCart(testUsername1);
         assertEquals(2, res.getProductsData().size());
-        assertEquals(15.0, res.getOldPrice(),0);
-        assertEquals(10.0, res.getNewPrice(),0);
+        assertEquals(38.0, res.getOldPrice(),0);
+        assertEquals(25.0, res.getNewPrice(),0);
     }
     @Test
     public void viewCartWith2stores() throws Exception{
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.addProductToCart(testUsername1, testStoreId2++, 2, 3);
         List<ProductDataPrice> list1=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,1,2,7,5));
-        list1.add(new ProductDataPrice(2,1,3,8,5));;
+        list1.add(new ProductDataPrice(1,1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,1,"eyal", 3,8,5));
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(list1);
         UserOrderDTO res=userFacade.viewCart(testUsername1);
         assertEquals(2, res.getProductsData().size());
-        assertEquals(15.0, res.getOldPrice(),0);
-        assertEquals(10.0, res.getNewPrice(),0);
+        assertEquals(38.0, res.getOldPrice(),0);
+        assertEquals(25.0, res.getNewPrice(),0);
     }
     @Test
     public void purchaseCart() throws Exception{
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.addProductToCart(testUsername1, testStoreId2, 2, 3);
         List<ProductDataPrice> list1=new ArrayList<>();
-        list1.add(new ProductDataPrice(1,1,2,7,5));
-        list1.add(new ProductDataPrice(2,1,3,8,5));
+        list1.add(new ProductDataPrice(1,1,"dana",2,7,5));
+        list1.add(new ProductDataPrice(2,1,"eyal", 3,8,5));
         when(storeFacade.calculatePrice(anyString(), any())).thenReturn(list1);
         SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);

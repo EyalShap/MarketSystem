@@ -12,7 +12,8 @@ public class ProductMapper {
                 product.getProductPrice(),
                 product.getProductCategory(),
                 product.getProductRank(),
-                product.isActiveProduct());
+                product.getProductWeight(),
+                product.isActiveProduct(),product.getStoreId());
     }
 
     public static List<ProductDTO> toProductDTOList(List<Product> products) {

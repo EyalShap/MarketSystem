@@ -19,21 +19,11 @@ class StoreUnitTests {
     private Store store1;
 
     private StoreInfo generateStore0Info() {
-        LocalTime openingHour = LocalTime.of(10, 0);
-        LocalTime closingHour = LocalTime.of(21, 0);
-        LocalTime fridayClosingHour = LocalTime.of(14, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        return new StoreInfo("Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours);
+        return new StoreInfo("Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
     }
 
     private StoreInfo generateStore1Info() {
-        LocalTime openingHour = LocalTime.of(9, 0);
-        LocalTime closingHour = LocalTime.of(20, 0);
-        LocalTime fridayClosingHour = LocalTime.of(15, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        return new StoreInfo("Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120", openingHours, closingHours);
+        return new StoreInfo("Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120");
     }
 
     private BankAccountDTO generateBankAccount0() {
@@ -561,7 +551,7 @@ class StoreUnitTests {
         store0.addProduct(2, 1000);
         store0.addProduct(3, 1000);
 
-        assertEquals("",store0.checkCart(cart));
+        assertEquals(new HashSet<>(),store0.checkCart(cart));
     }
 
     @Test

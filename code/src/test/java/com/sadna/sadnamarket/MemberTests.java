@@ -1,29 +1,16 @@
 package com.sadna.sadnamarket;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
-import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
-import com.sadna.sadnamarket.domain.payment.PaymentInterface;
-import com.sadna.sadnamarket.domain.payment.PaymentService;
-import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
-import com.sadna.sadnamarket.domain.supply.AddressDTO;
-import com.sadna.sadnamarket.domain.supply.SupplyInterface;
-import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
 class MemberTests {
@@ -48,7 +35,7 @@ class MemberTests {
     void memberLogoutTest() {
         Response resp = bridge.logout(username);
         Assertions.assertFalse(resp.getError());
-        Assertions.assertEquals("true", resp.getDataJson());
+        Assertions.assertEquals("2", resp.getDataJson());
     }
 
     @Test

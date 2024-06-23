@@ -21,10 +21,10 @@ public class MemoryProductRepository implements IProductRepository {
 
     @Override
     public int addProduct(String productName, double productPrice,
-            String productCategory, double productRank) {
+                          String productCategory, double productRank, double productWeight, int storeId) {
         synchronized (products) {
             Product createdProduct = new Product(nextProductId, productName, productPrice,
-                    productCategory, productRank);
+                    productCategory, productRank, productWeight, storeId);
 
             products.put(nextProductId, createdProduct);
             nextProductId++;
@@ -41,7 +41,13 @@ public class MemoryProductRepository implements IProductRepository {
                 logger.error(String.format("Product Id %d does not exist.", productId));
                 throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
             }
-            return products.get(productId);
+            Product product = products.get(productId);
+//            if (!product.isActiveProduct()) {
+//                logger.error(String.format("Product Id %d was already removed.", productId));
+//                throw new IllegalArgumentException(Error.makeProductAlreadyRemovedError(productId));
+//            }
+
+            return product;
         }
     }
 
@@ -88,7 +94,7 @@ public class MemoryProductRepository implements IProductRepository {
                 throw new IllegalArgumentException(Error.makeProductAlreadyRemovedError(productId));
             }
             product.disableProduct();
-            logger.error(String.format("Product Id %d was succesully removed.", productId));
+            logger.info(String.format("Product Id %d was succesully removed.", productId));
         }
     }
 
@@ -120,5 +126,10 @@ public class MemoryProductRepository implements IProductRepository {
                             && product.isActiveProduct())
                     .collect(Collectors.toList());
         }
+    }
+
+    @Override
+    public List<Product> getTopProducts() {
+        return products.values().stream().collect(Collectors.toList());
     }
 }

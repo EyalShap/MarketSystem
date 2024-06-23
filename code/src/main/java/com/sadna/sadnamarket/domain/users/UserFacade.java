@@ -1,4 +1,5 @@
 package com.sadna.sadnamarket.domain.users;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -6,6 +7,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.sadna.sadnamarket.service.Error;
+import com.sadna.sadnamarket.service.RealtimeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,10 +29,22 @@ public class UserFacade {
     private static StoreFacade storeFacade;
     private static OrderFacade orderFacade;
     private static final Logger logger = LogManager.getLogger(UserFacade.class);
+    private RealtimeService realtime;
+
+    public UserFacade(RealtimeService realtime, IUserRepository userRepo, StoreFacade storeFacadeInstance,OrderFacade orderFacadeInsance) {
+        logger.info("initilize user fascade");
+        this.iUserRepo=userRepo;
+        this.realtime = realtime;
+        systemManagerUserName=null;
+        storeFacade=storeFacadeInstance;
+        orderFacade=orderFacadeInsance;
+        logger.info("finish initilize user fascade");
+    }
 
     public UserFacade(IUserRepository userRepo, StoreFacade storeFacadeInstance,OrderFacade orderFacadeInsance) {
         logger.info("initilize user fascade");
         this.iUserRepo=userRepo;
+        this.realtime = null;
         systemManagerUserName=null;
         storeFacade=storeFacadeInstance;
         orderFacade=orderFacadeInsance;
@@ -58,7 +72,13 @@ public class UserFacade {
 
     public void notify(String userName, String msg) {
         logger.info("{} got notification {}",userName,msg);
-        iUserRepo.getMember(userName).addNotification(msg);
+        NotificationDTO notificationDTO = iUserRepo.getMember(userName).addNotification(msg);
+        if(isLoggedIn(userName) && realtime != null){
+            realtime.sendNotification(userName, notificationDTO);
+        }
+        if(isLoggedIn(userName) && realtime == null){
+            logger.info("Did not send realtime notification as realtime service is null");
+        }
     }
 
     public List<NotificationDTO> getNotifications(String username){
@@ -175,16 +195,26 @@ public class UserFacade {
     public void addOwnerRequest(String senderName,String userName,int store_id){
         logger.info("{} try to add owner request to {} for store {}",senderName,userName,store_id);
         Member sender=getMember(senderName);
-        sender.addOwnerRequest(this,userName, store_id);
+        RequestDTO request = sender.addOwnerRequest(this,userName, store_id);
         logger.info("{} added owner request to {} for store {}",senderName,userName,store_id);
-
+        if(isLoggedIn(userName) && realtime != null){
+            realtime.sendNotification(userName, request);
+        }
+        if(isLoggedIn(userName) && realtime == null){
+            logger.info("Did not send realtime notification as realtime service is null");
+        }
     }
     public void addManagerRequest(String senderName,String userName,int store_id){
         logger.info("{} try to add manager request to {} for store {}",senderName,userName,store_id);
         Member sender=getMember(senderName);
-        sender.addManagerRequest(this,userName, store_id);
+        RequestDTO request = sender.addManagerRequest(this,userName, store_id);
         logger.info("{} added manager request to {} for store {}",senderName,userName,store_id);
-
+        if(isLoggedIn(userName) && realtime != null){
+            realtime.sendNotification(userName, request);
+        }
+        if(isLoggedIn(userName) && realtime == null){
+            logger.info("Did not send realtime notification as realtime service is null");
+        }
     }
 
     public void accept(String acceptingName,int requestID){
@@ -196,6 +226,7 @@ public class UserFacade {
         String role=request.getRole();
         String apointer=request.getSender();
         iUserRepo.getMember(apointer).addApointer(acceptingName, storeId);
+        notify(apointer, "User " + acceptingName + " accepted request for " + role + " in " + storeId);
         if(role.equals("Manager"))
             storeFacade.addStoreManager(acceptingName, storeId);
         else
@@ -206,20 +237,36 @@ public class UserFacade {
     public void reject(String rejectingName,int requestID){
         logger.info("{} reject request id: {}",rejectingName,requestID);
         Member rejecting=getMember(rejectingName);
-        rejecting.accept(requestID);
+        Request request=rejecting.getRequest(requestID);
+        int storeId=request.getStoreId();
+        String role=request.getRole();
+        String apointer=request.getSender();
+        notify(apointer, "User " + rejectingName + " rejected request for " + role + " in " + storeId);
+        rejecting.reject(requestID);
         logger.info("{} rejected request id: {}",rejectingName,requestID);
 
+    }
+
+    public void ok(String okayingName,int notifId){
+        logger.info("{} ok notification id: {}",okayingName,notifId);
+        Member okaying =getMember(okayingName);
+        okaying.reject(notifId);
+        logger.info("{} okayed notification id: {}",okayingName,notifId);
     }
 
     public void login(String userName,String password, int guestId){//the cart of the guest
         logger.info("{} login from guest {}",userName,guestId);
         isValid(userName);
         Member member=iUserRepo.getMember(userName);
+        if(member.isLoggedIn()){
+            logger.error("user {} already logged in",userName);
+            throw new IllegalStateException(Error.makeUserLoggedInError());
+        }
         if(member.getCart().isEmpty()){
             member.setCart(iUserRepo.getGuest(guestId).getCart());
         }
         member.setLogin(true);
-        iUserRepo.deleteGuest(guestId);
+        exitGuest(guestId);
         logger.info("{} done login from guest {}",userName,guestId);
     }
     
@@ -239,10 +286,10 @@ public class UserFacade {
     }
   
 
-    public void register(String username,String firstName, String lastName,String emailAddress,String phoneNumber){
+    public void register(String username,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate){
         logger.info("{} try to register ",username);
 
-        Member member=new Member(username,firstName,lastName,emailAddress,phoneNumber);
+        Member member=new Member(username,firstName,lastName,emailAddress,phoneNumber,birthDate);
         iUserRepo.store(member);
         logger.info("{} done register ",username);
     }
@@ -343,6 +390,12 @@ public class UserFacade {
         member.setPhoneNumber(phoneNumber);
         logger.info("done set phone number for {}", userName);
     }
+    public void setBirthDate(String userName, LocalDate birthDate) {
+        logger.info("set birth date for {}={}", userName,birthDate);
+        Member member = iUserRepo.getMember(userName);
+        member.setBirthday(birthDate);
+        logger.info("done set birth date for {}", userName);
+    }
     private void isValid(String detail){
         logger.info("check if field is valid");
         if(detail==null||detail.trim().equals("")){
@@ -373,16 +426,44 @@ public class UserFacade {
         return permissionsInRole;
 
     }
-    public List<String> getMemberRoles(String userName){
+
+    public List<Permission> getMemberPermissionsEnum(String userName, int storeId){
+        List<Integer> permissionNums = getMemberPermissions(userName, storeId);
+        List<Permission> permissions = new ArrayList<>();
+        for(int permission : permissionNums) {
+            permissions.add(Permission.getEnumByInt(permission));
+        }
+        return permissions;
+    }
+
+    public List<UserRoleDTO> getMemberRoles(String userName){
         logger.info("get user roles for {}",userName);
         Member member=iUserRepo.getMember(userName);
-        List<String> userRoles=member.getUserRolesString();
+        List<UserRoleDTO> userRoles=member.getUserRolesString();
+        for (UserRoleDTO userRoleDTO : userRoles) {
+            String storeName=storeFacade.getStoreInfo(userName,userRoleDTO.getStoreId()).getStoreName();
+            userRoleDTO.setStoreName(storeName);
+        }
         logger.info("got user roles for {}: {}",userName, userRoles);
         return userRoles;
-
     }
 
     public List<String> getUserOrders(String username){
+        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List <String> ordersString=new ArrayList<>();
+        for (Integer orderId : ordersIds) {
+            Map<Integer,OrderDTO> orders=orderFacade.getOrderByOrderId(orderId);
+            for (Integer store_id : orders.keySet()) {
+                Map<Integer,String> ordersProducts=orders.get(store_id).getOrderProductsJsons();
+                for (Integer product_id : ordersProducts.keySet()) {
+                    ordersString.add(ordersProducts.get(product_id));
+                }
+            }
+        }
+        return ordersString;
+    }
+
+     public List<String> getUserOrdersV2(String username){
         List<Integer> ordersIds=getMember(username).getOrdersHistory();
         List <String> ordersString=new ArrayList<>();
         for (Integer orderId : ordersIds) {
@@ -416,7 +497,7 @@ public class UserFacade {
         logger.info("calculate final price for user {} with items {}",username,storePriceData);
         double sum=0;
         for(ProductDataPrice productDataPrice: storePriceData){
-            sum=sum+productDataPrice.getNewPrice();
+            sum=sum+productDataPrice.getAmount()* productDataPrice.getNewPrice();
         }
         logger.info("finished calculate final price for user {} with items {} and got {}",username,storePriceData, sum);
         return sum;
@@ -425,7 +506,7 @@ public class UserFacade {
         logger.info("calculate old price for user {} with items {}",username,storePriceData);
         double sum=0;
         for(ProductDataPrice productDataPrice: storePriceData){
-                sum=sum+productDataPrice.getOldPrice();
+                sum=sum+productDataPrice.getAmount()*productDataPrice.getOldPrice();
         }
         logger.info("finished calculate old price for user {} with items {} and got {}",username,storePriceData, sum);
         return sum;
@@ -434,7 +515,6 @@ public class UserFacade {
     public UserOrderDTO viewCart(String username) throws Exception {
         logger.info("view cart for user {}",username);
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
-        storeFacade.checkCart(username, items);
         List<ProductDataPrice> storePriceData=storeFacade.calculatePrice(username, items);
         logger.info("finished view cart for user {}",username);
         return new UserOrderDTO(storePriceData,calculateOldPrice(username, storePriceData),calculateFinalPrice(username, storePriceData)); 
@@ -443,27 +523,43 @@ public class UserFacade {
     public UserOrderDTO viewCart(int guestId) throws Exception {
         logger.info("view cart for guest {}",guestId);
         List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
-        storeFacade.checkCart(null, items);
         List<ProductDataPrice> storeApriceData=storeFacade.calculatePrice(null, items);
         logger.info("finished view cart for guest {}",guestId);
         return new UserOrderDTO(storeApriceData,calculateOldPrice(null, storeApriceData),calculateFinalPrice(null, storeApriceData));    
     }
+
+    public void checkCart(String username){
+        logger.info("check cart for user {}",username);
+        List<CartItemDTO> items=iUserRepo.getUserCart(username);
+        storeFacade.checkCart(username, items);
+        logger.info("finished check cart for user {} without errors",username);
+    }
+    public void checkCart(int guestId){
+        logger.info("check cart for guest {}",guestId);
+        List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
+        storeFacade.checkCart(null, items);
+        logger.info("finished check cart for guest {} without errors",guestId);
+    }
+
     public void purchaseCart(String username,CreditCardDTO creditCard,AddressDTO addressDTO) throws Exception {
         logger.info("purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         validateCreditCard(creditCard);
         validateAddress(addressDTO);
-        try {
-            storeFacade.checkCart(null, items);
-        }catch (Exception e){
-            throw new Exception("One or more stores did not accept your basket for the following reason: " + e.getMessage());
-        }
+        storeFacade.checkCart(null, items);
         List<ProductDataPrice> productList=storeFacade.calculatePrice(username, items);
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,username);
-        storeFacade.buyCart(username, items);
+        storeFacade.updateStock(null, items);
+        clearCart(username);
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
+    }
+
+    public void clearCart(String username){
+        logger.info("clear cart for user {}",username);
+        iUserRepo.getMember(username).clearCart();
+        logger.info("done clear cart for user {}",username);
     }
 
     public void purchaseCart(int guestId,CreditCardDTO creditCard,AddressDTO addressDTO) throws Exception {
@@ -471,16 +567,13 @@ public class UserFacade {
         List<CartItemDTO> items=iUserRepo.getGuestCart(guestId);
         validateCreditCard(creditCard);
         validateAddress(addressDTO);
-        try {
-            storeFacade.checkCart(null, items);
-        }catch (Exception e){
-            throw new Exception("One or more stores did not accept your basket for the following reason: " + e.getMessage());
-        }
+        storeFacade.checkCart(null, items);
         List<ProductDataPrice> productList=storeFacade.calculatePrice(null, items);
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,null);
-        storeFacade.buyCart(null, items);
+        storeFacade.updateStock(null, items);
+        iUserRepo.getGuest(guestId).getCart().clear();
         logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
     }
     private void validateAddress(AddressDTO address){
@@ -543,14 +636,16 @@ public class UserFacade {
         return supplyString;
     }
     private Map<Integer,Double> getStorePrice(List<ProductDataPrice> storeBag){
+        logger.info("get store price");
         Map<Integer,Double> productAmounts=new HashMap<>();
         for(ProductDataPrice productDataPrice: storeBag){
             if(productAmounts.containsKey(productDataPrice.getStoreId())){
-                productAmounts.put(productDataPrice.getStoreId(), productAmounts.get(productDataPrice.getStoreId())+productDataPrice.getNewPrice());
+                productAmounts.put(productDataPrice.getStoreId(), productAmounts.get(productDataPrice.getStoreId())+productDataPrice.getAmount()*productDataPrice.getNewPrice());
             }else{
-                productAmounts.put(productDataPrice.getStoreId(), productDataPrice.getNewPrice());
+                productAmounts.put(productDataPrice.getStoreId(), productDataPrice.getAmount()*productDataPrice.getNewPrice());
             }
         }
+        logger.info("finish get store price");
         return productAmounts;
     }
     private List<ProductDataPrice> getStoreOrder(List<ProductDataPrice> allOrder,int store_id){
@@ -567,6 +662,12 @@ public class UserFacade {
     public List<CartItemDTO> getCartItems(int guest_id){
         logger.info("get guest cart");
         return iUserRepo.getGuestCart(guest_id);
+    }
+    public boolean checkIfSystemManager(String username){
+        logger.info("check if user is system manager {}",username);
+        boolean res= systemManagerUserName.equals(username);
+        logger.info("checked if user is system manager {} and got {}",username,res);
+        return res;
     }
 
 }

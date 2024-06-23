@@ -1,5 +1,9 @@
 package com.sadna.sadnamarket.domain.orders;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.MemoryProductRepository;
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
@@ -57,19 +61,21 @@ public class MemoryOrderRepository implements IOrderRepository {
     }
 
     @Override
-    public List<OrderDTO> getOrders(int storeId) {
-        LinkedList<OrderDTO> ordersStore = new LinkedList<OrderDTO>();
+    public List<ProductDataPrice> getOrders(int storeId) {
+        List<ProductDataPrice> productDataPrices=new LinkedList<>();
         for (int orderId : orders.keySet()) {
             if(orders.get(orderId).containsKey(storeId)){
                 Order order = orders.get(orderId).get(storeId);
-                OrderDTO orderDTO = orderToDTO(order);
-                ordersStore.add(orderDTO);
+                Map<Integer, String> orderProductsJsons=order.getOrderProductsJsons();
+                for (String productsJsons: orderProductsJsons.values() ) {
+                        productDataPrices.add(fromJson(productsJsons));
+                }
             }
         }
-        if(ordersStore.isEmpty()){
+        if(productDataPrices.isEmpty()){
             throw new IllegalArgumentException(Error.makeOrderStoreNoOrdersError(storeId));
         }
-        return ordersStore;
+        return productDataPrices;
     }
 
     private OrderDTO orderToDTO(Order order){
@@ -83,37 +89,91 @@ public class MemoryOrderRepository implements IOrderRepository {
         return orderDTO;
     }
 
-    public Map<Integer,Map<Integer,OrderDTO>> getOrdersByMember(String nameMember) {
+//    public Map<Integer,Map<Integer,OrderDTO>> getOrdersByMember(String nameMember) {
+//        if(nameMember==null){
+//            throw new IllegalArgumentException(Error.makeOrderNameNullError());
+//        }
+//        if(nameMember.isEmpty()){
+//            throw new IllegalArgumentException(Error.makeOrderNameEmptyError());
+//        }
+//        Map<Integer,List<ProductDataPrice>> productDataPrices=new HashMap<>();
+//        Map<Integer,Map<Integer,OrderDTO>> ordersByMember = new HashMap<>();
+//        for (Map.Entry<Integer, Map<Integer, Order>> outerEntry : orders.entrySet()) {
+//            Integer outerKey = outerEntry.getKey();
+//            Map<Integer, Order> innerMap = outerEntry.getValue();
+//            Map<Integer, OrderDTO> storeOrderDTO = new HashMap<>();
+//            //test
+//            List<ProductDataPrice> test=new LinkedList<>();
+//            //test
+//            for (Map.Entry<Integer, Order> innerEntry : innerMap.entrySet()) {
+//                Order order = innerEntry.getValue();
+//                if (order.getMemberName().equals(nameMember)) {
+//                    Map<Integer, String> orderProductsJsons = order.getOrderProductsJsons();
+//                    for (String productsJsons: orderProductsJsons.values() ) {
+//                        test.add(fromJson(productsJsons));
+//                    }
+//                    OrderDTO orderDTO= orderToDTO(order);
+//                    storeOrderDTO.put(innerEntry.getKey(),orderDTO);
+//                }
+//            }
+//            if (!storeOrderDTO.isEmpty()) {
+//                ordersByMember.put(outerKey, storeOrderDTO);
+//                productDataPrices.put(outerKey,test);
+//            }
+//        }
+//        if(ordersByMember.isEmpty()){
+//            throw new IllegalArgumentException(Error.makeOrderNoOrdersForUserError(nameMember));
+//        }
+//        return ordersByMember;
+//    }
+
+
+    public Map<Integer,List<ProductDataPrice>> getProductDataPriceByMember(String nameMember) {
         if(nameMember==null){
             throw new IllegalArgumentException(Error.makeOrderNameNullError());
         }
         if(nameMember.isEmpty()){
             throw new IllegalArgumentException(Error.makeOrderNameEmptyError());
         }
-        Map<Integer,Map<Integer,OrderDTO>> ordersByMember = new HashMap<>();
+        Map<Integer,List<ProductDataPrice>> ans=new HashMap<>();
         for (Map.Entry<Integer, Map<Integer, Order>> outerEntry : orders.entrySet()) {
             Integer outerKey = outerEntry.getKey();
             Map<Integer, Order> innerMap = outerEntry.getValue();
-            Map<Integer, OrderDTO> storeOrderDTO = new HashMap<>();
-
+            List<ProductDataPrice> productDataPrices=new LinkedList<>();
             for (Map.Entry<Integer, Order> innerEntry : innerMap.entrySet()) {
                 Order order = innerEntry.getValue();
                 if (order.getMemberName().equals(nameMember)) {
-                    OrderDTO orderDTO= orderToDTO(order);
-                    storeOrderDTO.put(innerEntry.getKey(),orderDTO);
+                    Map<Integer, String> orderProductsJsons = order.getOrderProductsJsons();
+                    for (String productsJsons: orderProductsJsons.values() ) {
+                        productDataPrices.add(fromJson(productsJsons));
+                    }
                 }
             }
-            if (!storeOrderDTO.isEmpty()) {
-                ordersByMember.put(outerKey, storeOrderDTO);
-            }
+            if(productDataPrices.size()!=0)
+                ans.put(outerKey,productDataPrices);
         }
-        if(ordersByMember.isEmpty()){
+        if(ans.isEmpty()){
             throw new IllegalArgumentException(Error.makeOrderNoOrdersForUserError(nameMember));
         }
-        return ordersByMember;
+        return ans;
     }
 
-    //TODO
+
+
+    public static ProductDataPrice fromJson(String jsonString) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(jsonString, ProductDataPrice.class);
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+            return null;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     public Map<Integer,OrderDTO> getOrderByOrderId(int orderId) {
         Map<Integer,OrderDTO> orderDTOByOrderId = new HashMap<>();
         if(orders.containsKey(orderId)){

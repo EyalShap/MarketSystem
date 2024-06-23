@@ -30,7 +30,7 @@ public class ProductFacade {
     }
 
     public int addProduct(int storeId, String productName, double productPrice, String productCategory,
-            double productRank) {
+            double productRank, double productWeight) {
         logger.info("Adding product with name: {}, price: {}, category: {}, rank: {} to store ID: {}", productName,
                 productPrice, productCategory, productRank, storeId);
         if (storeId < 0) {
@@ -41,7 +41,7 @@ public class ProductFacade {
 
         try {
             checkProductAttributes(productName, productPrice, productCategory, productRank);
-            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank);
+            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank, productWeight,storeId);
             Product createdProduct = productRepository.getProduct(productId);
             logger.info("Product added with ID: {}", productId);
             return productId;
@@ -118,7 +118,7 @@ public class ProductFacade {
 
             if (productName != null && isValidProductName(productName)) {
                 storeProducts = storeProducts.stream()
-                        .filter(product -> product.getProductName().equals(productName))
+                        .filter(product -> product.getProductName().contains(productName))
                         .collect(Collectors.toList());
             }
 
@@ -155,7 +155,8 @@ public class ProductFacade {
                 "Filtering all products with product name: {}, min price: {}, max price: {}, category: {}, min rank: {}",
                 productName, minProductPrice, maxProductPrice, productCategory, minProductRank);
         try {
-            List<Product> products = productRepository.getAllProducts();
+            List<Product> products = productRepository.getAllProducts();    
+            
 
             if (productName != null) {
                 if (isValidProductName(productName)) {
@@ -166,7 +167,7 @@ public class ProductFacade {
                     throw new IllegalArgumentException(Error.makeProductAspectCannotBeNullOrEmptyError("name"));
                 }
             }
-
+           
             if (productCategory != null) {
                 if (isValidProductName(productCategory)) {
                     products = products.stream()
@@ -182,7 +183,9 @@ public class ProductFacade {
                     throw new IllegalArgumentException(Error.makeProductMinimumPriceMustBeBelowMaximumError());
                 }
             }
-
+               
+                 System.out.println("ah sheli"  );
+            System.out.println(products);
             if (minProductPrice != -1) {
                 if (isValidProductPrice(minProductPrice)) {
                     products = products.stream()
@@ -192,7 +195,7 @@ public class ProductFacade {
                     throw new IllegalArgumentException(Error.makeProductValuePriceCannotBeNegativeError("Min"));
                 }
             }
-
+              
             if (maxProductPrice != -1) {
                 if (isValidProductPrice(maxProductPrice)) {
                     products = products.stream()
@@ -322,5 +325,11 @@ public class ProductFacade {
             logger.error("Error retrieving product DTO: {}", e.getMessage(), e);
             throw e;
         }
+    }
+    public List<ProductDTO> getTopProducts(){
+        return ProductMapper.toProductDTOList(productRepository.getTopProducts());
+    }
+    public boolean productExists(int productId) {
+        return productRepository.isExistProduct(productId);
     }
 }

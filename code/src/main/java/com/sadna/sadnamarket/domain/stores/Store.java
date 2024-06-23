@@ -128,33 +128,42 @@ public class Store {
      * }
      */
 
-    public void updateStock(List<CartItemDTO> cart) {
+    public Set<String> updateStock(List<CartItemDTO> cart) {
         synchronized (productAmounts) {
-            String checkCartRes = checkCart(cart);
-            if (!checkCartRes.equals(""))
-                throw new IllegalArgumentException(checkCartRes);
+            Set<String> checkCartRes = checkCart(cart);
+            if (checkCartRes.size() != 0)
+                return checkCartRes;
 
             for (CartItemDTO item : cart) {
                 int newAmount = productAmounts.get(item.getProductId()) - item.getAmount();
                 setProductAmounts(item.getProductId(), newAmount);
             }
+            return new HashSet<>();
         }
     }
 
     public boolean productExists(int productId) {
-        return productAmounts.containsKey(productId);
+        synchronized (productAmounts) {
+            return productAmounts.containsKey(productId);
+        }
     }
 
     public boolean hasProductInAmount(int productId, int amount) {
-        return productAmounts.containsKey(productId) && amount <= productAmounts.get(productId);
+        synchronized (productAmounts) {
+            return productAmounts.containsKey(productId) && amount <= productAmounts.get(productId);
+        }
     }
 
     public boolean isStoreOwner(String username) {
-        return ownerUsernames.contains(username);
+        synchronized (ownerUsernames) {
+            return ownerUsernames.contains(username);
+        }
     }
 
     public boolean isStoreManager(String username) {
-        return managerUsernames.contains(username);
+        synchronized (managerUsernames) {
+            return managerUsernames.contains(username);
+        }
     }
 
     /*public boolean isSeller(String username) {
@@ -204,6 +213,15 @@ public class Store {
         }
     }
 
+    public void reopenStore() {
+        synchronized (lock) {
+            if (this.isActive)
+                throw new IllegalArgumentException(Error.makeStoreAlreadyClosedError(storeId));
+
+            this.isActive = true;
+        }
+    }
+
     public StoreDTO getStoreDTO() {
         return new StoreDTO(this);
     }
@@ -231,21 +249,32 @@ public class Store {
         return now.toLocalTime().isAfter(dayOpeningHour) && now.toLocalTime().isBefore(dayClosingHour);
     }*/
 
-    public String checkCart(List<CartItemDTO> cart) {
-        String error = "";
+    public Set<String> checkCart(List<CartItemDTO> cart) {
+        Set<String> error = new HashSet<>();
         synchronized (productAmounts) {
             synchronized (lock) {
-                if (!isActive)
-                    return Error.makeStoreClosedError(storeId);
+                if (!isActive) {
+                    error.add(Error.makeStoreClosedError(storeId));
+                    return error;
+                }
                 for (CartItemDTO item : cart) {
                     if (!productExists(item.getProductId()))
-                        error += Error.makeProductDoesntExistInStoreError(storeId, item.getProductId()) + "\n";
+                        error.add(Error.makeProductDoesntExistInStoreError(storeId, item.getProductId()));
                     else if (item.getAmount() > productAmounts.get(item.getProductId()))
-                        error += Error.makeNotEnoughInStcokError(storeId, item.getProductId(), item.getAmount(), productAmounts.get(item.getProductId())) + "\n";
+                        error.add(Error.makeNotEnoughInStcokError(storeId, item.getProductId(), item.getAmount(), productAmounts.get(item.getProductId())));
                 }
                 return error;
             }
         }
+    }
+
+    public boolean hasProducts(Set<Integer> productIds) {
+        for(int productId : productIds)
+            if(productId != -1) {
+                if(!productExists(productId))
+                    return false;
+            }
+        return true;
     }
 
     @Override

@@ -15,12 +15,12 @@ public interface IProductRepository {
 
     public void removeProduct(int productId);
 
-    public int addProduct(String productName, double productPrice, String productCategory, double productRank);
+    public int addProduct(String productName, double productPrice, String productCategory, double productRank, double productWeight, int storeId);
 
     public boolean isExistProduct(int productId);
 
     public List<Product> filterByName(String productName);
 
     public List<Product> filterByCategory(String category);
-
+    public List <Product> getTopProducts();
 }

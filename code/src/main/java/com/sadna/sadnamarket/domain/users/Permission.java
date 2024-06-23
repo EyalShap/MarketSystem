@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.users;
 
+import com.sadna.sadnamarket.service.Error;
+
 public enum Permission {
     ADD_PRODUCTS(1),
     DELETE_PRODUCTS(2),
@@ -9,10 +11,11 @@ public enum Permission {
     ADD_OWNER(6),
     ADD_MANAGER(7),
     //ADD_SELLER(8),
-    ADD_BUY_POLICY(8),
-    ADD_DISCOUNT_POLICY(9),
-    VIEW_ROLES(10);
-
+    ADD_BUY_POLICY(9),
+    REMOVE_BUY_POLICY(10),
+    ADD_DISCOUNT_POLICY(11),
+    VIEW_ROLES(12),
+    REMOVE_DISCOUNT_POLICY(13);
 
     private final int value;
 
@@ -22,5 +25,14 @@ public enum Permission {
 
     public int getValue() {
         return value;
+    }
+
+    public static Permission getEnumByInt(int i) {
+        for (Permission permission : Permission.values()) {
+            if (permission.getValue() == i) {
+                return permission;
+            }
+        }
+        throw new IllegalArgumentException(Error.makePermissionError(i));
     }
 }

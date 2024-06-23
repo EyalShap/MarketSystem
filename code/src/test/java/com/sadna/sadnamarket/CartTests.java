@@ -49,7 +49,7 @@ public class CartTests {
         resp = bridge.openStore(ownerToken, ownerUsername, "TestStore");
         storeId = Integer.parseInt(resp.getDataJson());
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
-                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, true));
+                new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true,storeId));
         productId = Integer.parseInt(resp.getDataJson());
         BankAccountDTO bankAccountDTO = new BankAccountDTO("10", "392", "393013", "2131516175");
         bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, bankAccountDTO);
@@ -223,6 +223,40 @@ public class CartTests {
     }
 
     @Test
+    void buyCartStorePolicyForbidTest() {
+        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
+        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
+        PaymentService.getInstance().setController(paymentMock);
+        SupplyService.getInstance().setController(supplyMock);
+        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
+        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
+        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
+
+
+        bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 5);
+        bridge.addPolicyAgainst(ownerToken, ownerUsername, storeId, productId);
+
+        try {
+            bridge.addProductToBasketGuest(uuid, storeId, productId, 1);
+            bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 4);
+            CreditCardDTO cardDTO = new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782");
+            AddressDTO addressDTO = new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
+                    "+97254-989-4939", "jimjimmy@gmail.com");
+            Response resp = bridge.buyCartGuest(uuid, cardDTO,addressDTO);
+            Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeAmountBuyPolicyError(""+productId,0,0), resp.getErrorString());
+            Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "4");
+            resp = bridge.getUserPurchaseHistory("", "", uuid);
+            List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
+            });
+            Assertions.assertEquals(0, history.size());
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Test
     void buyCartStoreNotEnoughProductTest() {
         SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
@@ -244,8 +278,8 @@ public class CartTests {
                     "+97254-989-4939", "jimjimmy@gmail.com");
             Response resp = bridge.buyCartGuest(uuid, cardDTO,addressDTO);
             Assertions.assertTrue(resp.getError());
+            Assertions.assertEquals(Error.makeNotEnoughInStcokError(storeId, productId, 5, 4), resp.getErrorString());
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "4");
-            Assertions.assertTrue(resp.getErrorString().startsWith("One or more stores did not accept your basket for the following reason: "));
             resp = bridge.getUserPurchaseHistory("", "", uuid);
             List<OrderDTO> history = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<OrderDTO>>() {
             });

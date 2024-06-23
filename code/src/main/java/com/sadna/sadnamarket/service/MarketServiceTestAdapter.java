@@ -15,6 +15,7 @@ import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class MarketServiceTestAdapter {
@@ -53,7 +54,7 @@ public class MarketServiceTestAdapter {
     }
 
     public Response signUp(String uuid, String email, String username, String passwordHash) {
-        Response resp = real.register(username, passwordHash, "John", "Doe", email, "052-052-0520");
+        Response resp = real.register(username, passwordHash, "John", "Doe", email, "052-052-0520",LocalDate.of(1988, 11, 7));
         if (resp.getError()) {
             return resp;
         }
@@ -96,7 +97,7 @@ public class MarketServiceTestAdapter {
 
     public Response searchProduct(String productName, double productPriceMin, double productPriceMax,
             String productCategory, int storeRating, int productRating) throws JsonProcessingException {
-        return real.getFilteredProducts("", null, productName, productPriceMin, productPriceMax, productCategory, productRating);
+        return real.getFilteredProducts( null, productName, productPriceMin, productPriceMax, productCategory, productRating);
     }
 
     public Response searchProductInStore(int storeId, String productName, double productPriceMin,
@@ -149,13 +150,13 @@ public class MarketServiceTestAdapter {
 
     public Response openStore(String token, String userId, String storeName) {
         // return Response.createResponse(false, "4"); //returns store id
-        return real.createStore(token, userId, storeName, "Beer Sheva", "coolio@gmail.com", "0546102344", null, null);
+        return real.createStore(token, userId, storeName, "Beer Sheva", "coolio@gmail.com", "0546102344");
     }
 
     public Response addProductToStore(String token, String userId, int storeId, ProductDTO productDetails) {
         // return Response.createResponse(false, "5"); //returns product id
         return real.addProductToStore(token, userId, storeId, productDetails.getProductName(), 100,
-                productDetails.getProductPrice(), productDetails.getProductCategory(), 3);
+                productDetails.getProductPrice(), productDetails.getProductCategory(), productDetails.getProductRank(), productDetails.getProductWeight());
     }
 
     public Response removeProductFromStore(String token, String userId, int storeId, int productId) {
@@ -193,20 +194,20 @@ public class MarketServiceTestAdapter {
 
     public Response acceptOwnerAppointment(String token, String appointedUserId, int storeId, int requestId) {
         // return Response.createResponse(false, "true");
-        return real.acceptRequest(token, appointedUserId, requestId);
+        return real.acceptRequest(appointedUserId, requestId);
     }
 
     public Response acceptManagerAppointment(String token, String appointedUserId, int storeId, int requestId) {
         // return Response.createResponse(false, "true");
-        return real.acceptRequest(token, appointedUserId, requestId);
+        return real.acceptRequest(appointedUserId, requestId);
     }
 
     public Response rejectOwnerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return Response.createResponse(false, "true"); // THIS ONE IS MISSING
+        return real.rejectRequest(appointedUserId, storeId);
     }
 
     public Response rejectManagerAppointment(String token, String appointedUserId, int storeId, String appointerid) {
-        return Response.createResponse(false, "true"); // THIS ONE IS MISSING
+        return real.rejectRequest(appointedUserId, storeId);
     }
 
     public Response changeManagerPermissions(String token, String userId, String managerId, int storeId,
@@ -283,5 +284,11 @@ public class MarketServiceTestAdapter {
 
     public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
         return real.setStoreBankAccount(token, username, storeId, bankAccount);
+    }
+
+    public Response addPolicyAgainst(String token, String username, int storeId, int productId){
+        Response resp = real.createProductAmountBuyPolicy(token, username, productId, new LinkedList<>(), 0, 0);
+        int id = Integer.parseInt(resp.getDataJson());
+        return real.addBuyPolicyToStore(token, username, storeId, id);
     }
 }
