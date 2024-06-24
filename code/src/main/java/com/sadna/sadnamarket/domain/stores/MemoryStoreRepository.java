@@ -29,6 +29,18 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
+    public Store findStoreByName(String storeName) {
+        synchronized (stores) {
+            for(Store store : stores.values()) {
+                if(store.getStoreInfo().getStoreName().equals(storeName)) {
+                    return store;
+                }
+            }
+            throw new IllegalArgumentException(Error.makeStoreNoStoreWithNameError(storeName));
+        }
+    }
+
+    @Override
     public Set<Integer> getAllStoreIds() {
         synchronized (stores) {
             return stores.keySet();
