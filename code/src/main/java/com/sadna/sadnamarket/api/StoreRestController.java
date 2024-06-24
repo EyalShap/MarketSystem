@@ -204,6 +204,16 @@ public class StoreRestController {
         return marketService.getStoreInfo(token,username,storeId);
     }
 
+    @GetMapping("/getStoreByName")
+    public Response getStoreByName(@RequestParam(value = "username", required = false) String username,@RequestParam String storeName,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getStoreByName(token,username,storeName);
+    }
+
     @GetMapping("/getProductInfo")
     public Response getProductInfo(@RequestParam(value = "username", required = false) String username, @RequestParam int  productId ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
