@@ -654,4 +654,16 @@ public class StoreFacade {
         Store store = storeRepository.findStoreByID(storeId);
         return store.hasProducts(productIds);
     }
+
+    public StoreDTO getStoreByName(String storeName, String username) {
+        Store store = storeRepository.findStoreByName(storeName);
+        synchronized (store) {
+            if (!isStoreActive(store.getStoreId())) {
+                if (!store.isStoreOwner(username) && !userFacade.isSystemManager(username))
+                    throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(store.getStoreId()));
+            }
+
+            return store.getStoreDTO();
+        }
+    }
 }

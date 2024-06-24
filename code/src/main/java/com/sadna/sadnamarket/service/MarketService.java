@@ -332,7 +332,26 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //From "my stores" page OR from search store (from main search)
-  
+
+    public Response getStoreByName(String token, String username, String storeName) {
+        try {
+            if(username != null)
+                checkToken(token, username);
+            Set<String> fields = Set.of("storeId", "storeName");
+            SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+            filterProvider.addFilter("filter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
+
+            StoreDTO storeDTO = storeFacade.getStoreByName(storeName, username);
+            String json = objectMapper.writer(filterProvider).writeValueAsString(storeDTO);
+            logger.info(String.format("A user got store info of store %s.", storeName));
+            return Response.createResponse(false, json);
+        }
+        catch (Exception e) {
+            logger.error("getStoreByName: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
   public Response getProductInfo(String token, String username, int productId) {
         try {
             if(username != null)
