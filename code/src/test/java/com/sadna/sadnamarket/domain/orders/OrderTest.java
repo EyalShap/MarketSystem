@@ -20,7 +20,7 @@ public class OrderTest {
     @Test
     void givenNullStoreOrder(){
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            memoryOrderRepository.createOrder(null);
+            memoryOrderRepository.createOrder(null,"");
         });
         assertEquals("The order is null.", exception.getMessage());
     }
@@ -29,7 +29,7 @@ public class OrderTest {
     void givenEmptyStoreOrder(){
         Map<Integer,OrderDTO> storeOrder = new HashMap<>();
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            memoryOrderRepository.createOrder(storeOrder);
+            memoryOrderRepository.createOrder(storeOrder,"");
         });
         assertEquals("The order is empty.", exception.getMessage());
     }
@@ -39,7 +39,7 @@ public class OrderTest {
         Map<Integer,OrderDTO> storeOrder = new HashMap<>();
         storeOrder.put(1,null);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            memoryOrderRepository.createOrder(storeOrder);
+            memoryOrderRepository.createOrder(storeOrder,"");
         });
         assertEquals("The store with ID: 1 has null order.", exception.getMessage());
     }
@@ -50,7 +50,7 @@ public class OrderTest {
         OrderDTO orderDTO=new OrderDTO("name","store",new HashMap<>(),new HashMap<>());
         storeOrder.put(1,orderDTO);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            memoryOrderRepository.createOrder(storeOrder);
+            memoryOrderRepository.createOrder(storeOrder,"");
         });
         assertEquals("The store with ID: 1 has no products.", exception.getMessage());
     }
@@ -65,7 +65,7 @@ public class OrderTest {
         OrderDTO orderDTO=new OrderDTO("name","store",productAmounts,orderProductsJsons);
         storeOrder.put(1,orderDTO);
 
-        int orderId = memoryOrderRepository.createOrder(storeOrder);
+        int orderId = memoryOrderRepository.createOrder(storeOrder,"");
 
         assertEquals(orderId, 0);
     }
@@ -83,10 +83,10 @@ public class OrderTest {
         Map<Integer,Integer> productAmounts=new HashMap<>();
         productAmounts.put(1,1);
         Map<Integer,String> orderProductsJsons=new HashMap<>();
-        orderProductsJsons.put(1,"banana");
+        orderProductsJsons.put(1,"{\"id\":1,\"storeId\":101,\"name\":\"store1\",\"amount\":5,\"oldPrice\":19.99,\"newPrice\":17.99}");
         OrderDTO orderDTO = new OrderDTO("name","store",productAmounts,orderProductsJsons);
         storeOrder.put(1,orderDTO);
-        memoryOrderRepository.createOrder(storeOrder);
+        memoryOrderRepository.createOrder(storeOrder,"");
         List<ProductDataPrice> orders= memoryOrderRepository.getOrders(1);
 
         assertEquals(orders.size(), 1);
@@ -125,7 +125,7 @@ public class OrderTest {
         HashMap<Integer,OrderDTO> orders1 = new HashMap<>();
         orders1.put(1,orderDTO1);
 
-        memoryOrderRepository.createOrder(orders1);
+        memoryOrderRepository.createOrder(orders1,"matan");
         HashMap<Integer,Integer> productAmounts2=new HashMap<>();
         HashMap<Integer,String>orderProductsJsons2=new HashMap<>();
         productAmounts2.put(4,7);
@@ -133,7 +133,7 @@ public class OrderTest {
         OrderDTO orderDTO2 = new OrderDTO("noam","store2",productAmounts2,orderProductsJsons2);
         HashMap<Integer,OrderDTO> orders2=new HashMap<>();
         orders2.put(1,orderDTO2);
-        memoryOrderRepository.createOrder(orders2);
+        memoryOrderRepository.createOrder(orders2,"noam");
 
         HashMap<Integer,Integer> productAmounts3=new HashMap<>();
         HashMap<Integer,String>orderProductsJsons3=new HashMap<>();
@@ -144,8 +144,8 @@ public class OrderTest {
         OrderDTO orderDTO3 = new OrderDTO("matan","store3",productAmounts3,orderProductsJsons3);
         HashMap<Integer,OrderDTO> orders3=new HashMap<>();
         orders3.put(1,orderDTO3);
-        memoryOrderRepository.createOrder(orders3);
-        Map<Integer,List<ProductDataPrice>>OrdersByName = memoryOrderRepository.getProductDataPriceByMember("matan");
+        memoryOrderRepository.createOrder(orders3,"matan");
+        Map<Integer,OrderDetails>OrdersByName = memoryOrderRepository.getProductDataPriceByMember("matan");
         assertEquals(OrdersByName.size(),2);
     }
 
@@ -167,7 +167,7 @@ public class OrderTest {
         OrderDTO orderDTO1 = new OrderDTO("matan","store1",productAmounts1,orderProductsJsons1);
         HashMap<Integer,OrderDTO> orders1 = new HashMap<>();
         orders1.put(1,orderDTO1);
-        memoryOrderRepository.createOrder(orders1);
+        memoryOrderRepository.createOrder(orders1,"");
 
         HashMap<Integer,Integer> productAmounts3=new HashMap<>();
         HashMap<Integer,String>orderProductsJsons3=new HashMap<>();
@@ -180,7 +180,7 @@ public class OrderTest {
         HashMap<Integer,OrderDTO> orders3=new HashMap<>();
         orders3.put(1,orderDTO3);
         orders3.put(2,orderDTO4);
-        memoryOrderRepository.createOrder(orders3);
+        memoryOrderRepository.createOrder(orders3,"matan");
 
         Map<Integer,OrderDTO> storeOrder=memoryOrderRepository.getOrderByOrderId(1);
         assertEquals(storeOrder.size(),2);

@@ -29,7 +29,7 @@ public class OrderFacade {
             OrderDTO orderDTO=productDataPriceToOrderDTO(bag.getValue(),storeName,memberName);
             ordersStore.put(bag.getKey(),orderDTO);
         }
-        int orderId = orderRepository.createOrder(ordersStore);
+        int orderId = orderRepository.createOrder(ordersStore,memberName);
         for (Map.Entry<Integer, List<ProductDataPrice>> bag : storeBag.entrySet()) {
             storeFacade.addOrderId(bag.getKey(), orderId);
         }
@@ -61,12 +61,7 @@ public class OrderFacade {
     }
 
 
-    ///need to change
-//    public Map<Integer,Map<Integer,OrderDTO>> getOrdersByMember(String nameMember) {
-//        return orderRepository.getOrdersByMember(nameMember);
-//    }
-
-    public Map<Integer,List<ProductDataPrice>> getProductDataPriceByMember(String nameMember){
+    public Map<Integer,OrderDetails> getProductDataPriceByMember(String nameMember){
         return orderRepository.getProductDataPriceByMember(nameMember);
     }
     public Map<Integer,OrderDTO> getOrderByOrderId(int orderId) {
@@ -76,40 +71,6 @@ public class OrderFacade {
     public List<OrderDTO> getAllOrders(){
         return orderRepository.getAllOrders();
     }
-
-//    public static void main(String[] args) {
-//        ProductDataPrice product = new ProductDataPrice(1, 101, "Example Product", 50, 19.99, 17.99);
-//        String jsonString = "";
-//
-//        // Convert object to JSON string
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        try {
-//            jsonString = objectMapper.writeValueAsString(product);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        System.out.println("JSON String: " + jsonString);
-//
-//        // Convert JSON string back to object
-//        ProductDataPrice product2 = null;
-//        ObjectMapper objectMapper2 = new ObjectMapper();
-//        try {
-//            product2 = objectMapper2.readValue(jsonString, ProductDataPrice.class);
-//        } catch (JsonMappingException e) {
-//            e.printStackTrace();
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // Check and print the deserialized object
-//        if (product2 != null) {
-//            int f=1;
-//        } else {
-//            System.out.println("Failed to deserialize JSON string.");
-//        }
-//
-//    }
 
 
 }
