@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.Objects;
 
@@ -18,10 +18,10 @@ public class StoreDTO {
     private String phoneNumber;
     private Map<Integer, Integer> productAmounts;
     private String founderUsername;
-    private List<String> ownerUsernames;
-    private List<String> managerUsernames;
-    //private List<String> sellerUsernames;
-    private List<Integer> orderIds;
+    private Set<String> ownerUsernames;
+    private Set<String> managerUsernames;
+    //private Set<String> sellerUsernames;
+    private Set<Integer> orderIds;
 
     public StoreDTO() {
     }
@@ -42,7 +42,7 @@ public class StoreDTO {
         this.orderIds = store.getOrderIds();
     }
 
-    public StoreDTO(int storeId, boolean isActive, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours, Map<Integer, Integer> productAmounts, String founderUsername, List<String> ownerUsernames, List<String> managerUsernames, List<Integer> orderIds) {
+    public StoreDTO(int storeId, boolean isActive, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours, Map<Integer, Integer> productAmounts, String founderUsername, Set<String> ownerUsernames, Set<String> managerUsernames, Set<Integer> orderIds) {
         this.storeId = storeId;
         this.isActive = isActive;
         this.storeName = storeName;
@@ -131,35 +131,35 @@ public class StoreDTO {
         this.founderUsername = founderUsername;
     }
 
-    public List<String> getOwnerUsernames() {
+    public Set<String> getOwnerUsernames() {
         return ownerUsernames;
     }
 
-    public void setOwnerUsernames(List<String> ownerUsernames) {
+    public void setOwnerUsernames(Set<String> ownerUsernames) {
         this.ownerUsernames = ownerUsernames;
     }
 
-    public List<String> getManagerUsernames() {
+    public Set<String> getManagerUsernames() {
         return managerUsernames;
     }
 
-    public void setManagerUsernames(List<String> managerUsernames) {
+    public void setManagerUsernames(Set<String> managerUsernames) {
         this.managerUsernames = managerUsernames;
     }
 
-    /*public List<String> getSellerUsernames() {
+    /*public Set<String> getSellerUsernames() {
         return sellerUsernames;
     }
 
-    public void setSellerUsernames(List<String> sellerUsernames) {
+    public void setSellerUsernames(Set<String> sellerUsernames) {
         this.sellerUsernames = sellerUsernames;
     }*/
 
-    public List<Integer> getOrderIds() {
+    public Set<Integer> getOrderIds() {
         return orderIds;
     }
 
-    public void setOrderIds(List<Integer> orderIds) {
+    public void setOrderIds(Set<Integer> orderIds) {
         this.orderIds = orderIds;
     }
 

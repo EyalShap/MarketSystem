@@ -452,4 +452,8 @@ public class Error {
     public static String makeConditionWithIdDoesNotExistError(int condId) {
         return String.format("A Condition with id %d does not exist.", condId);
     }
+
+    public static String makeDBError() {
+        return "DB Error";
+    }
 }

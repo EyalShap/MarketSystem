@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalTime;
@@ -35,10 +36,10 @@ public class MemoryStoreRepository implements IStoreRepository {
         }
     }
 
-    @Override
+    /*@Override
     public void deleteStore(int storeId) {
         findStoreByID(storeId).closeStore();
-    }
+    }*/
 
     @Override
     public int addStore(String founderUsername, String storeName, String address, String email, String phoneNumber) {
@@ -59,6 +60,23 @@ public class MemoryStoreRepository implements IStoreRepository {
 
     public boolean storeExists(int storeId) {
         return stores.containsKey(storeId);
+    }
+
+    @Override
+    public void saveStore(Store store) {
+    }
+
+    @Override
+    public void addProductToStore(int storeId, int productId, int amount) {
+        if (productExists(storeId, productId))
+            throw new IllegalArgumentException(Error.makeStoreProductAlreadyExistsError(productId));
+
+        findStoreByID(storeId).addProduct(productId, amount);
+    }
+
+    @Override
+    public boolean productExists(int storeId, int productId) {
+        return findStoreByID(storeId).productExists(productId);
     }
 
     private boolean storeNameExists(String storeName) {
