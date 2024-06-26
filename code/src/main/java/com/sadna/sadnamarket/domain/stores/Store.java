@@ -131,13 +131,16 @@ public class Store {
     }
 
     public void deleteProduct(int productId) {
+        HashMap<Integer, Integer> newMap = new HashMap<>(productAmounts);
+        newMap.remove(productId);
+
         synchronized (productAmounts) {
             if (!isActive)
                 throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (!productExists(productId))
                 throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId,productId));
 
-            productAmounts.remove(productId);
+            productAmounts = newMap;
         }
     }
 
@@ -314,6 +317,14 @@ public class Store {
                     return false;
             }
         return true;
+    }
+
+    public int getProductAmount(int productId) {
+        synchronized (productAmounts) {
+            if (!productExists(productId))
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
+            return productAmounts.get(productId);
+        }
     }
 
     @Override

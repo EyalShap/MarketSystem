@@ -123,10 +123,17 @@ class DBTest {
     void createStoreSuccess() {
         //storeFacade.setStoreBankAccount("WillyTheChocolateDude", storeId0, new BankAccountDTO("123", "123", "123", "WillyTheChocolateDude"));
         //storeFacade.setStoreBankAccount("Mr. Krabs", storeId1, new BankAccountDTO("123", "123", "123", "Mr. Krabs"));
-        //storeFacade.addProductToStore("WillyTheChocolateDude", 5, "Banana", 9, 4, "Fruit", 2, 5);
-        //storeFacade.addProductToStore("Mr. Krabs", 6, "Banana", 12, 4, "Fruit", 2, 5);
-        storeFacade.addProductToStore("WillyTheChocolateDude", 5, "Apple", 9, 4, "Fruit", 2, 5);
-
+        //storeFacade.addProductToStore("WillyTheChocolateDude", 13, "Banana", 9, 4, "Fruit", 2, 5);
+        //storeFacade.addProductToStore("WillyTheChocolateDude", 13, "Apple", 5, 4, "Fruit", 2, 5);
+        //storeFacade.addProductToStore("Mr. Krabs", 14, "Banana", 12, 4, "Fruit", 2, 5);
+        //storeFacade.updateProduct("WillyTheChocolateDude", 5, 0, "Banana", 1000, 89, "F", 4);
+        //storeFacade.deleteProduct("Mr. Krabs", 6, 0);
+        //storeFacade.addStoreManager("Mr. Krabs", 6);
+        //storeFacade.closeStore("WillyTheChocolateDude", 5);
+        //List<CartItemDTO> cart = new ArrayList<>();
+        //cart.add(new CartItemDTO(13, 0, 1));
+        int x = storeFacade.addOrderId(13, 0);
+        int u = 9;
     }
 
 }

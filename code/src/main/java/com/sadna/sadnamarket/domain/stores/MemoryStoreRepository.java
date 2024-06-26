@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
+import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalTime;
@@ -77,6 +78,42 @@ public class MemoryStoreRepository implements IStoreRepository {
     @Override
     public boolean productExists(int storeId, int productId) {
         return findStoreByID(storeId).productExists(productId);
+    }
+
+    /*@Override
+    public boolean hasProductInStock(int storeId, int productId, int amount) {
+        return findStoreByID(storeId).hasProductInAmount(productId, amount);
+    }*/
+
+    @Override
+    public int getProductAmountInStore(int storeId, int productId) {
+        return findStoreByID(storeId).getProductAmounts().get(storeId);
+    }
+
+    @Override
+    public void deleteProductFromStore(int storeId, int productId) {
+        Store store = findStoreByID(storeId);
+        store.deleteProduct(productId);
+    }
+
+    @Override
+    public void updateProductAmountInStore(int storeId, int productId, int newAmount) {
+        findStoreByID(storeId).setProductAmounts(productId, newAmount);
+    }
+
+    @Override
+    public StoreDTO getStoreDTO(int storeId) {
+        return findStoreByID(storeId).getStoreDTO();
+    }
+
+    @Override
+    public Set<String> checkCartInStore(int storeId, List<CartItemDTO> cart) {
+        return findStoreByID(storeId).checkCart(cart);
+    }
+
+    @Override
+    public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart) {
+        return findStoreByID(storeId).updateStock(cart);
     }
 
     private boolean storeNameExists(String storeName) {
