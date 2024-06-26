@@ -13,7 +13,7 @@ public interface IStoreRepository {
     public int addStore(String founderUsername, String storeName, String address, String email, String phoneNumber);
     public boolean storeExists(int storeId);
     public boolean productExists(int storeId, int productId);
-    //public boolean hasProductInStock(int storeId, int productId, int amount);
+    public boolean hasProductInStock(int storeId, int productId, int amount);
     public int getProductAmountInStore(int storeId, int productId);
     public void saveStore(Store store);
     public void addProductToStore(int storeId, int productId, int amount);

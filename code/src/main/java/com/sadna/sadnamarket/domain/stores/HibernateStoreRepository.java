@@ -127,7 +127,7 @@ public class HibernateStoreRepository implements IStoreRepository{
         return findStoreByID(storeId).getProductAmounts().containsKey(productId);
     }
 
-    /*@Override
+    @Override
     public boolean hasProductInStock(int storeId, int productId, int amount) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()){
             Store store = session.get(Store.class, storeId);
@@ -139,7 +139,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store.hasProductInAmount(productId, amount);
         }
-    }*/
+    }
 
     @Override
     public int getProductAmountInStore(int storeId, int productId) {

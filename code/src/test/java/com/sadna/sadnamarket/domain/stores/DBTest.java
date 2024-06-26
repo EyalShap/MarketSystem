@@ -132,7 +132,7 @@ class DBTest {
         //storeFacade.closeStore("WillyTheChocolateDude", 5);
         //List<CartItemDTO> cart = new ArrayList<>();
         //cart.add(new CartItemDTO(13, 0, 1));
-        int x = storeFacade.addOrderId(13, 0);
+        //int x = storeFacade.addOrderId(13, 0);
         int u = 9;
     }
 
