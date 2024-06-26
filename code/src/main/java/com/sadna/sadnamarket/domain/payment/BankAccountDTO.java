@@ -1,11 +1,18 @@
 package com.sadna.sadnamarket.domain.payment;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.util.Objects;
 
+@Embeddable
 public class BankAccountDTO {
+    @Column(name = "bank_code")
     String bankCode;
+    @Column(name = "bank_branch_code")
     String bankBranchCode;
+    @Column(name = "account_code")
     String accountCode;
+    @Column(name = "owner_username")
     String ownerId;
 
     public BankAccountDTO(String bankCode, String bankBranchCode, String accountCode, String ownerId) {
@@ -14,6 +21,8 @@ public class BankAccountDTO {
         this.accountCode = accountCode;
         this.ownerId = ownerId;
     }
+
+    public BankAccountDTO() {}
 
     public String getBankCode() {
         return bankCode;
