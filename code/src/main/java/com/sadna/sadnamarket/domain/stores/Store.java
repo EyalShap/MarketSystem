@@ -321,7 +321,7 @@ public class Store {
     public int getProductAmount(int productId) {
         synchronized (productAmounts) {
             if (!productExists(productId))
-                return 0;
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
             return productAmounts.get(productId);
         }
     }

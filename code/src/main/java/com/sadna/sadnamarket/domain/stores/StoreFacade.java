@@ -106,7 +106,6 @@ public class StoreFacade {
         if (!hasPermission(username, storeId, Permission.DELETE_PRODUCTS))
             throw new IllegalArgumentException(Error.makeStoreUserCannotDeleteProductError(username, storeId));
 
-        //productFacade.removeProduct(storeId, productId);
 
         /*Store store = storeRepository.findStoreByID(storeId);
         synchronized (store.getProductAmounts()) {
@@ -115,6 +114,7 @@ public class StoreFacade {
         }
         return productId;*/
         storeRepository.deleteProductFromStore(storeId, productId);
+        productFacade.removeProduct(storeId, productId);
         return productId;
     }
 
@@ -511,7 +511,7 @@ public class StoreFacade {
             //Store store = storeRepository.findStoreByID(storeId);
             //synchronized (store.getProductAmounts()) {
                 //Set<String> newError1 = store.checkCart(cartByStore.get(storeId));
-            Set<String> newError1 = storeRepository.checkCartInStore(storeId, cart);
+            Set<String> newError1 = storeRepository.checkCartInStore(storeId, cartByStore.get(storeId));
             if (newError1.size() != 0)
                 error.addAll(newError1);
             Set<String> newError2 = buyPolicyFacade.canBuy(storeId, cartByStore.get(storeId), username);
@@ -545,7 +545,7 @@ public class StoreFacade {
             throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
         Store store = storeRepository.findStoreByID(storeId);
         return store.hasProductInAmount(productId, amount);*/
-        return storeRepository.getProductAmountInStore(storeId, productId) >= amount;
+        return storeRepository.hasProductInStock(storeId, productId, amount);
     }
 
     public boolean getIsManager(String actorUsername, int storeId, String infoUsername){

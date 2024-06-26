@@ -81,10 +81,10 @@ public class MemoryStoreRepository implements IStoreRepository {
         return findStoreByID(storeId).productExists(productId);
     }
 
-    /*@Override
+    @Override
     public boolean hasProductInStock(int storeId, int productId, int amount) {
         return findStoreByID(storeId).hasProductInAmount(productId, amount);
-    }*/
+    }
 
     @Override
     public int getProductAmountInStore(int storeId, int productId) {

@@ -1009,7 +1009,7 @@ class StoreFacadeTest {
         assertFalse(storeFacade.hasProductInStock(0, 0, 1001));
         assertFalse(storeFacade.hasProductInStock(0, 1, 983));
         assertFalse(storeFacade.hasProductInStock(0, 2, 313));
-        assertTrue(storeFacade.hasProductInStock(0, 981, 0));
+        assertFalse(storeFacade.hasProductInStock(0, 981, 0));
     }
 
     @Test
