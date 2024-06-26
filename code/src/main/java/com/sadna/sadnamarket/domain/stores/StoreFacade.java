@@ -545,7 +545,7 @@ public class StoreFacade {
             throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
         Store store = storeRepository.findStoreByID(storeId);
         return store.hasProductInAmount(productId, amount);*/
-        return storeRepository.getProductAmountInStore(storeId, productId) <= amount;
+        return storeRepository.getProductAmountInStore(storeId, productId) >= amount;
     }
 
     public boolean getIsManager(String actorUsername, int storeId, String infoUsername){

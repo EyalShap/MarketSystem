@@ -265,7 +265,7 @@ class StoreUnitTests {
             store0.setProductAmounts(3, 18);
         });
 
-        String expectedMessage1 = "Product Id 3 does not exist.";
+        String expectedMessage1 = Error.makeStoreProductDoesntExistError(0, 3);
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 

@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.stores;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.service.Error;
+import org.springframework.data.relational.core.sql.In;
 
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class MemoryStoreRepository implements IStoreRepository {
 
     @Override
     public int getProductAmountInStore(int storeId, int productId) {
-        return findStoreByID(storeId).getProductAmounts().get(storeId);
+        return findStoreByID(storeId).getProductAmount(productId);
     }
 
     @Override

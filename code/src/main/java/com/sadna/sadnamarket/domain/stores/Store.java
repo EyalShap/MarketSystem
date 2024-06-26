@@ -124,23 +124,22 @@ public class Store {
     public void addProduct(int productId, int amount) {
         if (amount < 0)
             throw new IllegalArgumentException(Error.makeStoreIllegalProductAmountError(amount));
-
         synchronized (productAmounts) {
+            if(productAmounts.containsKey(productId))
+                throw new IllegalArgumentException(Error.makeStoreProductAlreadyExistsError(productId));
+
             productAmounts.put(productId, amount);
         }
     }
 
     public void deleteProduct(int productId) {
-        HashMap<Integer, Integer> newMap = new HashMap<>(productAmounts);
-        newMap.remove(productId);
-
         synchronized (productAmounts) {
             if (!isActive)
                 throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (!productExists(productId))
                 throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId,productId));
 
-            productAmounts = newMap;
+            productAmounts.remove(productId);
         }
     }
 
@@ -152,7 +151,7 @@ public class Store {
             if (!isActive)
                 throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (!productExists(productId))
-                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
 
             productAmounts.put(productId, newAmount);
         }
@@ -322,7 +321,7 @@ public class Store {
     public int getProductAmount(int productId) {
         synchronized (productAmounts) {
             if (!productExists(productId))
-                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
+                return 0;
             return productAmounts.get(productId);
         }
     }
