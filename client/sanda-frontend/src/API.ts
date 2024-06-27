@@ -1293,6 +1293,29 @@ export const getStoreOrders=async( storeId: number,username: string): Promise<Or
     return [];
 }
 }
+
+export const getStoreByName = async (storeName: string, username: string | null): Promise<any> => {
+    try {
+        let url = `${server}/api/stores/getStoreByName?storeName=${storeName}`;
+        if (username) {
+            url += `&username=${username}`;
+        }
+
+        const response = (await axios.get(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })).data;
+
+        return response; // Adjust this based on the actual response structure
+    } catch (error) {
+        console.error("Failed to fetch store data:", error);
+        return null;
+    }
+};
+
+
 export const buyCart = async(purchase: PurchaseInfoModel): Promise<RestResponse> => {
     let request = {
         creditCard: {

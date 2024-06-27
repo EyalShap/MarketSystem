@@ -45,9 +45,9 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
             <option value="Category 2">Category 2</option>
             <option value="Category 3">Category 3</option>
           </select>
-        <input className='search-inputs'
+        <input className='search-input'
           type="text"
-          placeholder="Search..."
+          placeholder="Search Product..."
           value={searchTerm}
           onChange={handleInputChange}
         />
