@@ -81,7 +81,7 @@ class DBTest {
         IProductRepository productRepo = new MemoryProductRepository();
         this.productFacade = new ProductFacade(productRepo);
 
-        this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
+        this.buyPolicyFacade = new BuyPolicyFacade(new HibernateBuyPolicyRepository());
         this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
 
         this.storeFacade.setUserFacade(userFacade);
@@ -120,7 +120,8 @@ class DBTest {
     }
 
     @Test
-    void createStoreSuccess() {
+    void createStoreSuccess() throws JsonProcessingException {
+        //storeFacade.createStore("WillyTheChocolateDude", "Chlate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
         //storeFacade.setStoreBankAccount("WillyTheChocolateDude", storeId0, new BankAccountDTO("123", "123", "123", "WillyTheChocolateDude"));
         //storeFacade.setStoreBankAccount("Mr. Krabs", storeId1, new BankAccountDTO("123", "123", "123", "Mr. Krabs"));
         //storeFacade.addProductToStore("WillyTheChocolateDude", 13, "Banana", 9, 4, "Fruit", 2, 5);
@@ -133,6 +134,8 @@ class DBTest {
         //List<CartItemDTO> cart = new ArrayList<>();
         //cart.add(new CartItemDTO(13, 0, 1));
         //int x = storeFacade.addOrderId(13, 0);
+        //int id = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Chocolate", List.of(BuyType.immidiatePurchase), 10, 20, "WillyTheChocolateDude");
+        //int id1 = buyPolicyFacade.createProductAmountBuyPolicy(0, List.of(BuyType.immidiatePurchase), 9, 12, "WillyTheChocolateDude");
         int u = 9;
     }
 

@@ -4,10 +4,13 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.service.Error;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
+@Entity
+@DiscriminatorValue("CATEGORY")
 public class CategorySubject extends PolicySubject{
     private String category;
 
@@ -17,8 +20,6 @@ public class CategorySubject extends PolicySubject{
         this.category = category;
     }
 
-    public CategorySubject() {
-    }
 
     @Override
     public int subjectAmount(List<CartItemDTO> cart, Map<Integer, ProductDTO> products) {

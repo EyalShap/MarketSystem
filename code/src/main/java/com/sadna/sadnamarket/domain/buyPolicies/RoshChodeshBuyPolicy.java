@@ -7,13 +7,14 @@ import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
     RoshChodeshBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
         super(id, buytypes, subject);
-        setErrorDescription(Error.makeRoshChodeshBuyPolicyError(subject.getSubject()));
     }
 
     public RoshChodeshBuyPolicy() {
@@ -25,11 +26,14 @@ public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
     }
 
     @Override
-    public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
-        if(policySubject.subjectAmount(cart, products) > 0) {
-            return !isRoshChodesh();
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        Set<String> error = new HashSet<>();
+        if(policySubject.get(0).subjectAmount(cart, products) > 0) {
+            if(isRoshChodesh()) {
+                error.add(Error.makeRoshChodeshBuyPolicyError(policySubject.get(0).getSubject()));
+            }
         }
-        return false;
+        return error;
     }
 
     @Override
@@ -39,6 +43,6 @@ public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
 
     @Override
     public String getPolicyDesc() {
-        return String.format("%s can not be bought on Rosh Chodesh.", policySubject.getDesc());
+        return String.format("%s can not be bought on Rosh Chodesh.", policySubject.get(0).getDesc());
     }
 }
