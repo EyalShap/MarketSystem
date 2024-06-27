@@ -405,7 +405,6 @@ export const getMember = async(username: string): Promise<MemberModel> => {
     
     // Assuming the API returns the data in dataJson
     const profileData = JSON.parse(data.dataJson) as MemberModel;
-    console.log(profileData);
     // Validate the structure of profileData before returning
 
     return profileData;
