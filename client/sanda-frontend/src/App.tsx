@@ -27,6 +27,7 @@ import StoreOrders from './components/StoreOrders';
 import Purchase from './components/Purchase';
 import SearchOrdersByUsername from './components/OrderHistoryByUser';
 import StoreViewHistory from './components/StoreViewHistory';
+import SearchStoresResult from './components/SearchStoresResult';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -96,6 +97,8 @@ function App() {
             <Route path="/permission-error" element={<PermissionError />}/>
             <Route path="/managerStoreHistory" element={<StoreOrders />}/>
             <Route path="/managerUserHistory" element={<SearchOrdersByUsername />}/>
+            <Route path="/search-stores-results" element={<SearchStoresResult />}/>
+
             <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
           </Routes>
         </Router>

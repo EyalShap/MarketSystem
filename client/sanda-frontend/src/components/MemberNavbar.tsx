@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import '../styles/memberNavbar.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { IconButton, Badge } from '@mui/material';
+import { IconButton, Badge, Button } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { acceptRequest, checkIsSystemManager, enterAsGuest, fetchNotifications, logout, okNotification, rejectRequest } from '../API';
@@ -10,6 +10,7 @@ import { NotificationModel, RequestModel } from '../models/NotificationModel';
 import { useSubscription } from 'react-stomp-hooks';
 import SearchBar from './Search';
 import logo from '../images/la_sadna.png';
+import StoreSearchBar from './StoreSearchBar';
 
 
 const MemberNavbar = () => {
@@ -84,17 +85,23 @@ const MemberNavbar = () => {
       navigate(`/cart/${localStorage.getItem('guestId')}`);
     }
   }
-
+   const handleToggleSearch = () => {
+        setShowStoreSearch(prevShowStoreSearch => !prevShowStoreSearch);
+    };
    const handleGetAllOrdersClick = () => {
         return '/managerUserHistory';
     };
-  
+      const [showStoreSearch, setShowStoreSearch] = useState(false);
+
   return (
     <nav className="membernavbar" onClick={()=>{menuOpen&&toggleMenu();notificationsOpen&&toggleNotifications();}}>
       <Link to="/" className="navbar-logo">
         <img src={logo} width={160} height={100} alt="Logo"></img>
       </Link>
-      <SearchBar />
+         {showStoreSearch ? <StoreSearchBar /> : <SearchBar />}
+              <Button onClick={handleToggleSearch} className="toggle-search-button">
+                    {showStoreSearch ? 'Switch to Product Search' : 'Switch to Store Search'}
+                </Button>
       <div className="navbar-right">
         <div className="notifications-navbar-items">
           <IconButton size="small" color="inherit" onClick={toggleNotifications}>
