@@ -14,19 +14,23 @@ const ProductsBar = () => {
     const [carouselRef, setcarouselRef]= useState(0);
     const [products, setProducts]= useState([] as ProductModel[]);
     const [currentProduct, setCurrentProducts]= useState([] as ProductModel[]);
+        const [carouselIndex, setCarouselIndex] = useState(0);
+
     const navigate = useNavigate();
-    useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const response = await getTopProducts();
-          setProducts(JSON.parse(response.dataJson)as ProductModel[]);
-          setCurrentProducts(products.slice(0,5));
-        } catch (error) {
-          console.error('Error fetching products: ', error);
-        }
-      }
-      fetchProducts();
-    },[]);
+  useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await getTopProducts();
+                const parsedProducts = JSON.parse(response.dataJson) as ProductModel[];
+                setProducts(parsedProducts);
+                setCurrentProducts(parsedProducts.slice(carouselIndex, carouselIndex + 5));
+            } catch (error) {
+                console.error('Error fetching products: ', error);
+            }
+        };
+
+        fetchProducts();
+    }, [carouselIndex]);
     const scrollLeft = () => {
         if(carouselRef>0){
             setcarouselRef(carouselRef-1);
