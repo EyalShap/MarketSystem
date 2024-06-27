@@ -3,18 +3,18 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
+@Entity
+@DiscriminatorValue("PRODUCT")
 public class ProductSubject extends PolicySubject{
     private int productId;
 
     public ProductSubject(int productId) {
         this.productId = productId;
-    }
-
-    public ProductSubject() {
     }
 
     @Override

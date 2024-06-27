@@ -887,7 +887,9 @@ class StoreFacadeTest {
             });
             BuyPolicy policy1 = buyPolicyFacade.getBuyPolicy(2);
             BuyPolicy policy2 = buyPolicyFacade.getBuyPolicy(3);
-            assertEquals(Error.makeOrBuyPolicyError(policy1.getErrorDescription(), policy2.getErrorDescription()), expected.getMessage());
+            String expectedError = Error.makeAmountBuyPolicyError("2", 3, 10) + "\n" +
+                    Error.makeHolidayBuyPolicyError("Alcohol");
+            assertEquals(expectedError, expected.getMessage());
         }
     }
 
@@ -929,8 +931,10 @@ class StoreFacadeTest {
 
             BuyPolicy policy1 = buyPolicyFacade.getBuyPolicy(2);
             BuyPolicy policy2 = buyPolicyFacade.getBuyPolicy(3);
-            String expectedErr = Error.makeAgeLimitBuyPolicyError("Alcohol", 18, -1) + "\n" +
-                    Error.makeOrBuyPolicyError(policy1.getErrorDescription(), policy2.getErrorDescription());
+            String expectedErr =
+                    Error.makeAmountBuyPolicyError("2", 3, 10) + "\n" +
+                    Error.makeAgeLimitBuyPolicyError("Alcohol", 18, -1) + "\n" +
+                    Error.makeHolidayBuyPolicyError("Alcohol");
 
             assertEquals(expectedErr, expected.getMessage());
         }

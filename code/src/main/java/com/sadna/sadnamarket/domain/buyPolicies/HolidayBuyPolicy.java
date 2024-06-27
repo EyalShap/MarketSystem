@@ -9,27 +9,26 @@ import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HolidayBuyPolicy extends SimpleBuyPolicy{
 
     public HolidayBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
         super(id, buytypes, subject);
-        this.setErrorDescription(Error.makeHolidayBuyPolicyError(subject.getSubject()));
     }
 
     public HolidayBuyPolicy() {
     }
 
     @Override
-    public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
-        if(policySubject.subjectAmount(cart, products) > 0) {
-            return !isHoliday();
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        Set<String> error = new HashSet<>();
+        if(policySubject.get(0).subjectAmount(cart, products) > 0) {
+            if(isHoliday()) {
+                error.add(Error.makeHolidayBuyPolicyError(policySubject.get(0).getSubject()));
+            }
         }
-        return true;
+        return error;
     }
 
     public static boolean isHoliday() {
@@ -51,7 +50,7 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
 
     @Override
     public String getPolicyDesc() {
-        return String.format("%s can not be bought on a holiday.", policySubject.getDesc());
+        return String.format("%s can not be bought on a holiday.", policySubject.get(0).getDesc());
     }
 
 }

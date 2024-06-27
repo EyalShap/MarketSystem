@@ -30,7 +30,6 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
         this.day = day;
         this.month = month;
         this.year = year;
-        setErrorDescription(Error.makeSpecificDateBuyPolicyError(subject.getSubject()));
     }
 
     public SpecificDateBuyPolicy() {
@@ -40,9 +39,8 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
         return LocalDate.now();
     }
 
-    @Override
-    public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
-        if(policySubject.subjectAmount(cart, products) > 0) {
+    private boolean canBuyBool(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        if(policySubject.get(0).subjectAmount(cart, products) > 0) {
             LocalDate now = getCurrDate();
             if(day != -1 && now.getDayOfMonth() != day)
                 return true;
@@ -53,6 +51,15 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        Set<String> error = new HashSet<>();
+        if(!canBuyBool(cart, products, user)) {
+            error.add(Error.makeSpecificDateBuyPolicyError(policySubject.get(0).getSubject()));
+        }
+        return error;
     }
 
     public int getDay() {
@@ -102,7 +109,7 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
             date.append(year);
         }
 
-        return String.format("%s can not be bought on %s.", policySubject.getDesc(), date.toString().trim());
+        return String.format("%s can not be bought on %s.", policySubject.get(0).getDesc(), date.toString().trim());
     }
 
     private static String getDaySuffix(int day) {

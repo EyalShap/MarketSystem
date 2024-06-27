@@ -45,7 +45,6 @@ public class HibernateStoreRepository implements IStoreRepository{
             throw new IllegalArgumentException(
                     Error.makeStoreWithNameAlreadyExistsError(storeName));
 
-        //Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
