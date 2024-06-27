@@ -1,3 +1,4 @@
+
 package com.sadna.sadnamarket.domain.orders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,21 +10,23 @@ import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class MemoryOrderRepository implements IOrderRepository {
-    private Map<Integer, Map<Integer, Order>> orders;
+    private Map<Integer, PurchaseRecord> orders;
     private int nextOrderId;
     private static final Logger logger = LogManager.getLogger(MemoryOrderRepository.class);
     public MemoryOrderRepository() {
-        orders = new HashMap<>();
+        orders=new HashMap<>();
         this.nextOrderId = 0;
     }
     @Override
-    public synchronized int createOrder(Map<Integer, OrderDTO> storeOrdersDTO){
+    public synchronized int createOrder(Map<Integer, OrderDTO> storeOrdersDTO,String memberName){
         if (storeOrdersDTO == null) {
             throw new IllegalArgumentException(Error.makeOrderNullError());
         }
@@ -44,7 +47,16 @@ public class MemoryOrderRepository implements IOrderRepository {
             Order order = DTOToOrder(entry.getValue());
             storeOrders.put(entry.getKey(),order);
         }
-        orders.put(nextOrderId,storeOrders);
+        // Get the current date and time
+        LocalDateTime now = LocalDateTime.now();
+
+        // Define the format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Format the date and time
+        String formattedNow = now.format(formatter);
+        PurchaseRecord purchaseRecord=new PurchaseRecord(memberName,formattedNow,storeOrders);
+        orders.put(nextOrderId,purchaseRecord);
         nextOrderId++;
         return nextOrderId-1;
     }
@@ -64,11 +76,11 @@ public class MemoryOrderRepository implements IOrderRepository {
     public List<ProductDataPrice> getOrders(int storeId) {
         List<ProductDataPrice> productDataPrices=new LinkedList<>();
         for (int orderId : orders.keySet()) {
-            if(orders.get(orderId).containsKey(storeId)){
-                Order order = orders.get(orderId).get(storeId);
+            if(orders.get(orderId).getOrders().containsKey(storeId)){
+                Order order = orders.get(orderId).getOrders().get(storeId);
                 Map<Integer, String> orderProductsJsons=order.getOrderProductsJsons();
                 for (String productsJsons: orderProductsJsons.values() ) {
-                        productDataPrices.add(fromJson(productsJsons));
+                    productDataPrices.add(fromJson(productsJsons));
                 }
             }
         }
@@ -89,68 +101,33 @@ public class MemoryOrderRepository implements IOrderRepository {
         return orderDTO;
     }
 
-//    public Map<Integer,Map<Integer,OrderDTO>> getOrdersByMember(String nameMember) {
-//        if(nameMember==null){
-//            throw new IllegalArgumentException(Error.makeOrderNameNullError());
-//        }
-//        if(nameMember.isEmpty()){
-//            throw new IllegalArgumentException(Error.makeOrderNameEmptyError());
-//        }
-//        Map<Integer,List<ProductDataPrice>> productDataPrices=new HashMap<>();
-//        Map<Integer,Map<Integer,OrderDTO>> ordersByMember = new HashMap<>();
-//        for (Map.Entry<Integer, Map<Integer, Order>> outerEntry : orders.entrySet()) {
-//            Integer outerKey = outerEntry.getKey();
-//            Map<Integer, Order> innerMap = outerEntry.getValue();
-//            Map<Integer, OrderDTO> storeOrderDTO = new HashMap<>();
-//            //test
-//            List<ProductDataPrice> test=new LinkedList<>();
-//            //test
-//            for (Map.Entry<Integer, Order> innerEntry : innerMap.entrySet()) {
-//                Order order = innerEntry.getValue();
-//                if (order.getMemberName().equals(nameMember)) {
-//                    Map<Integer, String> orderProductsJsons = order.getOrderProductsJsons();
-//                    for (String productsJsons: orderProductsJsons.values() ) {
-//                        test.add(fromJson(productsJsons));
-//                    }
-//                    OrderDTO orderDTO= orderToDTO(order);
-//                    storeOrderDTO.put(innerEntry.getKey(),orderDTO);
-//                }
-//            }
-//            if (!storeOrderDTO.isEmpty()) {
-//                ordersByMember.put(outerKey, storeOrderDTO);
-//                productDataPrices.put(outerKey,test);
-//            }
-//        }
-//        if(ordersByMember.isEmpty()){
-//            throw new IllegalArgumentException(Error.makeOrderNoOrdersForUserError(nameMember));
-//        }
-//        return ordersByMember;
-//    }
-
-
-    public Map<Integer,List<ProductDataPrice>> getProductDataPriceByMember(String nameMember) {
+    public Map<Integer,OrderDetails> getProductDataPriceByMember(String nameMember) {
         if(nameMember==null){
             throw new IllegalArgumentException(Error.makeOrderNameNullError());
         }
         if(nameMember.isEmpty()){
             throw new IllegalArgumentException(Error.makeOrderNameEmptyError());
         }
-        Map<Integer,List<ProductDataPrice>> ans=new HashMap<>();
-        for (Map.Entry<Integer, Map<Integer, Order>> outerEntry : orders.entrySet()) {
+        Map<Integer,OrderDetails> ans=new HashMap<>();
+        for (Map.Entry<Integer, PurchaseRecord> outerEntry : orders.entrySet()) {
             Integer outerKey = outerEntry.getKey();
-            Map<Integer, Order> innerMap = outerEntry.getValue();
-            List<ProductDataPrice> productDataPrices=new LinkedList<>();
-            for (Map.Entry<Integer, Order> innerEntry : innerMap.entrySet()) {
-                Order order = innerEntry.getValue();
-                if (order.getMemberName().equals(nameMember)) {
+            List<ProductDataPrice> productDataPrices = new LinkedList<>();
+            String date=outerEntry.getValue().getDateOfPurchase();
+            if(outerEntry.getValue().getMemberName().equals(nameMember)) {
+                Map<Integer, Order> innerMap = outerEntry.getValue().getOrders();
+                for (Map.Entry<Integer, Order> innerEntry : innerMap.entrySet()) {
+                    Order order = innerEntry.getValue();
                     Map<Integer, String> orderProductsJsons = order.getOrderProductsJsons();
-                    for (String productsJsons: orderProductsJsons.values() ) {
+                    for (String productsJsons : orderProductsJsons.values()) {
                         productDataPrices.add(fromJson(productsJsons));
                     }
                 }
             }
-            if(productDataPrices.size()!=0)
-                ans.put(outerKey,productDataPrices);
+            if(productDataPrices.size()!=0) {
+                OrderDetails OrderDetails=new OrderDetails(productDataPrices,date);
+                ans.put(outerKey,OrderDetails);
+                //ans.put(outerKey,productDataPrices);
+            }
         }
         if(ans.isEmpty()){
             throw new IllegalArgumentException(Error.makeOrderNoOrdersForUserError(nameMember));
@@ -177,7 +154,7 @@ public class MemoryOrderRepository implements IOrderRepository {
     public Map<Integer,OrderDTO> getOrderByOrderId(int orderId) {
         Map<Integer,OrderDTO> orderDTOByOrderId = new HashMap<>();
         if(orders.containsKey(orderId)){
-            Map<Integer,Order> orderByOrderId = orders.get(orderId);
+            Map<Integer,Order> orderByOrderId = orders.get(orderId).getOrders();
             for (Integer storeId : orderByOrderId.keySet()) {
                 OrderDTO orderDTO=orderToDTO(orderByOrderId.get(storeId));
                 orderDTOByOrderId.put(storeId,orderDTO);
@@ -191,8 +168,8 @@ public class MemoryOrderRepository implements IOrderRepository {
 
     public List<OrderDTO> getAllOrders(){
         List<OrderDTO> allOrders = new LinkedList<>();
-        for (Map.Entry<Integer, Map<Integer, Order>> outerEntry : orders.entrySet()) {
-            Map<Integer, Order> innerMap = outerEntry.getValue();
+        for (Map.Entry<Integer, PurchaseRecord> outerEntry : orders.entrySet()) {
+            Map<Integer, Order> innerMap = outerEntry.getValue().getOrders();
             for (Map.Entry<Integer, Order> innerEntry : innerMap.entrySet()) {
                 allOrders.add(orderToDTO(innerEntry.getValue()));
             }

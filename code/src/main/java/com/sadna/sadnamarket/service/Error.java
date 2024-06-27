@@ -110,6 +110,10 @@ public class Error {
         return String.format("There is no store with id %d.", storeId);
     }
 
+    public static String makeStoreNoStoreWithNameError(String storeName){
+        return String.format("There is no store with name %s.", storeName);
+    }
+
     public static String makeStoreWithIdAlreadyExistsError(int storeId){
         return String.format("A store with the id %d already exists.", storeId);
     }

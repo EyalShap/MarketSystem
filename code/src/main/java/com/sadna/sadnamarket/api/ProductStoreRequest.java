@@ -9,6 +9,7 @@ public class ProductStoreRequest {
         String category;
         double rank;
         double productWeight;
+        String description;
 
     public int getStoreId() {
         return storeId;
@@ -72,5 +73,13 @@ public class ProductStoreRequest {
 
     public void setProductWeight(double productWeight) {
         this.productWeight = productWeight;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

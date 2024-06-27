@@ -7,6 +7,7 @@ import { addProduct, createNewStore, hasPermission, loginUsingJwt } from '../API
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '../App';
 import Permission from '../models/Permission';
+import { Categories } from '../models/CategoriesConst';
 
 // Define the schema for validation
 const schema = yup.object().shape({
@@ -14,7 +15,8 @@ const schema = yup.object().shape({
   productPrice: yup.number().positive('Product Price must be above positive').required('Product price is required'),
   category: yup.string().required('Product category is required'),
   productWeight: yup.number().positive('Product Weight must be above positive').required('Product weight is required'),
-  productQuantity: yup.number().integer('Initial Amount must be whole').positive('Initial Amount must be positive').required('Product category is required')
+  productQuantity: yup.number().integer('Initial Amount must be whole').positive('Initial Amount must be positive').required('Product category is required'),
+  description: yup.string()
 });
 
 const AddProduct = () => {
@@ -75,9 +77,22 @@ const AddProduct = () => {
             id="category"
             placeholder='Enter product category'
             {...register('category', { onChange: () => trigger("category") })}
+            list="categs"
             className={errors.category && touchedFields.category ? 'invalid' : ''}
           />
+          <datalist id="categs">
+          {Categories.map(catego => <option>{catego}</option>)}
+          </datalist>
           {errors.category && <p className="error-message">{errors.category.message}</p>}
+        </div>
+        <div className="form-group">
+          <label htmlFor="description" className='label'>Description</label>
+          <input
+            id="description"
+            placeholder='Enter product description'
+            {...register('description', { onChange: () => trigger("description") })}
+            className={errors.description && touchedFields.description ? 'invalid' : ''}
+          />
         </div>
         <div className="form-group">
           <label htmlFor="productWeight" className='label'>Product Weight</label>

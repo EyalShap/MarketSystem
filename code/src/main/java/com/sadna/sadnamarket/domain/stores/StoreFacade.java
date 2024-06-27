@@ -88,7 +88,21 @@ public class StoreFacade {
     }
 
     public int addProductToStore(String username, int storeId, String productName, int productQuantity,
-            double productPrice, String category, double rank, double productWeight) {
+            double productPrice, String category, double rank, double productWeight, String description) {
+        if (!hasPermission(username, storeId, Permission.ADD_PRODUCTS))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotAddProductError(username, storeId));
+        if (!storeRepository.storeExists(storeId))
+            throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+        if (!isStoreActive(storeId))
+            throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+
+        int newProductId = productFacade.addProduct(storeId, productName, productPrice, category, rank, productWeight, description);
+        storeRepository.findStoreByID(storeId).addProduct(newProductId, productQuantity);
+        return newProductId;
+    }
+
+    public int addProductToStore(String username, int storeId, String productName, int productQuantity,
+                                 double productPrice, String category, double rank, double productWeight) {
         if (!hasPermission(username, storeId, Permission.ADD_PRODUCTS))
             throw new IllegalArgumentException(Error.makeStoreUserCannotAddProductError(username, storeId));
         if (!storeRepository.storeExists(storeId))
@@ -116,6 +130,21 @@ public class StoreFacade {
         storeRepository.deleteProductFromStore(storeId, productId);
         productFacade.removeProduct(storeId, productId);
         return productId;
+    }
+
+    public int updateProduct(String username, int storeId, int productId, String newProductName, int newQuantity,
+            double newPrice, String newCategory, double newRank, String newDesc) {
+        if (!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotUpdateProductError(username, storeId));
+        Store store = storeRepository.findStoreByID(storeId);
+        synchronized (store.getProductAmounts()) {
+            if (!store.productExists(productId))
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
+
+            store.setProductAmounts(productId, newQuantity);
+            productFacade.updateProduct(storeId, productId, newProductName, newPrice, newCategory, newRank, newDesc);
+            return productId;
+        }
     }
 
     public int updateProduct(String username, int storeId, int productId, String newProductName, int newQuantity,
@@ -651,5 +680,17 @@ public class StoreFacade {
     public boolean areProductsInStore(int storeId, Set<Integer> productIds) {
         Store store = storeRepository.findStoreByID(storeId);
         return store.hasProducts(productIds);
+    }
+
+    public StoreDTO getStoreByName(String storeName, String username) {
+        Store store = storeRepository.findStoreByName(storeName);
+        synchronized (store) {
+            if (!isStoreActive(store.getStoreId())) {
+                if (!store.isStoreOwner(username) && !userFacade.isSystemManager(username))
+                    throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(store.getStoreId()));
+            }
+
+            return store.getStoreDTO();
+        }
     }
 }
