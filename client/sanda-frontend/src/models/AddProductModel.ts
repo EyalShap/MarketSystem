@@ -7,4 +7,5 @@ export default interface AddProductModel {
     category: string,
     rank?: number,
     productWeight: number,
+    description: string
 }

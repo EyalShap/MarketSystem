@@ -458,6 +458,7 @@ export const getProductDetails = async (productId: number): Promise<RestResponse
             }
         );
         const data: RestResponse = await response.json();
+        console.log(data);
         return data;
     }
     const response = await fetch(
@@ -1165,8 +1166,8 @@ export const addPolicyToStore = async(storeId: number, policyId: number): Promis
 
 export const removePolicyFromStore = async(storeId: number, policyId: number): Promise<string> => {
     let request = {
-        policyId1: storeId,
-        policyId2: policyId
+        storeId: storeId,
+        policyId1: policyId
     }
     const response = await axios.patch(`${server}/api/stores/removeBuyPolicyFromStore?username=${localStorage.getItem("username")}`,request,{ 
         headers: {

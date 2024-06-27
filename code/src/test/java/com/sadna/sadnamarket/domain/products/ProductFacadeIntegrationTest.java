@@ -21,14 +21,14 @@ public class ProductFacadeIntegrationTest {
         productFacade = new ProductFacade(productRepository);
 
         // Ajout de produits communs pour les tests
-        productFacade.addProduct(1, "Product1", 50.0, "Category1", 3.5, 2);
-        productFacade.addProduct(1, "Product2", 100.0, "Category2", 4.5, 1.5);
+        productFacade.addProduct(1, "Product1", 50.0, "Category1", 3.5, 2,"");
+        productFacade.addProduct(1, "Product2", 100.0, "Category2", 4.5, 1.5,"");
     }
 
     @Test
     public void given_ValidProductDetailsAndStoreId_When_AddProduct_Then_ProductIsAdded() {
         // Assuming you have added a product in a setup method or a previous test
-        int productId = productFacade.addProduct(1, "To Be Added", 50.0, "Category1", 3.5, 2);
+        int productId = productFacade.addProduct(1, "To Be Added", 50.0, "Category1", 3.5, 2,"");
         assertTrue(productId != -1);
         Product addedProduct = productRepository.getProduct(productId);
 
@@ -43,7 +43,7 @@ public class ProductFacadeIntegrationTest {
     @Test
     public void given_InvalidStoreId_When_AddProduct_Then_ThrowException() {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class,
-                () -> productFacade.addProduct(-1, "Test Product", 100.0, "Category1", 4.5, 7));
+                () -> productFacade.addProduct(-1, "Test Product", 100.0, "Category1", 4.5, 7,""));
 
         String expectedMessage = Error.makeProductStoreIdInvalidError(-1);
         assertEquals(expectedMessage, expected.getMessage());
@@ -52,7 +52,7 @@ public class ProductFacadeIntegrationTest {
     @Test
     public void given_ValidStoreIdAndProductId_When_RemoveProduct_Then_ProductIsRemoved() {
         // Assuming you have added a product in a setup method or a previous test
-        int productId = productFacade.addProduct(1, "To Be Removed", 50.0, "Category1", 3.5, 2);
+        int productId = productFacade.addProduct(1, "To Be Removed", 50.0, "Category1", 3.5, 2,"");
         assertTrue(productId != -1);
 
         productFacade.removeProduct(1, productId);
@@ -62,7 +62,7 @@ public class ProductFacadeIntegrationTest {
 
     @Test
     public void given_ValidDetails_When_UpdateProduct_Then_ProductIsUpdated() {
-        int productId = productFacade.addProduct(1, "Test Product", 100.0, "Category1", 4.5, 2);
+        int productId = productFacade.addProduct(1, "Test Product", 100.0, "Category1", 4.5, 2,"");
 
         productFacade.updateProduct(1, productId, "Updated Product", 150.0, "Updated Category", 4.8);
 
@@ -118,7 +118,7 @@ public class ProductFacadeIntegrationTest {
 
     @Test
     public void given_ValidProductId_When_GetProductDTO_Then_ReturnProductDTO() {
-        int productId = productFacade.addProduct(1, "Product1", 50.0, "Category1", 3.5, 2);
+        int productId = productFacade.addProduct(1, "Product1", 50.0, "Category1", 3.5, 2,"");
 
         ProductDTO productDTO = productFacade.getProductDTO(productId);
 

@@ -7,6 +7,7 @@ public class Product {
     private String productName;
     private double productPrice;
     private String productCategory;
+    private String description;
     private double productRank;
     private boolean isActive = true;
     private double productWeight;
@@ -20,6 +21,18 @@ public class Product {
         this.productRank = productRank;
         this.productWeight = productWeight;
         this.storeId = storeId;
+        this.description = "";
+    }
+
+    public Product(int productId, String productName, double productPrice, String productCategory, double productRank, double productWeight,int storeId, String description) {
+        this.productId = productId;
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productCategory = productCategory;
+        this.productRank = productRank;
+        this.productWeight = productWeight;
+        this.storeId = storeId;
+        this.description = description;
     }
 
     public int getProductId() {
@@ -76,6 +89,14 @@ public class Product {
 
     public ProductDTO getProductDTO() {
         return ProductMapper.toProductDTO(this);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
