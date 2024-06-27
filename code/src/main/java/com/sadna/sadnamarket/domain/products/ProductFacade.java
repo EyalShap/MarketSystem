@@ -30,7 +30,7 @@ public class ProductFacade {
     }
 
     public int addProduct(int storeId, String productName, double productPrice, String productCategory,
-            double productRank, double productWeight) {
+            double productRank, double productWeight, String description) {
         logger.info("Adding product with name: {}, price: {}, category: {}, rank: {} to store ID: {}", productName,
                 productPrice, productCategory, productRank, storeId);
         if (storeId < 0) {
@@ -41,7 +41,7 @@ public class ProductFacade {
 
         try {
             checkProductAttributes(productName, productPrice, productCategory, productRank);
-            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank, productWeight,storeId);
+            int productId = productRepository.addProduct(productName, productPrice, productCategory, productRank, productWeight,storeId, description);
             Product createdProduct = productRepository.getProduct(productId);
             logger.info("Product added with ID: {}", productId);
             return productId;
@@ -74,7 +74,44 @@ public class ProductFacade {
     }
 
     public void updateProduct(int storeId, int productId, String newProductName, double newPrice, String newCategory,
-            double newRank) {
+            double newRank, String newDesc) {
+        logger.info("Updating product with ID: {} in store ID: {}", productId, storeId);
+        if (storeId < 0) {
+            String errorMessage = Error.makeProductStoreIdInvalidError(storeId);
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        try {
+            if (!isProductExistInStore(storeId, productId)) {
+                String errorMessage = Error.makeProductDoesntExistInStoreError(storeId, productId);
+                logger.error(errorMessage);
+                throw new IllegalArgumentException(errorMessage);
+            }
+
+            checkProductAttributes(newProductName, newPrice, newCategory, newRank);
+            Product productToUpdate = productRepository.getProduct(productId);
+
+            if (!productToUpdate.isActiveProduct()) {
+                String errorMessage = Error.makeProductAlreadyDeletedFromStoreError(storeId, productId);
+                logger.error(errorMessage);
+                throw new IllegalArgumentException(errorMessage);
+            }
+
+            productToUpdate.setProductName(newProductName);
+            productToUpdate.setProductPrice(newPrice);
+            productToUpdate.setProductCategory(newCategory);
+            productToUpdate.setProductRank(newRank);
+            productToUpdate.setDescription(newDesc);
+            logger.info("Product updated with ID: {}", productId);
+        } catch (Exception e) {
+            logger.error("Error updating product: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public void updateProduct(int storeId, int productId, String newProductName, double newPrice, String newCategory,
+                              double newRank) {
         logger.info("Updating product with ID: {} in store ID: {}", productId, storeId);
         if (storeId < 0) {
             String errorMessage = Error.makeProductStoreIdInvalidError(storeId);

@@ -21,10 +21,10 @@ public class MemoryProductRepository implements IProductRepository {
 
     @Override
     public int addProduct(String productName, double productPrice,
-                          String productCategory, double productRank, double productWeight, int storeId) {
+                          String productCategory, double productRank, double productWeight, int storeId, String description) {
         synchronized (products) {
             Product createdProduct = new Product(nextProductId, productName, productPrice,
-                    productCategory, productRank, productWeight, storeId);
+                    productCategory, productRank, productWeight, storeId, description);
 
             products.put(nextProductId, createdProduct);
             nextProductId++;

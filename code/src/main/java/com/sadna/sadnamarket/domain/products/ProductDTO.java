@@ -35,6 +35,7 @@ public class ProductDTO {
         this.productWeight = productWeight;
         this.isActive = isActive;
         this.storeId = storeId;
+        this.description = "";
     }
 
 
