@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface IOrderRepository {
-    int createOrder(Map<Integer, OrderDTO> storeOrdersDTO);
+    int createOrder(Map<Integer, OrderDTO> storeOrdersDTO,String memberName);
     List<ProductDataPrice> getOrders(int storeId);
 
-    Map<Integer,List<ProductDataPrice>> getProductDataPriceByMember(String nameMember);
+    Map<Integer,OrderDetails> getProductDataPriceByMember(String nameMember);
     Map<Integer,OrderDTO> getOrderByOrderId(int orderId);
     List<OrderDTO> getAllOrders();
 }

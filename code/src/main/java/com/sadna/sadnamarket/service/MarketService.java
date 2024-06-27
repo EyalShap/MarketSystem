@@ -15,6 +15,7 @@ import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.discountPolicies.Discounts.MemoryDiscountPolicyRepository;
 import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
+import com.sadna.sadnamarket.domain.orders.OrderDetails;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
@@ -1279,7 +1280,7 @@ public class MarketService {
     public Response getOrderHistory(String username) {
         logger.info("Getting order history for username: {}", username);
         try {
-            Map<Integer,List<ProductDataPrice>> orders = orderFacade.getProductDataPriceByMember(username);
+            Map<Integer, OrderDetails> orders = orderFacade.getProductDataPriceByMember(username);
             logger.info("Get order history successful for username: {}", username);
             return Response.createResponse(false, objectMapper.writeValueAsString(orders));
         } catch (Exception e) {
