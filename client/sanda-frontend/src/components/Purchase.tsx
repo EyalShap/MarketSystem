@@ -23,7 +23,7 @@ const schema = yup.object().shape({
   ordererName: yup.string().required("Orderer Name is required"),
   contactPhone: yup.string().required("Contact Phone is required"),
   contactEmail: yup.string().email("Contact Email must be a valid email").required("Contact Email is required"),
-  ordererId: yup.string().required("Orderer ID is required"),
+  ordererId: yup.string().length(9, "An israeli ID consists of 9 digits").required("Orderer ID is required"),
 });
 
 const Purchase = () => {
