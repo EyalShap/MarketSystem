@@ -11,41 +11,30 @@ public class MinProductCondition extends Condition{
     private int minAmount;
     private Integer productID;
     private String categoryName;
-    private boolean chosePath; // promise there is CategoryName Xor ProductName
 
     public MinProductCondition(int id, int minAmount){
         super(id);
         this.minAmount = minAmount;
         productID = null;
         categoryName = null;
-        chosePath = false;
     }
 
     public void setOnProductName(int productID) {
-        if(!chosePath) {
-            this.productID = productID;
-        }
-        chosePath = true;
+        this.productID = productID;
     }
 
     public void setOnCategoryName(String categoryName) {
-        if(!chosePath){
-            this.categoryName = categoryName;
-        }
-        chosePath = true;
+        this.categoryName = categoryName;
     }
 
     public void setOnStore() {
-        chosePath = true;
+        ;
     }
 
 
     @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
         int totalAmount;
-        if(!chosePath){
-            return false;
-        }
         if(productID != null){
             totalAmount = countOnlyProduct(productDTOMap, listProductsPrice);
         }

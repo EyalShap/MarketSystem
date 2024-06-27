@@ -12,7 +12,6 @@ public class SimpleDiscount extends Discount {
     private final double percentage;
     private Integer productID;
     private String categoryName;
-    private boolean chosePath; // promise there is CategoryName Xor ProductName
     private final Condition condition;
 
     public SimpleDiscount(int id, double percentage, Condition condition){
@@ -20,26 +19,19 @@ public class SimpleDiscount extends Discount {
         this.percentage = percentage;
         productID = null;
         categoryName = null;
-        chosePath = false;
         this.condition = condition;
     }
 
     public void setOnProductID(int productID) {
-        if(!chosePath) {
-            this.productID = productID;
-        }
-        chosePath = true;
+        this.productID = productID;
     }
 
     public void setOnCategoryName(String categoryName) {
-        if(!chosePath){
-            this.categoryName = categoryName;
-        }
-        chosePath = true;
+        this.categoryName = categoryName;
     }
 
     public void setOnStore() {
-        chosePath = true;
+        ;
     }
 
     @Override
