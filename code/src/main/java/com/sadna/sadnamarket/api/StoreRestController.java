@@ -44,7 +44,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.addProductToStore(token,username,productStoreRequest.getStoreId(),productStoreRequest.getProductName(),productStoreRequest.getProductQuantity(),productStoreRequest.getProductPrice(),productStoreRequest.getCategory(),productStoreRequest.getRank(),productStoreRequest.getProductWeight());
+        return marketService.addProductToStore(token,username,productStoreRequest.getStoreId(),productStoreRequest.getProductName(),productStoreRequest.getProductQuantity(),productStoreRequest.getProductPrice(),productStoreRequest.getCategory(),productStoreRequest.getRank(),productStoreRequest.getProductWeight(), productStoreRequest.getDescription());
     }
 
     @PostMapping("/setStoreBankAccount")
@@ -76,7 +76,7 @@ public class StoreRestController {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
-        return marketService.updateProductInStore(token, username, productStoreRequest.getStoreId(),productStoreRequest.getProductId(),productStoreRequest.getProductName(),productStoreRequest.getProductQuantity(),productStoreRequest.getProductPrice(),productStoreRequest.getCategory(),productStoreRequest.getRank());
+        return marketService.updateProductInStore(token, username, productStoreRequest.getStoreId(),productStoreRequest.getProductId(),productStoreRequest.getProductName(),productStoreRequest.getProductQuantity(),productStoreRequest.getProductPrice(),productStoreRequest.getCategory(),productStoreRequest.getRank(), productStoreRequest.getDescription());
     }
 
 
@@ -202,6 +202,16 @@ public class StoreRestController {
             token = authorizationHeader.substring(7); // Skip "Bearer " prefix
         }
         return marketService.getStoreInfo(token,username,storeId);
+    }
+
+    @GetMapping("/getStoreByName")
+    public Response getStoreByName(@RequestParam(value = "username", required = false) String username,@RequestParam String storeName,HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7); // Skip "Bearer " prefix
+        }
+        return marketService.getStoreByName(token,username,storeName);
     }
 
     @GetMapping("/getProductInfo")
