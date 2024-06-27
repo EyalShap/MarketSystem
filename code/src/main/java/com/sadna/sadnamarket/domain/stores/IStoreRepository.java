@@ -22,4 +22,5 @@ public interface IStoreRepository {
     public StoreDTO getStoreDTO(int storeId);
     public Set<String> checkCartInStore(int storeId, List<CartItemDTO> cart);
     public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart);
+    public Store findStoreByName(String storeName);
 }

@@ -241,4 +241,10 @@ public class HibernateStoreRepository implements IStoreRepository{
             return errors;
         }
     }
+
+    @Override
+    public Store findStoreByName(String storeName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findStoreByName'");
+    }
 }
