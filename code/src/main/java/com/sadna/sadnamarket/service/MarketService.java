@@ -73,6 +73,8 @@ public class MarketService {
         this.buyPolicyFacade.setUserFacade(userFacade);
         this.discountPolicyFacade.setProductFacade(productFacade);
         this.discountPolicyFacade.setStoreFacade(storeFacade);
+        this.authFacade.register("SM", "1234", "sami", "hatuka", "shawarma@gmail.com", "0511111111", null);
+        this.userFacade.setSystemManagerUserName("SM");
     }
 
     public static MarketService getInstance() {

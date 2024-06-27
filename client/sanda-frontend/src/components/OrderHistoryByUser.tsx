@@ -7,21 +7,25 @@ const SearchOrdersByUsername = () => {
     const [orders, setOrders] = useState<OrderModel[]>([]);
     const [username, setUsername] = useState<string>('');
 
-    const handleUsernameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newUsername = event.target.value;
-        setUsername(newUsername);
-        if (newUsername.trim()) {
-            const fetchedOrders = await getOrders(newUsername);
+      const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(event.target.value);
+    };
+
+      const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (username.trim()) {
+            const fetchedOrders = await getOrders(username);
             setOrders(fetchedOrders);
         } else {
             setOrders([]);
         }
     };
 
+
     return (
         <div className="main">
             <div className="page-title">Search Orders by Username</div>
-            <div className="search-form">
+            <form className="search-form" onSubmit={handleSubmit}>
                 <input 
                     type="text" 
                     placeholder="Enter username..." 
@@ -29,7 +33,8 @@ const SearchOrdersByUsername = () => {
                     onChange={handleUsernameChange} 
                     className="search-input"
                 />
-            </div>
+                <button type="submit" className="submit-button">Search</button>
+            </form>
             <div className="orders-grid">
                 {orders.map((order) => (
                     <div className="order-container" key={order.id}>
