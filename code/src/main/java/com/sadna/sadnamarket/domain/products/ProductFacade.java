@@ -116,7 +116,7 @@ public class ProductFacade {
         try {
             List<Product> storeProducts = productRepository.getProducts(storeProductIds);
 
-            if (productName != null && isValidProductName(productName)) {
+            if (productName != null &&!productName.equals("")&& isValidProductName(productName)) {
                 storeProducts = storeProducts.stream()
                         .filter(product -> product.getProductName().contains(productName))
                         .collect(Collectors.toList());
@@ -158,7 +158,7 @@ public class ProductFacade {
             List<Product> products = productRepository.getAllProducts();    
             
 
-            if (productName != null) {
+            if (productName != null&&!productName.equals("")) {
                 if (isValidProductName(productName)) {
                     products = products.stream()
                             .filter(product -> product.getProductName().equals(productName))
