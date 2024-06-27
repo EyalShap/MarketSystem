@@ -57,11 +57,15 @@ const SearchOrdersByUsername = () => {
                         <div className="order-details-grid">
                             {order.products.map((product) => (
                                 <React.Fragment key={product.id}>
+                                    <div className="product-image-container">
+                                    
+                                    </div>
                                     <div className="product-details">
                                         <div className="product-name">{product.name}</div>
-                                        <div className="store-name">Store: {product.storeId}</div>
+                                        <div className="store-name">Store ID: {product.storeId}</div>
                                         <div className="product-quantity">Quantity: {product.quantity}</div>
                                     </div>
+
                                     <div className="product-actions">
                                         <div className="product-price">Price Before: ${product.oldPrice}</div>
                                         <div className="product-price">Price After: ${product.newPrice}</div>
