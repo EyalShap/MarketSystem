@@ -103,6 +103,25 @@ export const getStoreInfo = async (storeId: string): Promise<RestResponse> => {
     return data;
 }
 
+export const checkIsSystemManager = async (username: string): Promise<boolean> => {
+    const response = await axios.post(
+        `${server}/api/user/checkIfSystemManager`,
+        null,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            params: {
+                username
+            }
+        }
+    );
+
+    const data: RestResponse = await response.data;
+    return !data.error && data.dataJson === 'true';
+};
+
 export const getStoreDiscounts = async (storeId: string): Promise<PolicyDescriptionModel[]> => {
     if(localStorage.getItem('token') == null){
         const response = await fetch(
