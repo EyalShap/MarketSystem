@@ -53,7 +53,7 @@ public class UserFacadeTest {
     private StoreDTO storeDTO;
 
     private String testUsername1="idanasis";
-    private String testUsername2="shavirmor";
+    private String testUsername2="shavitmor";
     private String testUsername3="Nir";
     private String testPassword="12";
     private int testStoreId;
