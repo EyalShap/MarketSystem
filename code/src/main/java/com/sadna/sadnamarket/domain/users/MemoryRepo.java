@@ -193,7 +193,7 @@ public class MemoryRepo implements IUserRepository {
     @Override
     public void logout(String userName) {
         logger.info("Entering logout with userName={}", userName);
-        setLogin(userName, false);
+        getMember(userName).logout();
         logger.info("Exiting logout");
     }
 
