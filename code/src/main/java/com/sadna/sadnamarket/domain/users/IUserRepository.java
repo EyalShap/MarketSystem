@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface IUserRepository {
-    Member getMember(String userName);
     List<Member> getAll();
     void store(Member member);
     boolean hasMember(String name);
@@ -48,8 +47,9 @@ public interface IUserRepository {
     void accept(String acceptingName, int requestID);
     void addApointer(String apointer, String acceptingName, int storeId);
     void reject(String rejectingName, int requestID);
-    boolean isApointee(String giverUserName,String userName, Permission permission, int storeId);
+    boolean isApointee(String giverUserName,String userName, int storeId);
     void leaveRole(String username, int storeId,UserFacade userFacade);
     void removeRoleFromMember(String username,String remover,  int storeId,UserFacade userFacade);
+    RequestDTO addRequest(String senderName, String sentName,int storeId, String reqType);
 
 }

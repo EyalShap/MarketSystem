@@ -181,11 +181,6 @@ public class UserFacade {
         logger.info("guest: {} try to changed amount of prooduct {} from store id {} amount: {}",guestId,productId,storeId,amount);
 
     }
-    public Member getMember(String userName){
-        logger.info("try to get member {}",userName);
-        return iUserRepo.getMember(userName);
-    }    
-    
     public void addOwnerRequest(String senderName,String userName,int store_id){
         logger.info("{} try to add owner request to {} for store {}",senderName,userName,store_id);
         RequestDTO request = iUserRepo.addOwnerRequest(senderName,this,userName, store_id);
@@ -302,7 +297,7 @@ public class UserFacade {
     }
     public void addPremssionToStore(String giverUserName,String userName, int storeId,Permission permission){
         logger.info("{} get permission to store {} to {}",userName,storeId,permission);
-        if(!iUserRepo.isApointee(giverUserName, userName, permission, storeId))
+        if(!iUserRepo.isApointee(giverUserName, userName,storeId))
             throw new IllegalStateException(Error.makeUserCanOnlyEditPermissionsToApointeesError());
         iUserRepo.addPermissionToRole(userName,permission, storeId);
         logger.info("{} got permission to store {} to {}",userName,storeId,permission);
@@ -310,7 +305,7 @@ public class UserFacade {
     }
     public void removePremssionFromStore(String removerUsername,String userName, int storeId,Permission permission){
         logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
-        if(!iUserRepo.isApointee(removerUsername, userName, permission, storeId))
+        if(!iUserRepo.isApointee(removerUsername, userName, storeId))
             throw new IllegalStateException(Error.makeUserCanOnlyEditPermissionsToApointeesError());
        
         iUserRepo.removePermissionFromRole(userName,permission, storeId);
@@ -636,5 +631,19 @@ public class UserFacade {
         logger.info("checked if user is system manager {} and got {}",username,res);
         return res;
     }
-
+    public RequestDTO addRequest(String senderName, String sentName,int storeId, String reqType){
+        logger.info("add request from {} to {} for store {} with type {}",senderName,sentName,storeId,reqType);
+        RequestDTO requestDTO=iUserRepo.addRequest(senderName, sentName, storeId, reqType);
+        logger.info("added request from {} to {} for store {} with type {}",senderName,sentName,storeId,reqType);
+        return requestDTO;
+    }
+    public List<CartItemDTO> getMemberCart(String username){
+        logger.info("get member cart for {}",username);
+        List<CartItemDTO> cart=iUserRepo.getUserCart(username);
+        logger.info("got member cart for {}",username);
+        return cart;
+    }
+    public boolean isApointee(String apointee,String apointer,int store_id){
+        return iUserRepo.isApointee(apointer, apointee,store_id);
+    }
 }

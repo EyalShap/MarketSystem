@@ -265,18 +265,6 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
-    public Member getMember(String userName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMember'");
-    }
-
-    @Override
-    public boolean isApointee(String giverUserName, String userName, Permission permission, int storeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isApointee'");
-    }
-
-    @Override
     public void leaveRole(String username, int storeId, UserFacade userFacade) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'leaveRole'");
@@ -286,6 +274,18 @@ public class UserHibernateRepo implements IUserRepository {
     public void removeRoleFromMember(String username, String remover, int storeId, UserFacade userFacade) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'removeRoleFromMember'");
+    }
+
+    @Override
+    public RequestDTO addRequest(String senderName, String sentName, int storeId, String reqType) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addRequest'");
+    }
+
+    @Override
+    public boolean isApointee(String giverUserName, String userName, int storeId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isApointee'");
     }
     
 }

@@ -410,9 +410,9 @@ public class MemoryRepo implements IUserRepository {
 
 
     @Override
-    public boolean isApointee(String giverUserName,String userName, Permission permission, int storeId) {
-    logger.info("Entering isApointee with giverUserName={}, userName={}, permission={}, storeId={}", giverUserName, userName, permission, storeId);
-    boolean res= getMember(giverUserName).getRoleOfStore(storeId).getAppointers().contains(userName);
+    public boolean isApointee(String checker,String userName, int storeId) {
+    logger.info("Entering isApointee with checker={}, userName={}, permission={}, storeId={}", checker, userName, storeId);
+    boolean res= getMember(checker).getRoleOfStore(storeId).getAppointers().contains(userName);
     logger.info("Exiting isApointee with result={}", res);
     return res;
     }
@@ -441,5 +441,12 @@ public class MemoryRepo implements IUserRepository {
            }
         }
         logger.info("Exiting removeRoleFromMember");
+    }
+
+
+    @Override
+    public RequestDTO addRequest(String senderName, String sentName,int storeId, String reqType) {
+       RequestDTO requestDTO= getMember(sentName).getRequest(senderName, storeId, reqType);
+       return requestDTO;
     }
 }

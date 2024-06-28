@@ -208,7 +208,7 @@ public class UserFacadeTest {
         userFacade.accept(testUsername2, 1);
         userFacade.addOwnerRequest(testUsername2, testUsername3, testStoreId);
         userFacade.accept(testUsername3, 1);
-        assertEquals(testUsername2, userFacade.getMember(testUsername3).getRoleOfStore(testStoreId).getApointee());
+        assertTrue(userFacade.isApointee(testUsername3, testUsername2, testStoreId)); 
         userFacade.leaveRole(testUsername2, testStoreId);
         assertTrue(userFacade.getMemberRoles(testUsername2).size()==0);
         assertTrue(userFacade.getMemberRoles(testUsername3).size()==0);
@@ -216,26 +216,26 @@ public class UserFacadeTest {
     @Test
     public void testUserAddProduct(){
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
-        List<CartItemDTO> items=userFacade.getMember(testUsername1).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername1);
         assertEquals(1, items.size());
         assertEquals(1, items.get(testStoreId).getProductId());
         assertEquals(2, items.get(testStoreId).getAmount());
         userFacade.addProductToCart(testUsername1, testStoreId2, 2, 3);
-        items=userFacade.getMember(testUsername1).getCartItems();
+        items=userFacade.getMemberCart(testUsername1);
         assertEquals(2, items.size());
     }
     @Test
     public void testUserRemoveProduct(){
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.removeProductFromCart(testUsername1, testStoreId2, 1);
-        List<CartItemDTO> items=userFacade.getMember(testUsername1).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername1);
         assertEquals(0, items.size());
     }
     @Test
     public void testUserChangeAmountOfProduct(){
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.changeQuantityCart(testUsername1, testStoreId, 1, 3);
-        List<CartItemDTO> items=userFacade.getMember(testUsername1).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername1);
         assertEquals(1, items.size());
         assertEquals(1, items.get(testStoreId).getProductId());
         assertEquals(3, items.get(testStoreId).getAmount());
@@ -277,7 +277,7 @@ public class UserFacadeTest {
         int guestId = userFacade.enterAsGuest();
         userFacade.addProductToCart(guestId, testStoreId, 1, 2);
         authFacade.login(testUsername2, testPassword, guestId);
-        List<CartItemDTO> items=userFacade.getMember(testUsername2).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername2);
         assertEquals(1, items.size());
     }
     @Test
@@ -288,7 +288,7 @@ public class UserFacadeTest {
         int guestId = userFacade.enterAsGuest();
         userFacade.addProductToCart(guestId, testStoreId, 1, 2);
         authFacade.login(testUsername2, testPassword, guestId);
-        List<CartItemDTO> items=userFacade.getMember(testUsername2).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername2);
         assertEquals(2, items.size());
     }
     @Test
