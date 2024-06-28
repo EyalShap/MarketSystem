@@ -20,12 +20,6 @@ public class Guest extends IUser {
         logger.info("guest {} is login is {}",guestId,false);
         return false;
     }
-
-
-    public void guestChangeQuantityCart(int guestId2, int storeId, int productId, int amount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'guestChangeQuantityCart'");
-    }
-    
+   
     
 }
