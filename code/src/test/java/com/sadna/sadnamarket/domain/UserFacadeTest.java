@@ -18,10 +18,12 @@ import org.junit.Test;
 import org.mockito.*;
 
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.IUserRepository;
 import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.auth.IAuthRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
@@ -38,8 +40,8 @@ import com.sadna.sadnamarket.domain.users.UserOrderDTO;
 
 public class UserFacadeTest {
 
-    private MemoryRepo iUserRepo;
-    private AuthRepositoryMemoryImpl iAuthRepo;
+    private IUserRepository iUserRepo;
+    private IAuthRepository iAuthRepo;
 
     private UserFacade userFacade;
 
@@ -128,7 +130,7 @@ public class UserFacadeTest {
     @Test
     public void testRegister() {
         authFacade.register("Jimi",testPassword,"Jimi","hatuka","Jimi@gmail.com","0501118121",testDate);
-        assertDoesNotThrow(()-> iUserRepo.getMember("Jimi"));
+        assertDoesNotThrow(()-> iUserRepo.getMemberDTO("Jimi"));
     }
     @Test
     public void testRegisterWithSameUsername() {

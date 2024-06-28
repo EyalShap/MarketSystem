@@ -147,7 +147,7 @@ public class UserFacade {
             throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
             throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
-        iUserRepo.getGuest(guestId).addProductToCart(storeId, productId, amount);
+        iUserRepo.addProductToCart(guestId,storeId, productId, amount);
         logger.info("guest: {} add prooduct {} from store id {} amount: {}",guestId,productId,storeId,amount);
 
     }
@@ -246,7 +246,7 @@ public class UserFacade {
             throw new IllegalStateException(Error.makeUserLoggedInError());
         }
         if(iUserRepo.getUserCart(userName).isEmpty()){
-            iUserRepo.setCart(userName,iUserRepo.getGuest(guestId).getCart());
+            iUserRepo.setCart(userName,iUserRepo.getGuestCart(guestId));
         }
         iUserRepo.setLogin(userName,true);
         exitGuest(guestId);
@@ -262,7 +262,7 @@ public class UserFacade {
         logger.info("{} done logout",userName);
         return enterAsGuest();
     }
-    public void setCart(Cart cart,String userName){
+    public void setCart(List<CartItemDTO> cart,String userName){
         logger.info("{} set cart ",userName);
         iUserRepo.setCart(userName,cart);
         logger.info("{} done set cart ",userName);
@@ -271,9 +271,7 @@ public class UserFacade {
 
     public void register(String username,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate){
         logger.info("{} try to register ",username);
-
-        Member member=new Member(username,firstName,lastName,emailAddress,phoneNumber,birthDate);
-        iUserRepo.store(member);
+        iUserRepo.store(username,firstName,lastName,emailAddress,phoneNumber,birthDate);
         logger.info("{} done register ",username);
     }
 
@@ -357,7 +355,7 @@ public class UserFacade {
     }
     public void setBirthDate(String userName, LocalDate birthDate) {
         logger.info("set birth date for {}={}", userName,birthDate);
-        iUserRepo.setBirthday(birthDate);
+        iUserRepo.setBirthday(userName,birthDate);
         logger.info("done set birth date for {}", userName);
     }
     private void isValid(String detail){
@@ -535,7 +533,7 @@ public class UserFacade {
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,null);
         storeFacade.updateStock(null, items);
-        iUserRepo.getGuest(guestId).getCart().clear();
+        iUserRepo.clearGuestCart(guestId);;
         logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
     }
     private void validateAddress(AddressDTO address){

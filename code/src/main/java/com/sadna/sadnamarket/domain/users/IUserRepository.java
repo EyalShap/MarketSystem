@@ -4,12 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface IUserRepository {
-    List<Member> getAll();
-    void store(Member member);
+    void store(String username,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate);
     boolean hasMember(String name);
     int addGuest();
     void deleteGuest(int guestID);
-    Guest getGuest(int guestID);
     List<CartItemDTO> getUserCart(String username);
     List<CartItemDTO> getGuestCart(int guestID);
     boolean hasPermissionToRole(String userName, Permission permission, int storeId);
@@ -17,12 +15,13 @@ public interface IUserRepository {
     boolean isLoggedIn(String username);
     void setLogin(String userName, boolean b);
     void addProductToCart(String username, int storeId, int productId, int amount);
+    void addProductToCart(int guestId, int storeId, int productId, int amount);
     void removeProductFromCart(String username, int storeId, int productId);
     void removeProductFromGuestCart(int guestId, int storeId, int productId);
     void changeQuantityCart(String username, int storeId, int productId, int amount);
     void guestChangeQuantityCart(int guestId, int storeId, int productId, int amount);
     void logout(String userName);
-    void setCart(String userName, Cart cart);
+    void setCart(String userName, List<CartItemDTO> cart);
     void addRole(String username, StoreManager storeManager);
     void addRole(String username, StoreOwner storeOwner);
     void addPermissionToRole(String userName, Permission permission, int storeId);
@@ -32,7 +31,7 @@ public interface IUserRepository {
     void setLastName(String userName, String lastName);
     void setEmailAddress(String userName, String emailAddress);
     void setPhoneNumber(String userName, String phoneNumber);
-    void setBirthday(LocalDate birthDate);
+    void setBirthday(String username,LocalDate birthDate);
     MemberDTO getMemberDTO(String userName);
     List<Integer> getOrdersHistory(String username);
     void clearCart(String username);
@@ -51,5 +50,7 @@ public interface IUserRepository {
     void leaveRole(String username, int storeId,UserFacade userFacade);
     void removeRoleFromMember(String username,String remover,  int storeId,UserFacade userFacade);
     RequestDTO addRequest(String senderName, String sentName,int storeId, String reqType);
+    void clearGuestCart(int guestID);
+    void clear();
 
 }

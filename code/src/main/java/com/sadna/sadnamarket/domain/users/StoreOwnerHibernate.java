@@ -2,23 +2,28 @@ package com.sadna.sadnamarket.domain.users;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @DiscriminatorValue("STORE_OWNER")
 public class StoreOwnerHibernate extends UserRoleHibernate {
-
+private static final Logger logger = LogManager.getLogger(StoreOwnerHibernate.class);
     @Override
     public boolean hasPermission(Permission permission) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hasPermission'");
+        logger.info("Entering hasPermission with permission={}", permission);
+        boolean result = !(permission == Permission.REOPEN_STORE || permission == Permission.CLOSE_STORE);
+        logger.info("Exiting hasPermission with result={}", result);
+        return result;
     }
 
     @Override
     public void addPermission(Permission permission) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addPermission'");
+        throw new IllegalStateException("Store owner has all the permissions");
     }
 
     @Override

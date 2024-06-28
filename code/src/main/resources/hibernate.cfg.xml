@@ -38,6 +38,10 @@
         <mapping class="com.sadna.sadnamarket.domain.buyPolicies.PolicySubject"/>
         <mapping class="com.sadna.sadnamarket.domain.buyPolicies.ProductSubject"/>
         <mapping class="com.sadna.sadnamarket.domain.buyPolicies.CategorySubject"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.MemberHibernate"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.CartHibernate"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.UserRoleHibernate"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.GuestHibernate"/>
 
 
     </session-factory>

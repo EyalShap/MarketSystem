@@ -47,16 +47,9 @@ public class MemoryRepo implements IUserRepository {
     }
 
     @Override
-    public List<Member> getAll() {
-        logger.info("Entering getAll");
-        List<Member> allMembers = new ArrayList<>(members.values());
-        logger.info("Exiting getAll with result={}", allMembers);
-        return allMembers;
-    }
-
-    @Override
-    public void store(Member member) {
-        logger.info("Entering store with member={}", member);
+    public void store(String username,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate) {
+        logger.info("Entering store with username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}, birthDate={}", username, firstName, lastName, emailAddress, phoneNumber, birthDate);
+        Member member = new Member(username,firstName,lastName,emailAddress,phoneNumber,birthDate);
         members.put(member.getUsername(), member);
         logger.info("Exiting store");
     }
@@ -88,8 +81,7 @@ public class MemoryRepo implements IUserRepository {
         return result;
     }
 
-    @Override
-    public Guest getGuest(int guestID) {
+    private Guest getGuest(int guestID) {
         logger.info("Entering getGuest with guestID={}", guestID);
         Guest guest = guests.get(guestID);
         if (guest == null) {
@@ -198,9 +190,10 @@ public class MemoryRepo implements IUserRepository {
     }
 
     @Override
-    public void setCart(String userName, Cart cart) {
-        logger.info("Entering setCart with userName={}, cart={}", userName, cart);
+    public void setCart(String userName, List<CartItemDTO> cartLst) {
+        logger.info("Entering setCart with userName={}, cart={}", userName, cartLst);
         Member member = getMember(userName);
+        Cart cart=new Cart(cartLst);
         member.setCart(cart);
         logger.info("Exiting setCart");
     }
@@ -279,12 +272,9 @@ public class MemoryRepo implements IUserRepository {
     }
 
     @Override
-    public void setBirthday(LocalDate birthDate) {
+    public void setBirthday(String username,LocalDate birthDate) {
         logger.info("Entering setBirthday with birthDate={}", birthDate);
-        // Assuming that the method should set the birthday for all members (this could be refined)
-        for (Member member : members.values()) {
-            member.setBirthday(birthDate);
-        }
+        getMember(null).setBirthday(birthDate);
         logger.info("Exiting setBirthday");
     }
 
@@ -448,5 +438,27 @@ public class MemoryRepo implements IUserRepository {
     public RequestDTO addRequest(String senderName, String sentName,int storeId, String reqType) {
        RequestDTO requestDTO= getMember(sentName).getRequest(senderName, storeId, reqType);
        return requestDTO;
+    }
+
+
+    @Override
+    public void clearGuestCart(int guestID) {
+        logger.info("Entering clearGuestCart with guestID={}", guestID);
+        Guest guest = getGuest(guestID);
+        guest.getCart().clear();;
+        logger.info("Exiting clearGuestCart");
+    }
+
+
+    @Override
+    public void addProductToCart(int guestId, int storeId, int productId, int amount) {
+        logger.info("Entering addProductToCart with guestId={}, storeId={}, productId={}, amount={}", guestId, storeId, productId, amount);
+        getGuest(guestId).addProductToCart(storeId, productId, amount);
+        logger.info("Exiting addProductToCart");
+    }
+
+
+    @Override
+    public void clear() {
     }
 }
