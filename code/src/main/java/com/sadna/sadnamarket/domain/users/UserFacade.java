@@ -80,17 +80,12 @@ public class UserFacade {
         }
     }
 
-    public List<NotificationDTO> getNotifications(String username){//######################
+    public List<NotificationDTO> getNotifications(String username){
         logger.info("getting notifications for {}",username);
-        List<Notification> notifes = new ArrayList<>(iUserRepo.getMember(username).getNotifications().values());
-        List<NotificationDTO> notificationDTOs=new ArrayList<NotificationDTO>();
-        for(Notification notif : notifes){
-            notificationDTOs.add(notif.toDTO());
-        }
+        List<NotificationDTO> notifes = new ArrayList<>(iUserRepo.getNotifications(username));
         logger.info("got notifications for {}",username);
-        return notificationDTOs;
+        return notifes;
     }
-
 
     public boolean isLoggedIn(String username){
         logger.info("check for login for member {}",username);
@@ -305,17 +300,17 @@ public class UserFacade {
         iUserRepo.addRole(username,new StoreFounder(storeId,username));
         logger.info("done add Store founder to {} in {} ",username,storeId);
     }
-    public void addPremssionToStore(String giverUserName,String userName, int storeId,Permission permission){//##################
+    public void addPremssionToStore(String giverUserName,String userName, int storeId,Permission permission){
         logger.info("{} get permission to store {} to {}",userName,storeId,permission);
-        if(!iUserRepo.getMember(giverUserName).getRoleOfStore(storeId).getAppointers().contains(userName))
+        if(!iUserRepo.isApointee(giverUserName, userName, permission, storeId))
             throw new IllegalStateException(Error.makeUserCanOnlyEditPermissionsToApointeesError());
         iUserRepo.addPermissionToRole(userName,permission, storeId);
         logger.info("{} got permission to store {} to {}",userName,storeId,permission);
 
     }
-    public void removePremssionFromStore(String removerUsername,String userName, int storeId,Permission permission){//##################
+    public void removePremssionFromStore(String removerUsername,String userName, int storeId,Permission permission){
         logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
-        if(!iUserRepo.getMember(removerUsername).getRoleOfStore(storeId).getAppointers().contains(userName))
+        if(!iUserRepo.isApointee(removerUsername, userName, permission, storeId))
             throw new IllegalStateException(Error.makeUserCanOnlyEditPermissionsToApointeesError());
        
         iUserRepo.removePermissionFromRole(userName,permission, storeId);
@@ -327,31 +322,21 @@ public class UserFacade {
         return iUserRepo.getPermissions(userName,storeId);
     }
 
-    public void leaveRole(String username,int storeId){//#############################
+    public void leaveRole(String username,int storeId){
         logger.info("{} try leave role in store {}",username,storeId);
-        Member member=iUserRepo.getMember(username);
-        UserRole role=member.getRoleOfStore(storeId);
-        role.leaveRole(new UserRoleVisitor(), storeId, member, this);
-        member.removeRole(role);
+        iUserRepo.leaveRole(username,storeId,this);
         logger.info("{} try left role in store {}",username,storeId);
     }
-    public void removeRoleFromMember(String username,String remover,int storeId){//##############
-        List<UserRole> roles=iUserRepo.getUserRoles(username);
-        for(UserRole role : roles){
-           // role
-           if(role.getStoreId()==storeId){
-            if(!role.getApointee().equals(remover))
-                throw new IllegalStateException("you can only remove your apointees");
-            role.leaveRole(new UserRoleVisitor(), storeId, iUserRepo.getMember(username),this);;
-           }
-        }
+    public void removeRoleFromMember(String username,String remover,int storeId){
+        logger.info("{} try remove role in store {}",username,storeId);
+        iUserRepo.removeRoleFromMember(username, remover, storeId, this);
+        logger.info("{} removed role in store {}",username,storeId);
     }
     public void setFirstName(String userName, String firstName) {
         logger.info("set first name for {}", firstName);
         isValid(firstName);
         iUserRepo.setFirstName(userName, firstName);
         logger.info("done set first name for {}", firstName);
-
     }
 
     public void setLastName(String userName, String lastName) {
@@ -410,7 +395,7 @@ public class UserFacade {
 
     }
 
-    public List<Permission> getMemberPermissionsEnum(String userName, int storeId){//##############
+    public List<Permission> getMemberPermissionsEnum(String userName, int storeId){
         List<Integer> permissionNums = getMemberPermissions(userName, storeId);
         List<Permission> permissions = new ArrayList<>();
         for(int permission : permissionNums) {

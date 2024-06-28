@@ -1,12 +1,17 @@
 package com.sadna.sadnamarket.domain.users;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CollectionTable;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.DiscriminatorType; // Add this import
-
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,6 +36,10 @@ public abstract class UserRoleHibernate implements UserRole{
     private String roleName;
     @Column
     private String apointee;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_orders", joinColumns = @JoinColumn(name = "role_id"))
+    @Column(name = "permissionId")
+    private List<Integer> permissions;
 
     public String getUsername() {
         return username;
@@ -55,5 +64,13 @@ public abstract class UserRoleHibernate implements UserRole{
     }
     public void setApointee(String apointee) {
         this.apointee = apointee;
+    }
+
+    public List<Permission> getPermissions() {
+        List<Permission> permissionsRet = new ArrayList<>();
+        for (int i = 0; i < permissions.size(); i++) {
+            permissionsRet.add(i, Permission.values()[permissions.get(i)]);
+        }
+        return permissionsRet;
     }
 }

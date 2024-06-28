@@ -23,7 +23,7 @@ public class MemoryRepo implements IUserRepository {
         logger.info("Exiting MemoryRepo constructor");
     }
 
-    @Override
+
     public Member getMember(String userName) {
         logger.info("Entering getMember with userName={}", userName);
         Member member = members.get(userName);
@@ -315,9 +315,9 @@ public class MemoryRepo implements IUserRepository {
     }
 
     @Override
-    public List<Notification> getNotifications(String username) {
+    public List<NotificationDTO> getNotifications(String username) {
         logger.info("Entering getNotifications with username={}", username);
-        List<Notification> notifes = new ArrayList<>(getMember(username).getNotifications().values());
+        List<NotificationDTO> notifes = new ArrayList<>(getMember(username).getNotifications().values().stream().map((Notification notification)->notification.toDTO()).toList());
         logger.info("Exiting getNotifications with result={}", notifes);
         return notifes;
     }
@@ -406,5 +406,40 @@ public class MemoryRepo implements IUserRepository {
         Member rejectingMember = getMember(rejectingName);
         rejectingMember.reject(requestID);
         logger.info("Exiting reject");
+    }
+
+
+    @Override
+    public boolean isApointee(String giverUserName,String userName, Permission permission, int storeId) {
+    logger.info("Entering isApointee with giverUserName={}, userName={}, permission={}, storeId={}", giverUserName, userName, permission, storeId);
+    boolean res= getMember(giverUserName).getRoleOfStore(storeId).getAppointers().contains(userName);
+    logger.info("Exiting isApointee with result={}", res);
+    return res;
+    }
+
+
+    @Override
+    public void leaveRole(String username, int storeId,UserFacade userFacade) {
+        logger.info("Entering leaveRole with username={}, storeId={}", username, storeId);
+        Member member=getMember(username);
+        UserRole role=member.getRoleOfStore(storeId);
+        role.leaveRole(new UserRoleVisitor(), storeId, member, userFacade);
+        member.removeRole(role);
+        logger.info("Exiting leaveRole");
+    }
+
+
+    @Override
+    public void removeRoleFromMember(String username,String remover, int storeId, UserFacade userFacade) {
+        logger.info("Entering removeRoleFromMember with username={}, remover={}, storeId={}", username, remover, storeId);
+        List<UserRole> roles=getUserRoles(username);
+        for(UserRole role : roles){
+           if(role.getStoreId()==storeId){
+            if(!role.getApointee().equals(remover))
+                throw new IllegalStateException("you can only remove your apointees");
+            role.leaveRole(new UserRoleVisitor(), storeId, getMember(username),userFacade);;
+           }
+        }
+        logger.info("Exiting removeRoleFromMember");
     }
 }

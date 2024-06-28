@@ -1,6 +1,9 @@
 package com.sadna.sadnamarket.domain.users;
 
 import javax.persistence.JoinTable;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
@@ -41,7 +44,10 @@ public class MemberHibernate {
         name = "User_orders",
         joinColumns = @JoinColumn(name = "username")
     )
-    private List<UserOrders> orders;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_orders", joinColumns = @JoinColumn(name = "username"))
+    @Column(name = "order_id")
+    private List<Integer> orders;
 
     @OneToOne
     @JoinTable(
