@@ -486,18 +486,20 @@ public class StoreFacade {
             if (!store.isStoreOwner(ownerUsername))
                 throw new IllegalArgumentException(Error.makeStoreUserCannotSetBankAccountError(ownerUsername, storeId));
 
+            bankAccount.setStore(store.getStoreDTO());
             store.setBankAccount(bankAccount);
-            storeRepository.saveStore(store);
+            storeRepository.setStoreBankAccount(bankAccount);
         }
     }
 
     public BankAccountDTO getStoreBankAccount(int storeId) {
-        Store store = storeRepository.findStoreByID(storeId);
-        return store.getBankAccount();
+        //Store store = storeRepository.findStoreByID(storeId);
+        //return store.getBankAccount();
+        return storeRepository.getStoreBankAccount(storeId);
     }
 
     public int getProductAmount(int storeId, int productId) {
-        Store store = storeRepository.findStoreByID(storeId);
+        //Store store = storeRepository.findStoreByID(storeId);
 
         if (!isStoreActive(storeId))
             throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));

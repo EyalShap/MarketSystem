@@ -122,20 +122,30 @@ class DBTest {
     @Test
     void createStoreSuccess() throws JsonProcessingException {
         //storeFacade.createStore("WillyTheChocolateDude", "Chlate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
-        //storeFacade.setStoreBankAccount("WillyTheChocolateDude", storeId0, new BankAccountDTO("123", "123", "123", "WillyTheChocolateDude"));
-        //storeFacade.setStoreBankAccount("Mr. Krabs", storeId1, new BankAccountDTO("123", "123", "123", "Mr. Krabs"));
-        //storeFacade.addProductToStore("WillyTheChocolateDude", 13, "Banana", 9, 4, "Fruit", 2, 5);
-        //storeFacade.addProductToStore("WillyTheChocolateDude", 13, "Apple", 5, 4, "Fruit", 2, 5);
-        //storeFacade.addProductToStore("Mr. Krabs", 14, "Banana", 12, 4, "Fruit", 2, 5);
-        //storeFacade.updateProduct("WillyTheChocolateDude", 5, 0, "Banana", 1000, 89, "F", 4);
-        //storeFacade.deleteProduct("Mr. Krabs", 6, 0);
-        //storeFacade.addStoreManager("Mr. Krabs", 6);
-        //storeFacade.closeStore("WillyTheChocolateDude", 5);
+        //storeFacade.setStoreBankAccount("WillyTheChocolateDude", 43, new BankAccountDTO("123", "123", "123", "WillyTheChocolateDude", null));
+        //storeFacade.setStoreBankAccount("Mr. Krabs", 46, new BankAccountDTO("123", "123", "123", "Mr. Krabs", null));
+        //storeFacade.addProductToStore("WillyTheChocolateDude", 43, "Banana", 9, 4, "Fruit", 2, 5);
+        //storeFacade.addProductToStore("WillyTheChocolateDude", 43, "Apple", 5, 4, "Fruit", 2, 5);
+        //storeFacade.addProductToStore("Mr. Krabs", 46, "Banana", 12, 4, "Fruit", 2, 5);
+        //storeFacade.updateProduct("WillyTheChocolateDude", 43, 0, "Banana", 1000, 89, "F", 4);
+        //storeFacade.deleteProduct("Mr. Krabs", 46, 2);
+        //storeFacade.addStoreManager("Mr. Krabs", 43);
+        //storeFacade.closeStore("WillyTheChocolateDude", 43);
+        //storeFacade.reopenStore("WillyTheChocolateDude", 43);
+        //List<MemberDTO> x=  storeFacade.getManagers("WillyTheChocolateDude", 43);
         //List<CartItemDTO> cart = new ArrayList<>();
-        //cart.add(new CartItemDTO(13, 0, 1));
-        //int x = storeFacade.addOrderId(13, 0);
+        //cart.add(new CartItemDTO(43, 0, 1));
+        //storeFacade.updateStock();
+        //int x = storeFacade.addOrderId(43, 0);
+        //List<ProductDataPrice> y = storeFacade.getStoreOrderHistory("WillyTheChocolateDude", 43);
         //int id = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Chocolate", List.of(BuyType.immidiatePurchase), 10, 20, "WillyTheChocolateDude");
         //int id1 = buyPolicyFacade.createProductAmountBuyPolicy(0, List.of(BuyType.immidiatePurchase), 9, 12, "WillyTheChocolateDude");
+        //int id = storeFacade.addProductToStore("Mr. Krabs", 46, "Banana", 12, 4, "Fruit", 2, 5);
+        //ProductDTO p = storeFacade.getProductInfo("Mr. Krabs", id);
+        //Map<ProductDTO, Integer> hiu = storeFacade.getProductsInfoAndFilter("WillyTheChocolateDude", 43, null, null, -1, -1);
+        //BankAccountDTO acc = storeFacade.getStoreBankAccount(43);
+        //BankAccountDTO acc1 = storeFacade.getStoreBankAccount(46);
+        //int x = storeFacade.getProductAmount(43, 7);
         int u = 9;
     }
 

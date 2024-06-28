@@ -1,25 +1,44 @@
 package com.sadna.sadnamarket.domain.payment;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import com.sadna.sadnamarket.domain.stores.StoreDTO;
+
+import javax.persistence.*;
 import java.util.Objects;
 
-@Embeddable
+@Entity
+@Table(name = "bank_accounts")
 public class BankAccountDTO {
-    @Column(name = "bank_code")
-    String bankCode;
-    @Column(name = "bank_branch_code")
-    String bankBranchCode;
-    @Column(name = "account_code")
-    String accountCode;
-    @Column(name = "owner_username")
-    String ownerId;
+/*
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "account_id")
+    private Integer accountId;
+*/
+    @Id
+    @Column(name = "store_id")
+    private Integer storeId;
 
-    public BankAccountDTO(String bankCode, String bankBranchCode, String accountCode, String ownerId) {
+    @Column(name = "bank_code")
+    private String bankCode;
+
+    @Column(name = "bank_branch_code")
+    private String bankBranchCode;
+
+    @Column(name = "account_code")
+    private String accountCode;
+
+    @Column(name = "owner_username")
+    private String ownerId;
+
+    @OneToOne
+    @JoinColumn(name="store_id")
+    private StoreDTO store;
+
+    public BankAccountDTO(String bankCode, String bankBranchCode, String accountCode, String ownerId, StoreDTO store) {
         this.bankCode = bankCode;
         this.bankBranchCode = bankBranchCode;
         this.accountCode = accountCode;
         this.ownerId = ownerId;
+        this.store = store;
     }
 
     public BankAccountDTO() {}
@@ -51,5 +70,14 @@ public class BankAccountDTO {
     @Override
     public int hashCode() {
         return Objects.hash(bankCode, bankBranchCode, accountCode, ownerId);
+    }
+
+    public StoreDTO getStore() {
+        return store;
+    }
+
+    public void setStore(StoreDTO store) {
+        this.storeId = store.getStoreId();
+        this.store = store;
     }
 }

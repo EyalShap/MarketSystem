@@ -57,7 +57,7 @@ class StoreOwnerTests {
         token = resp.getDataJson();
         resp = bridge.openStore(token, username, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreBankAccount(token, username, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
+        bridge.setStoreBankAccount(token, username, storeId, new BankAccountDTO("10", "392", "393013", "2131516175", null));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";
