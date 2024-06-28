@@ -2,62 +2,110 @@ package com.sadna.sadnamarket.domain.users;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import com.sadna.sadnamarket.service.Error;
+
+import com.sadna.sadnamarket.HibernateUtil;
+import com.sadna.sadnamarket.domain.auth.UserCredential;
 
 public class UserHibernateRepo implements IUserRepository {
 
 
     @Override
-    public List<Member> getAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAll'");
-    }
-
-    @Override
-    public void store(Member member) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'store'");
+    public void store(String username,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = new MemberHibernate(username, firstName, lastName, emailAddress, phoneNumber,birthDate);
+            session.save(member);
+            transaction.commit();
+        }
     }
 
     @Override
     public boolean hasMember(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hasMember'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            MemberHibernate member = session.get(MemberHibernate.class, name);
+            if (member != null) {
+                return true;
+            } else {
+                return false;
+                
+            }
+        }
     }
 
     @Override
     public int addGuest() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addGuest'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            GuestHibernate guest = new GuestHibernate();
+            session.save(guest);
+            transaction.commit();
+            return guest.getGuestId();
+        } 
     }
 
     @Override
     public void deleteGuest(int guestID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteGuest'");
-    }
-
-    @Override
-    public Guest getGuest(int guestID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getGuest'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            GuestHibernate guest = session.get(GuestHibernate.class, guestID);
+            if (guest != null) {
+                session.delete(guest);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
+            }
+        }
     }
 
     @Override
     public List<CartItemDTO> getUserCart(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            MemberHibernate member = session.get(MemberHibernate.class, username);
+            if (member != null) {
+                return member.getCart();
+            } else {
+                return null;
+            }
+        }
     }
 
     @Override
     public List<CartItemDTO> getGuestCart(int guestID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getGuestCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            GuestHibernate guest = session.get(GuestHibernate.class, guestID);
+            if (guest != null) {
+                return guest.getCart();
+            } else {
+                throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
+            }
+        }
     }
 
     @Override
     public boolean hasPermissionToRole(String userName, Permission permission, int storeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hasPermissionToRole'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "FROM MemberHibernate m WHERE m.username = :username";
+            MemberHibernate member = session.createQuery(hql, MemberHibernate.class)
+                                            .setParameter("username", userName)
+                                            .uniqueResult();
+    
+            if (member != null) {
+                for (UserRoleHibernate role : member.getRoles()) {
+                    if (role.getStoreId() == storeId) {
+                        return role.hasPermission(permission);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
@@ -68,54 +116,171 @@ public class UserHibernateRepo implements IUserRepository {
 
     @Override
     public boolean isLoggedIn(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isLoggedIn'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            MemberHibernate member = session.get(MemberHibernate.class, username);
+            return member != null && member.isLoggedIn();
+        }
     }
 
     @Override
     public void setLogin(String userName, boolean b) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setLogin'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            if (member != null) {
+                member.setLoggedIn(b);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
     public void addProductToCart(String username, int storeId, int productId, int amount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addProductToCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, username);
+            if (member != null) {
+                CartHibernate cartItem = new CartHibernate(member.getCartId(),storeId, productId, amount);;
+                session.save(cartItem);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public void removeProductFromCart(String username, int storeId, int productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeProductFromCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, username);
+            if (member != null) {
+                int cartId=member.getCartId();
+                String hql = "FROM cart m WHERE m.cartId = :cartId";
+                List<CartHibernate> itemToRemove =session.createQuery(hql, CartHibernate.class).setParameter("CartId", cartId).list();
+                boolean found = false;
+                for (CartHibernate cartHibernate : itemToRemove) {
+                    if(cartHibernate.getCartId().getStoreId()==storeId && cartHibernate.getCartId().getProduceId()==productId)
+                        session.delete(itemToRemove);
+                        session.update(member);
+                        found = true;
+                        transaction.commit();
+                }
+                if (!found) {
+                    transaction.rollback();
+                    throw new NoSuchElementException(Error.makeBasketProductDoesntExistError());
+                }
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public void removeProductFromGuestCart(int guestId, int storeId, int productId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeProductFromGuestCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            GuestHibernate guest = session.get(GuestHibernate.class, guestId);
+            if (guest != null) {
+                int cartId=guest.getCartId();
+                String hql = "FROM cart m WHERE m.cartId = :cartId";
+                List<CartHibernate> itemToRemove =session.createQuery(hql, CartHibernate.class).setParameter("CartId", cartId).list();
+                boolean found = false;
+                for (CartHibernate cartHibernate : itemToRemove) {
+                    if(cartHibernate.getCartId().getStoreId()==storeId && cartHibernate.getCartId().getProduceId()==productId)
+                        session.delete(itemToRemove);
+                        session.update(guest);
+                        found = true;
+                        transaction.commit();
+                }
+                if (!found) {
+                    transaction.rollback();
+                    throw new NoSuchElementException(Error.makeBasketProductDoesntExistError());
+                }
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestId));
+            }
+        }
     }
 
     @Override
     public void changeQuantityCart(String username, int storeId, int productId, int amount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'changeQuantityCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, username);
+            if (member != null) {
+                int cartId=member.getCartId();                
+                String hql = "FROM cart m WHERE m.username = :username AND m.storeId = :storeId AND m.productId = :productId";
+                List<CartHibernate> cart = session.createQuery(hql, CartHibernate.class).setParameter("CartId", cartId).list();
+                for (CartHibernate item : cart) {
+                    if (item.getCartId().getStoreId() == storeId && item.getCartId().getProduceId() == productId) {
+                        item.setQuantity(amount);
+                        session.update(item);
+                        transaction.commit();
+                        return;
+                    }
+                }
+                transaction.rollback();
+                throw new NoSuchElementException("Product not found in cart");
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public void guestChangeQuantityCart(int guestId, int storeId, int productId, int amount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'guestChangeQuantityCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            GuestHibernate guest = session.get(GuestHibernate.class, guestId);
+            if (guest != null) {
+                int cartId=guest.getCartId();                
+                String hql = "FROM cart m WHERE m.username = :username AND m.storeId = :storeId AND m.productId = :productId";
+                List<CartHibernate> cart = session.createQuery(hql, CartHibernate.class).setParameter("CartId", cartId).list();
+                for (CartHibernate item : cart) {
+                    if (item.getCartId().getStoreId() == storeId && item.getCartId().getProduceId() == productId) {
+                        item.setQuantity(amount);
+                        session.update(item);
+                        transaction.commit();
+                        return;
+                    }
+                }
+                transaction.rollback();
+                throw new NoSuchElementException("Product not found in cart");
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestId));
+            }
+        }
     }
 
     @Override
     public void logout(String userName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'logout'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            if (member != null) {
+                member.setLoggedIn(false);;
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
-    public void setCart(String userName, Cart cart) {
+    public void setCart(String userName, List<CartItemDTO> cart) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setCart'");
     }
@@ -152,50 +317,113 @@ public class UserHibernateRepo implements IUserRepository {
 
     @Override
     public void setFirstName(String userName, String firstName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setFirstName'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            if (member != null) {
+                member.setFirstName(firstName);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
     public void setLastName(String userName, String lastName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setLastName'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            if (member != null) {
+                member.setLastName(lastName);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
     public void setEmailAddress(String userName, String emailAddress) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setEmailAddress'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            if (member != null) {
+                member.setEmail(emailAddress);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
     public void setPhoneNumber(String userName, String phoneNumber) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setPhoneNumber'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            if (member != null) {
+                member.setPhoneNumber(phoneNumber);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
-    public void setBirthday(LocalDate birthDate) {
+    public void setBirthday(String username,LocalDate birthDate) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setBirthday'");
     }
 
     @Override
     public MemberDTO getMemberDTO(String userName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMemberDTO'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            if (member != null) {
+                return new MemberDTO(member.getUsername(), member.getFirstName(), member.getLastName(), member.getEmail(), member.getPhoneNumber(),member.getBirDate().toString());
+            } else {
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
     public List<Integer> getOrdersHistory(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOrdersHistory'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            MemberHibernate member = session.get(MemberHibernate.class, username);
+            if (member != null) {
+                return member.getOrders();
+            } else {
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public void clearCart(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'clearCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, username);
+            if (member != null) {
+                int cartId = member.getCartId();
+                String hql = "DELETE FROM CartHibernate WHERE cartId = :cartId";
+                session.createQuery(hql).setParameter("cartId", cartId).executeUpdate();
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
@@ -206,8 +434,18 @@ public class UserHibernateRepo implements IUserRepository {
 
     @Override
     public void addOrder(String username, int orderId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addOrder'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            MemberHibernate member = session.get(MemberHibernate.class, username);
+            if (member != null) {
+                member.addOrder(orderId);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
@@ -286,6 +524,27 @@ public class UserHibernateRepo implements IUserRepository {
     public boolean isApointee(String giverUserName, String userName, int storeId) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'isApointee'");
+    }
+
+    @Override
+    public void clearGuestCart(int guestID) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'clearGuestCart'");
+    }
+
+    @Override
+    public void addProductToCart(int guestId, int storeId, int productId, int amount) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addProductToCart'");
+    }
+    @Override
+    public void clear() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            String hql = "DELETE FROM MemberHibernate";
+            session.createQuery(hql).executeUpdate();
+            transaction.commit();
+        }
     }
     
 }

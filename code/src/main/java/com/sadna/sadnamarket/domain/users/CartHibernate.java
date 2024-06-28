@@ -1,61 +1,59 @@
 package com.sadna.sadnamarket.domain.users;
-import java.util.Objects;
-
-import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 import javax.persistence.Table;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-
 
 @Entity
 @Table(name = "cart")
-@Embeddable
 public class CartHibernate {
-    @Column
-    private int cartId;
-    @Column
-    private int storeId;
-    @Column
-    private int produceId;
-    @Column
+
+    @EmbeddedId
+    private CartId cartId;
+
     private int quantity;
 
-    public CartHibernate(int storeId, int produceId, int quantity) {
-        this.storeId = storeId;
-        this.produceId = produceId;
+    public CartHibernate(int cartId,int storeId, int produceId, int quantity) {
+        this.cartId.setCartId(cartId);; // Initialize the embedded id object
+        this.cartId.setStoreId(storeId);
+        this.cartId.setProduceId(produceId);
         this.quantity = quantity;
     }
-    public int getCartId() {
+
+    // Default constructor for Hibernate
+    public CartHibernate() {
+        this.cartId = new CartId();
+    }
+
+    public CartId getCartId() {
         return cartId;
     }
-    public int getStoreId() {
-        return storeId;
+
+    public void setCartId(CartId cartId) {
+        this.cartId = cartId;
     }
-    public int getProduceId() {
-        return produceId;
-    }
+
     public int getQuantity() {
         return quantity;
     }
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-    public void setStoreId(int storeId) {
-        this.storeId = storeId;
-    }
-    public void setProduceId(int produceId) {
-        this.produceId = produceId;
-    }
+
+    // Equals and hashCode methods
+    // You can override equals and hashCode based on your business logic
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CartHibernate that = (CartHibernate) o;
-        return Objects.equals(cartId, that.cartId) && Objects.equals(storeId, that.storeId)&&Objects.equals(produceId, that.produceId);
+        return cartId.equals(that.cartId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cartId, storeId, produceId);
+        return cartId.hashCode();
     }
 }
+

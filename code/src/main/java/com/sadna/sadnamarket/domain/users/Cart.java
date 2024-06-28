@@ -18,6 +18,14 @@ public class Cart {
         baskets = new HashMap<>();
         logger.info("Exiting Cart constructor");
     }
+    public Cart(List<CartItemDTO> cartItems){
+        logger.info("Entering Cart constructor with cartItems={}",cartItems);
+        baskets = new HashMap<>();
+        for (CartItemDTO cartItem : cartItems) {
+            addProduct(cartItem.getStoreId(),cartItem.getProductId(),cartItem.getAmount());
+        }
+        logger.info("Exiting Cart constructor");
+    }
 
     public void addProduct(int storeId, int productId, int amount) {
         logger.info("Entering addProduct with storeId={}, productId={}, and amount={}", storeId, productId, amount);
