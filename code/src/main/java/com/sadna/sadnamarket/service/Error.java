@@ -460,4 +460,12 @@ public class Error {
     public static String makeDBError() {
         return "DB Error";
     }
+
+    public static String makeNoStoreWithNameError(String name) {
+        return String.format("There is no store called %s.", name);
+    }
+
+    public static String makeStoreDidNotSetBankAccountError(int storeId) {
+        return String.format("Store %d did not set a bank account.", storeId);
+    }
 }

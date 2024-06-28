@@ -19,7 +19,7 @@ class StoreIntegrationTests {
     }
 
     private BankAccountDTO generateBankAccount() {
-        return new BankAccountDTO("123", "456", "789", "Willy");
+        return new BankAccountDTO("123", "456", "789", "Willy", null);
     }
 
     private Store generateStore() {
@@ -58,14 +58,9 @@ class StoreIntegrationTests {
     }
 
     private StoreDTO generateStoreDTO() {
-        LocalTime openingHour = LocalTime.of(10, 0);
-        LocalTime closingHour = LocalTime.of(21, 0);
-        LocalTime fridayClosingHour = LocalTime.of(14, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
         Set<String> owners = new HashSet<>();
         owners.add("Willy");
-        return new StoreDTO(0, true, "Chocolate Factory", 3, "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours, new HashMap<>(), "Willy", owners, new HashSet<>(), new HashSet<>());
+        return new StoreDTO(0, true, "Chocolate Factory", 3, "Beer Sheva", "chocolate@gmail.com", "0541075403", new HashMap<>(), "Willy", owners, new HashSet<>(), new HashSet<>());
     }
 
     private void fillStoreProducts() {
@@ -96,8 +91,8 @@ class StoreIntegrationTests {
     @Test
     void setBankAccount() {
         BankAccountDTO expected0 = generateBankAccount();
-        BankAccountDTO expected1 =  new BankAccountDTO("321", "654", "987", "Mr. Krabs");
-        BankAccountDTO newAccount =  new BankAccountDTO("321", "654", "987", "Mr. Krabs");
+        BankAccountDTO expected1 =  new BankAccountDTO("321", "654", "987", "Mr. Krabs", null);
+        BankAccountDTO newAccount =  new BankAccountDTO("321", "654", "987", "Mr. Krabs", null);
 
         assertEquals(expected0, store.getBankAccount());
 

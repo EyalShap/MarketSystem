@@ -2,25 +2,58 @@ package com.sadna.sadnamarket.domain.stores;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 
+import javax.persistence.*;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
+@Entity
+@Table(name = "stores")
 public class StoreDTO {
-    private int storeId;
-    private boolean isActive;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "store_id")
+    private Integer storeId;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+
+    @Column(name = "store_name")
     private String storeName;
-    private double rank;
+
+    @Column(name = "store_rank")
+    private Double rank;
+
+    @Column(name = "store_address")
     private String address;
+
+    @Column(name = "store_email")
     private String email;
+
+    @Column(name = "store_phone_number")
     private String phoneNumber;
+
+    @ElementCollection
+    @CollectionTable(name = "store_products", joinColumns = @JoinColumn(name = "store_id"))
+    @MapKeyColumn(name = "product_id")
+    @Column(name = "amount")
     private Map<Integer, Integer> productAmounts;
+
+    @Column(name = "founder_username")
     private String founderUsername;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_owners", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "username")
     private Set<String> ownerUsernames;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_managers", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "username")
     private Set<String> managerUsernames;
-    //private Set<String> sellerUsernames;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_orders", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "order_ids")
     private Set<Integer> orderIds;
 
     public StoreDTO() {
@@ -38,11 +71,10 @@ public class StoreDTO {
         this.founderUsername = store.getFounderUsername();
         this.ownerUsernames = store.getOwnerUsernames();
         this.managerUsernames = store.getManagerUsernames();
-        //this.sellerUsernames = store.getSellerUsernames();
         this.orderIds = store.getOrderIds();
     }
 
-    public StoreDTO(int storeId, boolean isActive, String storeName, double rank, String address, String email, String phoneNumber, LocalTime[] openingHours, LocalTime[] closingHours, Map<Integer, Integer> productAmounts, String founderUsername, Set<String> ownerUsernames, Set<String> managerUsernames, Set<Integer> orderIds) {
+    public StoreDTO(int storeId, boolean isActive, String storeName, double rank, String address, String email, String phoneNumber, Map<Integer, Integer> productAmounts, String founderUsername, Set<String> ownerUsernames, Set<String> managerUsernames, Set<Integer> orderIds) {
         this.storeId = storeId;
         this.isActive = isActive;
         this.storeName = storeName;
@@ -58,6 +90,20 @@ public class StoreDTO {
         this.orderIds = orderIds;
     }
 
+    public StoreDTO(String storeName, String address, String email, String phoneNumber, String founderUsername) {
+        this.isActive = true;
+        this.storeName = storeName;
+        this.rank = 3.0;
+        this.address = address;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.productAmounts = new HashMap<>();
+        this.founderUsername = founderUsername;
+        this.ownerUsernames = new HashSet<>();
+        ownerUsernames.add(founderUsername);
+        this.managerUsernames = new HashSet<>();
+        this.orderIds = new HashSet<>();
+    }
 
     public int getStoreId() {
         return storeId;
