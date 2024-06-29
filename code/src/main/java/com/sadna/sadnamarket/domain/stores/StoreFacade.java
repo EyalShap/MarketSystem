@@ -598,7 +598,7 @@ public class StoreFacade {
 
             Store store = storeRepository.findStoreByID(storeId);
             for(String owner : store.getOwnerUsernames()){
-                userFacade.notify(owner, "User " + (username != null ? username : "") + " made a purchase in your store " + store.getStoreInfo().getStoreName());
+                userFacade.notify(owner, "User " + (username != null ? username+" " : "") + "made a purchase in your store " + store.getStoreInfo().getStoreName());
             }
         }
     }

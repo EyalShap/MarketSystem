@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
@@ -13,6 +14,7 @@ import com.sadna.sadnamarket.domain.supply.SupplyInterface;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
+import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
@@ -473,9 +475,16 @@ class StoreOwnerTests {
     }
 
     @Test
-    void closeStoreTest() {
+    void closeStoreTest() throws JsonProcessingException {
         Response resp = bridge.closeStore(token, username, storeId);
         Assertions.assertFalse(resp.getError());
+
+        resp = bridge.getNotifications(username);
+        List<NotificationDTO> notifs = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<NotificationDTO>>() {
+        });
+        Assertions.assertTrue(notifs.size() >= 1);
+        NotificationDTO notif = notifs.get(0);
+        Assertions.assertEquals(String.format("The store \"%s\" was closed.", "Store's Store"), notif.getMessage());
     }
 
     @Test

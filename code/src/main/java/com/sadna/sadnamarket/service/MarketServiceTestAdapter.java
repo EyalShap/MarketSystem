@@ -37,6 +37,10 @@ public class MarketServiceTestAdapter {
         return true;
     }
 
+    public void injectRealtime(RealtimeService realtimeService){
+        this.real.injectRealtime(realtimeService);
+    }
+
     public Response guestEnterSystem() {
         return real.enterAsGuest();
     }
@@ -290,5 +294,9 @@ public class MarketServiceTestAdapter {
         Response resp = real.createProductAmountBuyPolicy(token, username, productId, new LinkedList<>(), 0, 0);
         int id = Integer.parseInt(resp.getDataJson());
         return real.addBuyPolicyToStore(token, username, storeId, id);
+    }
+
+    public Response getNotifications(String username){
+        return real.getUserNotifications(username);
     }
 }

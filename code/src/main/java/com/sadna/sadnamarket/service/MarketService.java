@@ -89,6 +89,10 @@ public class MarketService {
         return instance;
     }
 
+    public void injectRealtime(RealtimeService realtimeService){
+        userFacade.setRealtime(realtimeService);
+    }
+
     // ----------------------- Store -----------------------
 
     public Response loginUsingToken(String token, String username) {
