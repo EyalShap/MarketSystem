@@ -15,6 +15,10 @@ public class AndBuyPolicy extends CompositeBuyPolicy{
         super(id, policy1, policy2);
     }
 
+    public AndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+        super(policy1, policy2);
+    }
+
     public AndBuyPolicy() {
     }
 
@@ -24,6 +28,11 @@ public class AndBuyPolicy extends CompositeBuyPolicy{
         Set<String> res2 = policy2.canBuy(cart, products, user);
         res1.addAll(res2);
         return res1;
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new CompositeBuyPolicyDTO(policy1.getId(), policy2.getId(), BuyPolicyTypeCodes.AND);
     }
 
     @Override

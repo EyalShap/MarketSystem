@@ -9,8 +9,6 @@ import javax.persistence.Entity;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-@Entity
-@DiscriminatorValue("CATEGORY")
 public class CategorySubject extends PolicySubject{
     private String category;
 
@@ -67,6 +65,11 @@ public class CategorySubject extends PolicySubject{
         if (o == null || getClass() != o.getClass()) return false;
         CategorySubject that = (CategorySubject) o;
         return Objects.equals(category, that.category);
+    }
+
+    @Override
+    public String dataString() {
+        return "C-"+category;
     }
 
     @Override

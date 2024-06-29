@@ -17,6 +17,10 @@ public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
         super(id, buytypes, subject);
     }
 
+    RoshChodeshBuyPolicy(List<BuyType> buytypes, PolicySubject subject) {
+        super(buytypes, subject);
+    }
+
     public RoshChodeshBuyPolicy() {
     }
 
@@ -28,9 +32,9 @@ public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
     @Override
     public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         Set<String> error = new HashSet<>();
-        if(policySubject.get(0).subjectAmount(cart, products) > 0) {
+        if(policySubject.subjectAmount(cart, products) > 0) {
             if(isRoshChodesh()) {
-                error.add(Error.makeRoshChodeshBuyPolicyError(policySubject.get(0).getSubject()));
+                error.add(Error.makeRoshChodeshBuyPolicyError(policySubject.getSubject()));
             }
         }
         return error;
@@ -43,6 +47,11 @@ public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
 
     @Override
     public String getPolicyDesc() {
-        return String.format("%s can not be bought on Rosh Chodesh.", policySubject.get(0).getDesc());
+        return String.format("%s can not be bought on Rosh Chodesh.", policySubject.getDesc());
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new JewishCustomsBuyPolicyDTO(getPolicySubject().dataString(), BuyPolicyTypeCodes.ROSH_KHODESH);
     }
 }

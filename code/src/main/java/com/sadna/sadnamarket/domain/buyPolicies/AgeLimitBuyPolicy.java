@@ -12,39 +12,37 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-@Entity
-@DiscriminatorValue("AGE_BUY_POLICY")
-public class AgeLimitBuyPolicy extends RangeBuyPolicy{
-    //private int minValue;
-    //private int maxValue; // -1 if no limit
+public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
+    private int minValue;
+    private int maxValue; // -1 if no limit
 
     AgeLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int minAge, int maxAge) {
-        super(id, buytypes, subject, minAge, maxAge);
+        super(id, buytypes, subject);
 
         if((minAge == -1 && maxAge == -1) || minAge < -1 || maxAge < -1 || (maxAge != -1 && minAge > maxAge))
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("age limit", String.valueOf(minAge), String.valueOf(maxAge)));
 
-        //this.from = minAge;
-        //this.to = maxAge;
+        this.minValue = minAge;
+        this.maxValue = maxAge;
     }
 
     AgeLimitBuyPolicy(List<BuyType> buytypes, PolicySubject subject, int minAge, int maxAge) {
-        super(buytypes, subject, minAge, maxAge);
+        super(buytypes, subject);
 
         if((minAge == -1 && maxAge == -1) || minAge < -1 || maxAge < -1 || (maxAge != -1 && minAge > maxAge))
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("age limit", String.valueOf(minAge), String.valueOf(maxAge)));
 
-        //this.from = minAge;
-        //this.to = maxAge;
+        this.minValue = minAge;
+        this.maxValue = maxAge;
     }
 
     @Override
     public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         Set<String> error = new HashSet<>();
-        if(policySubject.get(0).subjectAmount(cart, products) > 0) {
+        if(policySubject.subjectAmount(cart, products) > 0) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             if(!((user != null) && isAgeInLimit(LocalDate.parse(user.getBirthDate(), formatter)))) {
-                error.add(Error.makeAgeLimitBuyPolicyError(policySubject.get(0).getSubject(), minValue, maxValue));
+                error.add(Error.makeAgeLimitBuyPolicyError(policySubject.getSubject(), minValue, maxValue));
             }
         }
 
@@ -59,10 +57,10 @@ public class AgeLimitBuyPolicy extends RangeBuyPolicy{
     @Override
     public String getPolicyDesc() {
         if(minValue == -1)
-            return String.format("Buying %s is allowed only for users younger than %d.", policySubject.get(0).getDesc(), maxValue);
+            return String.format("Buying %s is allowed only for users younger than %d.", policySubject.getDesc(), maxValue);
         if(maxValue == -1)
-            return String.format("Buying %s is allowed only for users older than %d.", policySubject.get(0).getDesc(), minValue);
-        return String.format("Buying %s is allowed only for users at ages %d - %d.", policySubject.get(0).getDesc(), minValue, maxValue);
+            return String.format("Buying %s is allowed only for users older than %d.", policySubject.getDesc(), minValue);
+        return String.format("Buying %s is allowed only for users at ages %d - %d.", policySubject.getDesc(), minValue, maxValue);
     }
 
     @Override
@@ -73,6 +71,11 @@ public class AgeLimitBuyPolicy extends RangeBuyPolicy{
         if (o == null || getClass() != o.getClass()) return false;
         AgeLimitBuyPolicy that = (AgeLimitBuyPolicy) o;
         return minValue == that.minValue && maxValue == that.maxValue;
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new RangedBuyPolicyDTO(getPolicySubject().dataString(), Double.valueOf(minValue), Double.valueOf(maxValue), BuyPolicyTypeCodes.AGE);
     }
 
     @Override

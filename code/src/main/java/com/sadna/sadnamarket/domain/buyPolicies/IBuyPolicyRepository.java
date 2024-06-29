@@ -21,4 +21,5 @@ public interface IBuyPolicyRepository {
     public int addOrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException;
     public int addConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException;
     public boolean buyPolicyExists(int policyId);
+    public BuyPolicyManager createManager(BuyPolicyFacade facade, int storeId);
 }

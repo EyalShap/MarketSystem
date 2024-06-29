@@ -7,28 +7,28 @@ import com.sadna.sadnamarket.service.Error;
 
 import java.util.*;
 
-public class KgLimitBuyPolicy extends RangeBuyPolicy{
-    //private double minValue;
-    //private double maxValue; // -1 for no limit
+public class KgLimitBuyPolicy extends SimpleBuyPolicy{
+    private double minValue;
+    private double maxValue; // -1 for no limit
 
     KgLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, double minKg, double maxKg) {
-        super(id, buytypes, subject, (int)minKg, (int)maxKg);
+        super(id, buytypes, subject);
 
         if(minKg < -1 || maxKg < -1 || (maxKg != -1 && minKg > maxKg))
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("kg limit", String.format("%.0f", minKg).trim(), String.format("%.0f", maxKg).trim()));
 
-        //this.minValue = minKg;
-        //this.maxValue = maxKg;
+        this.minValue = minKg;
+        this.maxValue = maxKg;
     }
 
     KgLimitBuyPolicy(List<BuyType> buytypes, PolicySubject subject, double minKg, double maxKg) {
-        super(buytypes, subject, (int)minKg, (int)maxKg);
+        super(buytypes, subject);
 
         if(minKg < -1 || maxKg < -1 || (maxKg != -1 && minKg > maxKg))
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("kg limit", String.format("%.0f", minKg).trim(), String.format("%.0f", maxKg).trim()));
 
-        //this.minValue = minKg;
-        //this.maxValue = maxKg;
+        this.minValue = minKg;
+        this.maxValue = maxKg;
     }
 
     @Override
@@ -37,19 +37,19 @@ public class KgLimitBuyPolicy extends RangeBuyPolicy{
         for(CartItemDTO item : cart) {
             int productId = item.getProductId();
             ProductDTO product = products.get(productId);
-            if(policySubject.get(0).isSubject(product)) {
+            if(policySubject.isSubject(product)) {
                 totalWeight += product.getProductWeight() * item.getAmount();
             }
         }
         Set<String> error = new HashSet<>();
         if(maxValue == -1) {
             if(totalWeight < minValue) {
-                error.add(Error.makeKgLimitBuyPolicyError(policySubject.get(0).getSubject(), String.valueOf(minValue), String.valueOf(maxValue)));
+                error.add(Error.makeKgLimitBuyPolicyError(policySubject.getSubject(), String.valueOf(minValue), String.valueOf(maxValue)));
                 return error;
             }
         }
         else if(!(totalWeight >= minValue && totalWeight <= maxValue)) {
-            error.add(Error.makeKgLimitBuyPolicyError(policySubject.get(0).getSubject(), String.valueOf(minValue), String.valueOf(maxValue)));
+            error.add(Error.makeKgLimitBuyPolicyError(policySubject.getSubject(), String.valueOf(minValue), String.valueOf(maxValue)));
             return error;
         }
         return error;
@@ -79,10 +79,10 @@ public class KgLimitBuyPolicy extends RangeBuyPolicy{
     @Override
     public String getPolicyDesc() {
         if(maxValue == -1)
-            return String.format("More than %d Kg of %s must be bought.", minValue, policySubject.get(0).getDesc());
+            return String.format("More than %f Kg of %s must be bought.", minValue, policySubject.getDesc());
         if(minValue == -1)
-            return String.format("You can not buy more than %d Kg of %s.", maxValue, policySubject.get(0).getDesc());
-        return String.format("%d - %d Kg of %s must be bought.", minValue, maxValue, policySubject.get(0).getDesc());
+            return String.format("You can not buy more than %f Kg of %s.", maxValue, policySubject.getDesc());
+        return String.format("%f - %f Kg of %s must be bought.", minValue, maxValue, policySubject.getDesc());
     }
 
     @Override
@@ -97,5 +97,10 @@ public class KgLimitBuyPolicy extends RangeBuyPolicy{
     @Override
     public int hashCode() {
         return Objects.hash(minValue, maxValue);
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new RangedBuyPolicyDTO(getPolicySubject().dataString(), minValue, maxValue, BuyPolicyTypeCodes.KG);
     }
 }

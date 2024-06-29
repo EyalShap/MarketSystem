@@ -44,6 +44,16 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
+    public void setStoreBankAccount(BankAccountDTO bankAccountDTO) {
+    }
+
+    @Override
+    public BankAccountDTO getStoreBankAccount(int storeId) {
+        Store store = findStoreByID(storeId);
+        return store.getBankAccount();
+    }
+
+    @Override
     public Set<Integer> getAllStoreIds() {
         synchronized (stores) {
             return stores.keySet();
