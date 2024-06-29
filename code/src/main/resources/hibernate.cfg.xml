@@ -25,5 +25,6 @@
         <!-- Mention your annotated class names here -->
         
         <mapping class="com.sadna.sadnamarket.domain.auth.UserCredential"/>
+        <mapping class="com.sadna.sadnamarket.domain.products.ProductDTO"/>
     </session-factory>
 </hibernate-configuration>
