@@ -73,17 +73,13 @@ public class BuyPolicyManager {
         synchronized (buyPolicyIds) {
             for (Integer policyId : buyPolicyIds) {
                 BuyPolicy policy = facade.getBuyPolicy(policyId);
-                if (!policy.canBuy(cart, products, user)) {
-                    error.add(policy.getErrorDescription());
-                }
+                error.addAll(policy.canBuy(cart, products, user));
             }
         }
         synchronized (lawsBuyPolicyIds) {
             for (Integer policyId : lawsBuyPolicyIds) {
                 BuyPolicy policy = facade.getBuyPolicy(policyId);
-                if (!policy.canBuy(cart, products, user)) {
-                    error.add(policy.getErrorDescription());
-                }
+                error.addAll(policy.canBuy(cart, products, user));
             }
         }
         return error;

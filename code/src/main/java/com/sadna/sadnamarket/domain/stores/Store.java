@@ -4,33 +4,53 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.service.Error;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Store {
-    private int storeId;
-    private boolean isActive;
+    private Integer storeId;
+    private Boolean isActive;
     private StoreInfo storeInfo;
     private Map<Integer, Integer> productAmounts;
     private String founderUsername;
-    private List<String> ownerUsernames;
-    private List<String> managerUsernames;
-    //private List<String> sellerUsernames;
-    private List<Integer> orderIds;
+    private Set<String> ownerUsernames;
+    private Set<String> managerUsernames;
+    private Set<Integer> orderIds;
     private BankAccountDTO bankAccount;
     private final Object lock = new Object();
 
     public Store(int storeId, String founderUsername, StoreInfo storeInfo) {
         this.storeId = storeId;
+        setAnythingButId(founderUsername, storeInfo);
+    }
+
+    public Store(String founderUsername, StoreInfo storeInfo) {
+        setAnythingButId(founderUsername, storeInfo);
+    }
+
+    public Store() {}
+
+    public Store(StoreDTO storeDTO){
+        this.storeId = storeDTO.getStoreId();
+        this.isActive = storeDTO.isActive();
+        this.storeInfo = new StoreInfo(storeDTO);
+        this.productAmounts = storeDTO.getProductAmounts();
+        this.founderUsername = storeDTO.getFounderUsername();
+        this.ownerUsernames = storeDTO.getOwnerUsernames();
+        this.managerUsernames = storeDTO.getManagerUsernames();
+        this.orderIds = storeDTO.getOrderIds();
+    }
+
+    private void setAnythingButId(String founderUsername, StoreInfo storeInfo) {
         this.isActive = true;
         this.storeInfo = storeInfo;
         this.productAmounts = new ConcurrentHashMap<>();
         this.founderUsername = founderUsername;
-        this.ownerUsernames = Collections.synchronizedList(new ArrayList<>());
+        this.ownerUsernames = Collections.synchronizedSet(new HashSet<>());
         this.ownerUsernames.add(founderUsername);
-        this.managerUsernames = Collections.synchronizedList(new ArrayList<>());
-        //this.sellerUsernames = Collections.synchronizedList(new ArrayList<>());
-        this.orderIds = Collections.synchronizedList(new ArrayList<>());
+        this.managerUsernames = Collections.synchronizedSet(new HashSet<>());
+        this.orderIds = Collections.synchronizedSet(new HashSet<>());
     }
 
     public int getStoreId() {
@@ -55,15 +75,15 @@ public class Store {
         }
     }
 
-    public List<String> getOwnerUsernames() {
+    public Set<String> getOwnerUsernames() {
         return this.ownerUsernames;
     }
 
-    public List<String> getManagerUsernames() {
+    public Set<String> getManagerUsernames() {
         return this.managerUsernames;
     }
 
-    /*public List<String> getSellerUsernames() {
+    /*public Set<String> getSellerUsernames() {
         return this.sellerUsernames;
     }*/
 
@@ -71,7 +91,7 @@ public class Store {
         return this.productAmounts;
     }
 
-    public List<Integer> getOrderIds() {
+    public Set<Integer> getOrderIds() {
         return this.orderIds;
     }
 
@@ -82,9 +102,8 @@ public class Store {
     public void addProduct(int productId, int amount) {
         if (amount < 0)
             throw new IllegalArgumentException(Error.makeStoreIllegalProductAmountError(amount));
-
         synchronized (productAmounts) {
-            if (productExists(productId))
+            if(productAmounts.containsKey(productId))
                 throw new IllegalArgumentException(Error.makeStoreProductAlreadyExistsError(productId));
 
             productAmounts.put(productId, amount);
@@ -110,7 +129,7 @@ public class Store {
             if (!isActive)
                 throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (!productExists(productId))
-                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
 
             productAmounts.put(productId, newAmount);
         }
@@ -275,6 +294,14 @@ public class Store {
                     return false;
             }
         return true;
+    }
+
+    public int getProductAmount(int productId) {
+        synchronized (productAmounts) {
+            if (!productExists(productId))
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
+            return productAmounts.get(productId);
+        }
     }
 
     @Override

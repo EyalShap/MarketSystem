@@ -1,28 +1,48 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Entity
 public abstract class SimpleBuyPolicy extends BuyPolicy{
-    protected PolicySubject policySubject;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "policy_id")
+    protected List<PolicySubject> policySubject;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "buy_policy_types", joinColumns = @JoinColumn(name = "policy_id"))
+    @MapKeyJoinColumns({
+            @MapKeyJoinColumn(name = "store_id", referencedColumnName = "store_id"),
+            @MapKeyJoinColumn(name = "buy_type", referencedColumnName = "buy_type")
+    })
     protected List<BuyType> buytypes;
 
-    SimpleBuyPolicy(int id, List<BuyType> buytypes, PolicySubject policySubject) {
+    SimpleBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
         super(id);
         this.buytypes = buytypes;
-        this.policySubject = policySubject;
+        this.policySubject = new ArrayList<>();
+        policySubject.add(subject);
+    }
+
+    SimpleBuyPolicy(List<BuyType> buytypes, PolicySubject subject) {
+        super();
+        this.buytypes = buytypes;
+        this.policySubject = new ArrayList<>();
+        policySubject.add(subject);
     }
 
     public SimpleBuyPolicy() {
     }
 
     public PolicySubject getPolicySubject() {
-        return policySubject;
+        return policySubject.get(0);
     }
 
     public void setPolicySubject(PolicySubject policySubject) {
-        this.policySubject = policySubject;
+        this.policySubject = List.of(policySubject);
     }
 
     public List<BuyType> getBuytypes() {
@@ -35,7 +55,7 @@ public abstract class SimpleBuyPolicy extends BuyPolicy{
 
     public Set<Integer> getPolicyProductIds() {
         Set<Integer> ids = new HashSet<>();
-        ids.add(policySubject.getProductId());
+        ids.add(policySubject.get(0).getProductId());
         return ids;
     }
 

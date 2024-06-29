@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {Categories} from '../models/CategoriesConst'
 
 import '../styles/search.css';
 
@@ -40,14 +41,13 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
     <nav className="searcharea">
         <select className="category"  // Add this line
             value={searchCategory} onChange={handleCategoryChange}>
-            <option value="all">All</option>
-            <option value="Category 1">Category 1</option>
-            <option value="Category 2">Category 2</option>
-            <option value="Category 3">Category 3</option>
+            {Categories.map((category:string, index:number) => (
+          <option key={index} value={category}>{category}</option>
+        ))}
           </select>
-        <input className='search-inputs'
+        <input className='search-input'
           type="text"
-          placeholder="Search..."
+          placeholder="Search Product..."
           value={searchTerm}
           onChange={handleInputChange}
         />

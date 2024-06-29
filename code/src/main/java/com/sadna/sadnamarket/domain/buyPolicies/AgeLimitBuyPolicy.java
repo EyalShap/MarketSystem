@@ -5,36 +5,50 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
-public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
-    private int minAge;
-    private int maxAge; // -1 if no limit
+@Entity
+@DiscriminatorValue("AGE_BUY_POLICY")
+public class AgeLimitBuyPolicy extends RangeBuyPolicy{
+    //private int minValue;
+    //private int maxValue; // -1 if no limit
 
     AgeLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int minAge, int maxAge) {
-        super(id, buytypes, subject);
+        super(id, buytypes, subject, minAge, maxAge);
 
         if((minAge == -1 && maxAge == -1) || minAge < -1 || maxAge < -1 || (maxAge != -1 && minAge > maxAge))
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("age limit", String.valueOf(minAge), String.valueOf(maxAge)));
 
-        this.minAge = minAge;
-        this.maxAge = maxAge;
-        this.setErrorDescription(Error.makeAgeLimitBuyPolicyError(subject.getSubject(), minAge, maxAge));
+        //this.from = minAge;
+        //this.to = maxAge;
+    }
+
+    AgeLimitBuyPolicy(List<BuyType> buytypes, PolicySubject subject, int minAge, int maxAge) {
+        super(buytypes, subject, minAge, maxAge);
+
+        if((minAge == -1 && maxAge == -1) || minAge < -1 || maxAge < -1 || (maxAge != -1 && minAge > maxAge))
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("age limit", String.valueOf(minAge), String.valueOf(maxAge)));
+
+        //this.from = minAge;
+        //this.to = maxAge;
     }
 
     @Override
-    public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
-        if(policySubject.subjectAmount(cart, products) > 0) {
-             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return (user != null) && isAgeInLimit(LocalDate.parse(user.getBirthDate(), formatter));
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        Set<String> error = new HashSet<>();
+        if(policySubject.get(0).subjectAmount(cart, products) > 0) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            if(!((user != null) && isAgeInLimit(LocalDate.parse(user.getBirthDate(), formatter)))) {
+                error.add(Error.makeAgeLimitBuyPolicyError(policySubject.get(0).getSubject(), minValue, maxValue));
+            }
         }
-        
-        return true;
+
+        return error;
     }
 
     @Override
@@ -44,11 +58,11 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
 
     @Override
     public String getPolicyDesc() {
-        if(minAge == -1)
-            return String.format("Buying %s is allowed only for users younger than %d.", policySubject.getDesc(), maxAge);
-        if(maxAge == -1)
-            return String.format("Buying %s is allowed only for users older than %d.", policySubject.getDesc(), minAge);
-        return String.format("Buying %s is allowed only for users at ages %d - %d.", policySubject.getDesc(), minAge, maxAge);
+        if(minValue == -1)
+            return String.format("Buying %s is allowed only for users younger than %d.", policySubject.get(0).getDesc(), maxValue);
+        if(maxValue == -1)
+            return String.format("Buying %s is allowed only for users older than %d.", policySubject.get(0).getDesc(), minValue);
+        return String.format("Buying %s is allowed only for users at ages %d - %d.", policySubject.get(0).getDesc(), minValue, maxValue);
     }
 
     @Override
@@ -58,36 +72,36 @@ public class AgeLimitBuyPolicy extends SimpleBuyPolicy{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AgeLimitBuyPolicy that = (AgeLimitBuyPolicy) o;
-        return minAge == that.minAge && maxAge == that.maxAge;
+        return minValue == that.minValue && maxValue == that.maxValue;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(minAge, maxAge);
+        return Objects.hash(minValue, maxValue);
     }
 
     private boolean isAgeInLimit(LocalDate birthDate) {
         Period period = Period.between(birthDate, LocalDate.now());
         int age = period.getYears();
-        if(maxAge == -1) {
-            return age >= minAge;
+        if(maxValue == -1) {
+            return age >= minValue;
         }
-        return age <= maxAge && age >= minAge;
+        return age <= maxValue && age >= minValue;
     }
 
     public int getMinAge() {
-        return minAge;
+        return minValue;
     }
 
     public void setMinAge(int minAge) {
-        this.minAge = minAge;
+        this.minValue = minAge;
     }
 
     public int getMaxAge() {
-        return maxAge;
+        return maxValue;
     }
 
     public void setMaxAge(int maxAge) {
-        this.maxAge = maxAge;
+        this.maxValue = maxAge;
     }
 }

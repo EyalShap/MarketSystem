@@ -27,11 +27,11 @@ class StoreUnitTests {
     }
 
     private BankAccountDTO generateBankAccount0() {
-        return new BankAccountDTO("123", "456", "789", "Willy");
+        return new BankAccountDTO("123", "456", "789", "Willy", null);
     }
 
     private BankAccountDTO generateBankAccount1() {
-        return new BankAccountDTO("321", "654", "987", "Mr. Krabs");
+        return new BankAccountDTO("321", "654", "987", "Mr. Krabs", null);
     }
 
     private Store generateStore0() {
@@ -265,7 +265,7 @@ class StoreUnitTests {
             store0.setProductAmounts(3, 18);
         });
 
-        String expectedMessage1 = "Product Id 3 does not exist.";
+        String expectedMessage1 = Error.makeStoreProductDoesntExistError(0, 3);
         assertEquals(expectedMessage1, expected1.getMessage());
     }
 

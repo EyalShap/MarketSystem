@@ -103,6 +103,25 @@ export const getStoreInfo = async (storeId: string): Promise<RestResponse> => {
     return data;
 }
 
+export const checkIsSystemManager = async (username: string): Promise<boolean> => {
+    const response = await axios.post(
+        `${server}/api/user/checkIfSystemManager`,
+        null,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            },
+            params: {
+                username
+            }
+        }
+    );
+
+    const data: RestResponse = await response.data;
+    return !data.error && data.dataJson === 'true';
+};
+
 export const getStoreDiscounts = async (storeId: string): Promise<PolicyDescriptionModel[]> => {
     if(localStorage.getItem('token') == null){
         const response = await fetch(
@@ -405,7 +424,6 @@ export const getMember = async(username: string): Promise<MemberModel> => {
     
     // Assuming the API returns the data in dataJson
     const profileData = JSON.parse(data.dataJson) as MemberModel;
-    console.log(profileData);
     // Validate the structure of profileData before returning
 
     return profileData;
@@ -439,6 +457,7 @@ export const getProductDetails = async (productId: number): Promise<RestResponse
             }
         );
         const data: RestResponse = await response.json();
+        console.log(data);
         return data;
     }
     const response = await fetch(
@@ -561,20 +580,21 @@ export const searchProducts = async (
 };
 
 
+
 export const getOrders = async (username: string): Promise<OrderModel[]> => {
     try {
-        
         const response = (await axios.get(`${server}/api/user/getOrderHistory?username=${username}`, {
             headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem("token")}` 
-        }
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
         })).data;
 
+        const ordersData: { [key: number]: { products: ProductDataPrice[], dateTimeOfPurchase: string } } = JSON.parse(response.dataJson);
 
-        const ordersData: { [key: number]: ProductDataPrice[] } = JSON.parse(response.dataJson);
+        const orders: OrderModel[] = Object.entries(ordersData).map(([orderId, orderDetails]) => {
+            const { products, dateTimeOfPurchase } = orderDetails;
 
-        const orders: OrderModel[] = Object.entries(ordersData).map(([orderId, products]) => {
             const total = products.reduce((acc, product) => acc + product.newPrice * product.amount, 0);
             const orderProducts: ProductOrderModel[] = products.map(product => ({
                 id: product.id,
@@ -585,18 +605,17 @@ export const getOrders = async (username: string): Promise<OrderModel[]> => {
                 newPrice: product.newPrice
             }));
 
-            const date = new Date().toLocaleDateString(); 
+            const date = new Date(dateTimeOfPurchase).toLocaleDateString(); 
 
             return {
                 id: orderId,
-                date: date, 
+                date: date,
                 total: total,
                 products: orderProducts
             };
         });
 
         return orders;
-
 
     } catch (error) {
         console.error("Failed to fetch orders:", error);
@@ -1146,8 +1165,8 @@ export const addPolicyToStore = async(storeId: number, policyId: number): Promis
 
 export const removePolicyFromStore = async(storeId: number, policyId: number): Promise<string> => {
     let request = {
-        policyId1: storeId,
-        policyId2: policyId
+        storeId: storeId,
+        policyId1: policyId
     }
     const response = await axios.patch(`${server}/api/stores/removeBuyPolicyFromStore?username=${localStorage.getItem("username")}`,request,{ 
         headers: {
@@ -1275,6 +1294,29 @@ export const getStoreOrders=async( storeId: number,username: string): Promise<Or
     return [];
 }
 }
+
+export const getStoreByName = async (storeName: string, username: string | null): Promise<any> => {
+    try {
+        let url = `${server}/api/stores/getStoreByName?storeName=${storeName}`;
+        if (username) {
+            url += `&username=${username}`;
+        }
+
+        const response = (await axios.get(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })).data;
+
+        return response; // Adjust this based on the actual response structure
+    } catch (error) {
+        console.error("Failed to fetch store data:", error);
+        return null;
+    }
+};
+
+
 export const buyCart = async(purchase: PurchaseInfoModel): Promise<RestResponse> => {
     let request = {
         creditCard: {

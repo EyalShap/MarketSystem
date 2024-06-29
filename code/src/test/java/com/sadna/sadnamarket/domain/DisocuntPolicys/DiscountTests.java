@@ -1,13 +1,10 @@
 package com.sadna.sadnamarket.domain.DisocuntPolicys;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.Discounts.Discount;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
-import com.sadna.sadnamarket.service.MarketService;
-import com.sadna.sadnamarket.service.RealtimeService;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +29,9 @@ public class DiscountTests extends DiscountPolicyTest{
     Discount onCategoryDairy10DiscountTrue1;
     Discount onStore10DiscountFalse1;
     Discount onCategoryDairy10DiscountFalse1;
-
+    ProductDataPrice eyalItemWithId0;
+    ProductDataPrice milkItem;
+    ProductDataPrice cheeseItem;
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -66,16 +65,12 @@ public class DiscountTests extends DiscountPolicyTest{
         productDTOMap.put(0, productFacade.getProductDTO(0));
         productDTOMap.put(1, productFacade.getProductDTO(1));
         productDTOMap.put(2, productFacade.getProductDTO(2));
+        eyalItemWithId0 = listProductDataPrices.get(0);
+        milkItem = listProductDataPrices.get(1);
+        cheeseItem = listProductDataPrices.get(2);
     }
 
-
-
-    private void resetListProductDataPrices(){
-        listProductDataPrices = new ArrayList<>();
-        listProductDataPrices.add(new ProductDataPrice(0,0, "eyal",1, 100,100));
-        listProductDataPrices.add(new ProductDataPrice(1,0, "milk", 1,20,20));
-        listProductDataPrices.add(new ProductDataPrice(2,0, "cheese",3,40,40));
-    }
+    
     @Test
     public void checkConditions() throws Exception {
         assertTrue(conditionTrue1.checkCond(productDTOMap, listProductDataPrices));
@@ -87,242 +82,320 @@ public class DiscountTests extends DiscountPolicyTest{
 
 
     @Test
-    public void checkSimpleDiscountOnProduct() throws Exception {
+    public void checkSimpleDiscountOnProductCondIsTrue() throws Exception {
         //condition is true
-        int simpleDiscountID1 = discountPolicyRepository.addOnProductSimpleDiscount(50, 0, conditionTrue1);
+        double percentDiscount = 50;
+        int simpleDiscountID1 = discountPolicyRepository.addOnProductSimpleDiscount(percentDiscount, 0, conditionTrue1);
         Discount simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
         simpleDiscount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(50 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
 
-        resetListProductDataPrices();
-        //condition is false now
-        int simpleDiscountID2 = discountPolicyRepository.addOnProductSimpleDiscount(50, 0, conditionFalse1);
-        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
-        simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice()*(1 - percentDiscount / 100) , eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice(), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice(), cheeseItem.getNewPrice());
 
     }
 
     @Test
-    public void checkSimpleDiscountOnCategory() throws Exception {
+    public void checkSimpleDiscountOnProductCondIsFalse() throws Exception {
+        //condition is false now
+        double percentDiscount = 50;
+        int simpleDiscountID2 = discountPolicyRepository.addOnProductSimpleDiscount(percentDiscount, 0, conditionFalse1);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
+
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice(), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice(), cheeseItem.getNewPrice());
+}
+
+    @Test
+    public void checkSimpleDiscountOnCategoryCondTrue() throws Exception {
         //condition is true
+        double percentDiscount = 50;
         int simpleDiscountID1 = discountPolicyRepository.addOnCategorySimpleDiscount(50, "dairy", conditionTrue1);
         Discount simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
         simpleDiscount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(10 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(2).getNewPrice());
 
-        resetListProductDataPrices();
-        //condition is false now
-        int simpleDiscountID2 = discountPolicyRepository.addOnCategorySimpleDiscount(50, "dairy", conditionFalse1);
-        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
-        simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice()*(1 - percentDiscount / 100)  , milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice()*(1 - percentDiscount / 100)  , cheeseItem.getNewPrice());
 
     }
 
     @Test
-    public void checkSimpleDiscountOnStore() throws Exception {
-
+    public void checkSimpleDiscountOnCategoryCondIsFalse() throws Exception {
         //condition is true
-        int simpleDiscountID1 = discountPolicyRepository.addOnStoreSimpleDiscount(50, conditionTrue1);
+        double percentDiscount = 50;
+        int simpleDiscountID2 = discountPolicyRepository.addOnCategorySimpleDiscount(percentDiscount, "dairy", conditionFalse1);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
+
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice(), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice(), cheeseItem.getNewPrice());
+    }
+
+    @Test
+    public void checkSimpleDiscountOnStoreCondTrue() throws Exception {
+        double percentDiscount = 50;
+        //condition is true
+        int simpleDiscountID1 = discountPolicyRepository.addOnStoreSimpleDiscount(percentDiscount, conditionTrue1);
         Discount simpleDiscount1 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID1);
         simpleDiscount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(50 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(10 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(2).getNewPrice());
 
-        resetListProductDataPrices();
-        //condition is false now
-        int simpleDiscountID2 = discountPolicyRepository.addOnStoreSimpleDiscount(50, conditionFalse1);
-        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
-        simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice()*(1 - percentDiscount / 100), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice()*(1 - percentDiscount / 100)  , milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice()*(1 - percentDiscount / 100)  , cheeseItem.getNewPrice());
 
     }
+
     @Test
-    public void checkMaximumDiscount() throws Exception {
+    public void checkSimpleDiscountOnStoreCondFalse() throws Exception {
+        double percentDiscount = 50;
+        //condition is false now
+        int simpleDiscountID2 = discountPolicyRepository.addOnStoreSimpleDiscount(percentDiscount, conditionFalse1);
+        Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
+        simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
+
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice(), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice(), cheeseItem.getNewPrice());
+    }
+
+    @Test
+    public void checkMaximumDiscountBothTrue() throws Exception {
+        double percentDiscount = 10;
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addMaximumDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
         Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(36 , listProductDataPrices.get(2).getNewPrice());
 
-        resetListProductDataPrices();
+        assertEquals(eyalItemWithId0.getOldPrice() * (1 - percentDiscount / 100), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount / 100), cheeseItem.getNewPrice());
+
+    }
+
+
+    @Test
+    public void checkMaximumDiscountOneTrue() throws Exception {
+        double percentDiscount = 10;
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addMaximumDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
         Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(36 , listProductDataPrices.get(2).getNewPrice());
 
-        resetListProductDataPrices();
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount / 100), cheeseItem.getNewPrice());
+    }
+
+    @Test
+    public void checkMaximumDiscountBothFalse() throws Exception {
+        double percentDiscount = 10;
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addMaximumDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
         Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice(), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice(), cheeseItem.getNewPrice());
     }
 
 
     @Test
-    public void checkAdditionDiscount() throws Exception {
+    public void checkAdditionDiscountBothCondTrue() throws Exception {
         //twos condition are true
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
+
         int DiscountID1 = discountPolicyRepository.addAdditionDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
         Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(16 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(32 , listProductDataPrices.get(2).getNewPrice());
-
-        resetListProductDataPrices();
+        assertEquals(eyalItemWithId0.getOldPrice() * (1 - percentDiscount1 / 100), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - (percentDiscount1 + percentDiscount2) / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - (percentDiscount1 + percentDiscount2) / 100), cheeseItem.getNewPrice());
+    }
+    @Test
+    public void checkAdditionDiscountOneCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addAdditionDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
         Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(36 , listProductDataPrices.get(2).getNewPrice());
-
-        resetListProductDataPrices();
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount1 / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount1 / 100), cheeseItem.getNewPrice());
+    }
+    @Test
+    public void checkAdditionDiscountBothCondFalse() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addAdditionDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
         Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice() , eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() , milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() , cheeseItem.getNewPrice());
     }
 
     @Test
-    public void checkOrDiscount() throws Exception {
+    public void checkOrDiscountBothCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addOrDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
         Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(16.2 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(32.4 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice() * (1 - percentDiscount1 / 100), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount1 / 100) * (1 - percentDiscount2 / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount1 / 100) * (1 - percentDiscount2 / 100), cheeseItem.getNewPrice());
 
-        resetListProductDataPrices();
+    }
+    @Test
+    public void checkOrDiscountOneCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addOrDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
         Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(16.2 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(32.4 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice() * (1 - percentDiscount1 / 100), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount1 / 100) * (1 - percentDiscount2 / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount1 / 100) * (1 - percentDiscount2 / 100), cheeseItem.getNewPrice());
 
-        resetListProductDataPrices();
+    }
+    @Test
+    public void checkOrDiscountBothCondFalse() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addOrDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
         Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+
+        assertEquals(eyalItemWithId0.getOldPrice() , eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() , milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() , cheeseItem.getNewPrice());
     }
 
     @Test
-    public void checkMaxXorDiscount() throws Exception {
+    public void checkMaxXorDiscountBothCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addTakeMaxXorDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
         Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(36 , listProductDataPrices.get(2).getNewPrice());
-
-        resetListProductDataPrices();
+        assertEquals(eyalItemWithId0.getOldPrice() * (1 - percentDiscount1 / 100), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount1 / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount1 / 100), cheeseItem.getNewPrice());
+    }
+    @Test
+    public void checkMaxXorDiscountOneCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addTakeMaxXorDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
         Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(36 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount1 / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount1 / 100), cheeseItem.getNewPrice());
+    }
 
-        resetListProductDataPrices();
+    @Test
+    public void checkMaxXorDiscountBothCondFalse() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addTakeMaxXorDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
         Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice() , eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() , milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() , cheeseItem.getNewPrice());
     }
 
     @Test
-    public void checkMinXorDiscount() throws Exception {
+    public void checkMinXorDiscountBothCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addTakeMinXorDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
         Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(36 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount1 / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount1 / 100), cheeseItem.getNewPrice());
+    }
 
-        resetListProductDataPrices();
+    @Test
+    public void checkMinXorDiscountOneCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //one condition is false, one is true
         int simpleDiscountID2 = discountPolicyRepository.addTakeMinXorDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountTrue1);
         Discount simpleDiscount2 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID2);
         simpleDiscount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(36 , listProductDataPrices.get(2).getNewPrice());
-
-        resetListProductDataPrices();
+        assertEquals(eyalItemWithId0.getOldPrice() * (1 - percentDiscount1 / 100), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount1 / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount1 / 100), cheeseItem.getNewPrice());
+    }
+    @Test
+    public void checkMinXorDiscountBothCondFalse() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //two conditions are false,
         int simpleDiscountID3 = discountPolicyRepository.addTakeMinXorDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
         Discount simpleDiscount3 = discountPolicyRepository.findDiscountPolicyByID(simpleDiscountID3);
         simpleDiscount3.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice() , eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() , milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() , cheeseItem.getNewPrice());
     }
 
 
     @Test
-    public void checkAndDiscount() throws Exception {
+    public void checkAndDiscountBothCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //twos condition are true
         int DiscountID1 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountTrue1);
         Discount Discount1 = discountPolicyRepository.findDiscountPolicyByID(DiscountID1);
         Discount1.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(16.2 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(32.4 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice() * (1 - percentDiscount1 / 100), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice() * (1 - percentDiscount1 / 100) * (1 - percentDiscount2 / 100), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice() * (1 - percentDiscount1 / 100) * (1 - percentDiscount2 / 100), cheeseItem.getNewPrice());
+    }
 
-        resetListProductDataPrices();
+    @Test
+    public void checkAndDiscountOneCondTrue() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //one condition is false, one is true
         int Discount2ID2 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountTrue1, onStore10DiscountFalse1);
         Discount Discount2 = discountPolicyRepository.findDiscountPolicyByID(Discount2ID2);
         Discount2.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice(), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice(), cheeseItem.getNewPrice());
+    }
 
-        resetListProductDataPrices();
+    @Test
+    public void checkAndDiscountBothCondFalse() throws Exception {
+        double percentDiscount1 = 10;
+        double percentDiscount2 = 10;
         //two conditions are false,
         int DiscountID3 = discountPolicyRepository.addAndDiscount(onCategoryDairy10DiscountFalse1, onStore10DiscountFalse1);
         Discount Discount3 = discountPolicyRepository.findDiscountPolicyByID(DiscountID3);
         Discount3.giveDiscount(productDTOMap, listProductDataPrices);
-        assertEquals(100 , listProductDataPrices.get(0).getNewPrice());
-        assertEquals(20 , listProductDataPrices.get(1).getNewPrice());
-        assertEquals(40 , listProductDataPrices.get(2).getNewPrice());
+        assertEquals(eyalItemWithId0.getOldPrice(), eyalItemWithId0.getNewPrice());
+        assertEquals(milkItem.getOldPrice(), milkItem.getNewPrice());
+        assertEquals(cheeseItem.getOldPrice(), cheeseItem.getNewPrice());
     }
 
 

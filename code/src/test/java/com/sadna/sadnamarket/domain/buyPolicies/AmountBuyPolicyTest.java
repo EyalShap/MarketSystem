@@ -34,8 +34,8 @@ class AmountBuyPolicyTest extends BuyPolicyTest{
         cartMap.put(0, productFacade.getProductDTO(0));
         cartMap.put(1, productFacade.getProductDTO(1));
 
-        assertTrue(categoryPolicy.canBuy(cart, cartMap, null));
-        assertTrue(productPolicy.canBuy(cart, cartMap, null));
+        assertTrue(categoryPolicy.canBuy(cart, cartMap, null).isEmpty());
+        assertTrue(productPolicy.canBuy(cart, cartMap, null).isEmpty());
     }
 
     @Test
@@ -48,8 +48,8 @@ class AmountBuyPolicyTest extends BuyPolicyTest{
         cartMap.put(0, productFacade.getProductDTO(0));
         cartMap.put(1, productFacade.getProductDTO(1));
 
-        assertFalse(categoryPolicy.canBuy(cart, cartMap, null));
-        assertFalse(productPolicy.canBuy(cart, cartMap, null));
+        assertFalse(categoryPolicy.canBuy(cart, cartMap, null).isEmpty());
+        assertFalse(productPolicy.canBuy(cart, cartMap, null).isEmpty());
     }
 
     @Test
@@ -61,6 +61,6 @@ class AmountBuyPolicyTest extends BuyPolicyTest{
         Map<Integer, ProductDTO> cartMap = new HashMap<>();
         cartMap.put(0, productFacade.getProductDTO(0));
 
-        assertFalse(productPolicy.canBuy(cart, cartMap, null));
+        assertFalse(productPolicy.canBuy(cart, cartMap, null).isEmpty());
     }
 }

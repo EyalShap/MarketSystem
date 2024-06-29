@@ -73,6 +73,8 @@ public class MarketService {
         this.buyPolicyFacade.setUserFacade(userFacade);
         this.discountPolicyFacade.setProductFacade(productFacade);
         this.discountPolicyFacade.setStoreFacade(storeFacade);
+        this.authFacade.register("SM", "1234", "sami", "hatuka", "shawarma@gmail.com", "0511111111", null);
+        this.userFacade.setSystemManagerUserName("SM");
     }
 
     public static MarketService getInstance() {
@@ -128,10 +130,10 @@ public class MarketService {
         }
     } //From "My Stores" page, redirects to new store
 
-    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, double productPrice, String category, double rank, double productWeight) {
+    public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, double productPrice, String category, double rank, double productWeight, String description) {
         try {
             checkToken(token, username);
-            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category, rank, productWeight);
+            int newProductId = storeFacade.addProductToStore(username, storeId, productName, productQuantity, productPrice, category, rank, productWeight, description);
             logger.info(String.format("User %s added product %d to store %d.", username, newProductId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
@@ -167,10 +169,10 @@ public class MarketService {
         }
     } //From Store page, X on products from products list, only for permission
 
-    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, double newPrice, String newCategory, double newRank) {
+    public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, double newPrice, String newCategory, double newRank, String newDesc) {
         try {
             checkToken(token, username);
-            int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice, newCategory, newRank);
+            int updateProductId = storeFacade.updateProduct(username, storeId, productId, newProductName, newQuantity, newPrice, newCategory, newRank, newDesc);
             logger.info(String.format("User %s updated product %d in store %d.", username, productId, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }
@@ -333,7 +335,26 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //From "my stores" page OR from search store (from main search)
-  
+
+    public Response getStoreByName(String token, String username, String storeName) {
+        try {
+            if(username != null)
+                checkToken(token, username);
+            Set<String> fields = Set.of("storeId", "storeName");
+            SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+            filterProvider.addFilter("filter", SimpleBeanPropertyFilter.filterOutAllExcept(fields));
+
+            StoreDTO storeDTO = storeFacade.getStoreByName(storeName, username);
+            String json = objectMapper.writer(filterProvider).writeValueAsString(storeDTO);
+            logger.info(String.format("A user got store info of store %s.", storeName));
+            return Response.createResponse(false, json);
+        }
+        catch (Exception e) {
+            logger.error("getStoreByName: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
+
   public Response getProductInfo(String token, String username, int productId) {
         try {
             if(username != null)

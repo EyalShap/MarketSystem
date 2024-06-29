@@ -96,4 +96,14 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
     private static boolean verifyPassword(String password, String hashedPassword) {
         return BCrypt.checkpw(password, hashedPassword);
     }
+
+    @Override
+    public void clear() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            String hql = "DELETE FROM UserCredential";
+            session.createQuery(hql).executeUpdate();
+            transaction.commit();
+        }
+    }
 }

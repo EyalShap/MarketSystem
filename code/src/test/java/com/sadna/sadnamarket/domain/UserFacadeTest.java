@@ -18,10 +18,12 @@ import org.junit.Test;
 import org.mockito.*;
 
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.IUserRepository;
 import com.sadna.sadnamarket.domain.users.MemoryRepo;
 import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.auth.IAuthRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
@@ -38,8 +40,8 @@ import com.sadna.sadnamarket.domain.users.UserOrderDTO;
 
 public class UserFacadeTest {
 
-    private MemoryRepo iUserRepo;
-    private AuthRepositoryMemoryImpl iAuthRepo;
+    private IUserRepository iUserRepo;
+    private IAuthRepository iAuthRepo;
 
     private UserFacade userFacade;
 
@@ -53,7 +55,7 @@ public class UserFacadeTest {
     private StoreDTO storeDTO;
 
     private String testUsername1="idanasis";
-    private String testUsername2="shavirmor";
+    private String testUsername2="shavitmor";
     private String testUsername3="Nir";
     private String testPassword="12";
     private int testStoreId;
@@ -128,7 +130,7 @@ public class UserFacadeTest {
     @Test
     public void testRegister() {
         authFacade.register("Jimi",testPassword,"Jimi","hatuka","Jimi@gmail.com","0501118121",testDate);
-        assertDoesNotThrow(()-> iUserRepo.getMember("Jimi"));
+        assertDoesNotThrow(()-> iUserRepo.getMemberDTO("Jimi"));
     }
     @Test
     public void testRegisterWithSameUsername() {
@@ -208,7 +210,7 @@ public class UserFacadeTest {
         userFacade.accept(testUsername2, 1);
         userFacade.addOwnerRequest(testUsername2, testUsername3, testStoreId);
         userFacade.accept(testUsername3, 1);
-        assertEquals(testUsername2, userFacade.getMember(testUsername3).getRoleOfStore(testStoreId).getApointee());
+        assertTrue(userFacade.isApointee(testUsername3, testUsername2, testStoreId)); 
         userFacade.leaveRole(testUsername2, testStoreId);
         assertTrue(userFacade.getMemberRoles(testUsername2).size()==0);
         assertTrue(userFacade.getMemberRoles(testUsername3).size()==0);
@@ -216,26 +218,26 @@ public class UserFacadeTest {
     @Test
     public void testUserAddProduct(){
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
-        List<CartItemDTO> items=userFacade.getMember(testUsername1).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername1);
         assertEquals(1, items.size());
         assertEquals(1, items.get(testStoreId).getProductId());
         assertEquals(2, items.get(testStoreId).getAmount());
         userFacade.addProductToCart(testUsername1, testStoreId2, 2, 3);
-        items=userFacade.getMember(testUsername1).getCartItems();
+        items=userFacade.getMemberCart(testUsername1);
         assertEquals(2, items.size());
     }
     @Test
     public void testUserRemoveProduct(){
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.removeProductFromCart(testUsername1, testStoreId2, 1);
-        List<CartItemDTO> items=userFacade.getMember(testUsername1).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername1);
         assertEquals(0, items.size());
     }
     @Test
     public void testUserChangeAmountOfProduct(){
         userFacade.addProductToCart(testUsername1, testStoreId, 1, 2);
         userFacade.changeQuantityCart(testUsername1, testStoreId, 1, 3);
-        List<CartItemDTO> items=userFacade.getMember(testUsername1).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername1);
         assertEquals(1, items.size());
         assertEquals(1, items.get(testStoreId).getProductId());
         assertEquals(3, items.get(testStoreId).getAmount());
@@ -277,7 +279,7 @@ public class UserFacadeTest {
         int guestId = userFacade.enterAsGuest();
         userFacade.addProductToCart(guestId, testStoreId, 1, 2);
         authFacade.login(testUsername2, testPassword, guestId);
-        List<CartItemDTO> items=userFacade.getMember(testUsername2).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername2);
         assertEquals(1, items.size());
     }
     @Test
@@ -288,7 +290,7 @@ public class UserFacadeTest {
         int guestId = userFacade.enterAsGuest();
         userFacade.addProductToCart(guestId, testStoreId, 1, 2);
         authFacade.login(testUsername2, testPassword, guestId);
-        List<CartItemDTO> items=userFacade.getMember(testUsername2).getCartItems();
+        List<CartItemDTO> items=userFacade.getMemberCart(testUsername2);
         assertEquals(2, items.size());
     }
     @Test

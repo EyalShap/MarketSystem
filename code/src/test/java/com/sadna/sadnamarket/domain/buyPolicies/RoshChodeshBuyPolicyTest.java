@@ -35,7 +35,7 @@ class RoshChodeshBuyPolicyTest extends BuyPolicyTest{
             Map<Integer, ProductDTO> cartMap = new HashMap<>();
             cartMap.put(0, productFacade.getProductDTO(0));
 
-            assertTrue(policy.canBuy(cart, cartMap, null));
+            assertTrue(policy.canBuy(cart, cartMap, null).isEmpty());
         }
     }
 
@@ -52,7 +52,7 @@ class RoshChodeshBuyPolicyTest extends BuyPolicyTest{
             cartMap.put(0, productFacade.getProductDTO(0));
             cartMap.put(1, productFacade.getProductDTO(1));
 
-            assertTrue(policy.canBuy(cart, cartMap, null));
+            assertTrue(policy.canBuy(cart, cartMap, null).isEmpty());
         }
     }
 
@@ -69,7 +69,7 @@ class RoshChodeshBuyPolicyTest extends BuyPolicyTest{
             cartMap.put(0, productFacade.getProductDTO(0));
             cartMap.put(1, productFacade.getProductDTO(1));
 
-            assertFalse(policy.canBuy(cart, cartMap, null));
+            assertFalse(policy.canBuy(cart, cartMap, null).isEmpty());
         }
     }
 }

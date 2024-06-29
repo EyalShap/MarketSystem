@@ -42,7 +42,7 @@ class OrBuyPolicyTest extends BuyPolicyTest{
             cartMap.put(0, productFacade.getProductDTO(0));
             cartMap.put(1, productFacade.getProductDTO(1));
 
-            assertTrue(policy.canBuy(cart, cartMap, null));
+            assertTrue(policy.canBuy(cart, cartMap, null).isEmpty());
         }
     }
 
@@ -58,9 +58,9 @@ class OrBuyPolicyTest extends BuyPolicyTest{
             cartMap.put(0, productFacade.getProductDTO(0));
             cartMap.put(1, productFacade.getProductDTO(1));
 
-            assertTrue(policy.canBuy(cart, cartMap, userFacade.getMemberDTO("Mr. Krabs")));
-            assertFalse(policy.canBuy(cart, cartMap, userFacade.getMemberDTO("FourSeasonsOrlandoBaby")));
-            assertFalse(policy.canBuy(cart, cartMap, null));
+            assertTrue(policy.canBuy(cart, cartMap, userFacade.getMemberDTO("Mr. Krabs")).isEmpty());
+            assertFalse(policy.canBuy(cart, cartMap, userFacade.getMemberDTO("FourSeasonsOrlandoBaby")).isEmpty());
+            assertFalse(policy.canBuy(cart, cartMap, null).isEmpty());
         }
     }
 
@@ -76,9 +76,9 @@ class OrBuyPolicyTest extends BuyPolicyTest{
             cartMap.put(0, productFacade.getProductDTO(0));
             cartMap.put(1, productFacade.getProductDTO(1));
 
-            assertTrue(policy.canBuy(cart, cartMap, userFacade.getMemberDTO("Mr. Krabs")));
-            assertTrue(policy.canBuy(cart, cartMap, userFacade.getMemberDTO("FourSeasonsOrlandoBaby")));
-            assertTrue(policy.canBuy(cart, cartMap, null));
+            assertTrue(policy.canBuy(cart, cartMap, userFacade.getMemberDTO("Mr. Krabs")).isEmpty());
+            assertTrue(policy.canBuy(cart, cartMap, userFacade.getMemberDTO("FourSeasonsOrlandoBaby")).isEmpty());
+            assertTrue(policy.canBuy(cart, cartMap, null).isEmpty());
         }
     }
 }

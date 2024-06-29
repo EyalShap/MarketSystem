@@ -25,18 +25,18 @@ public class ProductFacadeTest {
 
     @Test
     public void given_ValidProductDetailsAndStoreId_When_AddProduct_Then_ProductIsAdded() {
-        when(productRepositoryMock.addProduct(anyString(), anyDouble(), anyString(), anyDouble(), anyDouble(),anyInt())).thenReturn(1);
+        when(productRepositoryMock.addProduct(anyString(), anyDouble(), anyString(), anyDouble(), anyDouble(),anyInt(),anyString())).thenReturn(1);
         when(productRepositoryMock.getProduct(1)).thenReturn(new Product(1, "Test Product", 100.0, "Category1", 4.5, 2,1));
 
-        int productId = productFacade.addProduct(1, "Test Product", 100.0, "Category1", 4.5, 2);
+        int productId = productFacade.addProduct(1, "Test Product", 100.0, "Category1", 4.5, 2,"");
         assertEquals(1, productId);
-        verify(productRepositoryMock, times(1)).addProduct("Test Product", 100.0, "Category1", 4.5, 2,1);
+        verify(productRepositoryMock, times(1)).addProduct("Test Product", 100.0, "Category1", 4.5, 2,1,"");
     }
 
     @Test
     public void given_InvalidStoreId_When_AddProduct_Then_ThrowException() {
         assertThrows(IllegalArgumentException.class,
-                () -> productFacade.addProduct(-1, "Test Product", 100.0, "Category1", 4.5, 7));
+                () -> productFacade.addProduct(-1, "Test Product", 100.0, "Category1", 4.5, 7,""));
     }
 
     @Test

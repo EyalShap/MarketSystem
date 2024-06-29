@@ -5,22 +5,29 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class OrBuyPolicy extends CompositeBuyPolicy{
 
     public OrBuyPolicy(int id, BuyPolicy policy1, BuyPolicy policy2) {
         super(id, policy1, policy2);
-        setErrorDescription(Error.makeOrBuyPolicyError(policy1.getErrorDescription(), policy2.getErrorDescription()));
     }
 
     public OrBuyPolicy() {
     }
 
     @Override
-    public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
-        return policy1.canBuy(cart, products, user) || policy2.canBuy(cart, products, user);
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        Set<String> res1 = policy1.canBuy(cart, products, user);
+        Set<String> res2 = policy2.canBuy(cart, products, user);
+        if(res1.isEmpty() || res2.isEmpty()) {
+            return new HashSet<>();
+        }
+        res1.addAll(res2);
+        return res1;
     }
 
     @Override
