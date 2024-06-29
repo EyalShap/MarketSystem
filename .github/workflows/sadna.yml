@@ -31,7 +31,13 @@ jobs:
         run: |
           cd code
           mvn -B package --file pom.xml
+        env:
+          DB_USERNAME: ${{ env.DB_USERNAME }}          
+          DB_PASSWORD: ${{env.DB_PASSWORD}}  
       - name: run tests
         run: |
           cd code
           mvn test
+        env:
+          DB_USERNAME: ${{ env.DB_USERNAME }}          
+          DB_PASSWORD: ${{env.DB_PASSWORD}}  

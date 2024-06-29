@@ -1,14 +1,44 @@
 package com.sadna.sadnamarket.domain.users;
 
 import com.sadna.sadnamarket.service.Error;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import java.util.Map;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Basket {
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "baskets")
+public class Basket implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "basket_id")
+    private int id;
+
+    @Column
     private int storeId;
-    private HashMap<Integer, Integer> products;
+
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "basket_products", joinColumns =@JoinColumn(name = "basket_id"))
+    @MapKeyColumn(name = "product_id")
+    @Column(name = "quantity")
+    private Map<Integer, Integer> products;
     private static final Logger logger = LogManager.getLogger(Basket.class);
 
     public Basket(int storeId) {
@@ -17,7 +47,10 @@ public class Basket {
         products = new HashMap<>();
         logger.info("Exiting Basket constructor");
     }
-
+    public Basket(){
+        logger.info("Entering Basket constructor");
+        logger.info("Exiting Basket constructor");
+    }
     public int getStoreId() {
         logger.info("Entering getStoreId");
         logger.info("Exiting getStoreId with result={}", storeId);
@@ -55,7 +88,7 @@ public class Basket {
         logger.info("Exiting changeQuantity");
     }
 
-    public HashMap<Integer,Integer> getProducts(){
+    public Map<Integer,Integer> getProducts(){
         logger.info("return products from basket {}",products);
         return products;
     }

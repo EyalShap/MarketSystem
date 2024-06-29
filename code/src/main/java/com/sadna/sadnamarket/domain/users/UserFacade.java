@@ -208,7 +208,7 @@ public class UserFacade {
         logger.info("{} accept request id: {}",acceptingName,requestID);
         Request request=iUserRepo.getRequest(acceptingName,requestID);
         int storeId=request.getStoreId();
-        iUserRepo.accept(acceptingName,requestID);
+        iUserRepo.accept(acceptingName,requestID,this);
         String role=request.getRole();
         String apointer=request.getSender();
         iUserRepo.addApointer(apointer,acceptingName, storeId);
@@ -278,19 +278,19 @@ public class UserFacade {
    
     public void addStoreManager(String username,int storeId){
         logger.info("add Store Manager to {} in {} ",username,storeId);
-        iUserRepo.addRole(username,new StoreManager(storeId));
+        iUserRepo.addRole(username,iUserRepo.createStoreManagerRole(storeId));
         logger.info("done add Store Manager to {} in {} ",username,storeId);
 
     }
     public void addStoreOwner(String username,String asignee, int storeId){
         logger.info("add Store owner to {} in {} ",username,storeId);
-        iUserRepo.addRole(username,new StoreOwner(storeId,asignee));
+        iUserRepo.addRole(username,iUserRepo.createStoreOwnerRole(storeId,asignee));
         logger.info("done add Store owner to {} in {} ",username,storeId);
 
     }
     public void addStoreFounder(String username,int storeId){
         logger.info("add Store founder to {} in {} ",username,storeId);
-        iUserRepo.addRole(username,new StoreFounder(storeId,username));
+        iUserRepo.addRole(username,iUserRepo.createStoreFounderRole(storeId,username));
         logger.info("done add Store founder to {} in {} ",username,storeId);
     }
     public void addPremssionToStore(String giverUserName,String userName, int storeId,Permission permission){

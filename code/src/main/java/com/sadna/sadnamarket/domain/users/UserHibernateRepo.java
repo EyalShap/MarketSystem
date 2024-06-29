@@ -9,7 +9,6 @@ import org.hibernate.Transaction;
 import com.sadna.sadnamarket.service.Error;
 
 import com.sadna.sadnamarket.HibernateUtil;
-import com.sadna.sadnamarket.domain.auth.UserCredential;
 
 public class UserHibernateRepo implements IUserRepository {
 
@@ -18,7 +17,7 @@ public class UserHibernateRepo implements IUserRepository {
     public void store(String username,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = new MemberHibernate(username, firstName, lastName, emailAddress, phoneNumber,birthDate);
+            Member member = new Member(username, firstName, lastName, emailAddress, phoneNumber,birthDate);
             session.save(member);
             transaction.commit();
         }
@@ -27,7 +26,7 @@ public class UserHibernateRepo implements IUserRepository {
     @Override
     public boolean hasMember(String name) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            MemberHibernate member = session.get(MemberHibernate.class, name);
+            Member member = session.get(Member.class, name);
             if (member != null) {
                 return true;
             } else {
@@ -41,10 +40,10 @@ public class UserHibernateRepo implements IUserRepository {
     public int addGuest() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            GuestHibernate guest = new GuestHibernate();
+            Guest guest = new Guest();
             session.save(guest);
             transaction.commit();
-            return guest.getGuestId();
+            return guest.guestId;
         } 
     }
 
@@ -52,7 +51,7 @@ public class UserHibernateRepo implements IUserRepository {
     public void deleteGuest(int guestID) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            GuestHibernate guest = session.get(GuestHibernate.class, guestID);
+            Guest guest = session.get(Guest.class, guestID);
             if (guest != null) {
                 session.delete(guest);
                 transaction.commit();
@@ -66,9 +65,9 @@ public class UserHibernateRepo implements IUserRepository {
     @Override
     public List<CartItemDTO> getUserCart(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            MemberHibernate member = session.get(MemberHibernate.class, username);
+            Member member = session.get(Member.class, username);
             if (member != null) {
-                return member.getCart();
+                return member.getCartItems();
             } else {
                 return null;
             }
@@ -78,9 +77,9 @@ public class UserHibernateRepo implements IUserRepository {
     @Override
     public List<CartItemDTO> getGuestCart(int guestID) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            GuestHibernate guest = session.get(GuestHibernate.class, guestID);
+            Guest guest = session.get(Guest.class, guestID);
             if (guest != null) {
-                return guest.getCart();
+                return guest.getCartItems();
             } else {
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
             }
@@ -90,34 +89,38 @@ public class UserHibernateRepo implements IUserRepository {
     @Override
     public boolean hasPermissionToRole(String userName, Permission permission, int storeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM MemberHibernate m WHERE m.username = :username";
-            MemberHibernate member = session.createQuery(hql, MemberHibernate.class)
-                                            .setParameter("username", userName)
-                                            .uniqueResult();
-    
+            Member member = session.get(Member.class, userName);
             if (member != null) {
-                for (UserRoleHibernate role : member.getRoles()) {
-                    if (role.getStoreId() == storeId) {
-                        return role.hasPermission(permission);
-                    }
-                }
+                return member.hasPermissionToRole(permission, storeId);
+            } else {
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
     @Override
     public NotificationDTO addNotification(String userName, String msg) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addNotification'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, userName);
+            if (member != null) {
+                Notification notif=new Notification(msg);
+                session.save(notif);
+                NotificationDTO notification=member.addNotification(notif);
+                session.update(member);
+                transaction.commit();
+                return notification;
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
     public boolean isLoggedIn(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            MemberHibernate member = session.get(MemberHibernate.class, username);
+            Member member = session.get(Member.class, username);
             return member != null && member.isLoggedIn();
         }
     }
@@ -126,9 +129,9 @@ public class UserHibernateRepo implements IUserRepository {
     public void setLogin(String userName, boolean b) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            Member member = session.get(Member.class, userName);
             if (member != null) {
-                member.setLoggedIn(b);
+                member.setLogin(b);
                 session.update(member);
                 transaction.commit();
             } else {
@@ -142,10 +145,9 @@ public class UserHibernateRepo implements IUserRepository {
     public void addProductToCart(String username, int storeId, int productId, int amount) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, username);
+            Member member = session.get(Member.class, username);
             if (member != null) {
-                CartHibernate cartItem = new CartHibernate(member.getCartId(),storeId, productId, amount);;
-                session.save(cartItem);
+                member.addProductToCart(storeId, productId, amount);
                 session.update(member);
                 transaction.commit();
             } else {
@@ -159,23 +161,11 @@ public class UserHibernateRepo implements IUserRepository {
     public void removeProductFromCart(String username, int storeId, int productId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, username);
+            Member member = session.get(Member.class, username);
             if (member != null) {
-                int cartId=member.getCartId();
-                String hql = "FROM cart m WHERE m.cartId = :cartId";
-                List<CartHibernate> itemToRemove =session.createQuery(hql, CartHibernate.class).setParameter("CartId", cartId).list();
-                boolean found = false;
-                for (CartHibernate cartHibernate : itemToRemove) {
-                    if(cartHibernate.getCartId().getStoreId()==storeId && cartHibernate.getCartId().getProduceId()==productId)
-                        session.delete(itemToRemove);
-                        session.update(member);
-                        found = true;
-                        transaction.commit();
-                }
-                if (!found) {
-                    transaction.rollback();
-                    throw new NoSuchElementException(Error.makeBasketProductDoesntExistError());
-                }
+                member.removeProductFromCart(storeId, productId);
+                session.update(member);
+                transaction.commit();
             } else {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
@@ -187,23 +177,11 @@ public class UserHibernateRepo implements IUserRepository {
     public void removeProductFromGuestCart(int guestId, int storeId, int productId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            GuestHibernate guest = session.get(GuestHibernate.class, guestId);
+            Guest guest = session.get(Guest.class, guestId);
             if (guest != null) {
-                int cartId=guest.getCartId();
-                String hql = "FROM cart m WHERE m.cartId = :cartId";
-                List<CartHibernate> itemToRemove =session.createQuery(hql, CartHibernate.class).setParameter("CartId", cartId).list();
-                boolean found = false;
-                for (CartHibernate cartHibernate : itemToRemove) {
-                    if(cartHibernate.getCartId().getStoreId()==storeId && cartHibernate.getCartId().getProduceId()==productId)
-                        session.delete(itemToRemove);
-                        session.update(guest);
-                        found = true;
-                        transaction.commit();
-                }
-                if (!found) {
-                    transaction.rollback();
-                    throw new NoSuchElementException(Error.makeBasketProductDoesntExistError());
-                }
+                guest.removeProductFromCart(storeId, productId);
+                session.update(guest);
+                transaction.commit();
             } else {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestId));
@@ -215,21 +193,11 @@ public class UserHibernateRepo implements IUserRepository {
     public void changeQuantityCart(String username, int storeId, int productId, int amount) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, username);
+            Member member = session.get(Member.class, username);
             if (member != null) {
-                int cartId=member.getCartId();                
-                String hql = "FROM cart m WHERE m.username = :username AND m.storeId = :storeId AND m.productId = :productId";
-                List<CartHibernate> cart = session.createQuery(hql, CartHibernate.class).setParameter("CartId", cartId).list();
-                for (CartHibernate item : cart) {
-                    if (item.getCartId().getStoreId() == storeId && item.getCartId().getProduceId() == productId) {
-                        item.setQuantity(amount);
-                        session.update(item);
-                        transaction.commit();
-                        return;
-                    }
-                }
-                transaction.rollback();
-                throw new NoSuchElementException("Product not found in cart");
+                member.changeQuantityCart(storeId, productId, amount);
+                session.update(member);
+                transaction.commit();
             } else {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
@@ -241,21 +209,11 @@ public class UserHibernateRepo implements IUserRepository {
     public void guestChangeQuantityCart(int guestId, int storeId, int productId, int amount) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            GuestHibernate guest = session.get(GuestHibernate.class, guestId);
+            Guest guest = session.get(Guest.class, guestId);
             if (guest != null) {
-                int cartId=guest.getCartId();                
-                String hql = "FROM cart m WHERE m.username = :username AND m.storeId = :storeId AND m.productId = :productId";
-                List<CartHibernate> cart = session.createQuery(hql, CartHibernate.class).setParameter("CartId", cartId).list();
-                for (CartHibernate item : cart) {
-                    if (item.getCartId().getStoreId() == storeId && item.getCartId().getProduceId() == productId) {
-                        item.setQuantity(amount);
-                        session.update(item);
-                        transaction.commit();
-                        return;
-                    }
-                }
-                transaction.rollback();
-                throw new NoSuchElementException("Product not found in cart");
+                guest.changeQuantityCart(storeId, productId, amount);
+                session.update(guest);
+                transaction.commit();
             } else {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestId));
@@ -267,9 +225,9 @@ public class UserHibernateRepo implements IUserRepository {
     public void logout(String userName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            Member member = session.get(Member.class, userName);
             if (member != null) {
-                member.setLoggedIn(false);;
+                member.setLogin(false);
                 session.update(member);
                 transaction.commit();
             } else {
@@ -280,46 +238,102 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
-    public void setCart(String userName, List<CartItemDTO> cart) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCart'");
+    public void setCart(String userName, List<CartItemDTO> cartLst) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, userName);
+            if (member != null) {
+                Cart cart = new Cart(cartLst);
+                member.setCart(cart);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
     public void addRole(String username, StoreManager storeManager) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addRole'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                member.addRole(storeManager);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public void addRole(String username, StoreOwner storeOwner) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addRole'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                member.addRole(storeOwner);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
-    public void addPermissionToRole(String userName, Permission permission, int storeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addPermissionToRole'");
+    public void addPermissionToRole(String username, Permission permission, int storeId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                member.addPermissionToRole(permission, storeId);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
-    public void removePermissionFromRole(String userName, Permission permission, int storeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removePermissionFromRole'");
+    public void removePermissionFromRole(String username, Permission permission, int storeId) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                member.removePermissionFromRole(permission, storeId);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public List<Permission> getPermissions(String userName, int storeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPermissions'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Member member = session.get(Member.class, userName);
+            if (member != null) {
+                return member.getPermissions(storeId);
+            } else {
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
     public void setFirstName(String userName, String firstName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            Member member = session.get(Member.class, userName);
             if (member != null) {
                 member.setFirstName(firstName);
                 session.update(member);
@@ -335,7 +349,7 @@ public class UserHibernateRepo implements IUserRepository {
     public void setLastName(String userName, String lastName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            Member member = session.get(Member.class, userName);
             if (member != null) {
                 member.setLastName(lastName);
                 session.update(member);
@@ -351,9 +365,9 @@ public class UserHibernateRepo implements IUserRepository {
     public void setEmailAddress(String userName, String emailAddress) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            Member member = session.get(Member.class, userName);
             if (member != null) {
-                member.setEmail(emailAddress);
+                member.setEmailAddress(emailAddress);
                 session.update(member);
                 transaction.commit();
             } else {
@@ -367,7 +381,7 @@ public class UserHibernateRepo implements IUserRepository {
     public void setPhoneNumber(String userName, String phoneNumber) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            Member member = session.get(Member.class, userName);
             if (member != null) {
                 member.setPhoneNumber(phoneNumber);
                 session.update(member);
@@ -381,16 +395,26 @@ public class UserHibernateRepo implements IUserRepository {
 
     @Override
     public void setBirthday(String username,LocalDate birthDate) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setBirthday'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                member.setBirthday(birthDate);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public MemberDTO getMemberDTO(String userName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            MemberHibernate member = session.get(MemberHibernate.class, userName);
+            Member member = session.get(Member.class, userName);
             if (member != null) {
-                return new MemberDTO(member.getUsername(), member.getFirstName(), member.getLastName(), member.getEmail(), member.getPhoneNumber(),member.getBirDate().toString());
+                return new MemberDTO(member);
             } else {
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
@@ -400,9 +424,9 @@ public class UserHibernateRepo implements IUserRepository {
     @Override
     public List<Integer> getOrdersHistory(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            MemberHibernate member = session.get(MemberHibernate.class, username);
+            Member member = session.get(Member.class, username);
             if (member != null) {
-                return member.getOrders();
+                return member.getOrdersHistory();
             } else {
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
@@ -413,11 +437,9 @@ public class UserHibernateRepo implements IUserRepository {
     public void clearCart(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, username);
+            Member member = session.get(Member.class, username);
             if (member != null) {
-                int cartId = member.getCartId();
-                String hql = "DELETE FROM CartHibernate WHERE cartId = :cartId";
-                session.createQuery(hql).setParameter("cartId", cartId).executeUpdate();
+                member.clearCart();
                 transaction.commit();
             } else {
                 transaction.rollback();
@@ -428,15 +450,23 @@ public class UserHibernateRepo implements IUserRepository {
 
     @Override
     public List<NotificationDTO> getNotifications(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getNotifications'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                return member.getNotifications().values().stream().map(Notification::toDTO).toList();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public void addOrder(String username, int orderId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            MemberHibernate member = session.get(MemberHibernate.class, username);
+            Member member = session.get(Member.class, username);
             if (member != null) {
                 member.addOrder(orderId);
                 session.update(member);
@@ -449,102 +479,286 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
-    public List<UserRoleDTO> getUserRolesString(String userName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserRolesString'");
+    public List<UserRoleDTO> getUserRolesString(String username) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                return member.getUserRolesString();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public UserRole getRoleOfStore(String userName, int storeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRoleOfStore'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Member member = session.get(Member.class, userName);
+            if (member != null) {
+                return member.getRoleOfStore(storeId);
+            } else {
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
+            }
+        }
     }
 
     @Override
-    public List<UserRole> getUserRoles(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserRoles'");
+    public List<UserRoleHibernate> getUserRoles(String username) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                return member.getUserRoles();
+            } else {
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public RequestDTO addOwnerRequest(String senderName, UserFacade userFacade, String userName, int store_id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addOwnerRequest'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, senderName);
+            if (member != null) {
+                RequestDTO request = member.addOwnerRequest(userFacade, userName, store_id);
+                return request;
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(senderName));
+            }
+        }
     }
 
     @Override
     public RequestDTO addManagerRequest(String senderName, UserFacade userFacade, String userName, int store_id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addManagerRequest'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, senderName);
+            if (member != null) {
+                RequestDTO request = member.addManagerRequest(userFacade, userName, store_id);
+                return request;
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(senderName));
+            }
+        }
     }
 
     @Override
     public Request getRequest(String acceptingName, int requestID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRequest'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Member member = session.get(Member.class, acceptingName);
+            if (member != null) {
+                return member.getRequest(requestID);
+            } else {
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(acceptingName));
+            }
+        }
     }
 
     @Override
-    public void accept(String acceptingName, int requestID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'accept'");
+    public void accept(String acceptingName, int requestID,UserFacade userFacade) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, acceptingName);
+            if (member != null) {
+                member.accept(requestID,userFacade);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(acceptingName));
+            }
+        }
     }
 
     @Override
     public void addApointer(String apointer, String acceptingName, int storeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addApointer'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, apointer);
+            if (member != null) {
+                member.addApointer(acceptingName, storeId);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(apointer));
+            }
+        }
     }
 
     @Override
     public void reject(String rejectingName, int requestID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'reject'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, rejectingName);
+            if (member != null) {
+                member.reject(requestID);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(rejectingName));
+            }
+        }
     }
 
     @Override
     public void leaveRole(String username, int storeId, UserFacade userFacade) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'leaveRole'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, username);
+            if (member != null) {
+                UserRole role = member.getRoleOfStore(storeId);
+               role.leaveRole(new UserRoleVisitor(),storeId,member,userFacade);
+                 session.delete(role);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
+            }
+        }
     }
 
     @Override
     public void removeRoleFromMember(String username, String remover, int storeId, UserFacade userFacade) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeRoleFromMember'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, remover);
+            if (member != null) {
+                UserRole role = member.getRoleOfStore(storeId);
+                member.removeRole(role);
+                session.update(member);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(remover));
+            }
+        }
     }
 
     @Override
     public RequestDTO addRequest(String senderName, String sentName, int storeId, String reqType) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addRequest'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Member member = session.get(Member.class, sentName);
+            if (member != null) {
+                Request req=new Request(senderName, "You got appointment request", storeId,reqType);
+                session.save(req);
+                RequestDTO request = member.getRequest(req);
+                session.update(member);
+                transaction.commit();
+                return request;
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(senderName));
+            }
+        }
     }
 
     @Override
     public boolean isApointee(String giverUserName, String userName, int storeId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isApointee'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Member member = session.get(Member.class, giverUserName);
+            if (member != null) {
+                UserRole role = member.getRoleOfStore(storeId);
+                return role.isApointedByUser(userName);
+            } else {
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(giverUserName));
+            }
+        }
     }
 
     @Override
     public void clearGuestCart(int guestID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'clearGuestCart'");
+       try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Guest guest = session.get(Guest.class, guestID);
+            if (guest != null) {
+                guest.cart.clear();
+                session.update(guest);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
+            }
+        }
     }
 
     @Override
     public void addProductToCart(int guestId, int storeId, int productId, int amount) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addProductToCart'");
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Guest guest = session.get(Guest.class, guestId);
+            if (guest != null) {
+                guest.addProductToCart(storeId, productId, amount);
+                session.update(guest);
+                transaction.commit();
+            } else {
+                transaction.rollback();
+                throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestId));
+            }
+        }
     }
+    @Override
+    public StoreManager createStoreManagerRole(int storeId) {
+       try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            StoreManager role = new StoreManager(storeId);
+            session.save(role);
+            transaction.commit();
+            return role;
+        }
+    }
+    @Override
+    public StoreOwner createStoreOwnerRole(int storeId, String apointee) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            StoreOwner role = new StoreOwner(storeId, apointee);
+            session.save(role);
+            transaction.commit();
+            return role;
+        }
+    } 
+    public StoreFounder createStoreFounderRole(int storeId, String apointee) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            StoreFounder role = new StoreFounder(storeId, apointee);
+            session.save(role);
+            transaction.commit();
+            return role;
+        }
+    }  
     @Override
     public void clear() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            String hql = "DELETE FROM MemberHibernate";
-            session.createQuery(hql).executeUpdate();
-            transaction.commit();
-        }
+            try {
+                session.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE basket_products").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE baskets").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE role_permissions").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE user_orders").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE user_roles").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE Notification").executeUpdate();
+                //session.createNativeQuery("TRUNCATE TABLE user_notifications").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE carts").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE guests").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE Members").executeUpdate();
+                session.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+                
+                transaction.commit();
+            } catch (Exception e) {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
     }
+}
     
 }

@@ -39,11 +39,11 @@ public interface IUserRepository {
     void addOrder(String username, int orderId);
     List<UserRoleDTO> getUserRolesString(String userName);
     UserRole getRoleOfStore(String userName, int storeId);
-    List<UserRole> getUserRoles(String username);
+    List<UserRoleHibernate> getUserRoles(String username);
     RequestDTO addOwnerRequest(String senderName, UserFacade userFacade, String userName, int store_id);
     RequestDTO addManagerRequest(String senderName, UserFacade userFacade, String userName, int store_id);
     Request getRequest(String acceptingName, int requestID);
-    void accept(String acceptingName, int requestID);
+    void accept(String acceptingName, int requestID,UserFacade userFacade);
     void addApointer(String apointer, String acceptingName, int storeId);
     void reject(String rejectingName, int requestID);
     boolean isApointee(String giverUserName,String userName, int storeId);
@@ -52,5 +52,8 @@ public interface IUserRepository {
     RequestDTO addRequest(String senderName, String sentName,int storeId, String reqType);
     void clearGuestCart(int guestID);
     void clear();
+    StoreManager createStoreManagerRole(int storeId);
+    StoreOwner createStoreOwnerRole(int storeId,String apointee);
+    StoreFounder createStoreFounderRole(int storeId, String apointee);
 
 }
