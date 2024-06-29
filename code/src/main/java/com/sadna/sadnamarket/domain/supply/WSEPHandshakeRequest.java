@@ -1,4 +1,4 @@
-package com.sadna.sadnamarket.api;
+package com.sadna.sadnamarket.domain.supply;
 
 public class WSEPHandshakeRequest extends WSEPRequest{
     @Override

@@ -33,23 +33,6 @@ public class SadnaMarketApplication {
 				return true;
 			}
 		});
-
-		SupplyService.getInstance().setController(new SupplyInterface() {
-			@Override
-			public boolean canMakeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
-				return true;
-			}
-
-			@Override
-			public String makeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
-				return "null";
-			}
-
-			@Override
-			public boolean cancelOrder(String orderCode) {
-				return true;
-			}
-		});
 		SpringApplication.run(SadnaMarketApplication.class, args);
 		
 		//System.out.println(service.createStore("Alice", "hi").getDataJson());
