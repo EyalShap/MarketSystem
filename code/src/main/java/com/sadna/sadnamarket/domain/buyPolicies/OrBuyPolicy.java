@@ -16,6 +16,10 @@ public class OrBuyPolicy extends CompositeBuyPolicy{
         super(id, policy1, policy2);
     }
 
+    public OrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+        super(policy1, policy2);
+    }
+
     public OrBuyPolicy() {
     }
 
@@ -38,5 +42,10 @@ public class OrBuyPolicy extends CompositeBuyPolicy{
     @Override
     public String getPolicyDesc() {
         return policy1.getPolicyDesc() + " OR " + policy2.getPolicyDesc();
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new CompositeBuyPolicyDTO(policy1.getId(), policy2.getId(), "ORL");
     }
 }

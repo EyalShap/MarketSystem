@@ -59,6 +59,11 @@ public class ProductSubject extends PolicySubject{
     }
 
     @Override
+    public String dataString() {
+        return "P-"+productId;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(productId);
     }

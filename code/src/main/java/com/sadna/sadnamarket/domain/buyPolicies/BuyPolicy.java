@@ -10,15 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@JsonFilter("idFilter")
-@Entity
-@Table(name = "range_buy_policy")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "policy_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class BuyPolicy {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "policy_id")
     private Integer id;
 
     BuyPolicy(int id) {
@@ -46,4 +38,6 @@ public abstract class BuyPolicy {
     public abstract Set<Integer> getPolicyProductIds();
 
     public abstract boolean equals(Object other);
+
+    public abstract BuyPolicyDTO getDTO();
 }
