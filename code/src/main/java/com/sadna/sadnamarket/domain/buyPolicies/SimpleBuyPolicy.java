@@ -6,43 +6,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Entity
 public abstract class SimpleBuyPolicy extends BuyPolicy{
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "policy_id")
-    protected List<PolicySubject> policySubject;
+    protected PolicySubject policySubject;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "buy_policy_types", joinColumns = @JoinColumn(name = "policy_id"))
-    @MapKeyJoinColumns({
-            @MapKeyJoinColumn(name = "store_id", referencedColumnName = "store_id"),
-            @MapKeyJoinColumn(name = "buy_type", referencedColumnName = "buy_type")
-    })
     protected List<BuyType> buytypes;
 
     SimpleBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
         super(id);
         this.buytypes = buytypes;
-        this.policySubject = new ArrayList<>();
-        policySubject.add(subject);
+        this.policySubject = subject;
     }
 
     SimpleBuyPolicy(List<BuyType> buytypes, PolicySubject subject) {
         super();
         this.buytypes = buytypes;
-        this.policySubject = new ArrayList<>();
-        policySubject.add(subject);
+        this.policySubject = subject;
     }
 
     public SimpleBuyPolicy() {
     }
 
     public PolicySubject getPolicySubject() {
-        return policySubject.get(0);
+        return policySubject;
     }
 
     public void setPolicySubject(PolicySubject policySubject) {
-        this.policySubject = List.of(policySubject);
+        this.policySubject = policySubject;
     }
 
     public List<BuyType> getBuytypes() {
@@ -55,7 +44,7 @@ public abstract class SimpleBuyPolicy extends BuyPolicy{
 
     public Set<Integer> getPolicyProductIds() {
         Set<Integer> ids = new HashSet<>();
-        ids.add(policySubject.get(0).getProductId());
+        ids.add(policySubject.getProductId());
         return ids;
     }
 

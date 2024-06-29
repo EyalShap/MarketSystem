@@ -13,6 +13,11 @@ public abstract class CompositeBuyPolicy extends BuyPolicy{
         this.policy2 = policy2;
     }
 
+    public CompositeBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+        this.policy1 = policy1;
+        this.policy2 = policy2;
+    }
+
     public CompositeBuyPolicy() {
     }
 

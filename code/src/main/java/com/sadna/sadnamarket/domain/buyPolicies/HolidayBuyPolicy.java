@@ -17,15 +17,19 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
         super(id, buytypes, subject);
     }
 
+    public HolidayBuyPolicy(List<BuyType> buytypes, PolicySubject subject) {
+        super(buytypes, subject);
+    }
+
     public HolidayBuyPolicy() {
     }
 
     @Override
     public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         Set<String> error = new HashSet<>();
-        if(policySubject.get(0).subjectAmount(cart, products) > 0) {
+        if(policySubject.subjectAmount(cart, products) > 0) {
             if(isHoliday()) {
-                error.add(Error.makeHolidayBuyPolicyError(policySubject.get(0).getSubject()));
+                error.add(Error.makeHolidayBuyPolicyError(policySubject.getSubject()));
             }
         }
         return error;
@@ -50,7 +54,11 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
 
     @Override
     public String getPolicyDesc() {
-        return String.format("%s can not be bought on a holiday.", policySubject.get(0).getDesc());
+        return String.format("%s can not be bought on a holiday.", policySubject.getDesc());
     }
 
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new JewishCustomsBuyPolicyDTO(getPolicySubject().dataString(), BuyPolicyTypeCodes.HOLIDAY);
+    }
 }

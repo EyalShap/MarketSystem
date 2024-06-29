@@ -16,6 +16,10 @@ public class ConditioningBuyPolicy extends CompositeBuyPolicy{
         super(id, policy1, policy2);
     }
 
+    public ConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) {
+        super(policy1, policy2);
+    }
+
     public ConditioningBuyPolicy() {
     }
 
@@ -31,6 +35,11 @@ public class ConditioningBuyPolicy extends CompositeBuyPolicy{
             res.add(Error.makeConditioningBuyPolicyError(String.join("\n", res1), String.join("\n", res2)));
         }
         return res;
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new CompositeBuyPolicyDTO(policy1.getId(), policy2.getId(), BuyPolicyTypeCodes.CONDITION);
     }
 
     @Override
