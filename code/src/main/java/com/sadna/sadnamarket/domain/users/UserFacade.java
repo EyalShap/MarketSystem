@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.RealtimeService;
 import org.apache.logging.log4j.LogManager;
@@ -624,7 +625,7 @@ public class UserFacade {
         logger.info("got all orders for {}",username);
         return orderFacade.getAllOrders();
     }
-    private String makeSuplyment(Map<Integer,Integer> productAmount,AddressDTO addressDTO){
+    private String makeSuplyment(Map<Integer,Integer> productAmount,AddressDTO addressDTO) throws JsonProcessingException {
         logger.info("make supplyment {} with address {}",productAmount,addressDTO);
         SupplyService supply=SupplyService.getInstance();
         OrderDetailsDTO orderDetailsDTO=new OrderDetailsDTO(productAmount);

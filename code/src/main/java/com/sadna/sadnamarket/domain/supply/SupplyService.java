@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.supply;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class SupplyService {
     private static SupplyService instance = null;
     private SupplyInterface controller;
@@ -15,15 +17,25 @@ public class SupplyService {
     }
 
     public boolean canMakeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
-        return controller.canMakeOrder(orderDetails, address);
+        try{
+            return controller.canMakeOrder(orderDetails, address);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    public String makeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
+    public String makeOrder(OrderDetailsDTO orderDetails, AddressDTO address) throws JsonProcessingException {
         return controller.makeOrder(orderDetails, address);
     }
 
     public boolean cancelOrder(String orderCode) {
-        return controller.cancelOrder(orderCode);
+        try{
+            return controller.cancelOrder(orderCode);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void setController(SupplyInterface impl){
