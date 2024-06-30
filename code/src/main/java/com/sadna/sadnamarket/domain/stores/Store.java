@@ -306,28 +306,10 @@ public class Store {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Store store = (Store) o;
-        StoreInfo info = store.getStoreInfo();
-        if (!info.equals(storeInfo))
-            return false;
-
-        return storeId == store.storeId &&
-                isActive == store.isActive &&
-                //Objects.equals(productAmounts, store.productAmounts) &&
-                Objects.equals(founderUsername, store.founderUsername) &&
-                Objects.equals(ownerUsernames, store.ownerUsernames) &&
-                Objects.equals(managerUsernames, store.managerUsernames) &&
-                //Objects.equals(sellerUsernames, store.sellerUsernames) &&
-                Objects.equals(orderIds, store.orderIds);
+        return this.getStoreDTO().equals(store.getStoreDTO());
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(storeId, isActive, storeInfo, productAmounts, founderUsername, ownerUsernames,
-                managerUsernames, orderIds, lock);
-    }
+    
 }
