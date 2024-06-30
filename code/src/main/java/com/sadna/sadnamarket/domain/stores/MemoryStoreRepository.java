@@ -1,15 +1,14 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
+import com.sadna.sadnamarket.domain.products.ProductDTO;
+import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.service.Error;
 import org.springframework.data.relational.core.sql.In;
 
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MemoryStoreRepository implements IStoreRepository {
@@ -52,6 +51,37 @@ public class MemoryStoreRepository implements IStoreRepository {
         Store store = findStoreByID(storeId);
         return store.getBankAccount();
     }
+
+    @Override
+    public boolean areStoresEqual(StoreDTO s1, StoreDTO s2) {
+        if(!s1.equals(s2))
+            return false;
+        return Objects.equals(s1.getProductAmounts(), s2.getProductAmounts());
+    }
+
+    @Override
+    public boolean areProductsInStore(int storeId, Set<Integer> productIds) {
+        Store store = findStoreByID(storeId);
+        return store.hasProducts(productIds);
+    }
+
+    @Override
+    public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank) {
+        Store store = findStoreByID(storeId);
+
+        Map<Integer, Integer> productAmounts = store.getProductAmounts();
+        List<Integer> storeProductIds = new ArrayList<>(productAmounts.keySet());
+        List<ProductDTO> filteredProducts = productFacade.getFilteredProducts(storeProductIds, productName, price, category, minProductRank);
+        Map<ProductDTO, Integer> res = new HashMap<>();
+        for (ProductDTO product : filteredProducts)
+            res.put(product, productAmounts.get(product.getProductID()));
+        return res;
+    }
+
+    /*@Override
+    public Map<Integer, Integer> getStoreProducts(int storeId) {
+        return findStoreByID(storeId).getProductAmounts();
+    }*/
 
     @Override
     public Set<Integer> getAllStoreIds() {
