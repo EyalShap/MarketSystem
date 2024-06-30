@@ -110,6 +110,10 @@ public class Error {
         return String.format("There is no store with id %d.", storeId);
     }
 
+    public static String makeStoreNoStoreWithNameError(String storeName){
+        return String.format("There is no store with name %s.", storeName);
+    }
+
     public static String makeStoreWithIdAlreadyExistsError(int storeId){
         return String.format("A store with the id %d already exists.", storeId);
     }
@@ -451,5 +455,17 @@ public class Error {
 
     public static String makeConditionWithIdDoesNotExistError(int condId) {
         return String.format("A Condition with id %d does not exist.", condId);
+    }
+
+    public static String makeDBError() {
+        return "DB Error";
+    }
+
+    public static String makeNoStoreWithNameError(String name) {
+        return String.format("There is no store called %s.", name);
+    }
+
+    public static String makeStoreDidNotSetBankAccountError(int storeId) {
+        return String.format("Store %d did not set a bank account.", storeId);
     }
 }

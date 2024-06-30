@@ -12,6 +12,7 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
+import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
@@ -51,7 +52,7 @@ public class CartTests {
         resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true,storeId));
         productId = Integer.parseInt(resp.getDataJson());
-        BankAccountDTO bankAccountDTO = new BankAccountDTO("10", "392", "393013", "2131516175");
+        BankAccountDTO bankAccountDTO = new BankAccountDTO("10", "392", "393013", "2131516175", null);
         bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId, bankAccountDTO);
     }
 
@@ -187,6 +188,12 @@ public class CartTests {
             Response resp = bridge.buyCartGuest(uuid, cardDTO,addressDTO);
             Assertions.assertFalse(resp.getError());
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "1");
+            resp = bridge.getNotifications(ownerUsername);
+            List<NotificationDTO> notifs = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<NotificationDTO>>() {
+            });
+            Assertions.assertTrue(notifs.size() >= 1);
+            NotificationDTO notif = notifs.get(0);
+            Assertions.assertEquals("User made a purchase in your store TestStore", notif.getMessage());
         } catch (Exception e) {
 
         }

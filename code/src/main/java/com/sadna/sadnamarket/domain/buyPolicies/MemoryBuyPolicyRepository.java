@@ -126,4 +126,9 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
         }
     }
 
+    @Override
+    public BuyPolicyManager createManager(BuyPolicyFacade facade, int storeId) {
+        return new MemoryBuyPolicyManager(facade);
+    }
+
 }

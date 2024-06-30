@@ -5,14 +5,11 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class KgLimitBuyPolicy extends SimpleBuyPolicy{
-    private double minKg;
-    private double maxKg; // -1 for no limit
+    private double minValue;
+    private double maxValue; // -1 for no limit
 
     KgLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, double minKg, double maxKg) {
         super(id, buytypes, subject);
@@ -20,16 +17,22 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
         if(minKg < -1 || maxKg < -1 || (maxKg != -1 && minKg > maxKg))
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("kg limit", String.format("%.0f", minKg).trim(), String.format("%.0f", maxKg).trim()));
 
-        this.minKg = minKg;
-        this.maxKg = maxKg;
-        setErrorDescription(Error.makeKgLimitBuyPolicyError(subject.getSubject(), String.valueOf(minKg), String.valueOf(maxKg)));
+        this.minValue = minKg;
+        this.maxValue = maxKg;
     }
 
-    public KgLimitBuyPolicy() {
+    KgLimitBuyPolicy(List<BuyType> buytypes, PolicySubject subject, double minKg, double maxKg) {
+        super(buytypes, subject);
+
+        if(minKg < -1 || maxKg < -1 || (maxKg != -1 && minKg > maxKg))
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("kg limit", String.format("%.0f", minKg).trim(), String.format("%.0f", maxKg).trim()));
+
+        this.minValue = minKg;
+        this.maxValue = maxKg;
     }
 
     @Override
-    public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         double totalWeight = 0;
         for(CartItemDTO item : cart) {
             int productId = item.getProductId();
@@ -38,26 +41,34 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
                 totalWeight += product.getProductWeight() * item.getAmount();
             }
         }
-        if(maxKg == -1) {
-            return totalWeight >= minKg;
+        Set<String> error = new HashSet<>();
+        if(maxValue == -1) {
+            if(totalWeight < minValue) {
+                error.add(Error.makeKgLimitBuyPolicyError(policySubject.getSubject(), String.valueOf(minValue), String.valueOf(maxValue)));
+                return error;
+            }
         }
-        return totalWeight >= minKg && totalWeight <= maxKg;
+        else if(!(totalWeight >= minValue && totalWeight <= maxValue)) {
+            error.add(Error.makeKgLimitBuyPolicyError(policySubject.getSubject(), String.valueOf(minValue), String.valueOf(maxValue)));
+            return error;
+        }
+        return error;
     }
 
     public double getMinKg() {
-        return minKg;
+        return minValue;
     }
 
     public void setMinKg(double minKg) {
-        this.minKg = minKg;
+        this.minValue = (int)minKg;
     }
 
     public double getMaxKg() {
-        return maxKg;
+        return maxValue;
     }
 
     public void setMaxKg(double maxKg) {
-        this.maxKg = maxKg;
+        this.maxValue = (int)maxKg;
     }
 
     @Override
@@ -67,11 +78,11 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
 
     @Override
     public String getPolicyDesc() {
-        if(maxKg == -1)
-            return String.format("More than %f Kg of %s must be bought.", minKg, policySubject.getDesc());
-        if(minKg == -1)
-            return String.format("You can not buy more than %f Kg of %s.", maxKg, policySubject.getDesc());
-        return String.format("%f - %f Kg of %s must be bought.", minKg, maxKg, policySubject.getDesc());
+        if(maxValue == -1)
+            return String.format("More than %f Kg of %s must be bought.", minValue, policySubject.getDesc());
+        if(minValue == -1)
+            return String.format("You can not buy more than %f Kg of %s.", maxValue, policySubject.getDesc());
+        return String.format("%f - %f Kg of %s must be bought.", minValue, maxValue, policySubject.getDesc());
     }
 
     @Override
@@ -80,11 +91,16 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         KgLimitBuyPolicy that = (KgLimitBuyPolicy) o;
-        return Double.compare(that.minKg, minKg) == 0 && Double.compare(that.maxKg, maxKg) == 0;
+        return Double.compare(that.minValue, minValue) == 0 && Double.compare(that.maxValue, maxValue) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(minKg, maxKg);
+        return Objects.hash(minValue, maxValue);
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new RangedBuyPolicyDTO(getPolicySubject().dataString(), minValue, maxValue, BuyPolicyTypeCodes.KG);
     }
 }

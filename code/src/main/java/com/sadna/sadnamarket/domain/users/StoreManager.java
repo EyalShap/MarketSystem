@@ -3,20 +3,23 @@ package com.sadna.sadnamarket.domain.users;
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.util.List;
 
-public class StoreManager implements UserRole {
-    private int storeId;
-    private List<Permission> permissions;
+@Entity
+@DiscriminatorValue("STORE_MANAGER")
+public class StoreManager extends UserRoleHibernate {
     private List<String> appointments;
     private static final Logger logger = LogManager.getLogger(StoreManager.class);
 
     public StoreManager(int storeId) {
+        super(storeId);
         logger.info("Entering StoreManager constructor with storeId={}", storeId);
-        this.storeId = storeId;
-        permissions = new ArrayList<>();
+        logger.info("Exiting StoreManager constructor");
+    }
+    public StoreManager() {
+        logger.info("Entering StoreManager constructor");
         logger.info("Exiting StoreManager constructor");
     }
 
@@ -53,6 +56,7 @@ public class StoreManager implements UserRole {
 
     public int getStoreId() {
         logger.info("Entering getStoreId");
+        int storeId = super.getStoreId();
         logger.info("Exiting getStoreId with result={}", storeId);
         return storeId;
     }

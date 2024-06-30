@@ -7,4 +7,5 @@ public interface IAuthRepository {
     HashMap<String,String> getAll();
     void add(String username,String password);
     void delete(String username);
+    void clear();
 }

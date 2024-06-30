@@ -1,17 +1,26 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public abstract class SimpleBuyPolicy extends BuyPolicy{
     protected PolicySubject policySubject;
+
     protected List<BuyType> buytypes;
 
-    SimpleBuyPolicy(int id, List<BuyType> buytypes, PolicySubject policySubject) {
+    SimpleBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject) {
         super(id);
         this.buytypes = buytypes;
-        this.policySubject = policySubject;
+        this.policySubject = subject;
+    }
+
+    SimpleBuyPolicy(List<BuyType> buytypes, PolicySubject subject) {
+        super();
+        this.buytypes = buytypes;
+        this.policySubject = subject;
     }
 
     public SimpleBuyPolicy() {

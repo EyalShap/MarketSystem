@@ -2,16 +2,13 @@ package com.sadna.sadnamarket.domain.stores;
 
 import com.sadna.sadnamarket.service.Error;
 
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class StoreInfo {
     private String storeName;
-    private double rank;
+    private Double storeRank;
     private String address;
     private String email;
     private String phoneNumber;
@@ -19,10 +16,20 @@ public class StoreInfo {
     public StoreInfo(String storeName, String address, String email, String phoneNumber) {
         verify(storeName, address, email, phoneNumber);
         this.storeName = storeName;
-        this.rank = 3;
+        this.storeRank = 3.0;
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
+
+    public StoreInfo() {}
+
+    public StoreInfo(StoreDTO storeDTO) {
+        this.storeName = storeDTO.getStoreName();
+        this.storeRank = storeDTO.getRank();
+        this.address = storeDTO.getAddress();
+        this.email = storeDTO.getEmail();
+        this.phoneNumber = storeDTO.getPhoneNumber();
     }
 
     private void verify(String storeName, String address, String email, String phoneNumber) {
@@ -45,11 +52,11 @@ public class StoreInfo {
     }
 
     public double getRank() {
-        return rank;
+        return storeRank;
     }
 
     public void setRank(double rank) {
-        this.rank = rank;
+        this.storeRank = rank;
     }
 
     public String getAddress() {
@@ -81,12 +88,12 @@ public class StoreInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StoreInfo storeInfo = (StoreInfo) o;
-        return Double.compare(storeInfo.rank, rank) == 0 && Objects.equals(storeName, storeInfo.storeName) && Objects.equals(address, storeInfo.address) && Objects.equals(email, storeInfo.email) && Objects.equals(phoneNumber, storeInfo.phoneNumber);
+        return Double.compare(storeInfo.storeRank, storeRank) == 0 && Objects.equals(storeName, storeInfo.storeName) && Objects.equals(address, storeInfo.address) && Objects.equals(email, storeInfo.email) && Objects.equals(phoneNumber, storeInfo.phoneNumber);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(storeName, rank, address, email, phoneNumber);
+        int result = Objects.hash(storeName, storeRank, address, email, phoneNumber);
         return result;
     }
 }
