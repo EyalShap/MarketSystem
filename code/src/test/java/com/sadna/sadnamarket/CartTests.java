@@ -12,6 +12,7 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
+import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
@@ -187,6 +188,12 @@ public class CartTests {
             Response resp = bridge.buyCartGuest(uuid, cardDTO,addressDTO);
             Assertions.assertFalse(resp.getError());
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "1");
+            resp = bridge.getNotifications(ownerUsername);
+            List<NotificationDTO> notifs = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<NotificationDTO>>() {
+            });
+            Assertions.assertTrue(notifs.size() >= 1);
+            NotificationDTO notif = notifs.get(0);
+            Assertions.assertEquals("User made a purchase in your store TestStore", notif.getMessage());
         } catch (Exception e) {
 
         }

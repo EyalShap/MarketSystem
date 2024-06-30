@@ -506,12 +506,12 @@ public class UserFacade {
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         validateCreditCard(creditCard);
         validateAddress(addressDTO);
-        storeFacade.checkCart(null, items);
+        storeFacade.checkCart(username, items);
         List<ProductDataPrice> productList=storeFacade.calculatePrice(username, items);
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,username);
-        storeFacade.updateStock(null, items);
+        storeFacade.updateStock(username, items);
         clearCart(username);
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
     }
@@ -643,5 +643,9 @@ public class UserFacade {
     }
     public boolean isApointee(String apointee,String apointer,int store_id){
         return iUserRepo.isApointee(apointer, apointee,store_id);
+    }
+
+    public void setRealtime(RealtimeService realtime) {
+        this.realtime = realtime;
     }
 }
