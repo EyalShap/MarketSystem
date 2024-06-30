@@ -41,10 +41,16 @@
         <mapping class="com.sadna.sadnamarket.domain.buyPolicies.CompositeBuyPolicyDTO"/>
         <mapping class="com.sadna.sadnamarket.domain.buyPolicies.DateBuyPolicyDTO"/>
         <mapping class="com.sadna.sadnamarket.domain.payment.BankAccountDTO"/>
-        <mapping class="com.sadna.sadnamarket.domain.users.MemberHibernate"/>
-        <mapping class="com.sadna.sadnamarket.domain.users.CartHibernate"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Member"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Cart"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Basket"/>
         <mapping class="com.sadna.sadnamarket.domain.users.UserRoleHibernate"/>
-        <mapping class="com.sadna.sadnamarket.domain.users.GuestHibernate"/>
-
+        <mapping class="com.sadna.sadnamarket.domain.users.Guest"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.IUser"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Notification"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Request"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.StoreManager"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.StoreOwner"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.StoreFounder"/>
     </session-factory>
 </hibernate-configuration>

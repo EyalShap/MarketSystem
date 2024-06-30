@@ -339,10 +339,10 @@ public class MemoryRepo implements IUserRepository {
     }
 
     @Override
-    public List<UserRole> getUserRoles(String username) {
+    public List<UserRoleHibernate> getUserRoles(String username) {
         logger.info("Entering getUserRoles with username={}", username);
         Member member = getMember(username);
-        List<UserRole> userRoles = member.getUserRoles();
+        List<UserRoleHibernate> userRoles = member.getUserRoles();
         logger.info("Exiting getUserRoles with result={}", userRoles);
         return userRoles;
     }
@@ -375,10 +375,10 @@ public class MemoryRepo implements IUserRepository {
     }
 
     @Override
-    public void accept(String acceptingName, int requestID) {
+    public void accept(String acceptingName, int requestID,UserFacade userFacade) {
         logger.info("Entering accept with acceptingName={}, requestID={}", acceptingName, requestID);
         Member acceptingMember = getMember(acceptingName);
-        acceptingMember.accept(requestID);
+        acceptingMember.accept(requestID,userFacade);
         logger.info("Exiting accept");
     }
 
@@ -422,7 +422,7 @@ public class MemoryRepo implements IUserRepository {
     @Override
     public void removeRoleFromMember(String username,String remover, int storeId, UserFacade userFacade) {
         logger.info("Entering removeRoleFromMember with username={}, remover={}, storeId={}", username, remover, storeId);
-        List<UserRole> roles=getUserRoles(username);
+        List<UserRoleHibernate> roles=getUserRoles(username);
         for(UserRole role : roles){
            if(role.getStoreId()==storeId){
             if(!role.getApointee().equals(remover))
@@ -456,8 +456,18 @@ public class MemoryRepo implements IUserRepository {
         getGuest(guestId).addProductToCart(storeId, productId, amount);
         logger.info("Exiting addProductToCart");
     }
-
-
+    @Override
+    public StoreManager createStoreManagerRole(int storeId){
+        return new StoreManager(storeId);
+    }
+    @Override
+    public StoreOwner createStoreOwnerRole(int storeId,String apointee){
+        return new StoreOwner(storeId,apointee);
+    }
+    @Override
+    public StoreFounder createStoreFounderRole(int storeId, String apointee){
+        return new StoreFounder(storeId,apointee);
+    }
     @Override
     public void clear() {
     }
