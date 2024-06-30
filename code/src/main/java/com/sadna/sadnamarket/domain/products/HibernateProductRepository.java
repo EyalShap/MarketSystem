@@ -86,9 +86,8 @@ public class HibernateProductRepository implements IProductRepository{
             e.printStackTrace();
         }
     }
-
     @Override
-    public int addProduct(String productName, double productPrice, String productCategory, double productRank, double productWeight, int storeId) {
+    public int addProduct(String productName, double productPrice, String productCategory, double productRank, double productWeight, int storeId,String description) {
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -100,6 +99,7 @@ public class HibernateProductRepository implements IProductRepository{
             product.setProductRank(productRank);
             product.setProductWeight(productWeight);
             product.setStoreId(storeId);
+            product.setDescription(description);
             product.setActive(true);
 
             session.save(product);
