@@ -1,21 +1,47 @@
 package com.sadna.sadnamarket.domain.users;
 
 import com.sadna.sadnamarket.service.Error;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+@Entity
+@Table(name = "carts")
 public class Cart {
+    
+    @Id
+    @GeneratedValue(strategy = javax.persistence.GenerationType.TABLE)
+    private int cartId;
 
-    private HashMap<Integer, Basket> baskets;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "cart_id") // Foreign key column in Basket table
+    private Map<Integer, Basket> baskets;
     private static final Logger logger = LogManager.getLogger(Cart.class);
 
     public Cart() {
         logger.info("Entering Cart constructor");
         baskets = new HashMap<>();
+        logger.info("Exiting Cart constructor");
+    }
+    public Cart(List<CartItemDTO> cartItems){
+        logger.info("Entering Cart constructor with cartItems={}",cartItems);
+        baskets = new HashMap<>();
+        for (CartItemDTO cartItem : cartItems) {
+            addProduct(cartItem.getStoreId(),cartItem.getProductId(),cartItem.getAmount());
+        }
         logger.info("Exiting Cart constructor");
     }
 
@@ -77,7 +103,7 @@ public class Cart {
         logger.info("getting cart items");
         List<CartItemDTO> cartItems=new ArrayList<>();
         for (Integer basketStore : baskets.keySet()) {
-            HashMap<Integer,Integer> basketProducts=baskets.get(basketStore).getProducts();
+            Map<Integer,Integer> basketProducts=baskets.get(basketStore).getProducts();
             for (Integer productId : basketProducts.keySet()) {
                 CartItemDTO cartItemDTO=new CartItemDTO(basketStore, productId, basketProducts.get(productId));
                 cartItems.add(cartItemDTO);

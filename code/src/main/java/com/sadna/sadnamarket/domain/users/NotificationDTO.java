@@ -14,6 +14,10 @@ public class NotificationDTO {
         this.id=id;
     }
 
+    public NotificationDTO(){
+
+    }
+
     public NotificationDTO(Notification notific) {
         this.message = notific.getMessage();
         this.date = notific.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));

@@ -5,15 +5,12 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
-import java.time.Clock;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class HourLimitBuyPolicy extends SimpleBuyPolicy{
-    private LocalTime from;
-    private LocalTime to; // null if no limit
+    private LocalTime minValue;
+    private LocalTime maxValue; // null if no limit
 
     HourLimitBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, LocalTime from, LocalTime to) {
         super(id, buytypes, subject);
@@ -24,21 +21,40 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
         if(to.isBefore(from)) {
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("hour limit", from.toString(), to.toString()));
         }
-        this.from = from;
-        this.to = to;
-        setErrorDescription(Error.makeHourLimitBuyPolicyError(subject.getSubject(), from, to));
+        this.minValue = from;
+        this.maxValue = to;
     }
 
-    public HourLimitBuyPolicy() {
+    HourLimitBuyPolicy(List<BuyType> buytypes, PolicySubject subject, LocalTime from, LocalTime to) {
+        super(buytypes, subject);
+        if(to == null)
+            to = LocalTime.of(23, 59, 59);
+        if(from == null)
+            from = LocalTime.of(0, 0);
+        if(to.isBefore(from)) {
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("hour limit", from.toString(), to.toString()));
+        }
+        this.minValue = from;
+        this.maxValue = to;
     }
 
+    private int getTime(LocalTime time) {
+        return time.getHour() * 60 + time.getMinute();
+    }
+
+    private LocalTime getTime(int time) {
+        return LocalTime.of(time / 60, time % 60);
+    }
 
     @Override
-    public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        Set<String> error = new HashSet<>();
         if(policySubject.subjectAmount(cart, products) > 0) {
-            return isTimeInLimit();
+            if(!isTimeInLimit()) {
+                error.add(Error.makeHourLimitBuyPolicyError(policySubject.getSubject(), minValue, maxValue));
+            }
         }
-        return true;
+        return error;
     }
 
     public static LocalTime getCurrTime() {
@@ -47,23 +63,23 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
 
     private boolean isTimeInLimit() {
         LocalTime now = getCurrTime();
-        return now.isBefore(to) && now.isAfter(from);
+        return now.isBefore(maxValue) && now.isAfter(minValue);
     }
 
     public LocalTime getFrom() {
-        return from;
+        return minValue;
     }
 
     public void setFrom(LocalTime from) {
-        this.from = from;
+        this.minValue = from;
     }
 
     public LocalTime getTo() {
-        return to;
+        return maxValue;
     }
 
     public void setTo(LocalTime to) {
-        this.to = to;
+        this.maxValue = to;
     }
 
     @Override
@@ -73,11 +89,13 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
 
     @Override
     public String getPolicyDesc() {
-        if(from == null)
-            return String.format("%s can only be bought before %s.", policySubject.getDesc(), to.toString());
-        if(to == null)
-            return String.format("%s can only be bought after %s.", policySubject.getDesc(), from.toString());
-        return String.format("%s can only be bought at %s - %s.", policySubject.getDesc(), from.toString(), to.toString());
+        /*if(minValue == null)
+            return String.format("%s can only be bought before %s.", policySubject.get(0).getDesc(), maxValue.toString());
+        if(maxValue == null)
+            return String.format("%s can only be bought after %s.", policySubject.get(0).getDesc(), minValue.toString());
+        */
+        return String.format("%s can only be bought at %s - %s.", policySubject.getDesc(), minValue.toString(), maxValue.toString());
+
     }
 
     @Override
@@ -86,11 +104,16 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         HourLimitBuyPolicy buyPolicy = (HourLimitBuyPolicy) o;
-        return Objects.equals(from, buyPolicy.from) && Objects.equals(to, buyPolicy.to);
+        return Objects.equals(minValue, buyPolicy.minValue) && Objects.equals(maxValue, buyPolicy.maxValue);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to);
+        return Objects.hash(minValue, maxValue);
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new RangedBuyPolicyDTO(getPolicySubject().dataString(), minValue.getHour() + ((double)minValue.getMinute())/60, maxValue.getHour() + ((double)maxValue.getMinute())/60, BuyPolicyTypeCodes.HOUR);
     }
 }

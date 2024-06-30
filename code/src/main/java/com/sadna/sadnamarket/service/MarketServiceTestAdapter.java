@@ -37,6 +37,10 @@ public class MarketServiceTestAdapter {
         return true;
     }
 
+    public void injectRealtime(RealtimeService realtimeService){
+        this.real.injectRealtime(realtimeService);
+    }
+
     public Response guestEnterSystem() {
         return real.enterAsGuest();
     }
@@ -156,7 +160,7 @@ public class MarketServiceTestAdapter {
     public Response addProductToStore(String token, String userId, int storeId, ProductDTO productDetails) {
         // return Response.createResponse(false, "5"); //returns product id
         return real.addProductToStore(token, userId, storeId, productDetails.getProductName(), 100,
-                productDetails.getProductPrice(), productDetails.getProductCategory(), productDetails.getProductRank(), productDetails.getProductWeight());
+                productDetails.getProductPrice(), productDetails.getProductCategory(), productDetails.getProductRank(), productDetails.getProductWeight(),productDetails.getDescription());
     }
 
     public Response removeProductFromStore(String token, String userId, int storeId, int productId) {
@@ -168,7 +172,7 @@ public class MarketServiceTestAdapter {
             ProductDTO productDetails) {
         // return Response.createResponse(false, "true");
         return real.updateProductInStore(token, userId, storeId, productId, productDetails.getProductName(), 200,
-                productDetails.getProductPrice(), productDetails.getProductCategory(), 3);
+                productDetails.getProductPrice(), productDetails.getProductCategory(), 3,productDetails.getDescription());
     }
 
     public Response getStoreProductAmount(int storeId, int productId) {
@@ -290,5 +294,9 @@ public class MarketServiceTestAdapter {
         Response resp = real.createProductAmountBuyPolicy(token, username, productId, new LinkedList<>(), 0, 0);
         int id = Integer.parseInt(resp.getDataJson());
         return real.addBuyPolicyToStore(token, username, storeId, id);
+    }
+
+    public Response getNotifications(String username){
+        return real.getUserNotifications(username);
     }
 }

@@ -50,9 +50,9 @@ class AgeLimitBuyPolicyTest extends BuyPolicyTest{
         MemberDTO baby = userFacade.getMemberDTO("FourSeasonsOrlandoBaby");
         MemberDTO guest = null;
 
-        assertTrue(policy.canBuy(cart, cartMap, adult));
-        assertFalse(policy.canBuy(cart, cartMap, baby));
-        assertFalse(policy.canBuy(cart, cartMap, guest));
+        assertTrue(policy.canBuy(cart, cartMap, adult).isEmpty());
+        assertFalse(policy.canBuy(cart, cartMap, baby).isEmpty());
+        assertFalse(policy.canBuy(cart, cartMap, guest).isEmpty());
     }
 
     @Test
@@ -67,8 +67,8 @@ class AgeLimitBuyPolicyTest extends BuyPolicyTest{
         MemberDTO baby = userFacade.getMemberDTO("FourSeasonsOrlandoBaby");
         MemberDTO guest = null;
 
-        assertTrue(policy.canBuy(cart, cartMap, adult));
-        assertTrue(policy.canBuy(cart, cartMap, baby));
-        assertTrue(policy.canBuy(cart, cartMap, guest));
+        assertTrue(policy.canBuy(cart, cartMap, adult).isEmpty());
+        assertTrue(policy.canBuy(cart, cartMap, baby).isEmpty());
+        assertTrue(policy.canBuy(cart, cartMap, guest).isEmpty());
     }
 }

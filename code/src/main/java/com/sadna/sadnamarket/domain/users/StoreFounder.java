@@ -3,15 +3,24 @@ package com.sadna.sadnamarket.domain.users;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-public class StoreFounder extends StoreOwner {
+@Entity
+@DiscriminatorValue("STORE_FOUNDER")
+public class StoreFounder extends StoreOwner implements Serializable {
     private static final Logger logger = LogManager.getLogger(StoreFounder.class);
 
     public StoreFounder(int storeId, String apointee) {
         super(storeId, apointee);
         logger.info("Entering StoreFounder constructor with storeId={} and apointee={}", storeId, apointee);
+        logger.info("Exiting StoreFounder constructor");
+    }
+    public StoreFounder() {
+        logger.info("Entering StoreFounder constructor");
         logger.info("Exiting StoreFounder constructor");
     }
 

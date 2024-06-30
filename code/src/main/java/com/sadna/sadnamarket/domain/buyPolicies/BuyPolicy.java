@@ -5,39 +5,30 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@JsonFilter("idFilter")
 public abstract class BuyPolicy {
-    private int id;
-    private String errorDescription;
+    private Integer id;
 
     BuyPolicy(int id) {
         this.id = id;
-        this.errorDescription = null;
     }
 
-    public BuyPolicy() {
+    BuyPolicy() {
+        this.id = null;
     }
 
-    public abstract boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user);
+    public abstract Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user);
 
     public int getId() {
         return id;
     }
 
-    public String getErrorDescription() {
-        return errorDescription;
-    }
-
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setErrorDescription(String errorDescription) {
-        this.errorDescription = errorDescription;
     }
 
     protected abstract boolean dependsOnUser();
@@ -47,4 +38,6 @@ public abstract class BuyPolicy {
     public abstract Set<Integer> getPolicyProductIds();
 
     public abstract boolean equals(Object other);
+
+    public abstract BuyPolicyDTO getDTO();
 }

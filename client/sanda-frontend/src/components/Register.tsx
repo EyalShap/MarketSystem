@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { registerMember } from '../API';
 import { useNavigate } from 'react-router-dom'; 
 import {formatDate}  from '../utils';
+import { daDK } from '@mui/x-date-pickers/locales';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -17,7 +18,7 @@ const schema = yup.object().shape({
     lastName: yup.string().required("Last Name is required"),
     email: yup.string().email("Invalid email format").required("Email is required"),
     phoneNumber: yup.string().matches(phoneRegExp, 'Phone number is not valid').required("Phone number is required"),
-    birthDate: yup.date().required("Birthday is required"),
+    birthDate: yup.date().max(new Date(), "Birth date cannot be in the future").required("Birthday is required"),
     
 });
 

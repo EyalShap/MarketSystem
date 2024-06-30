@@ -13,7 +13,7 @@ import { CreditCard } from '@mui/icons-material';
 const schema = yup.object().shape({
   creditCard: yup.string().length(16, "A credit card number is 16 digits long").required("Credit Card is required"),
   digitsOnBack: yup.string().length(3, "All 3 digits are required").required("3 Digits on the back are required"),
-  expirationDate: yup.date().required("Expiration date is required"),
+  expirationDate: yup.date().min(new Date(), "date cannot be in the past").required("Expiration date is required"),
   ownerId: yup.string().length(9, "An israeli ID consists of 9 digits").required("Owner ID is required"),
   country: yup.string().required("Country is required"),
   city: yup.string().required("City is required"),
@@ -23,7 +23,7 @@ const schema = yup.object().shape({
   ordererName: yup.string().required("Orderer Name is required"),
   contactPhone: yup.string().required("Contact Phone is required"),
   contactEmail: yup.string().email("Contact Email must be a valid email").required("Contact Email is required"),
-  ordererId: yup.string().required("Orderer ID is required"),
+  ordererId: yup.string().length(9, "An israeli ID consists of 9 digits").required("Orderer ID is required"),
 });
 
 const Purchase = () => {

@@ -5,46 +5,66 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.util.*;
+
 
 public class AmountBuyPolicy extends SimpleBuyPolicy {
-    private int from;
-    private int to; // if this is equal to -1 there is no limit
+    private int minValue;
+    private int maxValue; // if this is equal to -1 there is no limit
 
     AmountBuyPolicy(int id, List<BuyType> buytypes, PolicySubject subject, int from, int to) {
         super(id, buytypes, subject);
+
         if((from == -1 && to == -1) || from < -1 || to < -1 || (to != -1 && to < from)) {
             throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("amount", String.valueOf(from), String.valueOf(to)));
         }
-        this.from = from;
-        this.to = to;
-        this.setErrorDescription(Error.makeAmountBuyPolicyError(subject.getSubject(), from, to));
+        this.minValue = from;
+        this.maxValue = to;
+    }
+
+    AmountBuyPolicy(List<BuyType> buytypes, PolicySubject subject, int from, int to) {
+        super(buytypes, subject);
+
+        if((from == -1 && to == -1) || from < -1 || to < -1 || (to != -1 && to < from)) {
+            throw new IllegalArgumentException(Error.makeBuyPolicyParamsError("amount", String.valueOf(from), String.valueOf(to)));
+        }
+        this.minValue = from;
+        this.maxValue = to;
     }
 
     @Override
-    public boolean canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+    public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
+        Set<String> error = new HashSet<>();
         int amount = policySubject.subjectAmount(cart, products);
-        if(to == -1)
-            return amount >= from;
-        return amount <= to && amount >= from;
+        if(maxValue == -1) {
+            if(amount < minValue) {
+                error.add(Error.makeAmountBuyPolicyError(policySubject.getSubject(), minValue, maxValue));
+                return error;
+            }
+        }
+        else if(!(amount <= maxValue && amount >= minValue)) {
+            error.add(Error.makeAmountBuyPolicyError(policySubject.getSubject(), minValue, maxValue));
+            return error;
+        }
+        return error;
     }
 
     public int getFrom() {
-        return from;
+        return minValue;
     }
 
     public void setFrom(int from) {
-        this.from = from;
+        this.minValue = from;
     }
 
     public int getTo() {
-        return to;
+        return maxValue;
     }
 
     public void setTo(int to) {
-        this.to = to;
+        this.maxValue = to;
     }
 
     @Override
@@ -54,11 +74,11 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
 
     @Override
     public String getPolicyDesc() {
-        if(to == -1)
-            return String.format("More than %d units of %s must be bought.", from, policySubject.getDesc());
-        if(from == -1)
-            return String.format("Less than %d units of %s must be bought.", to, policySubject.getDesc());
-        return String.format("%d - %d units of %s must be bought.", from, to, policySubject.getDesc());
+        if(maxValue == -1)
+            return String.format("More than %d units of %s must be bought.", minValue, policySubject.getDesc());
+        if(minValue == -1)
+            return String.format("Less than %d units of %s must be bought.", maxValue, policySubject.getDesc());
+        return String.format("%d - %d units of %s must be bought.", minValue, maxValue, policySubject.getDesc());
     }
 
     @Override
@@ -68,11 +88,16 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AmountBuyPolicy that = (AmountBuyPolicy) o;
-        return from == that.from && to == that.to;
+        return minValue == that.minValue && maxValue == that.maxValue;
+    }
+
+    @Override
+    public BuyPolicyDTO getDTO() {
+        return new RangedBuyPolicyDTO(getPolicySubject().dataString(), Double.valueOf(minValue), Double.valueOf(maxValue), BuyPolicyTypeCodes.AMOUNT);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to);
+        return Objects.hash(minValue, maxValue);
     }
 }

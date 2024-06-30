@@ -31,7 +31,7 @@ class BuyPolicyManagerTest {
     @BeforeEach
     void setUp() {
         this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
-        this.manager = new BuyPolicyManager(buyPolicyFacade);
+        this.manager = new MemoryBuyPolicyManager(buyPolicyFacade);
     }
 
     @Test
