@@ -32,17 +32,19 @@ jobs:
           cd code
           mvn -B package --file pom.xml
         env:
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}          
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
+          DB_USERNAME: ${{ secrets.env.DB_USERNAME }}          
+          DB_PASSWORD: ${{ secrets.env.DB_PASSWORD}}
       - name: Clean and Build with Maven
-        run: mvn clean package
+        run: | 
+            cd code
+            mvn clean package
         env:
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}          
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
+          DB_USERNAME: ${{ secrets.env.DB_USERNAME }}          
+          DB_PASSWORD: ${{ secrets.env.DB_PASSWORD}}
       - name: run tests
         run: |
           cd code
           mvn test
         env:
-          DB_USERNAME: ${{secrets.DB_USERNAME }}          
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}  
+          DB_USERNAME: ${{secrets.env.DB_USERNAME }}          
+          DB_PASSWORD: ${{secrets.env.DB_PASSWORD}}  
