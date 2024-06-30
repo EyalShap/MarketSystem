@@ -36,12 +36,7 @@ public class ExternalSupplyAPI {
         return sendRequest(request);
     }
 
-    private String sendRequest(WSEPRequest request) throws JsonProcessingException {
-        UriSpec<RequestBodySpec> uriSpec = client.post();
-        RequestBodySpec bodySpec = uriSpec.uri("");
-        RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(mapper.writeValueAsString(request));
-        ResponseSpec responseSpec = headersSpec.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).retrieve();
-        String resp = responseSpec.bodyToMono(String.class).block();
-        return resp;
+    private String sendRequest(WSEPRequest request) {
+        return client.post().uri("").body(request.getBody()).retrieve().bodyToMono(String.class).block();
     }
 }

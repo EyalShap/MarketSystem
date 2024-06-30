@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.supply;
 
+import org.springframework.web.reactive.function.BodyInserters;
+
 public class WSEPCancelSupplyRequest extends WSEPRequest{
     String transaction_id;
 
@@ -11,9 +13,8 @@ public class WSEPCancelSupplyRequest extends WSEPRequest{
         this.transaction_id = transaction_id;
     }
 
-
     @Override
-    public String getAction_type() {
-        return "cancel_supply";
+    public BodyInserters.FormInserter getBody() {
+        return BodyInserters.fromFormData("action_type","cancel_supply").with("transaction_id",transaction_id);
     }
 }
