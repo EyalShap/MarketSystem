@@ -170,8 +170,6 @@ public class HibernateProductRepository implements IProductRepository{
         }
     }
 
-
-    //????????....TODO
     @Override
     public List<Product> getTopProducts() {
         List<Product> products=new ArrayList<>();
@@ -199,25 +197,5 @@ public class HibernateProductRepository implements IProductRepository{
         Product product=new Product(id,productName,productPrice,productCategory,productRank,productWeight,storeId);
         return product;
     }
-
-
-    public static void main(String[] args) {
-        HibernateProductRepository a=new HibernateProductRepository();
-//        a.addProduct("banana",11.5,"vegetables",4.5,3,5);
-//        a.addProduct("orange",6,"fruits",7.2,6,7);
-//        a.addProduct("melon",8.9,"fruits",3.8,8,5);
-//        a.addProduct("banana",11.5,"vegetables",4.5,3,9);
-//        Set<Integer> u= a.getAllProductIds();
-//        List<Product>y =a.getAllProducts();
-//        boolean k1=a.isExistProduct(y.get(0).getProductId());
-//        boolean k2=a.isExistProduct(129);
-//        Product t=a.getProduct(y.get(0).getProductId());
-//        List<Product>b =a.filterByName("banana");
-//        List<Product>x=a.filterByCategory("fruits");
-//        List<Integer>u=new ArrayList<>();
-//        u.add(383);
-//        u.add(387);
-//        List<Product>abc =a.getProducts(u);
-//        a.removeProduct(383);
-    }
+    
 }
