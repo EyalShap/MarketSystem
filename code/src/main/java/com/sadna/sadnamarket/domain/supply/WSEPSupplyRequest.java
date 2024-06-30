@@ -1,16 +1,13 @@
 package com.sadna.sadnamarket.domain.supply;
 
+import org.springframework.web.reactive.function.BodyInserters;
+
 public class WSEPSupplyRequest extends WSEPRequest{
     String name;
     String address;
     String city;
     String country;
     String zip;
-
-    @Override
-    public String getAction_type() {
-        return "supply";
-    }
 
     public String getName() {
         return name;
@@ -50,5 +47,15 @@ public class WSEPSupplyRequest extends WSEPRequest{
 
     public void setZip(String zip) {
         this.zip = zip;
+    }
+
+    @Override
+    public BodyInserters.FormInserter getBody() {
+        return BodyInserters.fromFormData("action_type","supply")
+                .with("name",name)
+                .with("address",address)
+                .with("city",city)
+                .with("country",country)
+                .with("zip",zip);
     }
 }
