@@ -38,12 +38,8 @@ class RealtimeNotificationTests {
     @BeforeEach
     void clean() {
         bridge.reset();
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
         username = "StoreOwnerMan";
@@ -63,14 +59,6 @@ class RealtimeNotificationTests {
 
     @Test
     void buyCartTest() {
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
-        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
-        PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
-        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
-        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
         String uuid = bridge.guestEnterSystem().getDataJson();
 
         bridge.setStoreProductAmount(token, username, storeId, productId, 2);
@@ -88,14 +76,6 @@ class RealtimeNotificationTests {
 
     @Test
     void buyCartMemberTest() {
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
-        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
-        PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
-        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
-        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
         String uuid = bridge.guestEnterSystem().getDataJson();
 
         bridge.setStoreProductAmount(token, username, storeId, productId, 2);
@@ -113,14 +93,6 @@ class RealtimeNotificationTests {
 
     @Test
     void buyCartLoggedOutTest() {
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
-        PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
-        PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
-        Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
-        Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
         String uuid = bridge.guestEnterSystem().getDataJson();
 
         bridge.setStoreProductAmount(token, username, storeId, productId, 2);
