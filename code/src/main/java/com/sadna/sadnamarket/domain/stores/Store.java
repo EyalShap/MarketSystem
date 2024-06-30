@@ -45,12 +45,12 @@ public class Store {
     private void setAnythingButId(String founderUsername, StoreInfo storeInfo) {
         this.isActive = true;
         this.storeInfo = storeInfo;
-        this.productAmounts = new ConcurrentHashMap<>();
+        this.productAmounts = new HashMap<>();
         this.founderUsername = founderUsername;
-        this.ownerUsernames = Collections.synchronizedSet(new HashSet<>());
+        this.ownerUsernames = new HashSet<>();
         this.ownerUsernames.add(founderUsername);
-        this.managerUsernames = Collections.synchronizedSet(new HashSet<>());
-        this.orderIds = Collections.synchronizedSet(new HashSet<>());
+        this.managerUsernames = new HashSet<>();
+        this.orderIds = new HashSet<>();
     }
 
     public int getStoreId() {
@@ -317,7 +317,7 @@ public class Store {
 
         return storeId == store.storeId &&
                 isActive == store.isActive &&
-                Objects.equals(productAmounts, store.productAmounts) &&
+                //Objects.equals(productAmounts, store.productAmounts) &&
                 Objects.equals(founderUsername, store.founderUsername) &&
                 Objects.equals(ownerUsernames, store.ownerUsernames) &&
                 Objects.equals(managerUsernames, store.managerUsernames) &&
