@@ -197,5 +197,5 @@ public class HibernateProductRepository implements IProductRepository{
         Product product=new Product(id,productName,productPrice,productCategory,productRank,productWeight,storeId);
         return product;
     }
-    
+
 }
