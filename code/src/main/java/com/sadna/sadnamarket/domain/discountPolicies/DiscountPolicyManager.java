@@ -30,7 +30,7 @@ public class DiscountPolicyManager {
         /*if(discountIds.contains(discountPolicyId))
             throw new Exception();
         discountIds.remove(discountPolicyId);*/
-        if(discountIds.contains(discountPolicyId))
+        if(discountIds.contains(discountPolicyId) )
             discountIds.remove(discountPolicyId);
     }
 
