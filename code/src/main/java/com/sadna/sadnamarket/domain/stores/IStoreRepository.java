@@ -1,9 +1,12 @@
 package com.sadna.sadnamarket.domain.stores;
 
+import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.data.relational.core.sql.In;
 
 import java.time.LocalTime;
@@ -51,4 +54,26 @@ public interface IStoreRepository {
     public boolean areProductsInStore(int storeId, Set<Integer> productIds);
 
     public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank);
+
+    public static void cleanDB() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                session.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE stores").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE store_products").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE store_owners").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE store_managers").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE store_orders").executeUpdate();
+                session.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+
+                transaction.commit();
+            } catch (Exception e) {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+                throw e;
+            }
+        }
+    }
 }

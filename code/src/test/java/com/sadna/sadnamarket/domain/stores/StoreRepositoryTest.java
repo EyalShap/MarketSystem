@@ -20,7 +20,7 @@ class StoreRepositoryTest {
     @BeforeEach
     public void setUp() {
         //repo = new MemoryStoreRepository();
-        HibernateUtil.cleanDB();
+        IStoreRepository.cleanDB();
     }
 
     static Stream<IStoreRepository> repositoryProvider() {

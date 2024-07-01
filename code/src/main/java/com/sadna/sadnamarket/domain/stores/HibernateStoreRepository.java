@@ -351,4 +351,5 @@ public class HibernateStoreRepository implements IStoreRepository{
             return res;
         }
     }
+
 }

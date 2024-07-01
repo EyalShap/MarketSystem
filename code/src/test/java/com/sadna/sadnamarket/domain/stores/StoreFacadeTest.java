@@ -93,7 +93,7 @@ class StoreFacadeTest {
 
         hibernateStoreRepository = new HibernateStoreRepository();
         memoryStoreRepository = new MemoryStoreRepository();
-        HibernateUtil.cleanDB();
+        IStoreRepository.cleanDB();
         setUpFacades();
         registerUsers();
         storeFacade.setStoreRepository(memoryStoreRepository);

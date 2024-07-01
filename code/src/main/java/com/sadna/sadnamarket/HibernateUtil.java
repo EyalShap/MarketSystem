@@ -5,6 +5,7 @@ import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.service.Error;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -39,7 +40,7 @@ public class HibernateUtil {
         getSessionFactory().close();
     }
 
-    public static void cleanDB() {
+    /*public static void cleanDB() {
         List<String> tableNames = List.of("stores", "store_products", "store_owners", "store_managers", "store_orders");
         Session session = sessionFactory.openSession();
         try {
@@ -58,5 +59,7 @@ public class HibernateUtil {
         finally {
             session.close();
         }
-    }
+    }*/
+
+
 }
