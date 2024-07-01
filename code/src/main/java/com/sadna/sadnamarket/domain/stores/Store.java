@@ -311,5 +311,5 @@ public class Store {
         Store store = (Store) o;
         return this.getStoreDTO().equals(store.getStoreDTO());
     }
-    
+
 }
