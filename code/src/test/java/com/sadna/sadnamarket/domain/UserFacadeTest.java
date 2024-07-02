@@ -13,8 +13,8 @@ import java.util.NoSuchElementException;
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
@@ -64,7 +64,7 @@ public class UserFacadeTest {
     private int testStoreId2;
     private LocalDate testDate=LocalDate.of(1990, 11, 11);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         this.iUserRepo=new UserHibernateRepo();
@@ -124,9 +124,9 @@ public class UserFacadeTest {
         assertFalse(userFacade.isLoggedIn(testUsername1));
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void testLogoutUserNotFound() {
-        userFacade.logout("testUser");
+        assertThrows(NoSuchElementException.class, ()->userFacade.logout("testUser"));
     }
 
     @Test

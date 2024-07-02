@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
