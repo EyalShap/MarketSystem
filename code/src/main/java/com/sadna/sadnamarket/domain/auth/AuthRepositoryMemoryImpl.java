@@ -3,13 +3,10 @@ package com.sadna.sadnamarket.domain.auth;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+
 
 public class AuthRepositoryMemoryImpl implements IAuthRepository {
 
