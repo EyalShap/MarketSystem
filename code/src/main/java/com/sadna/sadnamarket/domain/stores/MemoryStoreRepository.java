@@ -43,7 +43,8 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
-    public void setStoreBankAccount(BankAccountDTO bankAccountDTO) {
+    public void setStoreBankAccount(int storeId, BankAccountDTO bankAccountDTO) {
+        findStoreByID(storeId).setBankAccount(bankAccountDTO);
     }
 
     @Override
@@ -52,12 +53,12 @@ public class MemoryStoreRepository implements IStoreRepository {
         return store.getBankAccount();
     }
 
-    @Override
+    /*@Override
     public boolean areStoresEqual(StoreDTO s1, StoreDTO s2) {
         if(!s1.equals(s2))
             return false;
         return Objects.equals(s1.getProductAmounts(), s2.getProductAmounts());
-    }
+    }*/
 
     @Override
     public boolean areProductsInStore(int storeId, Set<Integer> productIds) {

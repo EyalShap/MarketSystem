@@ -53,7 +53,7 @@ class SystemManagerTests {
         resp = bridge.openStore(storeOwnerToken, storeOwnerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreBankAccount(storeOwnerToken, storeOwnerUsername, storeId,
-                new BankAccountDTO("10", "392", "393013", "2131516175", null));
+                new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         buyerUsername = "Billy";

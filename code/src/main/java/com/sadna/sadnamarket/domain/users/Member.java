@@ -15,10 +15,7 @@ import java.util.HashMap;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;

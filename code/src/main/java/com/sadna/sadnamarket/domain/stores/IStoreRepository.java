@@ -45,11 +45,11 @@ public interface IStoreRepository {
 
     public Store findStoreByName(String storeName);
 
-    public void setStoreBankAccount(BankAccountDTO bankAccountDTO);
+    public void setStoreBankAccount(int storeId, BankAccountDTO bankAccountDTO);
 
     public BankAccountDTO getStoreBankAccount(int storeId);
 
-    public boolean areStoresEqual(StoreDTO s1, StoreDTO s2);
+    //public boolean areStoresEqual(Store s1, Store s2);
 
     public boolean areProductsInStore(int storeId, Set<Integer> productIds);
 
