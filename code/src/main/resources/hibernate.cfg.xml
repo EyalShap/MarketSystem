@@ -33,7 +33,7 @@
         <mapping class="com.sadna.sadnamarket.domain.orders.OrderWrapper"/>
         <mapping class="com.sadna.sadnamarket.domain.orders.OrderDTO"/>
 
-        <mapping class="com.sadna.sadnamarket.domain.stores.StoreDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.stores.Store"/>
         <mapping class="com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyDTO"/>
         <mapping class="com.sadna.sadnamarket.domain.buyPolicies.StoreBuyPolicyDTO"/>
         <mapping class="com.sadna.sadnamarket.domain.buyPolicies.RangedBuyPolicyDTO"/>

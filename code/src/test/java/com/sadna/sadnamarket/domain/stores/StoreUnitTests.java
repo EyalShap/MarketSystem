@@ -27,11 +27,11 @@ class StoreUnitTests {
     }
 
     private BankAccountDTO generateBankAccount0() {
-        return new BankAccountDTO("123", "456", "789", "Willy", null);
+        return new BankAccountDTO("123", "456", "789", "Willy");
     }
 
     private BankAccountDTO generateBankAccount1() {
-        return new BankAccountDTO("321", "654", "987", "Mr. Krabs", null);
+        return new BankAccountDTO("321", "654", "987", "Mr. Krabs");
     }
 
     private Store generateStore0() {
