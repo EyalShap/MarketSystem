@@ -11,14 +11,16 @@ name: Java CI with Maven
 on:
   push:
     branches: [ "*" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    environment: env 
+    environment: env
+
+    concurrency:
+      group: spooky-db-usage
+      cancel-in-progress: true 
 
     steps:
       - uses: actions/checkout@v4

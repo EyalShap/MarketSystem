@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.sadna.sadnamarket.service.Error;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -214,12 +215,40 @@ public class StoreDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StoreDTO storeDTO = (StoreDTO) o;
-        return storeId == storeDTO.storeId && isActive == storeDTO.isActive && Double.compare(storeDTO.rank, rank) == 0 && Objects.equals(storeName, storeDTO.storeName) && Objects.equals(address, storeDTO.address) && Objects.equals(email, storeDTO.email) && Objects.equals(phoneNumber, storeDTO.phoneNumber) && Objects.equals(productAmounts, storeDTO.productAmounts) && Objects.equals(founderUsername, storeDTO.founderUsername) && Objects.equals(ownerUsernames, storeDTO.ownerUsernames) && Objects.equals(managerUsernames, storeDTO.managerUsernames) && Objects.equals(orderIds, storeDTO.orderIds);
+        return Objects.equals(storeId, storeDTO.storeId) && Objects.equals(isActive, storeDTO.isActive) && Objects.equals(storeName, storeDTO.storeName) && Objects.equals(rank, storeDTO.rank) && Objects.equals(address, storeDTO.address) && Objects.equals(email, storeDTO.email) && Objects.equals(phoneNumber, storeDTO.phoneNumber) && Objects.equals(founderUsername, storeDTO.founderUsername) && equalStringSets(ownerUsernames, storeDTO.ownerUsernames) && equalStringSets(managerUsernames, storeDTO.managerUsernames) && equalIntegerSets(orderIds, storeDTO.orderIds);
     }
+
+    private boolean equalStringSets(Set<String> s1, Set<String> s2) {
+        for(String s : s1) {
+            if(!s2.contains(s)) {
+                return false;
+            }
+        }
+        for(String s : s2) {
+            if(!s1.contains(s)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean equalIntegerSets(Set<Integer> s1, Set<Integer> s2) {
+        for(Integer s : s1) {
+            if(!s2.contains(s)) {
+                return false;
+            }
+        }
+        for(Integer s : s2) {
+            if(!s1.contains(s)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(storeId, isActive, storeName, rank, address, email, phoneNumber, productAmounts, founderUsername, ownerUsernames, managerUsernames, orderIds);
-        return result;
+        return Objects.hash(storeId, isActive, storeName, rank, address, email, phoneNumber, founderUsername, ownerUsernames, managerUsernames, orderIds);
     }
 }
