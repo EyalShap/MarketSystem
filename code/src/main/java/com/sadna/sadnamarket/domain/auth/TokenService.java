@@ -13,7 +13,7 @@ import io.jsonwebtoken.security.Keys;
 
 public class TokenService { 
 
-@Value("${jwt.secretr}")
+@Value("${jwt.secret}")
 private String secret; 
 private final long expirationTime = 1000 * 60 * 60 * 24;
  // 24 hours 

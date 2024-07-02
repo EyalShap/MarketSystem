@@ -20,7 +20,7 @@ jobs:
 
     concurrency:
       group: spooky-db-usage
-      cancel-in-progress: true 
+      cancel-in-progress: false 
 
     steps:
       - uses: actions/checkout@v4
