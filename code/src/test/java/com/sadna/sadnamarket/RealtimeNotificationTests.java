@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
@@ -36,7 +37,7 @@ class RealtimeNotificationTests {
 
 
     @BeforeEach
-    void clean() {
+    void clean() throws JsonProcessingException {
         bridge.reset();
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);

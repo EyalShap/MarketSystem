@@ -555,7 +555,7 @@ public class UserFacade {
         }
         logger.info("credit card is valid {}",creditCard);
     }
-    private void createUserOrders(List<ProductDataPrice> storeBag, CreditCardDTO creditCard, String supplyString,String username){
+    private void createUserOrders(List<ProductDataPrice> storeBag, CreditCardDTO creditCard, String supplyString,String username) throws JsonProcessingException {
         logger.info("create user orders");
         SupplyService supply=SupplyService.getInstance();
         PaymentService payment = PaymentService.getInstance();

@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
@@ -54,7 +55,7 @@ class ConcurrencyTests {
     }
 
     @Test
-    void twoBuyLastProductTest() {
+    void twoBuyLastProductTest() throws JsonProcessingException {
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
@@ -167,7 +168,7 @@ class ConcurrencyTests {
     }
 
     @Test
-    void costumerBuyRemovedProductTest() {
+    void costumerBuyRemovedProductTest() throws JsonProcessingException {
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);

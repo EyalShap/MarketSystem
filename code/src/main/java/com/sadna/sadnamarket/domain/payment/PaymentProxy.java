@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.payment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class PaymentProxy implements PaymentInterface{
     PaymentAdapter real;
 
@@ -8,7 +10,7 @@ public class PaymentProxy implements PaymentInterface{
     }
 
     @Override
-    public boolean creditCardValid(CreditCardDTO creditDetails) {
+    public boolean creditCardValid(CreditCardDTO creditDetails) throws JsonProcessingException {
         if(real.implemented()){
             return real.creditCardValid(creditDetails);
         }
@@ -16,7 +18,7 @@ public class PaymentProxy implements PaymentInterface{
     }
 
     @Override
-    public boolean pay(double amount, CreditCardDTO payerCard, BankAccountDTO receiverAccount) {
+    public boolean pay(double amount, CreditCardDTO payerCard, BankAccountDTO receiverAccount) throws JsonProcessingException {
         if(real.implemented()){
             return real.pay(amount, payerCard, receiverAccount);
         }

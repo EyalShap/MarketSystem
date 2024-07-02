@@ -3,16 +3,26 @@ package com.sadna.sadnamarket.domain.payment;
 import java.util.Date;
 
 public class CreditCardDTO {
-    String creditCardNumber;
-    String digitsOnTheBack;
-    Date expirationDate;
-    String ownerId;
+    private String creditCardNumber;
+    private String digitsOnTheBack;
+    private Date expirationDate;
+    private String ownerId;
+    private String ownerName;
 
     public CreditCardDTO(String creditCardNumber, String digitsOnTheBack, Date expirationDate, String ownerId) {
         this.creditCardNumber = creditCardNumber;
         this.digitsOnTheBack = digitsOnTheBack;
         this.expirationDate = expirationDate;
         this.ownerId = ownerId;
+        this.ownerName = "israel";
+    }
+
+    public CreditCardDTO(String creditCardNumber, String digitsOnTheBack, Date expirationDate, String ownerId, String ownerName) {
+        this.creditCardNumber = creditCardNumber;
+        this.digitsOnTheBack = digitsOnTheBack;
+        this.expirationDate = expirationDate;
+        this.ownerId = ownerId;
+        this.ownerName = ownerName;
     }
 
     public String getCreditCardNumber() {
@@ -29,5 +39,13 @@ public class CreditCardDTO {
 
     public String getOwnerId() {
         return ownerId;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 }

@@ -42,7 +42,7 @@ class StoreOwnerTests {
     String maliciousToken;
 
     @BeforeEach
-    void clean() {
+    void clean() throws JsonProcessingException {
         bridge.reset();
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
