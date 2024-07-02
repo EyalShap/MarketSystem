@@ -52,7 +52,7 @@ class RealtimeNotificationTests {
         resp = bridge.addProductToStore(token, username, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true,storeId));
         productId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreBankAccount(token, username, storeId, new BankAccountDTO("10", "392", "393013", "2131516175", null));
+        bridge.setStoreBankAccount(token, username, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         fake = new FaketimeService();
         bridge.injectRealtime(fake);
     }

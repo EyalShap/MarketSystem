@@ -477,9 +477,8 @@ public class StoreFacade {
             if (!store.isStoreOwner(ownerUsername))
                 throw new IllegalArgumentException(Error.makeStoreUserCannotSetBankAccountError(ownerUsername, storeId));
 
-            bankAccount.setStore(store.getStoreDTO());
-            store.setBankAccount(bankAccount);
-            storeRepository.setStoreBankAccount(bankAccount);
+            bankAccount.setStore(store);
+            storeRepository.setStoreBankAccount(storeId, bankAccount);
         }
     }
 
@@ -684,9 +683,5 @@ public class StoreFacade {
 
             return store.getStoreDTO();
         }
-    }
-
-    public boolean areStoresEqual(StoreDTO s1, StoreDTO s2) {
-        return storeRepository.areStoresEqual(s1, s2);
     }
 }
