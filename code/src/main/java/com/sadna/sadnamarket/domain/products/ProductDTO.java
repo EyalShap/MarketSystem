@@ -3,27 +3,27 @@ import java.util.*;
 //import java.util.Objects;
 import javax.persistence.*;
 
-@Entity
-@Table(name = "Products")
+//@Entity
+//@Table(name = "Products")
 public class ProductDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
     private int productID;
-    @Column(name = "store_id")
+    //@Column(name = "store_id")
     private int storeId;
-    @Column(name = "product_name")
+    //@Column(name = "product_name")
     private String productName;
-    @Column(name = "product_price")
+    //@Column(name = "product_price")
     private double productPrice;
-    @Column(name = "product_category")
+    //@Column(name = "product_category")
     private String productCategory;
-    @Column(name = "product_rank")
+    //@Column(name = "product_rank")
     private double productRank;
-    @Column(name = "isActive")
+    //@Column(name = "isActive")
     private boolean isActive;
-    @Column(name = "product_weight")
+    //@Column(name = "product_weight")
     private double productWeight;
-    @Column(name = "description")
+    //@Column(name = "description")
     private String description;
 
     public ProductDTO(int productID, String productName, double productPrice, String productCategory,

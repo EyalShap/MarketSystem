@@ -1,16 +1,28 @@
 package com.sadna.sadnamarket.domain.products;
-
+import java.util.*;
+import javax.persistence.*;
 import java.text.MessageFormat;
-
+@Entity
+@Table(name = "Products")
 public class Product {
-    final private int productId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int productId;
+    @Column(name = "product_name")
     private String productName;
+    @Column(name = "product_price")
     private double productPrice;
+    @Column(name = "product_category")
     private String productCategory;
+    @Column(name = "description")
     private String description;
+    @Column(name = "product_rank")
     private double productRank;
+    @Column(name = "isActive")
     private boolean isActive = true;
+    @Column(name = "product_weight")
     private double productWeight;
+    @Column(name = "store_id")
     private int storeId;
 
     public Product(int productId, String productName, double productPrice, String productCategory, double productRank, double productWeight,int storeId) {
@@ -33,6 +45,8 @@ public class Product {
         this.productWeight = productWeight;
         this.storeId = storeId;
         this.description = description;
+    }
+    public Product(){
     }
 
     public int getProductId() {
@@ -110,4 +124,12 @@ public class Product {
         return storeId;
     }
 
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
+    }
 }
