@@ -3,11 +3,11 @@ package com.sadna.sadnamarket.domain.payment;
 import java.util.Date;
 
 public class CreditCardDTO {
-    private String creditCardNumber;
-    private String digitsOnTheBack;
-    private Date expirationDate;
-    private String ownerId;
-    private String ownerName;
+    String creditCardNumber;
+    String digitsOnTheBack;
+    Date expirationDate;
+    String ownerId;
+    String ownerName;
 
     public CreditCardDTO(String creditCardNumber, String digitsOnTheBack, Date expirationDate, String ownerId) {
         this.creditCardNumber = creditCardNumber;
