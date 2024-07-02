@@ -6,7 +6,7 @@
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="hibernate.connection.url">jdbc:mysql://sadnadb.c3802a2ys7i0.us-east-2.rds.amazonaws.com:3306/sadna?useSSL=true</property>
 
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 
         <!-- Connection pool settings -->
         <property name="hibernate.c3p0.min_size">5</property>
@@ -15,17 +15,42 @@
         <property name="hibernate.c3p0.max_statements">50</property>
         <property name="hibernate.c3p0.idle_test_period">3000</property>
 
+        <property name="hibernate.current_session_context_class">thread</property>
+
         <!-- Echo all executed SQL to stdout -->
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
 
         <!-- Update the database schema on startup -->
+        <property name="spring.jpa.hibernate.ddl-auto">create</property>
+
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Mention your annotated class names here -->
-        
+
         <mapping class="com.sadna.sadnamarket.domain.auth.UserCredential"/>
+
         <mapping class="com.sadna.sadnamarket.domain.orders.OrderWrapper"/>
         <mapping class="com.sadna.sadnamarket.domain.orders.OrderDTO"/>
+
+        <mapping class="com.sadna.sadnamarket.domain.stores.Store"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.StoreBuyPolicyDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.RangedBuyPolicyDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.JewishCustomsBuyPolicyDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.CompositeBuyPolicyDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.DateBuyPolicyDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.payment.BankAccountDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Member"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Cart"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Basket"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.UserRoleHibernate"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Guest"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.IUser"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Notification"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.Request"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.StoreManager"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.StoreOwner"/>
+        <mapping class="com.sadna.sadnamarket.domain.users.StoreFounder"/>
     </session-factory>
 </hibernate-configuration>

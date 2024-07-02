@@ -1,17 +1,17 @@
 package com.sadna.sadnamarket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
-import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
-import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
-import com.sadna.sadnamarket.domain.payment.PaymentInterface;
-import com.sadna.sadnamarket.domain.payment.PaymentService;
+import com.sadna.sadnamarket.domain.payment.*;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyInterface;
+import com.sadna.sadnamarket.domain.supply.SupplyProxy;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
+import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
@@ -40,6 +40,8 @@ public class CartTests {
 
     @BeforeEach
     void clean() {
+        PaymentService.getInstance().setController(new PaymentProxy());
+        SupplyService.getInstance().setController(new SupplyProxy());
         bridge.reset();
         Response resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
@@ -168,12 +170,8 @@ public class CartTests {
 
     @Test
     void buyCartTest() {
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
@@ -187,6 +185,12 @@ public class CartTests {
             Response resp = bridge.buyCartGuest(uuid, cardDTO,addressDTO);
             Assertions.assertFalse(resp.getError());
             Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "1");
+            resp = bridge.getNotifications(ownerUsername);
+            List<NotificationDTO> notifs = objectMapper.readValue(resp.getDataJson(), new TypeReference<List<NotificationDTO>>() {
+            });
+            Assertions.assertTrue(notifs.size() >= 1);
+            NotificationDTO notif = notifs.get(0);
+            Assertions.assertEquals("User made a purchase in your store TestStore", notif.getMessage());
         } catch (Exception e) {
 
         }
@@ -194,12 +198,8 @@ public class CartTests {
 
     @Test
     void buyCartIncorrectDetailsTest() {
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
@@ -224,12 +224,8 @@ public class CartTests {
 
     @Test
     void buyCartStorePolicyForbidTest() {
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
@@ -258,12 +254,8 @@ public class CartTests {
 
     @Test
     void buyCartStoreNotEnoughProductTest() {
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
@@ -290,15 +282,14 @@ public class CartTests {
     }
 
     @Test
-    void buyCartStoreCannotSupplyTest() {
+    void buyCartStoreCannotSupplyTest() throws JsonProcessingException {
         SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(false);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
+        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(false);
 
         bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 5);
         try {
@@ -321,12 +312,8 @@ public class CartTests {
 
     @Test
     void buyCartStoreCannotPayTest() {
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(false);
 

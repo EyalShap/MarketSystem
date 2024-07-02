@@ -145,7 +145,7 @@ public class BuyPolicyFacade {
         synchronized (mapper) {
             checkAddBuyPolicyToStore(username, storeId, policyId);
             if (!mapper.containsKey(storeId))
-                mapper.put(storeId, new BuyPolicyManager(this));
+                mapper.put(storeId, buyPolicyRepository.createManager(this,storeId));
             mapper.get(storeId).addBuyPolicy(policyId);
         }
     }
@@ -154,7 +154,7 @@ public class BuyPolicyFacade {
         synchronized (mapper) {
             checkAddBuyPolicyToStore(username, storeId, policyId);
             if (!mapper.containsKey(storeId))
-                mapper.put(storeId, new BuyPolicyManager(this));
+                mapper.put(storeId, buyPolicyRepository.createManager(this,storeId));
             mapper.get(storeId).addLawBuyPolicy(policyId);
         }
     }

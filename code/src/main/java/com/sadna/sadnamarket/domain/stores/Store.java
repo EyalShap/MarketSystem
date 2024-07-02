@@ -4,33 +4,85 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.service.Error;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Entity
+@Table(name = "stores")
 public class Store {
-    private int storeId;
-    private boolean isActive;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "store_id")
+    private Integer storeId;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+
+    @Embedded
     private StoreInfo storeInfo;
+
+    @ElementCollection
+    @CollectionTable(name = "store_products", joinColumns = @JoinColumn(name = "store_id"))
+    @MapKeyColumn(name = "product_id")
+    @Column(name = "amount")
     private Map<Integer, Integer> productAmounts;
+
+    @Column(name = "founder_username")
     private String founderUsername;
-    private List<String> ownerUsernames;
-    private List<String> managerUsernames;
-    //private List<String> sellerUsernames;
-    private List<Integer> orderIds;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_owners", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "username")
+    private Set<String> ownerUsernames;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_managers", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "username")
+    private Set<String> managerUsernames;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_orders", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "order_ids")
+    private Set<Integer> orderIds;
+
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private BankAccountDTO bankAccount;
+
+    @Transient
     private final Object lock = new Object();
 
     public Store(int storeId, String founderUsername, StoreInfo storeInfo) {
         this.storeId = storeId;
+        setAnythingButId(founderUsername, storeInfo);
+    }
+
+    public Store(String founderUsername, StoreInfo storeInfo) {
+        setAnythingButId(founderUsername, storeInfo);
+    }
+
+    public Store() {}
+
+    public Store(StoreDTO storeDTO){
+        this.storeId = storeDTO.getStoreId();
+        this.isActive = storeDTO.isActive();
+        this.storeInfo = new StoreInfo(storeDTO);
+        this.productAmounts = storeDTO.getProductAmounts();
+        this.founderUsername = storeDTO.getFounderUsername();
+        this.ownerUsernames = storeDTO.getOwnerUsernames();
+        this.managerUsernames = storeDTO.getManagerUsernames();
+        this.orderIds = storeDTO.getOrderIds();
+    }
+
+    private void setAnythingButId(String founderUsername, StoreInfo storeInfo) {
         this.isActive = true;
         this.storeInfo = storeInfo;
-        this.productAmounts = new ConcurrentHashMap<>();
+        this.productAmounts = new HashMap<>();
         this.founderUsername = founderUsername;
-        this.ownerUsernames = Collections.synchronizedList(new ArrayList<>());
+        this.ownerUsernames = new HashSet<>();
         this.ownerUsernames.add(founderUsername);
-        this.managerUsernames = Collections.synchronizedList(new ArrayList<>());
-        //this.sellerUsernames = Collections.synchronizedList(new ArrayList<>());
-        this.orderIds = Collections.synchronizedList(new ArrayList<>());
+        this.managerUsernames = new HashSet<>();
+        this.orderIds = new HashSet<>();
     }
 
     public int getStoreId() {
@@ -55,15 +107,15 @@ public class Store {
         }
     }
 
-    public List<String> getOwnerUsernames() {
+    public Set<String> getOwnerUsernames() {
         return this.ownerUsernames;
     }
 
-    public List<String> getManagerUsernames() {
+    public Set<String> getManagerUsernames() {
         return this.managerUsernames;
     }
 
-    /*public List<String> getSellerUsernames() {
+    /*public Set<String> getSellerUsernames() {
         return this.sellerUsernames;
     }*/
 
@@ -71,7 +123,7 @@ public class Store {
         return this.productAmounts;
     }
 
-    public List<Integer> getOrderIds() {
+    public Set<Integer> getOrderIds() {
         return this.orderIds;
     }
 
@@ -82,9 +134,8 @@ public class Store {
     public void addProduct(int productId, int amount) {
         if (amount < 0)
             throw new IllegalArgumentException(Error.makeStoreIllegalProductAmountError(amount));
-
         synchronized (productAmounts) {
-            if (productExists(productId))
+            if(productAmounts.containsKey(productId))
                 throw new IllegalArgumentException(Error.makeStoreProductAlreadyExistsError(productId));
 
             productAmounts.put(productId, amount);
@@ -110,7 +161,7 @@ public class Store {
             if (!isActive)
                 throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             if (!productExists(productId))
-                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
 
             productAmounts.put(productId, newAmount);
         }
@@ -277,30 +328,20 @@ public class Store {
         return true;
     }
 
+    public int getProductAmount(int productId) {
+        synchronized (productAmounts) {
+            if (!productExists(productId))
+                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
+            return productAmounts.get(productId);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Store store = (Store) o;
-        StoreInfo info = store.getStoreInfo();
-        if (!info.equals(storeInfo))
-            return false;
-
-        return storeId == store.storeId &&
-                isActive == store.isActive &&
-                Objects.equals(productAmounts, store.productAmounts) &&
-                Objects.equals(founderUsername, store.founderUsername) &&
-                Objects.equals(ownerUsernames, store.ownerUsernames) &&
-                Objects.equals(managerUsernames, store.managerUsernames) &&
-                //Objects.equals(sellerUsernames, store.sellerUsernames) &&
-                Objects.equals(orderIds, store.orderIds);
+        return this.getStoreDTO().equals(store.getStoreDTO());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(storeId, isActive, storeInfo, productAmounts, founderUsername, ownerUsernames,
-                managerUsernames, orderIds, lock);
-    }
 }

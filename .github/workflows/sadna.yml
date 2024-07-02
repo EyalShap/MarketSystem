@@ -11,13 +11,16 @@ name: Java CI with Maven
 on:
   push:
     branches: [ "*" ]
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    environment: env
+
+    concurrency:
+      group: spooky-db-usage
+      cancel-in-progress: false 
 
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +34,13 @@ jobs:
         run: |
           cd code
           mvn -B package --file pom.xml
+        env:
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}          
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
       - name: run tests
         run: |
           cd code
           mvn test
+        env:
+          DB_USERNAME: ${{secrets.DB_USERNAME }}          
+          DB_PASSWORD: ${{secrets.DB_PASSWORD}}  

@@ -1,9 +1,11 @@
 package com.sadna.sadnamarket.domain.users;
 
-import com.sadna.sadnamarket.service.RealtimeService;
+
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Map;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,22 +13,50 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
+
+
+@Entity
+@Table(name = "Members")
 public class Member extends IUser {
+    
+    @Id
     private String username;
+    @Column
     private String firstName;
+    @Column
     private String lastName;
+    @Column
     private String emailAddress;
+    @Column
     private String phoneNumber;
-    private List<UserRole> roles;
+    @OneToMany
+    @JoinColumn(name = "username")
+    private List<UserRoleHibernate> roles;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_orders", joinColumns = @JoinColumn(name = "username"))
+    @Column(name = "order_id")
     private List<Integer> orders;
+    @Column
     private LocalDate birthDate;
-    private HashMap<Integer, Notification> notifes;
+    
+    @OneToMany
+    @JoinColumn(name = "username")
+    private Map<Integer, Notification> notifes;
     private static final Logger logger = LogManager.getLogger(Member.class);
+    @Column
     private boolean isLoggedIn;
+    @Column
     private int notifyID;
-
-    private final RealtimeService realtime = new RealtimeService();
-
 
     public Member(String username, String firstName, String lastName, String emailAddress, String phoneNumber,LocalDate birthDate) {
         logger.info("Entering Member constructor with parameters: username={}, firstName={}, lastName={}, emailAddress={}, phoneNumber={}, birthDate={}",
@@ -44,6 +74,7 @@ public class Member extends IUser {
         this.birthDate = birthDate;
         logger.info("Exiting Member constructor");
     }
+    public Member(){} 
 
     @Override
     public synchronized boolean isLoggedIn() {
@@ -66,7 +97,7 @@ public class Member extends IUser {
         logger.info("Exiting setLogin");
     }
 
-    public NotificationDTO addNotification(String message) {
+    public synchronized NotificationDTO addNotification(String message) {
         logger.info("Entering addNotification with message={}", message);
         notifyID++;
         Notification notification = new Notification(message,notifyID);
@@ -130,7 +161,7 @@ public class Member extends IUser {
     }
 
     
-    public synchronized void addRole(UserRole role) {
+    public synchronized void addRole(UserRoleHibernate role) {
         logger.info("Entering addRole with role={}", role);
         roles.add(role);
         logger.info("Exiting addRole");
@@ -197,9 +228,9 @@ public class Member extends IUser {
         logger.info("Exiting removePermissionFromRole");
     }
 
-    public HashMap<Integer, Notification> getNotifications() {
+    public Map<Integer, Notification> getNotifications() {
         logger.info("Entering getNotifications");
-        HashMap<Integer, Notification> result = notifes;
+        Map<Integer, Notification> result = notifes;
         logger.info("Exiting getNotifications with result={}", result);
         return result;
     }
@@ -223,10 +254,21 @@ public class Member extends IUser {
         logger.info("Exiting getRequest");
         return new RequestDTO(request);
     }
-
-    public void accept(int requestID) {
+    public RequestDTO getRequest(Request request) {
+        logger.info("Entering getRequest with request={}", request);;
+        notifes.put(request.getId(), request);
+        logger.info("Exiting getRequest");
+        return new RequestDTO(request);
+    }
+    public NotificationDTO addNotification(Notification notification) {
+        logger.info("Entering getRequest with notification={}", notification);;
+        notifes.put(notification.getId(), notification);
+        logger.info("Exiting getRequest");
+        return notification.toDTO();
+    }
+    public void accept(int requestID,UserFacade userFacade) {
         logger.info("Entering accept with requestID={}", requestID);
-        notifes.get(requestID).accept(this);
+        notifes.get(requestID).accept(this,userFacade);
         notifes.remove(requestID);
         logger.info("Exiting accept");
     }
@@ -324,9 +366,9 @@ public class Member extends IUser {
         return rolesString;
     }
 
-    public List<UserRole> getUserRoles() {
+    public List<UserRoleHibernate> getUserRoles() {
         logger.info("Entering getUserRoles");
-        List<UserRole> result = roles;
+        List<UserRoleHibernate> result = roles;
         logger.info("Exiting getUserRoles with result={}", result);
         return result;
     }

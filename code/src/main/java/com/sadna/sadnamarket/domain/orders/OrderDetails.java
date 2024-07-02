@@ -31,4 +31,6 @@ public class OrderDetails {
     public void setDateTimeOfPurchase(String dateTimeOfPurchase) {
         this.dateTimeOfPurchase = dateTimeOfPurchase;
     }
+
 }
+

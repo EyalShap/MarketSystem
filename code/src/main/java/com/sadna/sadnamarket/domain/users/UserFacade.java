@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.RealtimeService;
 import org.apache.logging.log4j.LogManager;
@@ -64,15 +65,14 @@ public class UserFacade {
 
     public boolean checkPremssionToStore(String userName, int storeId,Permission permission){
         logger.info("check permission to {} for user {} for store {}",permission.getValue(),userName,storeId);
-        Member member=iUserRepo.getMember(userName);
-        boolean isAuthrized=member.hasPermissionToRole(permission,storeId);
+        boolean isAuthrized=iUserRepo.hasPermissionToRole(userName,permission,storeId);
         logger.info("checked permission to {} for user {} for store {} and answer is: {}",permission.getValue(),userName,storeId,isAuthrized);
         return isAuthrized ;
     }
 
     public void notify(String userName, String msg) {
         logger.info("{} got notification {}",userName,msg);
-        NotificationDTO notificationDTO = iUserRepo.getMember(userName).addNotification(msg);
+        NotificationDTO notificationDTO = iUserRepo.addNotification(userName,msg);
         if(isLoggedIn(userName) && realtime != null){
             realtime.sendNotification(userName, notificationDTO);
         }
@@ -83,22 +83,17 @@ public class UserFacade {
 
     public List<NotificationDTO> getNotifications(String username){
         logger.info("getting notifications for {}",username);
-        List<Notification> notifes = new ArrayList<>(iUserRepo.getMember(username).getNotifications().values());
-        List<NotificationDTO> notificationDTOs=new ArrayList<NotificationDTO>();
-        for(Notification notif : notifes){
-            notificationDTOs.add(notif.toDTO());
-        }
+        List<NotificationDTO> notifes = new ArrayList<>(iUserRepo.getNotifications(username));
         logger.info("got notifications for {}",username);
-        return notificationDTOs;
+        return notifes;
     }
-
 
     public boolean isLoggedIn(String username){
         logger.info("check for login for member {}",username);
         if(isExist(username)){
-            Member member= iUserRepo.getMember(username);
             logger.info("checked for login for member {}",username);
-            return member.isLoggedIn();
+
+            return iUserRepo.isLoggedIn(username);
         }
         logger.info("check for login for member but member doesnt exist {}",username);
         return false;
@@ -131,11 +126,11 @@ public class UserFacade {
     public void login(String userName,String password){
         logger.info("{} tries to login",userName);
         isValid(userName);
-        if(iUserRepo.getMember(userName).isLoggedIn()){
+        if(iUserRepo.isLoggedIn(userName)){
             logger.error("user {} already logged in",userName);
             throw new IllegalStateException(Error.makeUserLoggedInError());
         }
-        iUserRepo.getMember(userName).setLogin(true);
+        iUserRepo.setLogin(userName,true);
         logger.info("{} done login",userName);
     }
     public void addProductToCart(String username,int storeId, int productId,int amount){
@@ -144,7 +139,7 @@ public class UserFacade {
             throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
             throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
-        iUserRepo.getMember(username).addProductToCart(storeId, productId, amount);
+        iUserRepo.addProductToCart(username,storeId, productId, amount);
         logger.info("{} added prooduct {} from store id {} amount: {}",username,productId,storeId,amount);
     }
     public void addProductToCart(int guestId,int storeId, int productId,int amount){
@@ -153,18 +148,18 @@ public class UserFacade {
             throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
             throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
-        iUserRepo.getGuest(guestId).addProductToCart(storeId, productId, amount);
+        iUserRepo.addProductToCart(guestId,storeId, productId, amount);
         logger.info("guest: {} add prooduct {} from store id {} amount: {}",guestId,productId,storeId,amount);
 
     }
     public void removeProductFromCart(String username,int storeId, int productId){
         logger.info("{} remove prooduct {} from store id {}",username,productId,storeId);
-        iUserRepo.getMember(username).removeProductFromCart(storeId, productId);
+        iUserRepo.removeProductFromCart(username,storeId, productId);
         logger.info("{} removed prooduct {} from store id {}",username,productId,storeId);
     }
     public void removeProductFromCart(int guestId,int storeId, int productId){
         logger.info("guest {} removed prooduct {} from store id {}",guestId,productId,storeId);
-        iUserRepo.getGuest(guestId).removeProductFromCart(storeId, productId);
+        iUserRepo.removeProductFromGuestCart(guestId,storeId, productId);
         logger.info("guest {} removed prooduct {} from store id {}",guestId,productId,storeId);
     }
     public void changeQuantityCart(String username,int storeId, int productId,int amount){
@@ -173,7 +168,7 @@ public class UserFacade {
             throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
             throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
-        iUserRepo.getMember(username).changeQuantityCart(storeId, productId, amount);
+        iUserRepo.changeQuantityCart(username,storeId, productId, amount);
         logger.info("{} changed amount of prooduct {} from store id {} amount: {}",username,productId,storeId,amount);
 
     }
@@ -183,19 +178,13 @@ public class UserFacade {
             throw new IllegalArgumentException(Error.makeCartAmountAboveZeroError());
         if(!storeFacade.hasProductInStock(storeId, productId, amount))
             throw new IllegalArgumentException(Error.makeCartAmountDoesntExistError());
-        iUserRepo.getGuest(guestId).changeQuantityCart(storeId, productId, amount);
+        iUserRepo.guestChangeQuantityCart(guestId,storeId, productId, amount);
         logger.info("guest: {} try to changed amount of prooduct {} from store id {} amount: {}",guestId,productId,storeId,amount);
 
     }
-    public Member getMember(String userName){
-        logger.info("try to get member {}",userName);
-        return iUserRepo.getMember(userName);
-    }    
-    
     public void addOwnerRequest(String senderName,String userName,int store_id){
         logger.info("{} try to add owner request to {} for store {}",senderName,userName,store_id);
-        Member sender=getMember(senderName);
-        RequestDTO request = sender.addOwnerRequest(this,userName, store_id);
+        RequestDTO request = iUserRepo.addOwnerRequest(senderName,this,userName, store_id);
         logger.info("{} added owner request to {} for store {}",senderName,userName,store_id);
         if(isLoggedIn(userName) && realtime != null){
             realtime.sendNotification(userName, request);
@@ -206,8 +195,7 @@ public class UserFacade {
     }
     public void addManagerRequest(String senderName,String userName,int store_id){
         logger.info("{} try to add manager request to {} for store {}",senderName,userName,store_id);
-        Member sender=getMember(senderName);
-        RequestDTO request = sender.addManagerRequest(this,userName, store_id);
+        RequestDTO request = iUserRepo.addManagerRequest(senderName,this,userName, store_id);
         logger.info("{} added manager request to {} for store {}",senderName,userName,store_id);
         if(isLoggedIn(userName) && realtime != null){
             realtime.sendNotification(userName, request);
@@ -219,13 +207,12 @@ public class UserFacade {
 
     public void accept(String acceptingName,int requestID){
         logger.info("{} accept request id: {}",acceptingName,requestID);
-        Member accepting=getMember(acceptingName);
-        Request request=accepting.getRequest(requestID);
+        Request request=iUserRepo.getRequest(acceptingName,requestID);
         int storeId=request.getStoreId();
-        accepting.accept(requestID);
+        iUserRepo.accept(acceptingName,requestID,this);
         String role=request.getRole();
         String apointer=request.getSender();
-        iUserRepo.getMember(apointer).addApointer(acceptingName, storeId);
+        iUserRepo.addApointer(apointer,acceptingName, storeId);
         notify(apointer, "User " + acceptingName + " accepted request for " + role + " in " + storeId);
         if(role.equals("Manager"))
             storeFacade.addStoreManager(acceptingName, storeId);
@@ -236,36 +223,33 @@ public class UserFacade {
 
     public void reject(String rejectingName,int requestID){
         logger.info("{} reject request id: {}",rejectingName,requestID);
-        Member rejecting=getMember(rejectingName);
-        Request request=rejecting.getRequest(requestID);
+        Request request=iUserRepo.getRequest(rejectingName,requestID);
         int storeId=request.getStoreId();
         String role=request.getRole();
         String apointer=request.getSender();
         notify(apointer, "User " + rejectingName + " rejected request for " + role + " in " + storeId);
-        rejecting.reject(requestID);
+        iUserRepo.reject(rejectingName,requestID);
         logger.info("{} rejected request id: {}",rejectingName,requestID);
 
     }
 
     public void ok(String okayingName,int notifId){
         logger.info("{} ok notification id: {}",okayingName,notifId);
-        Member okaying =getMember(okayingName);
-        okaying.reject(notifId);
+        iUserRepo.reject(okayingName,notifId);
         logger.info("{} okayed notification id: {}",okayingName,notifId);
     }
 
     public void login(String userName,String password, int guestId){//the cart of the guest
         logger.info("{} login from guest {}",userName,guestId);
         isValid(userName);
-        Member member=iUserRepo.getMember(userName);
-        if(member.isLoggedIn()){
+        if(iUserRepo.isLoggedIn(userName)){
             logger.error("user {} already logged in",userName);
             throw new IllegalStateException(Error.makeUserLoggedInError());
         }
-        if(member.getCart().isEmpty()){
-            member.setCart(iUserRepo.getGuest(guestId).getCart());
+        if(iUserRepo.getUserCart(userName).isEmpty()){
+            iUserRepo.setCart(userName,iUserRepo.getGuestCart(guestId));
         }
-        member.setLogin(true);
+        iUserRepo.setLogin(userName,true);
         exitGuest(guestId);
         logger.info("{} done login from guest {}",userName,guestId);
     }
@@ -275,102 +259,84 @@ public class UserFacade {
         if(!iUserRepo.hasMember(userName))
             throw new NoSuchElementException("User doesnt exist in system");
 
-        iUserRepo.getMember(userName).logout();
+        iUserRepo.logout(userName);
         logger.info("{} done logout",userName);
         return enterAsGuest();
     }
-    public void setCart(Cart cart,String userName){
+    public void setCart(List<CartItemDTO> cart,String userName){
         logger.info("{} set cart ",userName);
-        iUserRepo.getMember(userName).setCart(cart);
+        iUserRepo.setCart(userName,cart);
         logger.info("{} done set cart ",userName);
     }
   
 
     public void register(String username,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate){
         logger.info("{} try to register ",username);
-
-        Member member=new Member(username,firstName,lastName,emailAddress,phoneNumber,birthDate);
-        iUserRepo.store(member);
+        iUserRepo.store(username,firstName,lastName,emailAddress,phoneNumber,birthDate);
         logger.info("{} done register ",username);
     }
 
    
     public void addStoreManager(String username,int storeId){
         logger.info("add Store Manager to {} in {} ",username,storeId);
-        iUserRepo.getMember(username).addRole(new StoreManager(storeId));
+        iUserRepo.addRole(username,iUserRepo.createStoreManagerRole(storeId));
         logger.info("done add Store Manager to {} in {} ",username,storeId);
 
     }
     public void addStoreOwner(String username,String asignee, int storeId){
         logger.info("add Store owner to {} in {} ",username,storeId);
-        iUserRepo.getMember(username).addRole(new StoreOwner(storeId,asignee));
+        iUserRepo.addRole(username,iUserRepo.createStoreOwnerRole(storeId,asignee));
         logger.info("done add Store owner to {} in {} ",username,storeId);
 
     }
     public void addStoreFounder(String username,int storeId){
         logger.info("add Store founder to {} in {} ",username,storeId);
-        iUserRepo.getMember(username).addRole(new StoreFounder(storeId,username));
+        iUserRepo.addRole(username,iUserRepo.createStoreFounderRole(storeId,username));
         logger.info("done add Store founder to {} in {} ",username,storeId);
     }
     public void addPremssionToStore(String giverUserName,String userName, int storeId,Permission permission){
         logger.info("{} get permission to store {} to {}",userName,storeId,permission);
-        if(!iUserRepo.getMember(giverUserName).getRoleOfStore(storeId).getAppointers().contains(userName))
+        if(!iUserRepo.isApointee(giverUserName, userName,storeId))
             throw new IllegalStateException(Error.makeUserCanOnlyEditPermissionsToApointeesError());
-        Member member=iUserRepo.getMember(userName);
-        member.addPermissionToRole(permission, storeId);
+        iUserRepo.addPermissionToRole(userName,permission, storeId);
         logger.info("{} got permission to store {} to {}",userName,storeId,permission);
 
     }
     public void removePremssionFromStore(String removerUsername,String userName, int storeId,Permission permission){
         logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
-        if(!iUserRepo.getMember(removerUsername).getRoleOfStore(storeId).getAppointers().contains(userName))
+        if(!iUserRepo.isApointee(removerUsername, userName, storeId))
             throw new IllegalStateException(Error.makeUserCanOnlyEditPermissionsToApointeesError());
-        Member member=iUserRepo.getMember(userName);
-        member.removePermissionFromRole(permission, storeId);
+       
+        iUserRepo.removePermissionFromRole(userName,permission, storeId);
         logger.info("{} remove permission to store {} to {}",userName,storeId,permission);
     }
 
     public List<Permission> getManagerPermissions(String actorUsername,String userName, int storeId){
         logger.info("{} got permissions of {} in store {}",actorUsername, userName, storeId);
-        Member member=iUserRepo.getMember(userName);
-        logger.info("{} got permissions of {} in store {}",actorUsername, userName, storeId);
-        return member.getPermissions(storeId);
+        return iUserRepo.getPermissions(userName,storeId);
     }
 
     public void leaveRole(String username,int storeId){
         logger.info("{} try leave role in store {}",username,storeId);
-        Member member=iUserRepo.getMember(username);
-        UserRole role=member.getRoleOfStore(storeId);
-        role.leaveRole(new UserRoleVisitor(), storeId, member, this);
-        member.removeRole(role);
+        iUserRepo.leaveRole(username,storeId,this);
         logger.info("{} try left role in store {}",username,storeId);
     }
     public void removeRoleFromMember(String username,String remover,int storeId){
-        Member member=iUserRepo.getMember(username);
-        List<UserRole> roles=member.getUserRoles();
-        for(UserRole role : roles){
-           // role
-           if(role.getStoreId()==storeId){
-            if(!role.getApointee().equals(remover))
-                throw new IllegalStateException("you can only remove your apointees");
-            role.leaveRole(new UserRoleVisitor(), storeId, member,this);;
-           }
-        }
+        logger.info("{} try remove role in store {}",username,storeId);
+        iUserRepo.removeRoleFromMember(username, remover, storeId, this);
+        logger.info("{} removed role in store {}",username,storeId);
     }
     public void setFirstName(String userName, String firstName) {
         logger.info("set first name for {}", firstName);
         isValid(firstName);
-        Member member = iUserRepo.getMember(userName);
-        member.setFirstName(firstName);
+        iUserRepo.setFirstName(userName, firstName);
         logger.info("done set first name for {}", firstName);
-
     }
 
     public void setLastName(String userName, String lastName) {
         logger.info("set last name for {}", userName);
         isValid(lastName);
-        Member member = iUserRepo.getMember(userName);
-        member.setLastName(lastName);
+        iUserRepo.setLastName(userName,lastName);
         logger.info("done set last name for {}", userName);
 
     }
@@ -378,22 +344,19 @@ public class UserFacade {
     public void setEmailAddress(String userName, String emailAddress) {
         logger.info("set email for {}", userName);
         isValid(emailAddress);
-        Member member = iUserRepo.getMember(userName);
-        member.setEmailAddress(emailAddress);
+       iUserRepo.setEmailAddress(userName,emailAddress);
         logger.info("done set email for {}", userName);
     }
 
     public void setPhoneNumber(String userName, String phoneNumber) {
         logger.info("set phone number for {}", userName);
         isValid(phoneNumber);
-        Member member = iUserRepo.getMember(userName);
-        member.setPhoneNumber(phoneNumber);
+        iUserRepo.setPhoneNumber(userName,phoneNumber);
         logger.info("done set phone number for {}", userName);
     }
     public void setBirthDate(String userName, LocalDate birthDate) {
         logger.info("set birth date for {}={}", userName,birthDate);
-        Member member = iUserRepo.getMember(userName);
-        member.setBirthday(birthDate);
+        iUserRepo.setBirthday(userName,birthDate);
         logger.info("done set birth date for {}", userName);
     }
     private void isValid(String detail){
@@ -407,15 +370,14 @@ public class UserFacade {
     public MemberDTO getMemberDTO(String userName){
         logger.info("get memberDTO for {}",userName);
         isValid(userName);
-        Member member=iUserRepo.getMember(userName);
-        MemberDTO memberDTO=new MemberDTO(member);
+        MemberDTO memberDTO= iUserRepo.getMemberDTO(userName);
         logger.info("finished get memberDTO for {}",userName);
         return memberDTO;
     }
     public List<Integer> getMemberPermissions(String userName, int storeId){
         logger.info("get permissions for {} in {}",userName,storeId);
         isValid(userName);
-        UserRole role=iUserRepo.getMember(userName).getRoleOfStore(storeId);
+        UserRole role=iUserRepo.getRoleOfStore(userName,storeId);
         List<Integer> permissionsInRole=new ArrayList<>();
         for(Permission permission: Permission.values()){
             if (role.hasPermission(permission))
@@ -438,8 +400,7 @@ public class UserFacade {
 
     public List<UserRoleDTO> getMemberRoles(String userName){
         logger.info("get user roles for {}",userName);
-        Member member=iUserRepo.getMember(userName);
-        List<UserRoleDTO> userRoles=member.getUserRolesString();
+        List<UserRoleDTO> userRoles=iUserRepo.getUserRolesString(userName);
         for (UserRoleDTO userRoleDTO : userRoles) {
             String storeName=storeFacade.getStoreInfo(userName,userRoleDTO.getStoreId()).getStoreName();
             userRoleDTO.setStoreName(storeName);
@@ -449,7 +410,7 @@ public class UserFacade {
     }
 
     public List<String> getUserOrders(String username){
-        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List<Integer> ordersIds=iUserRepo.getOrdersHistory(username);
         List <String> ordersString=new ArrayList<>();
         for (Integer orderId : ordersIds) {
             Map<Integer,OrderDTO> orders=orderFacade.getOrderByOrderId(orderId);
@@ -464,7 +425,7 @@ public class UserFacade {
     }
 
      public List<String> getUserOrdersV2(String username){
-        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List<Integer> ordersIds=iUserRepo.getOrdersHistory(username);
         List <String> ordersString=new ArrayList<>();
         for (Integer orderId : ordersIds) {
             Map<Integer,OrderDTO> orders=orderFacade.getOrderByOrderId(orderId);
@@ -480,7 +441,7 @@ public class UserFacade {
 
     public List<OrderDTO> getUserOrderDTOs(String username){
         logger.info("get orders for {}",username);
-        List<Integer> ordersIds=getMember(username).getOrdersHistory();
+        List<Integer> ordersIds=iUserRepo.getOrdersHistory(username);
         List <OrderDTO> orders =new ArrayList<>();
         for (Integer orderId : ordersIds) {
             Map<Integer,OrderDTO> ordersMap =orderFacade.getOrderByOrderId(orderId);
@@ -546,19 +507,19 @@ public class UserFacade {
         List<CartItemDTO> items=iUserRepo.getUserCart(username);
         validateCreditCard(creditCard);
         validateAddress(addressDTO);
-        storeFacade.checkCart(null, items);
+        storeFacade.checkCart(username, items);
         List<ProductDataPrice> productList=storeFacade.calculatePrice(username, items);
         Map<Integer,Integer> productAmount=new HashMap<>();
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,username);
-        storeFacade.updateStock(null, items);
+        storeFacade.updateStock(username, items);
         clearCart(username);
         logger.info("finish purchase cart for user {} with credit card {} and address {}",username,creditCard,addressDTO);
     }
 
     public void clearCart(String username){
         logger.info("clear cart for user {}",username);
-        iUserRepo.getMember(username).clearCart();
+        iUserRepo.clearCart(username);
         logger.info("done clear cart for user {}",username);
     }
 
@@ -573,7 +534,7 @@ public class UserFacade {
         String supplyString = makeSuplyment(productAmount,addressDTO);
         createUserOrders(productList,creditCard,supplyString,null);
         storeFacade.updateStock(null, items);
-        iUserRepo.getGuest(guestId).getCart().clear();
+        iUserRepo.clearGuestCart(guestId);;
         logger.info("finish purchase cart for guest {} with credit card {} and address {}",guestId,creditCard,addressDTO);
     }
     private void validateAddress(AddressDTO address){
@@ -609,7 +570,7 @@ public class UserFacade {
             productAmounts.put(storeId, productList);      
             int orderId=orderFacade.createOrder(productAmounts,username);
             if(username!=null)
-                iUserRepo.getMember(username).addOrder(orderId);
+                iUserRepo.addOrder(username,orderId);
         }
         logger.info("done create user orders");
     }
@@ -617,14 +578,14 @@ public class UserFacade {
         logger.info("get all orders for {}",username);
         if(!isExist(username))
             throw new NoSuchElementException(Error.makeUserDoesntExistError());
-        if(!iUserRepo.getMember(username).isLoggedIn())
+        if(!iUserRepo.isLoggedIn(username))
             throw new IllegalStateException(Error.makeUserLoggedInError());
         if(!username.equals(systemManagerUserName))
             throw new IllegalStateException(Error.makeSystemManagerCanOnlyViewOrdersError());
         logger.info("got all orders for {}",username);
         return orderFacade.getAllOrders();
     }
-    private String makeSuplyment(Map<Integer,Integer> productAmount,AddressDTO addressDTO){
+    private String makeSuplyment(Map<Integer,Integer> productAmount,AddressDTO addressDTO) throws JsonProcessingException {
         logger.info("make supplyment {} with address {}",productAmount,addressDTO);
         SupplyService supply=SupplyService.getInstance();
         OrderDetailsDTO orderDetailsDTO=new OrderDetailsDTO(productAmount);
@@ -669,5 +630,23 @@ public class UserFacade {
         logger.info("checked if user is system manager {} and got {}",username,res);
         return res;
     }
+    public RequestDTO addRequest(String senderName, String sentName,int storeId, String reqType){
+        logger.info("add request from {} to {} for store {} with type {}",senderName,sentName,storeId,reqType);
+        RequestDTO requestDTO=iUserRepo.addRequest(senderName, sentName, storeId, reqType);
+        logger.info("added request from {} to {} for store {} with type {}",senderName,sentName,storeId,reqType);
+        return requestDTO;
+    }
+    public List<CartItemDTO> getMemberCart(String username){
+        logger.info("get member cart for {}",username);
+        List<CartItemDTO> cart=iUserRepo.getUserCart(username);
+        logger.info("got member cart for {}",username);
+        return cart;
+    }
+    public boolean isApointee(String apointee,String apointer,int store_id){
+        return iUserRepo.isApointee(apointer, apointee,store_id);
+    }
 
+    public void setRealtime(RealtimeService realtime) {
+        this.realtime = realtime;
+    }
 }

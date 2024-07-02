@@ -72,6 +72,17 @@ export const Store = () => {
     setActMax(Math.ceil(max));
     setMaxPrice(Math.ceil(max));
   }
+
+  const handleDeletePolicy = async (policyId: number) => {
+    await removePolicyFromStore(parseInt(storeId!), policyId)
+    setBuyPolicies(await getStorePolicies(storeId!))
+  }
+
+  const handleDeleteDiscount = async (policyId: number) => {
+    await removeDiscountFromStore(parseInt(storeId!), policyId)
+    setDiscountPolicies(await getStoreDiscounts(storeId!))
+  }
+
   const handleInputChange = (event:any) => {
     setSearchTerm(event.target.value);
   };
@@ -99,12 +110,12 @@ export const Store = () => {
               <div className="listPolicies">
                 <h4>Purchase Policies:</h4>
                 {buyPolicies.map(policy => <div className='policDiv'><p>{policy.description}</p>
-                {canRemoveBuyPolicy && <button className='removeButton' onClick = {async () => await removePolicyFromStore(parseInt(storeId!), policy.policyId)}><TiDelete /></button>}</div>)}
+                {canRemoveBuyPolicy && <button className='removeButton' onClick = {() => handleDeletePolicy(policy.policyId)}><TiDelete /></button>}</div>)}
               </div>
               <div className="listPolicies">
                 <h4>Discount Policies:</h4>
                 {discountPolicies.map(policy => <div className='policDiv'><p>{policy.description}</p>
-                {canRemoveDisPolicy && <button className='removeButton' onClick={async () => await removeDiscountFromStore(parseInt(storeId!), policy.policyId)}><TiDelete /></button>}</div>)}
+                {canRemoveDisPolicy && <button className='removeButton' onClick={() => handleDeleteDiscount(policy.policyId)}><TiDelete /></button>}</div>)}
               </div>
             </div>
             <div className='dropdownDiv'>

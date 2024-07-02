@@ -1,12 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/navbar.css';
 import logo from '../images/la_sadna.png';
 import SearchBar from './Search';
 import '../styles/search.css';
-import { IconButton } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { AppContext } from '../App';
+import StoreSearchBar from './StoreSearchBar';
 
 export const Navbar = () => {
     const {isloggedin , setIsloggedin } = useContext(AppContext);
@@ -18,13 +19,22 @@ export const Navbar = () => {
           navigate(`/cart/${localStorage.getItem('guestId')}`);
         }
       }
+    const [showStoreSearch, setShowStoreSearch] = useState(false);
+
+
+          const handleToggleSearch = () => {
+        setShowStoreSearch(prevShowStoreSearch => !prevShowStoreSearch);
+    };
     return (
         <nav>
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
                     <img src={logo} width={160} height={100} alt="Logo"></img>
                 </Link>
-                <SearchBar />
+                  {showStoreSearch ? <StoreSearchBar /> : <SearchBar />}
+                <Button onClick={handleToggleSearch} className="toggle-search-button">
+                    {showStoreSearch ? 'Switch to Product Search' : 'Switch to Store Search'}
+                </Button>
                 <ul className="navbar-menu">
                     <li className="navbar-item">
                         <Link to="/login" className="navbar-link">

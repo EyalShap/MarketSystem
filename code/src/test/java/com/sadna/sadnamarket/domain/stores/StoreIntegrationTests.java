@@ -58,14 +58,9 @@ class StoreIntegrationTests {
     }
 
     private StoreDTO generateStoreDTO() {
-        LocalTime openingHour = LocalTime.of(10, 0);
-        LocalTime closingHour = LocalTime.of(21, 0);
-        LocalTime fridayClosingHour = LocalTime.of(14, 0);
-        LocalTime[] openingHours = new LocalTime[]{openingHour, openingHour, openingHour, openingHour, openingHour, openingHour, null};
-        LocalTime[] closingHours = new LocalTime[]{closingHour, closingHour, closingHour, closingHour, closingHour, fridayClosingHour, null};
-        List<String> owners = new ArrayList<>();
+        Set<String> owners = new HashSet<>();
         owners.add("Willy");
-        return new StoreDTO(0, true, "Chocolate Factory", 3, "Beer Sheva", "chocolate@gmail.com", "0541075403", openingHours, closingHours, new HashMap<>(), "Willy", owners, new ArrayList<>(), new ArrayList<>());
+        return new StoreDTO(0, true, "Chocolate Factory", 3, "Beer Sheva", "chocolate@gmail.com", "0541075403", new HashMap<>(), "Willy", owners, new HashSet<>(), new HashSet<>());
     }
 
     private void fillStoreProducts() {

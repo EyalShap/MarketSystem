@@ -1,3 +1,4 @@
+
 package com.sadna.sadnamarket.domain.orders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -79,7 +80,7 @@ public class MemoryOrderRepository implements IOrderRepository {
                 Order order = orders.get(orderId).getOrders().get(storeId);
                 Map<Integer, String> orderProductsJsons=order.getOrderProductsJsons();
                 for (String productsJsons: orderProductsJsons.values() ) {
-                        productDataPrices.add(fromJson(productsJsons));
+                    productDataPrices.add(fromJson(productsJsons));
                 }
             }
         }

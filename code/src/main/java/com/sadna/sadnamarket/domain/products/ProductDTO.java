@@ -35,6 +35,7 @@ public class ProductDTO {
         this.productWeight = productWeight;
         this.isActive = isActive;
         this.storeId = storeId;
+        this.description = "";
     }
 
 
@@ -84,12 +85,12 @@ public class ProductDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductDTO that = (ProductDTO) o;
-        return productID == that.productID && Double.compare(that.productPrice, productPrice) == 0 && Double.compare(that.productRank, productRank) == 0 && isActive == that.isActive && Double.compare(that.productWeight, productWeight) == 0 && Objects.equals(productName, that.productName) && Objects.equals(productCategory, that.productCategory) && Objects.equals(description, that.description);
+        return storeId == that.storeId && productID == that.productID && Double.compare(that.productPrice, productPrice) == 0 && Double.compare(that.productRank, productRank) == 0 && isActive == that.isActive && Double.compare(that.productWeight, productWeight) == 0 && Objects.equals(productName, that.productName) && Objects.equals(productCategory, that.productCategory) && Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productID, productName, productPrice, productCategory, productRank, isActive, productWeight, description);
+        return Objects.hash(storeId, productID, productName, productPrice, productCategory, productRank, isActive, productWeight, description);
     }
 
     public int getStoreId() {

@@ -8,6 +8,7 @@ import tradingCards from '../images/categories/05_PopularDestination_Cards.jpg';
 import preLovedLuxury from '../images/categories/06_PopularDestination_PreLoved.jpg';
 import toys from '../images/categories/07_PopularDestination_Toys.jpg';
 import other from '../images/categories/other.png';
+import { useNavigate } from 'react-router-dom';
 
 type Category= {
   
@@ -24,7 +25,6 @@ const categories = [
     {  name: 'Trading Cards', img:  tradingCards },
     {  name: 'Pre Loved Luxury', img: preLovedLuxury },
     {  name: 'Toys', img: toys },
-    
     {  name: 'Other', img: other},
   ];
 
@@ -34,8 +34,8 @@ type CategoryCarouselProps= {
 
 const CategoriesBar = () => {
     const [carouselRef, setcarouselRef]= useState(0);
-    const [currentCategory, setCategory]= useState(categories.slice(5));
-
+    const [currentCategory, setCategory]= useState(categories.slice(0,5));
+    const navigate = useNavigate();
     const scrollLeft = () => {
         if(carouselRef>0){
             setcarouselRef(carouselRef-1);
@@ -50,7 +50,7 @@ const CategoriesBar = () => {
         }
     };
     const handleClick = (category: Category) => {
-        console.log(category.name);
+        navigate(`/search-results?category=${category.name}&minPrice=0&maxPrice=1000`);
     }
     return (
       <div className="product-carousel">

@@ -5,10 +5,31 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+
+
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "notifications_type", discriminatorType = DiscriminatorType.STRING)
 public class Notification {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column
     private String message;
+    @Column
     private LocalDateTime date;
+    @Column
+    private String username;
     private static final Logger logger = LogManager.getLogger(Notification.class);
 
     public Notification(String msg,int id) {
@@ -18,8 +39,22 @@ public class Notification {
         this.date = LocalDateTime.now();
         logger.info("Exiting Notification constructor");
     }
-
-    public void accept(Member member) {
+    public Notification(String msg) {
+        logger.info("Entering Notification constructor with msg={}", msg);
+        this.message = msg;
+        this.date = LocalDateTime.now();
+        logger.info("Exiting Notification constructor");
+    }
+    public Notification(String msg,int id,String username) {
+        logger.info("Entering Notification constructor with msg={}", msg);
+        this.message = msg;
+        this.id=id;
+        this.username=username;
+        this.date = LocalDateTime.now();
+        logger.info("Exiting Notification constructor");
+    }
+    public Notification() {}
+    public void accept(Member member,UserFacade userFacade) {
         logger.info("Entering accept with member={}", member);
         // No specific implementation for accept in Notification
         logger.info("Exiting accept");
