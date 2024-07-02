@@ -1,4 +1,4 @@
-package com.sadna.sadnamarket;
+package com.sadna.sadnamarket.acceptance;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -38,6 +38,9 @@ import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 
+import javax.transaction.Transactional;
+
+@Transactional
 public class UserFacadeIntegrationTest {
 
     private MemoryRepo iUserRepo;
