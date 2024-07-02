@@ -4,36 +4,36 @@ import java.util.*;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "Orders")
+//@Entity
+//@Table(name = "Orders")
 public class OrderDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name = "member_name")
+//    @Column(name = "member_name")
     private String memberName;
 
-    @Column(name = "store_id")
+//    @Column(name = "store_id")
     private Integer storeId;
 
     //private int orderId;
-    @Column(name = "store_name_when_ordered")
+//    @Column(name = "store_name_when_ordered")
     private String storeNameWhenOrdered;
-    @ElementCollection
-    @CollectionTable(name = "Order_Product_Amounts", joinColumns = @JoinColumn(name = "order_id"))
-    @MapKeyColumn(name = "product_id")
-    @Column(name = "amount")
+//    @ElementCollection
+//    @CollectionTable(name = "Order_Product_Amounts", joinColumns = @JoinColumn(name = "order_id"))
+//    @MapKeyColumn(name = "product_id")
+//    @Column(name = "amount")
     private Map<Integer, Integer> productAmounts;
 
-    @ElementCollection
-    @CollectionTable(name = "Order_Products_Jsons", joinColumns = @JoinColumn(name = "order_id"))
-    @MapKeyColumn(name = "product_id")
-    @Column(name = "json")
+//    @ElementCollection
+//    @CollectionTable(name = "Order_Products_Jsons", joinColumns = @JoinColumn(name = "order_id"))
+//    @MapKeyColumn(name = "product_id")
+//    @Column(name = "json")
     private Map<Integer, String> orderProductsJsons;
 
-    @ManyToOne
-    @JoinColumn(name = "order_wrapper_id")
+//    @ManyToOne
+//    @JoinColumn(name = "order_wrapper_id")
     private OrderWrapper orderWrapper;
 
 //    @Column(name = "order_wrapper_id")

@@ -61,5 +61,40 @@ public class Order {
         return orderProductsJsons;
     }
 
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
+    }
+
+    public void setStoreId(Integer storeId) {
+        this.storeId = storeId;
+    }
+
+    public void setStoreNameWhenOrdered(String storeNameWhenOrdered) {
+        this.storeNameWhenOrdered = storeNameWhenOrdered;
+    }
+
+    public void setProductAmounts(Map<Integer, Integer> productAmounts) {
+        this.productAmounts = productAmounts;
+    }
+
+    public void setOrderProductsJsons(Map<Integer, String> orderProductsJsons) {
+        this.orderProductsJsons = orderProductsJsons;
+    }
+
+    public void setOrderWrapper(OrderWrapper orderWrapper) {
+        this.orderWrapper = orderWrapper;
+    }
+
+    public Integer getStoreId() {
+        return storeId;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 }
 
