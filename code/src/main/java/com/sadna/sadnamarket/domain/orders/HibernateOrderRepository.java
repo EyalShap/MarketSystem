@@ -181,24 +181,5 @@ public class HibernateOrderRepository implements IOrderRepository{
         return orderDTO;
     }
 
-    public static void main(String[] args) {
-//        Map<Integer, OrderDTO> ans=new HashMap<>();
-//        Map<Integer,Integer> amunt=new HashMap<>();
-//        amunt.put(2,10);
-//        Map<Integer,String> json=new HashMap<>();
-//        json.put(4,"{\"id\":7,\"storeId\":101,\"name\":\"store2\",\"amount\":8,\"oldPrice\":7,\"newPrice\":10}");
-//        OrderDTO orderDTO =new OrderDTO("matan","ramilevi",amunt,json);
-//        Map<Integer,OrderDTO> stors =new HashMap<>();
-//        stors.put(4,orderDTO);
-        HibernateOrderRepository a=new HibernateOrderRepository();
-//        a.createOrder(stors,"matan");
-//        List<ProductDataPrice> k=a.getOrders(4);
-//        Map<Integer, OrderDetails> g=a.getProductDataPriceByMember("matan");
-//       Map<Integer, OrderDTO>p=a.getOrderByOrderId(1181);
-
-   //     List<OrderDTO> q=a.getAllOrders();
-      //  ans=a.getOrderByOrderId(160);
-        int v=6;
-    }
 
 }

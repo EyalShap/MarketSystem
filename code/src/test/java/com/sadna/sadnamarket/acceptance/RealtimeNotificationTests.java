@@ -1,6 +1,8 @@
-package com.sadna.sadnamarket;
+package com.sadna.sadnamarket.acceptance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.FaketimeService;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
@@ -110,7 +112,7 @@ class RealtimeNotificationTests {
     }
 
     @Test
-    void sendOwnerRequestAcceptTest() {
+    void sendOwnerRequestAcceptTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -119,12 +121,12 @@ class RealtimeNotificationTests {
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
         Assertions.assertEquals("You got appointment request",fake.getMessages(appointeeUsername).get(0));
-        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, 1);
+        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, bridge.getFirstNotification(appointeeUsername));
         Assertions.assertEquals("User " + appointeeUsername + " accepted request for Owner in " + storeId,fake.getMessages(username).get(0));
     }
 
     @Test
-    void sendOwnerRequestRejectTest() {
+    void sendOwnerRequestRejectTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -133,12 +135,12 @@ class RealtimeNotificationTests {
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
         Assertions.assertEquals("You got appointment request",fake.getMessages(appointeeUsername).get(0));
-        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, 1,"");
+        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, bridge.getFirstNotification(appointeeUsername),"");
         Assertions.assertEquals("User " + appointeeUsername + " rejected request for Owner in " + storeId,fake.getMessages(username).get(0));
     }
 
     @Test
-    void sendManagerRequestAcceptTest() {
+    void sendManagerRequestAcceptTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -147,12 +149,12 @@ class RealtimeNotificationTests {
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<>());
         Assertions.assertEquals("You got appointment request",fake.getMessages(appointeeUsername).get(0));
-        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, 1);
+        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, bridge.getFirstNotification(appointeeUsername));
         Assertions.assertEquals("User " + appointeeUsername + " accepted request for Manager in " + storeId,fake.getMessages(username).get(0));
     }
 
     @Test
-    void sendManagerRequestRejectTest() {
+    void sendManagerRequestRejectTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -161,12 +163,12 @@ class RealtimeNotificationTests {
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<>());
         Assertions.assertEquals("You got appointment request",fake.getMessages(appointeeUsername).get(0));
-        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, 1,"");
+        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, bridge.getFirstNotification(appointeeUsername),"");
         Assertions.assertEquals("User " + appointeeUsername + " rejected request for Manager in " + storeId,fake.getMessages(username).get(0));
     }
 
     @Test
-    void closeStoreTest() {
+    void closeStoreTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -174,13 +176,13 @@ class RealtimeNotificationTests {
         String apointeeToken = resp.getDataJson();
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
-        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, 1);
+        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, bridge.getFirstNotification(appointeeUsername));
         bridge.closeStore(token,username,storeId);
         Assertions.assertEquals(String.format("The store \"%s\" was closed.", "Store's Store"),fake.getMessages(appointeeUsername).get(1));
     }
 
     @Test
-    void closeStoreLoggedOutTest() {
+    void closeStoreLoggedOutTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -188,7 +190,7 @@ class RealtimeNotificationTests {
         String apointeeToken = resp.getDataJson();
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
-        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, 1);
+        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, bridge.getFirstNotification(appointeeUsername));
         bridge.logout(appointeeUsername);
         bridge.closeStore(token,username,storeId);
         Assertions.assertTrue(fake.getMessages(appointeeUsername).size() == 1);

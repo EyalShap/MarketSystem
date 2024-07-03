@@ -37,6 +37,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.security.access.method.P;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -46,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Transactional
 class StoreFacadeTest {
     private StoreFacade storeFacade;
     private AuthFacade authFacade;

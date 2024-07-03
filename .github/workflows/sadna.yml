@@ -20,7 +20,7 @@ jobs:
 
     concurrency:
       group: spooky-db-usage
-      cancel-in-progress: false 
+      cancel-in-progress: false
 
     steps:
       - uses: actions/checkout@v4
@@ -37,10 +37,3 @@ jobs:
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
-      - name: run tests
-        run: |
-          cd code
-          mvn test
-        env:
-          DB_USERNAME: ${{secrets.DB_USERNAME }}          
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}  

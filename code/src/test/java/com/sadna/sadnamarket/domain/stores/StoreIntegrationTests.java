@@ -6,11 +6,13 @@ import com.sadna.sadnamarket.service.Error;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.transaction.Transactional;
 import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
 class StoreIntegrationTests {
     private Store store;
 
