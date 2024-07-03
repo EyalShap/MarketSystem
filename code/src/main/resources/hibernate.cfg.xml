@@ -34,12 +34,12 @@
         <mapping class="com.sadna.sadnamarket.domain.orders.OrderDTO"/>
 
         <mapping class="com.sadna.sadnamarket.domain.stores.Store"/>
-        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyDTO"/>
-        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.StoreBuyPolicyDTO"/>
-        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.RangedBuyPolicyDTO"/>
-        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.JewishCustomsBuyPolicyDTO"/>
-        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.CompositeBuyPolicyDTO"/>
-        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.DateBuyPolicyDTO"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyData"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.StoreBuyPolicyRelation"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.RangedBuyPolicyData"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.JewishCustomsBuyPolicyData"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.CompositeBuyPolicyData"/>
+        <mapping class="com.sadna.sadnamarket.domain.buyPolicies.DateBuyPolicyData"/>
         <mapping class="com.sadna.sadnamarket.domain.payment.BankAccountDTO"/>
         <mapping class="com.sadna.sadnamarket.domain.users.Member"/>
         <mapping class="com.sadna.sadnamarket.domain.users.Cart"/>

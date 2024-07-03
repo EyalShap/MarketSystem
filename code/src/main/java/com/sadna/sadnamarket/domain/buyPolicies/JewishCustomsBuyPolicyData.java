@@ -6,50 +6,37 @@ import org.hibernate.query.Query;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.time.LocalTime;
 import java.util.LinkedList;
 
 @Entity
-@Table(name = "datebuypolicies")
-public class DateBuyPolicyDTO extends BuyPolicyDTO{
-    @Column(name = "day")
-    Integer day;
-    @Column(name = "month")
-    Integer month;
-    @Column(name = "year")
-    Integer year;
+@Table(name = "jewishbuypolicies")
+public class JewishCustomsBuyPolicyData extends BuyPolicyData {
     @Column(name = "subject")
     String subject;
+    @Column(name = "type")
+    String type;
 
-    public DateBuyPolicyDTO(){
+    public JewishCustomsBuyPolicyData(){
 
     }
 
-    public DateBuyPolicyDTO(Integer policyId, Integer day, Integer month, Integer year, String subject) {
+    public JewishCustomsBuyPolicyData(Integer policyId, String subject, String type) {
         this.policyId = policyId;
-        this.day = day;
-        this.month = month;
-        this.year = year;
         this.subject = subject;
+        this.type = type;
     }
 
-    public DateBuyPolicyDTO(Integer day, Integer month, Integer year, String subject) {
-        this.day = day;
-        this.month = month;
-        this.year = year;
+    public JewishCustomsBuyPolicyData(String subject, String type) {
         this.subject = subject;
+        this.type = type;
     }
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT P FROM DateBuyPolicyDTO P " +
-                "WHERE P.day = :day " +
-                "AND P.month = :month " +
-                "AND P.year = :year " +
+        Query query = session.createQuery("SELECT P FROM JewishCustomsBuyPolicyData P " +
+                "WHERE P.type = :type " +
                 "AND P.subject = :subject ");
-        query.setParameter("day",day);
-        query.setParameter("month",month);
-        query.setParameter("year",year);
+        query.setParameter("type",type);
         query.setParameter("subject",subject);
         return query;
     }
@@ -62,7 +49,14 @@ public class DateBuyPolicyDTO extends BuyPolicyDTO{
         }else{
             policySubject = new CategorySubject(subject.substring(2));
         }
-        return new SpecificDateBuyPolicy(policyId,new LinkedList<>(), policySubject, day, month, year);
+        switch (type){
+            case BuyPolicyTypeCodes.HOLIDAY:
+                return new HolidayBuyPolicy(policyId, new LinkedList<>(),policySubject);
+            case BuyPolicyTypeCodes.ROSH_KHODESH:
+                return new RoshChodeshBuyPolicy(policyId, new LinkedList<>(),policySubject);
+
+        }
+        return null;
     }
 
     @Override

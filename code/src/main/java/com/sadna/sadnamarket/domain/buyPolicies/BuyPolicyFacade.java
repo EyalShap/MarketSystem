@@ -219,4 +219,11 @@ public class BuyPolicyFacade {
         return descs;
     }
 
+    public void clear(){
+        for(int storeId : mapper.keySet()){
+            mapper.get(storeId).clear();
+        }
+        this.mapper = new HashMap<Integer, BuyPolicyManager>();
+        buyPolicyRepository.clear();
+    }
 }

@@ -6,7 +6,6 @@ import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 
 public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
@@ -157,7 +156,7 @@ public class SpecificDateBuyPolicy extends SimpleBuyPolicy{
     }
 
     @Override
-    public BuyPolicyDTO getDTO() {
-        return new DateBuyPolicyDTO(day,month,year,getPolicySubject().dataString());
+    public BuyPolicyData generateData() {
+        return new DateBuyPolicyData(day,month,year,getPolicySubject().dataString());
     }
 }

@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class BuyPolicyDTO {
+public abstract class BuyPolicyData {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "policy_id")
