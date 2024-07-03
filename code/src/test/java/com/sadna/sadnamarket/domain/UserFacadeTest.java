@@ -40,6 +40,9 @@ import com.sadna.sadnamarket.domain.users.UserFacade;
 import com.sadna.sadnamarket.domain.users.UserHibernateRepo;
 import com.sadna.sadnamarket.domain.users.UserOrderDTO;
 
+import javax.transaction.Transactional;
+
+@Transactional
 public class UserFacadeTest {
 
     private IUserRepository iUserRepo;

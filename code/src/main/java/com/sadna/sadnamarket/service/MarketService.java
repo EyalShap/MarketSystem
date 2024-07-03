@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -95,6 +96,7 @@ public class MarketService {
 
     // ----------------------- Store -----------------------
 
+    @Transactional
     public Response loginUsingToken(String token, String username) {
         try{
             if(!authFacade.login(token).equals(username)) {
@@ -120,6 +122,8 @@ public class MarketService {
             throw new IllegalArgumentException(Error.makeTokenInvalidError(username));
         }
     }
+
+    @Transactional
     public Response createStore(String token, String founderUsername, String storeName, String address, String email, String phoneNumber) {
         try {
             checkToken(token, founderUsername);
@@ -134,6 +138,8 @@ public class MarketService {
         }
     } //From "My Stores" page, redirects to new store
 
+
+    @Transactional
     public Response addProductToStore(String token, String username, int storeId, String productName, int productQuantity, double productPrice, String category, double rank, double productWeight, String description) {
         try {
             checkToken(token, username);
@@ -147,6 +153,7 @@ public class MarketService {
         }
     } //From Store page, Actions menu, only for permission, new page
 
+    @Transactional
     public Response setStoreBankAccount(String token, String username, int storeId, BankAccountDTO bankAccount) {
         try {
             checkToken(token, username);
@@ -160,6 +167,7 @@ public class MarketService {
         }
     } //From Store page, Actions menu, only for owner, new page
 
+    @Transactional
     public Response deleteProductFromStore(String token, String username, int storeId, int productId) {
         try {
             checkToken(token, username);
@@ -173,6 +181,7 @@ public class MarketService {
         }
     } //From Store page, X on products from products list, only for permission
 
+    @Transactional
     public Response updateProductInStore(String token, String username, int storeId, int productId, String newProductName, int newQuantity, double newPrice, String newCategory, double newRank, String newDesc) {
         try {
             checkToken(token, username);
@@ -187,6 +196,7 @@ public class MarketService {
         }
     } //From Product page, button, only for permission, new page
 
+    @Transactional
     public Response updateProductAmountInStore(String token, String username, int storeId, int productId, int newQuantity) {
         try {
             checkToken(token, username);
@@ -201,6 +211,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response closeStore(String token, String username, int storeId) {
         try {
             checkToken(token, username);
@@ -215,6 +226,7 @@ public class MarketService {
         }
     } //From Store page, Actions menu, only for owner, popup
 
+    @Transactional
     public Response reopenStore(String token, String username, int storeId) {
         try {
             checkToken(token, username);
@@ -228,6 +240,7 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
 
     public Response getOwners(String token, String username, int storeId) {
         try {
@@ -269,6 +282,7 @@ public class MarketService {
         }
     }*/
 
+    @Transactional
     public Response sendStoreOwnerRequest(String token, String currentOwnerUsername, String newOwnerUsername, int storeId) {
         try {
             checkToken(token, currentOwnerUsername);
@@ -282,6 +296,7 @@ public class MarketService {
         }
     } //From Store page, Actions menu, new page, enter username and click send
 
+    @Transactional
     public Response sendStoreManagerRequest(String token, String currentOwnerUsername, String newManagerUsername, int storeId) {
         try {
             checkToken(token, currentOwnerUsername);
@@ -295,6 +310,7 @@ public class MarketService {
         }
     } //From Store page, Actions menu, new page, enter username and click send
 
+    @Transactional
     public Response acceptRequest(String token, String newUsername, int storeId) {
         try {
             checkToken(token, newUsername);
@@ -427,7 +443,7 @@ public class MarketService {
         }
     }*/
 
-
+    @Transactional
     public Response createProductKgBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, double min, double max) {
         try {
             checkToken(token, username);
@@ -441,6 +457,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createProductAmountBuyPolicy(String token, String username, int productId, List<BuyType> buytypes, int min, int max) {
         try {
             checkToken(token, username);
@@ -454,6 +471,7 @@ public class MarketService {
         }
     } //from Store window, Actions menu, new page
 
+    @Transactional
     public Response createCategoryAgeLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, int min, int max) {
         try {
             checkToken(token, username);
@@ -467,6 +485,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createCategoryHourLimitBuyPolicy(String token, String username, String category, List<BuyType> buytypes, LocalTime from, LocalTime to) {
         try {
             checkToken(token, username);
@@ -480,6 +499,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createCategoryRoshChodeshBuyPolicy(String token, String username, String category, List<BuyType> buytypes) {
         try {
             checkToken(token, username);
@@ -493,6 +513,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createCategoryHolidayBuyPolicy(String token, String username,  String category, List<BuyType> buytypes) {
         try {
             checkToken(token, username);
@@ -506,6 +527,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createCategorySpecificDatePolicy(String token, String username, String category, List<BuyType> buytypes, int day, int month, int year) {
         try {
             checkToken(token, username);
@@ -519,6 +541,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createAndBuyPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -532,6 +555,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createOrBuyPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -545,6 +569,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createConditioningBuyPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -558,6 +583,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response addBuyPolicyToStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);
@@ -571,6 +597,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response addLawBuyPolicyToStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);
@@ -584,6 +611,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response removeBuyPolicyFromStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);
@@ -657,6 +685,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createMinProductOnStoreCondition(String token, int minAmount, String username) {
         try {
             checkToken(token, username);
@@ -669,6 +698,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createMinProductOnCategoryCondition(String token, int minAmount, String categoryName, String username) {
         try {
             checkToken(token, username);
@@ -681,6 +712,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createMinProductCondition(String token, int minAmount, int productID, String username) {
         try {
             checkToken(token, username);
@@ -694,6 +727,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createMinBuyCondition(String token, String username, int minBuy) {
         try {
             checkToken(token, username);
@@ -706,6 +740,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createXorCondition(String token, String username, int conditionAID, int conditionBID) {
         try {
             checkToken(token, username);
@@ -718,6 +754,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createOrCondition(String token, String username, int conditionAID, int conditionBID) {
         try {
             checkToken(token, username);
@@ -730,6 +768,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createAndCondition(String token, String username, int conditionAID, int conditionBID) {
         try {
             checkToken(token, username);
@@ -742,6 +782,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createOnProductSimpleDiscountPolicy(String token, String username, double percentage, int ProductID) {
         try {
             checkToken(token, username);
@@ -754,6 +796,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createOnCategorySimpleDiscountPolicy(String token, String username, double percentage, String CategoryName) {
         try {
             checkToken(token, username);
@@ -767,6 +811,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createOnStoreSimpleDiscountPolicy(String token, String username, double percentage) {
         try {
             checkToken(token, username);
@@ -780,6 +825,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createOnProductConditionDiscountPolicy(String token, String username, double percentage, int ProductID, int conditionID) {
         try {
             checkToken(token, username);
@@ -792,6 +838,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createOnCategoryConditionDiscountPolicy(String token, String username, double percentage, String CategoryName, int conditionID) {
         try {
             checkToken(token, username);
@@ -805,6 +853,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createOnStoreConditionDiscountPolicy(String token, String username, double percentage, int conditionID) {
         try {
             checkToken(token, username);
@@ -818,6 +867,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createTakeMaxXorDiscountPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -830,6 +880,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createTakeMinXorDiscountPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -842,6 +894,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createAdditionDiscountPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -854,6 +908,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+
+    @Transactional
     public Response createMaximumDiscountPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -867,6 +923,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createAndDiscountPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -880,6 +937,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response createOrDiscountPolicy(String token, String username, int policyId1, int policyId2) {
         try {
             checkToken(token, username);
@@ -893,6 +951,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response addDiscountPolicyToStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);
@@ -906,6 +965,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response removeDiscountPolicyToStore(String token, String username, int storeId, int policyId) {
         try {
             checkToken(token, username);
@@ -919,6 +979,7 @@ public class MarketService {
         }
     } //from Store window, Actions menu, new page
 
+    @Transactional
     public Response changeManagerPermission(String token, String currentOwnerUsername, String newManagerUsername, int storeId, Set<Permission> permission) {
         try {
             checkToken(token, currentOwnerUsername);
@@ -969,6 +1030,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response login(String username, String password){
         try{
             logger.info("user {} tries to login", username);
@@ -981,6 +1043,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //Top right, choose "Login", new page
+
+    @Transactional
     public Response login(String username, String password,int guestId){
         try{
             logger.info("user {} tries to login from guestId={}", username,guestId);
@@ -993,6 +1057,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //Top right, choose "Login", new page
+
+    @Transactional
     public Response logout(String username){
         try{
             logger.info(username, username);
@@ -1005,6 +1071,7 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //dropdown menu as Member, choose "Logout"
+    @Transactional
         public Response exitGuest(int guestId){
             try{
                 logger.info("guest {} tries to exit", guestId);
@@ -1017,6 +1084,8 @@ public class MarketService {
                 return Response.createResponse(true, e.getMessage());
             }
         } //exit page
+
+    @Transactional
     public Response enterAsGuest(){
         try{
             logger.info("guest tries to enter");
@@ -1029,6 +1098,7 @@ public class MarketService {
         }
     } //enter page
 
+    @Transactional
     public Response register(String username, String password,String firstName, String lastName,String emailAddress,String phoneNumber, LocalDate birthDate){
         try{
             logger.info("user {} tries to register", username);
@@ -1067,6 +1137,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response setFirstName(String username, String firstName) {
         try {
             logger.info("user {} tries to set first name= {}", username,firstName);
@@ -1079,6 +1150,7 @@ public class MarketService {
         }
     } //From profile page, textbox
 
+    @Transactional
     public Response setLastName(String username, String lastName) {
         try {
             logger.info("user {} tries to set last name= {}", username,lastName);
@@ -1090,6 +1162,7 @@ public class MarketService {
         }
     } //From profile page, textbox
 
+    @Transactional
     public Response setEmailAddress(String username, String emailAddress) {
         try {
             logger.info("user {} tries to set email address= {}", username,emailAddress);
@@ -1102,6 +1175,7 @@ public class MarketService {
         }
     } //From profile page, textbox
 
+    @Transactional
     public Response setPhoneNumber(String username, String phoneNumber) {
         logger.info("Setting phoneNumber for username: {}", username);
         try {
@@ -1113,6 +1187,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //From profile page, textbox
+
+    @Transactional
     public Response setBirthDate(String username, LocalDate birthDate) {
         try {
             logger.info("user {} tries to set birth date= {}", username,birthDate);
@@ -1124,6 +1200,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //From profile page, textbox
+
+    @Transactional
     public Response addProductToCart(String username, int storeId, int productId, int amount) {
         logger.info("Adding product to cart for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
         try {
@@ -1140,6 +1218,7 @@ public class MarketService {
         }
     } //from Product Page, choose quantity and then "Add to Cart"
 
+    @Transactional
     public Response addProductToCart(int guestId, int storeId, int productId, int amount) {
         logger.info("Adding product to cart for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
         try {
@@ -1156,6 +1235,7 @@ public class MarketService {
         }
     } //from Product Page, choose quantity and then "Add to Cart"
 
+    @Transactional
     public Response removeProductFromCart(String username, int storeId, int productId) {
         logger.info("Removing product from cart for username: {}, storeId: {}, productId: {}", username, storeId, productId);
         try {
@@ -1168,6 +1248,7 @@ public class MarketService {
         }
     } //from "Cart" page, click on X/Trash next to product
 
+    @Transactional
     public Response removeProductFromCart(int guestId, int storeId, int productId) {
         logger.info("Removing product from cart for guestId: {}, storeId: {}, productId: {}", guestId, storeId, productId);
         try {
@@ -1180,6 +1261,7 @@ public class MarketService {
         }
     } //from "Cart" page, click on X/Trash next to product
 
+    @Transactional
     public Response changeQuantityCart(String username, int storeId, int productId, int amount) {
         logger.info("Changing quantity in cart for username: {}, storeId: {}, productId: {}, amount: {}", username, storeId, productId, amount);
         try {
@@ -1196,6 +1278,7 @@ public class MarketService {
         }
     } //from "Cart" page, edit Textbox next to product
 
+    @Transactional
     public Response changeQuantityCart(int guestId, int storeId, int productId, int amount) {
         logger.info("Changing quantity in cart for guestId: {}, storeId: {}, productId: {}, amount: {}", guestId, storeId, productId, amount);
         try {
@@ -1212,6 +1295,7 @@ public class MarketService {
         }
     } //from "Cart" page, edit Textbox next to product
 
+
     public Response getUserCart(int guestId) {
         logger.info("Getting user cart for guestId: {}", guestId);
         try {
@@ -1223,6 +1307,8 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //Cart page, for each product show amount and price before and after discount
+
+    @Transactional
     public Response acceptRequest(String acceptingName, int requestID) {
         logger.info("Accepting request for acceptingName: {}, requestID: {}", acceptingName, requestID);
         try {
@@ -1235,6 +1321,7 @@ public class MarketService {
         }
     } //From notifications, choose "Request" notification and click "accept", "Accept" and "Reject" on the request
 
+    @Transactional
     public Response okNotification(String username, int notifID) {
         logger.info("Okaying notification for username: {}, notifID: {}", username, notifID);
         try {
@@ -1247,6 +1334,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response rejectRequest(String rejectingName, int requestID) {
         logger.info("Rejecting request for rejectingName: {}, requestID: {}", rejectingName, requestID);
         try {
@@ -1259,6 +1347,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response setSystemAdminstor(String username) {
         logger.info("Setting system administrator for username: {}", username);
         try {
@@ -1271,6 +1360,7 @@ public class MarketService {
         }
     }
 
+    @Transactional
     public Response leaveRole(String username, int storeId) {
         logger.info("Leaving role for username: {}, storeId: {}", username, storeId);
         try {
@@ -1331,6 +1421,7 @@ public class MarketService {
         }
     } //Cart page, for each product show amount and price before and after discount
 
+    @Transactional
     public Response purchaseCart(String username, CreditCardDTO creditCard, AddressDTO addressDTO) {
         logger.info("Purchasing cart for username: {}, creditCard: {}, addressDTO: {}", username, creditCard, addressDTO);
         try {
@@ -1355,6 +1446,7 @@ public class MarketService {
         }
     } //Cart page, for each product show amount and price before and after discount
 
+    @Transactional
     public Response purchaseCart(int guestId, CreditCardDTO creditCard, AddressDTO addressDTO) {
         logger.info("Purchasing cart for guestId: {}, creditCard: {}, addressDTO: {}", guestId, creditCard, addressDTO);
         try {
