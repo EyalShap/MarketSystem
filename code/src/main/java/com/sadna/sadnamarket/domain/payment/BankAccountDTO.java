@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.payment;
 
+import com.sadna.sadnamarket.domain.stores.Store;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 
 import javax.persistence.*;
@@ -29,16 +30,16 @@ public class BankAccountDTO {
     @Column(name = "owner_username")
     private String ownerId;
 
-    @OneToOne
-    @JoinColumn(name="store_id")
-    private StoreDTO store;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
 
-    public BankAccountDTO(String bankCode, String bankBranchCode, String accountCode, String ownerId, StoreDTO store) {
+    public BankAccountDTO(String bankCode, String bankBranchCode, String accountCode, String ownerId) {
         this.bankCode = bankCode;
         this.bankBranchCode = bankBranchCode;
         this.accountCode = accountCode;
         this.ownerId = ownerId;
-        this.store = store;
+        this.store = null;
     }
 
     public BankAccountDTO() {}
@@ -72,11 +73,11 @@ public class BankAccountDTO {
         return Objects.hash(bankCode, bankBranchCode, accountCode, ownerId);
     }
 
-    public StoreDTO getStore() {
+    public Store getStore() {
         return store;
     }
 
-    public void setStore(StoreDTO store) {
+    public void setStore(Store store) {
         this.storeId = store.getStoreId();
         this.store = store;
     }

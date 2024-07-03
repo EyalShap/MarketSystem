@@ -158,16 +158,16 @@ public class HibernateOrderRepository implements IOrderRepository{
 
     public static void main(String[] args) {
         Map<Integer, OrderDTO> ans=new HashMap<>();
-//        Map<Integer,Integer> amunt=new HashMap<>();
-//        amunt.put(4,8);
-//        Map<Integer,String> json=new HashMap<>();
-//        json.put(4,"{\"id\":,4\"storeId\":101,\"name\":\"store1\",\"amount\":8,\"oldPrice\":7,\"newPrice\":10}");
-//        OrderDTO orderDTO =new OrderDTO("nisim","macabi",amunt,json);
-//        Map<Integer,OrderDTO> stors =new HashMap<>();
-//        stors.put(4,orderDTO);
+        Map<Integer,Integer> amunt=new HashMap<>();
+        amunt.put(4,8);
+        Map<Integer,String> json=new HashMap<>();
+        json.put(4,"{\"id\":,4\"storeId\":101,\"name\":\"store1\",\"amount\":8,\"oldPrice\":7,\"newPrice\":10}");
+        OrderDTO orderDTO =new OrderDTO("צשאשמ","rami levi",amunt,json);
+        Map<Integer,OrderDTO> stors =new HashMap<>();
+        stors.put(4,orderDTO);
         HibernateOrderRepository a=new HibernateOrderRepository();
-//        a.createOrder(stors,"nisim");
-        ans=a.getOrderByOrderId(160);
+        a.createOrder(stors,"nisim");
+       // ans=a.getOrderByOrderId(160);
         int k=6;
     }
 

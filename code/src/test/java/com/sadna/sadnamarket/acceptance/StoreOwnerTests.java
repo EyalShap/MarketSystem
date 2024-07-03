@@ -1,4 +1,4 @@
-package com.sadna.sadnamarket;
+package com.sadna.sadnamarket.acceptance;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -55,7 +55,7 @@ class StoreOwnerTests {
         token = resp.getDataJson();
         resp = bridge.openStore(token, username, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreBankAccount(token, username, storeId, new BankAccountDTO("10", "392", "393013", "2131516175", null));
+        bridge.setStoreBankAccount(token, username, storeId, new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";
@@ -211,7 +211,7 @@ class StoreOwnerTests {
     }
 
     @Test
-    void appointOwnerTest() {
+    void appointOwnerTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -225,7 +225,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsOwner(token, username, storeId, appointeeUsername);
@@ -234,7 +234,7 @@ class StoreOwnerTests {
     }
 
     @Test
-    void appointOwnerRejectTest() {
+    void appointOwnerRejectTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -248,7 +248,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, 1, username);
+        resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, bridge.getFirstNotification(appointeeUsername), username);
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsOwner(token, username, storeId, appointeeUsername);
@@ -257,14 +257,14 @@ class StoreOwnerTests {
     }
 
     @Test
-    void appointOwnerAlreadyOwnerTest() {
+    void appointOwnerAlreadyOwnerTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointOwner(token, username, storeId, appointeeUsername);
-        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
@@ -305,7 +305,7 @@ class StoreOwnerTests {
     }
 
     @Test
-    void appointManagerTest() {
+    void appointManagerTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -319,7 +319,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        resp = bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsManager(token, username, storeId, appointeeUsername);
@@ -328,7 +328,7 @@ class StoreOwnerTests {
     }
 
     @Test
-    void appointManagerRejectTest() {
+    void appointManagerRejectTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
@@ -342,7 +342,7 @@ class StoreOwnerTests {
 
         resp = bridge.login(appointeeUsername, "password");
         apointeeToken = resp.getDataJson();
-        resp = bridge.rejectManagerAppointment(apointeeToken, appointeeUsername, 1, username);
+        resp = bridge.rejectManagerAppointment(apointeeToken, appointeeUsername, bridge.getFirstNotification(appointeeUsername), username);
         Assertions.assertFalse(resp.getError());
 
         resp = bridge.getIsManager(token, username, storeId, appointeeUsername);
@@ -351,14 +351,14 @@ class StoreOwnerTests {
     }
 
     @Test
-    void appointManagerAlreadyManagerTest() {
+    void appointManagerAlreadyManagerTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertTrue(resp.getError());
@@ -367,14 +367,14 @@ class StoreOwnerTests {
     }
 
     @Test
-    void appointManagerAlreadyOwnerTest() {
+    void appointManagerAlreadyOwnerTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointOwner(token, username, storeId, appointeeUsername);
-        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
         Assertions.assertTrue(resp.getError());
@@ -416,14 +416,14 @@ class StoreOwnerTests {
     }
 
     @Test
-    void changeManagerPermissionsTest() {
+    void changeManagerPermissionsTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
         List<Integer> newPerms = new LinkedList<>();
         newPerms.add(1);
         resp = bridge.changeManagerPermissions(token, username, appointeeUsername, storeId, newPerms);
@@ -440,14 +440,14 @@ class StoreOwnerTests {
     }
 
     @Test
-    void changeManagerPermissionsNotOwnerTest() {
+    void changeManagerPermissionsNotOwnerTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
         List<Integer> newPerms = new LinkedList<>();
         newPerms.add(1);
         resp = bridge.changeManagerPermissions(maliciousToken, maliciousUsername, appointeeUsername, storeId, newPerms);
@@ -500,14 +500,14 @@ class StoreOwnerTests {
     }
 
     @Test
-    void getStoreRoleTest() {
+    void getStoreRoleTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
 
         try {
             resp = bridge.getStoreOwners(token, username, storeId);
@@ -527,14 +527,14 @@ class StoreOwnerTests {
     }
 
     @Test
-    void getStoreRoleDoesntExistTest() {
+    void getStoreRoleDoesntExistTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
 
         try {
             resp = bridge.getStoreOwners(token, username, Integer.MAX_VALUE);
@@ -552,14 +552,14 @@ class StoreOwnerTests {
     }
 
     @Test
-    void getStoreRoleNotOwnerTest() {
+    void getStoreRoleNotOwnerTest() throws JsonProcessingException {
         String appointeeUsername = "Eric";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         String apointeeToken = resp.getDataJson();
         bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<Integer>());
-        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, 1);
+        bridge.acceptManagerAppointment(apointeeToken, appointeeUsername, storeId, bridge.getFirstNotification(appointeeUsername));
 
         try {
             resp = bridge.getStoreOwners(maliciousToken, maliciousUsername, storeId);

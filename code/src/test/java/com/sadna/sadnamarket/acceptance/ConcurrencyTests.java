@@ -1,4 +1,4 @@
-package com.sadna.sadnamarket;
+package com.sadna.sadnamarket.acceptance;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +26,8 @@ import java.util.LinkedList;
 class ConcurrencyTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
+    final int AMOUNT=1000;
+
     @Autowired
     MarketServiceTestAdapter bridge;
 
@@ -46,7 +48,7 @@ class ConcurrencyTests {
         resp = bridge.openStore(ownerToken, ownerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId,
-                new BankAccountDTO("10", "392", "393013", "2131516175", null));
+                new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";
@@ -64,7 +66,7 @@ class ConcurrencyTests {
         Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true,storeId));
         int productId = Integer.parseInt(resp.getDataJson());
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < AMOUNT; i++) {
             System.out.println("ENTERTING ITERATION NUMBER " + i);
             bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 1);
             resp = bridge.guestEnterSystem();
@@ -152,7 +154,7 @@ class ConcurrencyTests {
                     }
                 }
             });
-            for(int i = 0; i < 100; i++) {
+            for(int i = 0; i < AMOUNT; i++) {
                 System.out.println("ENTERING ITERATION " + i);
                 t1.run();
                 t2.run();
@@ -173,7 +175,7 @@ class ConcurrencyTests {
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < AMOUNT; i++) {
             System.out.println("ENTERTING ITERATION " + i);
             Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
                     new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2, true, storeId));
@@ -221,16 +223,16 @@ class ConcurrencyTests {
     }
 
     @Test
-    void twoAppointManagerSameUser() {
+    void twoAppointManagerSameUser() throws JsonProcessingException {
         // make mallory an owner so we have 2 owners to make this test
         bridge.appointOwner(ownerToken, ownerUsername, storeId, maliciousUsername);
-        bridge.acceptOwnerAppointment(maliciousToken, maliciousUsername, storeId, 1);
+        bridge.acceptOwnerAppointment(maliciousToken, maliciousUsername, storeId, bridge.getFirstNotification(maliciousUsername));
 
         String[] appointeeUsername = new String[1];
         appointeeUsername[0] = "a";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < AMOUNT; i++) {
             resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername[0], "password");
             String apointeeToken = resp.getDataJson();
             try {
@@ -252,7 +254,7 @@ class ConcurrencyTests {
                 t2.run();
                 t1.join();
                 t2.join();
-                bridge.acceptManagerAppointment(apointeeToken, appointeeUsername[0], storeId, 1);
+                bridge.acceptManagerAppointment(apointeeToken, appointeeUsername[0], storeId, bridge.getFirstNotification(appointeeUsername[0]));
                 Assertions.assertEquals("true",
                         bridge.getIsManager(ownerToken, ownerUsername, storeId, appointeeUsername[0]).getDataJson());
                 appointeeUsername[0] = nextWord(appointeeUsername[0]);

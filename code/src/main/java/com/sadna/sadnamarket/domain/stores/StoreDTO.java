@@ -7,54 +7,18 @@ import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.*;
 
-@Entity
-@Table(name = "stores")
 public class StoreDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "store_id")
     private Integer storeId;
-
-    @Column(name = "is_active")
     private Boolean isActive;
-
-    @Column(name = "store_name")
     private String storeName;
-
-    @Column(name = "store_rank")
     private Double rank;
-
-    @Column(name = "store_address")
     private String address;
-
-    @Column(name = "store_email")
     private String email;
-
-    @Column(name = "store_phone_number")
     private String phoneNumber;
-
-    @ElementCollection
-    @CollectionTable(name = "store_products", joinColumns = @JoinColumn(name = "store_id"))
-    @MapKeyColumn(name = "product_id")
-    @Column(name = "amount")
     private Map<Integer, Integer> productAmounts;
-
-    @Column(name = "founder_username")
     private String founderUsername;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "store_owners", joinColumns = @JoinColumn(name = "store_id"))
-    @Column(name = "username")
     private Set<String> ownerUsernames;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "store_managers", joinColumns = @JoinColumn(name = "store_id"))
-    @Column(name = "username")
     private Set<String> managerUsernames;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "store_orders", joinColumns = @JoinColumn(name = "store_id"))
-    @Column(name = "order_ids")
     private Set<Integer> orderIds;
 
     public StoreDTO() {

@@ -1,16 +1,29 @@
 package com.sadna.sadnamarket.domain.products;
+import java.util.*;
+//import java.util.Objects;
+import javax.persistence.*;
 
-import java.util.Objects;
-
+//@Entity
+//@Table(name = "Products")
 public class ProductDTO {
-    private int storeId;
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
     private int productID;
+    //@Column(name = "store_id")
+    private int storeId;
+    //@Column(name = "product_name")
     private String productName;
+    //@Column(name = "product_price")
     private double productPrice;
+    //@Column(name = "product_category")
     private String productCategory;
+    //@Column(name = "product_rank")
     private double productRank;
+    //@Column(name = "isActive")
     private boolean isActive;
+    //@Column(name = "product_weight")
     private double productWeight;
+    //@Column(name = "description")
     private String description;
 
     public ProductDTO(int productID, String productName, double productPrice, String productCategory,
@@ -99,5 +112,29 @@ public class ProductDTO {
 
     public void setStoreId(int storeId) {
         this.storeId = storeId;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setProductPrice(double productPrice) {
+        this.productPrice = productPrice;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public void setProductRank(double productRank) {
+        this.productRank = productRank;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public void setProductWeight(double productWeight) {
+        this.productWeight = productWeight;
     }
 }

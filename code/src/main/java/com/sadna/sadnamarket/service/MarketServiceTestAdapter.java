@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
@@ -12,6 +13,7 @@ import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
+import com.sadna.sadnamarket.domain.users.NotificationDTO;
 import com.sadna.sadnamarket.domain.users.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -298,5 +300,17 @@ public class MarketServiceTestAdapter {
 
     public Response getNotifications(String username){
         return real.getUserNotifications(username);
+    }
+
+    public int getFirstNotification(String username) throws JsonProcessingException {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        Response resp = getNotifications(username);
+        if (resp.getError()) {
+            return -1;
+        }
+        List<NotificationDTO> notifications = objectMapper.readValue(resp.getDataJson(),
+                new TypeReference<List<NotificationDTO>>() {
+                });
+        return notifications.get(0).getId();
     }
 }
