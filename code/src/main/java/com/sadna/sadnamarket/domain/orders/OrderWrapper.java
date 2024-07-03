@@ -22,7 +22,7 @@ public class OrderWrapper {
     private String dateTimeOfPurchase;
 
     @OneToMany(mappedBy = "orderWrapper", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderDTO> orders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 
     // Getters and Setters
     public Integer getId() {

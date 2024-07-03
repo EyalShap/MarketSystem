@@ -37,38 +37,38 @@ public class HibernateOrderRepository implements IOrderRepository{
             int orderID=orderWrapper.getId();
 
             for (Map.Entry<Integer, OrderDTO> entry : storeOrdersDTO.entrySet()) {
-                OrderDTO orderDTO = entry.getValue();
-                orderDTO.setStoreId(entry.getKey());
-                orderDTO.setOrderWrapper(orderWrapper);
-                session.save(orderDTO);
+                Order order = DTOToOrder(entry.getValue());
+                order.setStoreId(entry.getKey());
+                order.setOrderWrapper(orderWrapper);
+                session.save(order);
             }
             transaction.commit();
             return orderID;
         }
         catch (Exception e) {
             transaction.rollback();
-            throw new IllegalArgumentException(Error.makeOrderNoOrdersForUserError(memberName));
+            throw new IllegalArgumentException(Error.makeDBError());
         }
     }
 
     @Override
     public List<ProductDataPrice> getOrders(int storeId) {
         List<ProductDataPrice> productDataPrices=new LinkedList<>();
-        List<OrderDTO> orders = null;
+        List<Order> orders = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM OrderDTO WHERE storeId = :storeId";
-            Query<OrderDTO> query = session.createQuery(hql, OrderDTO.class);
+            String hql = "FROM Order WHERE storeId = :storeId";
+            Query<Order> query = session.createQuery(hql, Order.class);
             query.setParameter("storeId", storeId);
             //orders =session.createQuery( "select s.storeId from StoreDTO s" ).list();
             orders=query.getResultList();
-            for (OrderDTO order: orders) {
+            for (Order order: orders) {
                 Map<Integer, String> orderProductsJsons=order.getOrderProductsJsons();
                 for (String productsJsons: orderProductsJsons.values() ) {
                     productDataPrices.add(fromJson(productsJsons));
                 }
             }
         }catch (Exception e) {
-            throw new IllegalArgumentException(Error.makeOrderStoreNoOrdersError(storeId));
+            throw new IllegalArgumentException(Error.makeDBError());
         }
 
         if(productDataPrices.isEmpty()){
@@ -87,15 +87,15 @@ public class HibernateOrderRepository implements IOrderRepository{
             query1.setParameter("memberName", nameMember);
             List<Object[]> results = query1.getResultList();
             for (Object[] result : results) {
-                List<OrderDTO> orders = null;
-                String hql = "FROM OrderDTO o WHERE o.orderWrapper.id = :orderWrapperId";
-                Query<OrderDTO> query = session.createQuery(hql, OrderDTO.class);
+                List<Order> orders = null;
+                String hql = "FROM Order o WHERE o.orderWrapper.id = :orderWrapperId";
+                Query<Order> query = session.createQuery(hql, Order.class);
                 Integer orderId= (Integer)result[0];
                 query.setParameter("orderWrapperId", orderId);
                 orders = query.getResultList();
                 String dateTime= (String)result[1];
                 List<ProductDataPrice> productDataPrices = new LinkedList<>();
-                for (OrderDTO order:orders) {
+                for (Order order:orders) {
                     Map<Integer, String> orderProductsJsons = order.getOrderProductsJsons();
                     for (String productsJsons : orderProductsJsons.values()) {
                         productDataPrices.add(fromJson(productsJsons));
@@ -107,6 +107,8 @@ public class HibernateOrderRepository implements IOrderRepository{
                     ans.put(orderId,OrderDetails);
                 }
             }
+        }catch (Exception e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         if(ans.isEmpty()){
             throw new IllegalArgumentException(Error.makeOrderNoOrdersForUserError(nameMember));
@@ -118,59 +120,66 @@ public class HibernateOrderRepository implements IOrderRepository{
     public Map<Integer, OrderDTO> getOrderByOrderId(int orderId) {
         Map<Integer, OrderDTO> ans=new HashMap<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM OrderDTO o WHERE o.orderWrapper.id = :orderWrapperId";
-            Query<OrderDTO> query = session.createQuery(hql, OrderDTO.class);
+            String hql = "FROM Order o WHERE o.orderWrapper.id = :orderWrapperId";
+            Query<Order> query = session.createQuery(hql, Order.class);
             query.setParameter("orderWrapperId", orderId);
-            List<OrderDTO> orders = query.getResultList();
-            for (OrderDTO order : orders) {
-                ans.put(order.getStoreId(), order);
+            List<Order> orders = query.getResultList();
+            for (Order order : orders) {
+                ans.put(order.getStoreId(), orderToDTO(order));
             }
         }catch (Exception e) {
-            throw new IllegalArgumentException(Error.makeOrderDoesntExistError(orderId));
+            throw new IllegalArgumentException(Error.makeDBError());
         }
-
         return ans;
     }
 
     @Override
     public List<OrderDTO> getAllOrders() {
-        List<OrderDTO> orders = null;
+        List<OrderDTO> ans = new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM Orders";
-            Query<OrderDTO> query = session.createQuery(hql, OrderDTO.class);
-            orders = query.getResultList();
+            String hql = "FROM Order";
+            Query<Order> query = session.createQuery(hql, Order.class);
+            List<Order> orders = query.getResultList();
+            for (Order order : orders) {
+                ans.add(orderToDTO(order));
+            }
+        }catch (Exception e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
-        return orders;
+        return ans;
     }
 
     public static ProductDataPrice fromJson(String jsonString) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(jsonString, ProductDataPrice.class);
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-            return null;
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
     }
-
-    public static void main(String[] args) {
-        Map<Integer, OrderDTO> ans=new HashMap<>();
-        Map<Integer,Integer> amunt=new HashMap<>();
-        amunt.put(4,8);
-        Map<Integer,String> json=new HashMap<>();
-        json.put(4,"{\"id\":,4\"storeId\":101,\"name\":\"store1\",\"amount\":8,\"oldPrice\":7,\"newPrice\":10}");
-        OrderDTO orderDTO =new OrderDTO("צשאשמ","rami levi",amunt,json);
-        Map<Integer,OrderDTO> stors =new HashMap<>();
-        stors.put(4,orderDTO);
-        HibernateOrderRepository a=new HibernateOrderRepository();
-        a.createOrder(stors,"nisim");
-       // ans=a.getOrderByOrderId(160);
-        int k=6;
+    private Order DTOToOrder( OrderDTO ordersDTO) {
+        String memberName=ordersDTO.getMemberName();
+        String storeNameWhenOrdered = ordersDTO.getStoreNameWhenOrdered();
+        Map<Integer, Integer> copiedProductAmounts=new HashMap<>();
+        copiedProductAmounts.putAll(ordersDTO.getProductAmounts());
+        Map<Integer, String> copiedProductsJsons = new HashMap<>();
+        copiedProductsJsons.putAll(ordersDTO.getOrderProductsJsons());
+        Order order = new Order(memberName,storeNameWhenOrdered,copiedProductAmounts,copiedProductsJsons);
+        return order;
     }
 
+    private OrderDTO orderToDTO(Order order){
+        String memberName=order.getMemberName();
+        String storeNameWhenOrdered = order.getStoreNameWhenOrdered();
+        Map<Integer, Integer> copiedProductAmounts=new HashMap<>();
+        copiedProductAmounts.putAll(order.getProductAmounts());
+        Map<Integer, String> copiedProductsJsons = new HashMap<>();
+        copiedProductsJsons.putAll(order.getOrderProductsJsons());
+        OrderDTO orderDTO = new OrderDTO(memberName,storeNameWhenOrdered,copiedProductAmounts,copiedProductsJsons);
+        orderDTO.setStoreId(order.getStoreId());
+        orderDTO.setId(order.getId());
+        return orderDTO;
+    }
 
 
 }
