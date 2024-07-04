@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.acceptance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
@@ -39,7 +40,7 @@ class SystemManagerTests {
     String maliciousToken;
 
     @BeforeEach
-    void clean() {
+    void clean() throws JsonProcessingException {
         bridge.reset();
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);

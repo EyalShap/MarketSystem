@@ -169,7 +169,7 @@ public class CartTests {
     }
 
     @Test
-    void buyCartTest() {
+    void buyCartTest() throws JsonProcessingException {
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
@@ -197,7 +197,7 @@ public class CartTests {
     }
 
     @Test
-    void buyCartIncorrectDetailsTest() {
+    void buyCartIncorrectDetailsTest() throws JsonProcessingException {
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
@@ -223,7 +223,7 @@ public class CartTests {
     }
 
     @Test
-    void buyCartStorePolicyForbidTest() {
+    void buyCartStorePolicyForbidTest() throws JsonProcessingException {
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
@@ -253,7 +253,7 @@ public class CartTests {
     }
 
     @Test
-    void buyCartStoreNotEnoughProductTest() {
+    void buyCartStoreNotEnoughProductTest() throws JsonProcessingException {
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
@@ -311,7 +311,7 @@ public class CartTests {
     }
 
     @Test
-    void buyCartStoreCannotPayTest() {
+    void buyCartStoreCannotPayTest() throws JsonProcessingException {
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);

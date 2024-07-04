@@ -22,7 +22,7 @@ import java.time.LocalDate;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class SadnaMarketApplication {
 	public static void main(String[] args) {
-		PaymentService.getInstance().setController(new PaymentInterface() {
+		/*PaymentService.getInstance().setController(new PaymentInterface() {
 			@Override
 			public boolean creditCardValid(CreditCardDTO creditDetails) {
 				return true;
@@ -32,7 +32,7 @@ public class SadnaMarketApplication {
 			public boolean pay(double amount, CreditCardDTO payerCard, BankAccountDTO receiverAccount) {
 				return true;
 			}
-		});
+		});*/
 		SpringApplication.run(SadnaMarketApplication.class, args);
 		
 		//System.out.println(service.createStore("Alice", "hi").getDataJson());
