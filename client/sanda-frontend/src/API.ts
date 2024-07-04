@@ -180,6 +180,7 @@ export const getStorePolicies = async (storeId: string): Promise<PolicyDescripti
         }
     );
     const data: RestResponse = await response.json();
+    console.log(data);
     if(data.error){
         return [];
     }
@@ -1217,6 +1218,19 @@ export const changeProductAmountInCartGuest = async (productId:number,storeId:nu
     );
     return response.data;
 }
+
+export const removeProductFromStore = async (productId:number,storeId:number) => {
+    const response = await axios.delete(`${server}/api/stores/deleteProductFromStore?username=${localStorage.getItem("username")}`,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` 
+        },
+        data: {storeId: storeId, productId:productId}
+    }
+    );
+    return response.data;
+}
+
 
 export const removeProductFromCart = async (productId:number,storeId:number) => {
     const response = await axios.patch(`${server}/api/user/removeProductFromCart?username=${localStorage.getItem("username")}`,{storeId: storeId, productId:productId},{ 

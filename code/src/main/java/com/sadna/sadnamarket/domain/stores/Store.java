@@ -22,7 +22,7 @@ public class Store {
     @Embedded
     private StoreInfo storeInfo;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "store_products", joinColumns = @JoinColumn(name = "store_id"))
     @MapKeyColumn(name = "product_id")
     @Column(name = "amount")

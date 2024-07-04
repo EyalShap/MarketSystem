@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import RestResponse from '../models/RestResponse';
-import { addProductToCartGuest, addProductToCartMember, getProductDetails } from '../API';
+import { addProductToCartGuest, addProductToCartMember, getProductDetails, hasPermission, removeProductFromStore } from '../API';
 import ProductModel from '../models/ProductModel';
 import { TextField, Button, IconButton, Grid, Box, Typography, Container, Paper } from '@mui/material';
 import { AppContext } from '../App';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import Permission from '../models/Permission';
 
 export const Product = () => {
     const { productId } = useParams();
@@ -14,6 +15,9 @@ export const Product = () => {
     const [amount, setAmount] = useState(1);
     const navigate = useNavigate();
     const { isloggedin, setIsloggedin } = useContext(AppContext);
+    const [canDelete, setCanDelete] = useState(false);
+    const [canEdit, setCanEdit] = useState(false);
+
 
     useEffect(() => {
         loadProduct();
@@ -27,6 +31,12 @@ export const Product = () => {
         } else {
             navigate('/permission-error', { state: productResponse.errorString });
         }
+
+        let checkCanDelete: boolean = await hasPermission(`${product.storeId!}`, Permission.DELETE_PRODUCTS);
+        let checkCanUpdate: boolean = await hasPermission(`${product.storeId!}`, Permission.UPDATE_PRODUCTS);
+
+        setCanDelete(checkCanDelete);
+        setCanEdit(checkCanUpdate);
     };
 
     const addToCart = async () => {
@@ -40,6 +50,17 @@ export const Product = () => {
             alert(`Add to cart failed: ${response.errorString}`);
         } else {
             alert("Product added to cart!");
+        }
+    };
+    
+    const removeFromStore = async () => {
+        let response: RestResponse;
+        response = await removeProductFromStore(parseInt(productId!), product.storeId!);
+        if (response.error) {
+            alert(`Remove from store failed: ${response.errorString}`);
+        } else {
+            alert("Product removed from store!");
+            navigate('/');
         }
     };
 
@@ -100,6 +121,14 @@ export const Product = () => {
                         </IconButton>
                     </Grid>
                 </Grid>
+                <Box mt={2}>
+                    {canDelete && <Button variant="contained" color="error" onClick={removeFromStore} fullWidth>
+                        Remove From Store
+                    </Button>}
+                    {canEdit && <Button variant="contained" color="primary" onClick={() => {}} fullWidth>
+                        Update Product
+                    </Button>}
+                </Box>
                 <Box mt={2}>
                     <Button variant="contained" color="primary" onClick={addToCart} fullWidth>
                         Add to Cart
