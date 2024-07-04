@@ -8,6 +8,7 @@ import { Button, IconButton } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { AppContext } from '../App';
 import StoreSearchBar from './StoreSearchBar';
+import { exitGuest } from '../API';
 
 export const Navbar = () => {
     const {isloggedin , setIsloggedin } = useContext(AppContext);
@@ -21,7 +22,20 @@ export const Navbar = () => {
       }
     const [showStoreSearch, setShowStoreSearch] = useState(false);
 
-
+  const handleExitGuest = async () => {
+        try {
+            const response = await exitGuest(Number(localStorage.getItem('guestId'))); // Call exitGuest function
+            if (response) {
+                localStorage.removeItem('guestId'); // Clear guestId from localStorage
+                alert('guest exited successfully. The page will now refresh.'); // Inform the user
+                window.location.reload(); // Reload the page
+            } else {
+                console.error('Error exiting guest:', response.statusText); // Handle error response if needed
+            }
+        } catch (error: any) {
+            console.error('Error exiting guest:', error.message); // Handle exception if request fails
+        }
+    };
           const handleToggleSearch = () => {
         setShowStoreSearch(prevShowStoreSearch => !prevShowStoreSearch);
     };
@@ -45,6 +59,11 @@ export const Navbar = () => {
                         <Link to="/register" className="navbar-link">
                             register
                         </Link>
+                    </li>
+                     <li className="navbar-item">
+                            <Button onClick={handleExitGuest} className="navbar-link">
+                                Exit Guest
+                            </Button>
                     </li>
                     <li className="navbar-item">
                         <IconButton size="small" color="inherit" onClick={handleCartClick}>
