@@ -1362,3 +1362,15 @@ export const getTopProducts=async():Promise<RestResponse>=>{
     const data: RestResponse = await res.json();
     return data;
 }
+
+export const exitGuest = async (guestId: number) => {
+    const response = await axios.post(`${server}/api/user/exitGuest`, null, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        params: {
+            guestId,
+        },
+    });
+    return response.data;
+};
