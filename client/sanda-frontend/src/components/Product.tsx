@@ -20,24 +20,23 @@ export const Product = () => {
 
 
     useEffect(() => {
+        const loadProduct = async () => {
+            var productResponse: RestResponse = await getProductDetails(parseInt(productId!));
+            let productData: ProductModel = JSON.parse(productResponse.dataJson);
+            if (!productResponse.error) {
+                setProduct(productData);
+            } else {
+                navigate('/permission-error', { state: productResponse.errorString });
+            }
+            let checkCanDelete: boolean = await hasPermission(`${productData.storeId!}`, Permission.DELETE_PRODUCTS);
+            let checkCanUpdate: boolean = await hasPermission(`${productData.storeId!}`, Permission.UPDATE_PRODUCTS);
+    
+            setCanDelete(checkCanDelete);
+            setCanEdit(checkCanUpdate);
+        };
         loadProduct();
     }, []);
 
-    const loadProduct = async () => {
-        var productResponse: RestResponse = await getProductDetails(parseInt(productId!));
-        console.log(productResponse);
-        if (!productResponse.error) {
-            setProduct(JSON.parse(productResponse.dataJson));
-        } else {
-            navigate('/permission-error', { state: productResponse.errorString });
-        }
-
-        let checkCanDelete: boolean = await hasPermission(`${product.storeId!}`, Permission.DELETE_PRODUCTS);
-        let checkCanUpdate: boolean = await hasPermission(`${product.storeId!}`, Permission.UPDATE_PRODUCTS);
-
-        setCanDelete(checkCanDelete);
-        setCanEdit(checkCanUpdate);
-    };
 
     const addToCart = async () => {
         let response: RestResponse;
@@ -125,7 +124,7 @@ export const Product = () => {
                     {canDelete && <Button variant="contained" color="error" onClick={removeFromStore} fullWidth>
                         Remove From Store
                     </Button>}
-                    {canEdit && <Button variant="contained" color="primary" onClick={() => {}} fullWidth>
+                    {canEdit && <Button variant="contained" color="primary" onClick={() => navigate(`/editproduct/${product.productID}`)} fullWidth>
                         Update Product
                     </Button>}
                 </Box>

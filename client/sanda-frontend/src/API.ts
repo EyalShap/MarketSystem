@@ -717,6 +717,20 @@ export const addProduct = async (productModel: AddProductModel,storeId: number) 
     return response.data;
 };
 
+export const editProduct = async (productModel: AddProductModel,storeId: number,productId: number) => {
+    productModel.storeId = storeId;
+    productModel.rank = 3;
+    productModel.productId = productId;
+    const response = await axios.put(`${server}/api/stores/updateProductInStore?username=${localStorage.getItem("username")}`, productModel,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    return response.data;
+};
+
 export const closeStore = async(storeId: string) => {
     const response = await axios.put(`${server}/api/stores/closeStore?username=${localStorage.getItem("username")}&storeId=${storeId}`,{},{
               headers: {
