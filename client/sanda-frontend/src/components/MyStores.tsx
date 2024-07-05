@@ -39,7 +39,7 @@ const Stores = () => {
         navigate('/createStore')
     };
     const handleEnterStore = (key:any) => {
-        navigate(`/Store/${stores[key].storeId}`)
+        navigate(`/Store/${key}`)
     };
 
     return (

@@ -28,6 +28,7 @@ import Purchase from './components/Purchase';
 import SearchOrdersByUsername from './components/OrderHistoryByUser';
 import StoreViewHistory from './components/StoreViewHistory';
 import SearchStoresResult from './components/SearchStoresResult';
+import EditProduct from './components/EditProduct';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -85,6 +86,7 @@ function App() {
             <Route path="/search-results" element={<SearchResults />} />
             <Route path="/store/:storeId" element={<Store/>}/>
             <Route path="/product/:productId" element={<Product/>}/>
+            <Route path="/editproduct/:productId" element={<EditProduct/>}/>
             <Route path="/store/:storeId/staff" element={<Staff/>}/>
             <Route path="/store/:storeId/policy" element={<BuyPolicyWizard/>}/>
             <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>

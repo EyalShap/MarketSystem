@@ -100,7 +100,7 @@ public class HibernateProductRepository implements IProductRepository{
 
             session.save(product);
             transaction.commit();
-            return product.getStoreId();
+            return product.getProductId();
         }catch (Exception e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }

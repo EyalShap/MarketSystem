@@ -180,6 +180,7 @@ export const getStorePolicies = async (storeId: string): Promise<PolicyDescripti
         }
     );
     const data: RestResponse = await response.json();
+    console.log(data);
     if(data.error){
         return [];
     }
@@ -716,6 +717,20 @@ export const addProduct = async (productModel: AddProductModel,storeId: number) 
     return response.data;
 };
 
+export const editProduct = async (productModel: AddProductModel,storeId: number,productId: number) => {
+    productModel.storeId = storeId;
+    productModel.rank = 3;
+    productModel.productId = productId;
+    const response = await axios.put(`${server}/api/stores/updateProductInStore?username=${localStorage.getItem("username")}`, productModel,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    );
+    return response.data;
+};
+
 export const closeStore = async(storeId: string) => {
     const response = await axios.put(`${server}/api/stores/closeStore?username=${localStorage.getItem("username")}&storeId=${storeId}`,{},{
               headers: {
@@ -1217,6 +1232,19 @@ export const changeProductAmountInCartGuest = async (productId:number,storeId:nu
     );
     return response.data;
 }
+
+export const removeProductFromStore = async (productId:number,storeId:number) => {
+    const response = await axios.delete(`${server}/api/stores/deleteProductFromStore?username=${localStorage.getItem("username")}`,{ 
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` 
+        },
+        data: {storeId: storeId, productId:productId}
+    }
+    );
+    return response.data;
+}
+
 
 export const removeProductFromCart = async (productId:number,storeId:number) => {
     const response = await axios.patch(`${server}/api/user/removeProductFromCart?username=${localStorage.getItem("username")}`,{storeId: storeId, productId:productId},{ 
