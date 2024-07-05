@@ -55,7 +55,7 @@ public class MarketService {
         this.realtimeService = realtimeService;
         this.productFacade = new ProductFacade();
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
-        this.storeFacade = new StoreFacade(new HibernateStoreRepository());
+        this.storeFacade = new StoreFacade(new MemoryStoreRepository());
         this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
         this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
         this.userFacade = new UserFacade(realtimeService, new MemoryRepo(),storeFacade, orderFacade);
