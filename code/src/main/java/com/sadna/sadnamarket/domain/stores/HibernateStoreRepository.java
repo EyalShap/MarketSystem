@@ -226,7 +226,11 @@ public class HibernateStoreRepository implements IStoreRepository{
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
-            store.getProductAmounts(); // for lazy loading
+            // for lazy loading
+            //store.getProductAmounts();
+            for(int productId : store.getProductAmounts().keySet()) {
+                store.getProductAmounts().get(productId);
+            }
             return store.getStoreDTO();
         }
     }
