@@ -74,8 +74,8 @@ public class MarketService {
         this.buyPolicyFacade.setUserFacade(userFacade);
         this.discountPolicyFacade.setProductFacade(productFacade);
         this.discountPolicyFacade.setStoreFacade(storeFacade);
-        this.authFacade.register("SM", "1234", "sami", "hatuka", "shawarma@gmail.com", "0511111111", null);
-        this.userFacade.setSystemManagerUserName("SM");
+        // this.authFacade.register("SM", "1234", "sami", "hatuka", "shawarma@gmail.com", "0511111111", LocalDate.of(1998, 12, 9));
+        // this.userFacade.setSystemManagerUserName("SM");
     }
 
     public static MarketService getInstance() {
@@ -100,6 +100,7 @@ public class MarketService {
     public Response loginUsingToken(String token, String username) {
         try{
             if(!authFacade.login(token).equals(username)) {
+                userFacade.logout(username);
                 logger.error(String.format("failed to verify token for user %s", username));
                 return Response.createResponse(true, "Failed to verify token");
             }
@@ -992,7 +993,19 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     } //Store window->Actions menu->get Managers->choose a manager->shows details and permissions->edit permissions
-
+    @Transactional
+    public Response changeManagerPermission(String token, String currentOwnerUsername, String newManagerUsername, int storeId, HashSet<Permission> permission) {
+        try {
+            checkToken(token, currentOwnerUsername);
+            storeFacade.addManagerPermission(currentOwnerUsername, newManagerUsername, storeId, permission);
+            logger.info(String.format("User %s added permission to user %s in store %d", currentOwnerUsername, newManagerUsername, storeId));
+            return Response.createResponse(false, objectMapper.writeValueAsString(newManagerUsername));
+        }
+        catch (Exception e) {
+            logger.error("addManagerPermission: " + e.getMessage());
+            return Response.createResponse(true, e.getMessage());
+        }
+    } //Store window->Actions menu->get Managers->choose a manager->shows details and permissions->edit permissions
     public Response getManagerPermissions(String token, String currentOwnerUsername, String managerUsername, int storeId) {
         try {
             checkToken(token, currentOwnerUsername);

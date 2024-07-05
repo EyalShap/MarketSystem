@@ -110,6 +110,10 @@ public class UserFacade {
             logger.error("user doesnt exist",username);
             throw new IllegalStateException(Error.makeUserSystemManagerError());
         }
+        if(systemManagerUserName!=null){
+            logger.error("system manager already exist",username);
+            throw new IllegalStateException(Error.makeUserSystemManagerError());
+        }
         systemManagerUserName=username;
         logger.info("done set system username {}",username);
     }
@@ -207,6 +211,8 @@ public class UserFacade {
 
     public void accept(String acceptingName,int requestID){
         logger.info("{} accept request id: {}",acceptingName,requestID);
+        if(!iUserRepo.isLoggedIn(acceptingName))
+            throw new IllegalStateException(Error.makeMemberUserIsNotLoggedInError());
         Request request=iUserRepo.getRequest(acceptingName,requestID);
         int storeId=request.getStoreId();
         iUserRepo.accept(acceptingName,requestID,this);

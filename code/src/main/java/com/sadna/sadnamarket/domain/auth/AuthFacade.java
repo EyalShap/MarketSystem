@@ -50,8 +50,9 @@ public class AuthFacade {
         return token;
     }
     public String login(String jwt) {
-        if(!tokenService.validateToken(jwt))
+        if(!tokenService.validateToken(jwt)){
             throw new IllegalArgumentException(Error.makeAuthInvalidJWTError());
+        }
         else 
             return tokenService.extractUsername(jwt);
 
