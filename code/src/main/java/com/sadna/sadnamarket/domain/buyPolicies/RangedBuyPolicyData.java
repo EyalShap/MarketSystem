@@ -9,7 +9,7 @@ import java.util.LinkedList;
 
 @Entity
 @Table(name = "rangebuypolicies")
-public class RangedBuyPolicyDTO extends BuyPolicyDTO{
+public class RangedBuyPolicyData extends BuyPolicyData {
 
     @Column(name = "subject")
     String subject;
@@ -23,7 +23,7 @@ public class RangedBuyPolicyDTO extends BuyPolicyDTO{
     @Column(name = "type")
     String type;
 
-    public RangedBuyPolicyDTO(Integer policyId, String subject, Double min, Double max, String type) {
+    public RangedBuyPolicyData(Integer policyId, String subject, Double min, Double max, String type) {
         this.policyId = policyId;
         this.subject = subject;
         this.min = min;
@@ -31,20 +31,20 @@ public class RangedBuyPolicyDTO extends BuyPolicyDTO{
         this.type = type;
     }
 
-    public RangedBuyPolicyDTO(String subject, Double min, Double max, String type) {
+    public RangedBuyPolicyData(String subject, Double min, Double max, String type) {
         this.subject = subject;
         this.min = min;
         this.max = max;
         this.type = type;
     }
 
-    public RangedBuyPolicyDTO(){
+    public RangedBuyPolicyData(){
 
     }
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT P FROM RangedBuyPolicyDTO P " +
+        Query query = session.createQuery("SELECT P FROM RangedBuyPolicyData P " +
                 "WHERE P.subject = :subj " +
                 "AND P.min = :min " +
                 "AND P.max = :max " +

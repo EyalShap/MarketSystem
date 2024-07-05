@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "storebuypolicies")
-public class StoreBuyPolicyDTO implements Serializable {
+public class StoreBuyPolicyRelation implements Serializable {
     @Id
     @Column(name = "store")
     int storeId;
@@ -21,13 +21,13 @@ public class StoreBuyPolicyDTO implements Serializable {
     @Column(name = "legal")
     boolean legal;
 
-    public StoreBuyPolicyDTO(int storeId, int policyId, boolean legal) {
+    public StoreBuyPolicyRelation(int storeId, int policyId, boolean legal) {
         this.storeId = storeId;
         this.policyId = policyId;
         this.legal = legal;
     }
 
-    public StoreBuyPolicyDTO(){
+    public StoreBuyPolicyRelation(){
 
     }
 
@@ -51,7 +51,7 @@ public class StoreBuyPolicyDTO implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StoreBuyPolicyDTO that = (StoreBuyPolicyDTO) o;
+        StoreBuyPolicyRelation that = (StoreBuyPolicyRelation) o;
         return storeId == that.storeId && policyId == that.policyId && legal == that.legal;
     }
 

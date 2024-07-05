@@ -3,7 +3,6 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
-import com.sadna.sadnamarket.service.Error;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +44,7 @@ public class OrBuyPolicy extends CompositeBuyPolicy{
     }
 
     @Override
-    public BuyPolicyDTO getDTO() {
-        return new CompositeBuyPolicyDTO(policy1.getId(), policy2.getId(), "ORL");
+    public BuyPolicyData generateData() {
+        return new CompositeBuyPolicyData(policy1.getId(), policy2.getId(), "ORL");
     }
 }

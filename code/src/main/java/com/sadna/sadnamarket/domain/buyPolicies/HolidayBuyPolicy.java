@@ -1,14 +1,12 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.kosherjava.zmanim.hebrewcalendar.JewishCalendar;
-import com.kosherjava.zmanim.hebrewcalendar.JewishDate;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 public class HolidayBuyPolicy extends SimpleBuyPolicy{
@@ -58,7 +56,7 @@ public class HolidayBuyPolicy extends SimpleBuyPolicy{
     }
 
     @Override
-    public BuyPolicyDTO getDTO() {
-        return new JewishCustomsBuyPolicyDTO(getPolicySubject().dataString(), BuyPolicyTypeCodes.HOLIDAY);
+    public BuyPolicyData generateData() {
+        return new JewishCustomsBuyPolicyData(getPolicySubject().dataString(), BuyPolicyTypeCodes.HOLIDAY);
     }
 }

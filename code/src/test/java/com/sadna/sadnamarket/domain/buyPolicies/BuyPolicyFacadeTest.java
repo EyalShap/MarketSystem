@@ -23,19 +23,21 @@ import com.sadna.sadnamarket.domain.users.*;
 import com.sadna.sadnamarket.service.Error;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Transactional
 class BuyPolicyFacadeTest {
     private StoreFacade storeFacade;
     private AuthFacade authFacade;
@@ -46,19 +48,29 @@ class BuyPolicyFacadeTest {
     private DiscountPolicyFacade discountPolicyFacade;
     ObjectMapper objectMapper = new ObjectMapper();
     private SimpleFilterProvider idFilter;
-    private final List<BuyType> buyTypes = List.of(new BuyType[]{BuyType.immidiatePurchase});
+    private final List<BuyType> buyTypes = new LinkedList<>();
     private final String ownerUsername = "WillyTheChocolateDude";
     private final LocalTime noon = LocalTime.of(12, 0);
     private final LocalTime behazotImHanadiBady = LocalTime.of(0, 0);
+    private static IBuyPolicyRepository nextRepo = new MemoryBuyPolicyRepository();
+    private int example1;
+    private int example2;
+    static Stream<IBuyPolicyRepository> repositoryStream() {
+        return Stream.of(new HibernateBuyPolicyRepository(), new MemoryBuyPolicyRepository());
+    }
+
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws JsonProcessingException {
         this.idFilter = new SimpleFilterProvider().addFilter("idFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
         objectMapper.registerModule(new JavaTimeModule());
 
-        setUpFacades();
+        setUpFacades(nextRepo);
+        buyPolicyFacade.clear();
         generateUsers();
         generateStore0();
+        generateExamplePolicies();
+
 
         MockitoAnnotations.openMocks(this);
     }
@@ -71,7 +83,7 @@ class BuyPolicyFacadeTest {
         authFacade.login("FourSeasonsOrlandoBaby", "654321");
     }
 
-    private void setUpFacades() {
+    private void setUpFacades(IBuyPolicyRepository repo) {
         IOrderRepository orderRepo = new MemoryOrderRepository();
         OrderFacade orderFacade = new OrderFacade(orderRepo);
 
@@ -84,7 +96,7 @@ class BuyPolicyFacadeTest {
         IProductRepository productRepo = new MemoryProductRepository();
         this.productFacade = new ProductFacade(productRepo);
 
-        this.buyPolicyRepository = new MemoryBuyPolicyRepository();
+        this.buyPolicyRepository = repo;
         this.buyPolicyFacade = new BuyPolicyFacade(buyPolicyRepository);
         this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
 
@@ -122,39 +134,49 @@ class BuyPolicyFacadeTest {
         storeFacade.addProductToStore("FourSeasonsOrlandoBaby", 1, "P6", 1000, 5.5, "Chocolate", 4,2);
     }
 
+    private void generateExamplePolicies() throws JsonProcessingException {
+        example1 = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Alcohol",buyTypes,21,-1,ownerUsername);
+        example2 = buyPolicyFacade.createCategoryRoshChodeshBuyPolicy("Alcohol",buyTypes,ownerUsername);
+    }
+
     private String toJson(BuyPolicy buyPolicy) throws JsonProcessingException {
         return buyPolicy.getClass().getName() + "-" + objectMapper.writer(idFilter).writeValueAsString(buyPolicy);
 
     }
 
-    @Test
-    void getBuyPolicySuccess() throws Exception {
-        BuyPolicy res0BuyPolicy = buyPolicyFacade.getBuyPolicy(0);
-        BuyPolicy res1BuyPolicy = buyPolicyFacade.getBuyPolicy(1);
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void getBuyPolicySuccess(IBuyPolicyRepository repo) throws Exception {
+        BuyPolicy res0BuyPolicy = buyPolicyFacade.getBuyPolicy(example1);
+        BuyPolicy res1BuyPolicy = buyPolicyFacade.getBuyPolicy(example2);
         String res0Json = toJson(res0BuyPolicy);
         String res1Json = toJson(res1BuyPolicy);
 
-        BuyPolicy expected0 = new AgeLimitBuyPolicy(0, buyTypes , new CategorySubject("Alcohol"), 18, -1);
-        BuyPolicy expected1 = new HourLimitBuyPolicy(1, buyTypes, new CategorySubject("Alcohol"), LocalTime.of(6, 0), LocalTime.of(23, 0));
+        BuyPolicy expected0 = new AgeLimitBuyPolicy(example1, buyTypes , new CategorySubject("Alcohol"), 21, -1);
+        BuyPolicy expected1 = new RoshChodeshBuyPolicy(example2, buyTypes, new CategorySubject("Alcohol"));
         String expected0Json = toJson(expected0);
         String expected1Json = toJson(expected1);
 
         assertEquals(expected0Json, res0Json);
         assertEquals(expected1Json, res1Json);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void getBuyPolicyNoPolicyId() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void getBuyPolicyNoPolicyId(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.getBuyPolicy(2);
+            buyPolicyFacade.getBuyPolicy(example2+100);
         });
 
-        String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(2);
+        String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(example2+100);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createProductKgBuyPolicySuccess() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createProductKgBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
         int policyId = buyPolicyFacade.createProductKgBuyPolicy(0, buyTypes, 5, 10, ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
@@ -164,30 +186,36 @@ class BuyPolicyFacadeTest {
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createProductKgBuyPolicyNoProduct() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createProductKgBuyPolicyNoProduct(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createProductKgBuyPolicy(9, buyTypes, 5, 10, ownerUsername);
         });
 
         String expectedMessage = Error.makeProductDoesntExistError(9);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createProductKgBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createProductKgBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createProductKgBuyPolicy(0, buyTypes, 5, 10, "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createProductKgBuyPolicyInvalidKg() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createProductKgBuyPolicyInvalidKg(IBuyPolicyRepository repo) {
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createProductKgBuyPolicy(0, buyTypes, 12, 10, ownerUsername);
         });
@@ -200,10 +228,12 @@ class BuyPolicyFacadeTest {
 
         assertEquals(expectedMessage1, expected1.getMessage());
         assertEquals(expectedMessage2, expected2.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createProductAmountBuyPolicySuccess() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createProductAmountBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
         int policyId = buyPolicyFacade.createProductAmountBuyPolicy(0, buyTypes, 5, 10, ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
@@ -213,30 +243,36 @@ class BuyPolicyFacadeTest {
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createProductAmountBuyPolicyNoProduct() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createProductAmountBuyPolicyNoProduct(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createProductAmountBuyPolicy(9, buyTypes, 5, 10, ownerUsername);
         });
 
         String expectedMessage = Error.makeProductDoesntExistError(9);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createProductAmountBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createProductAmountBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createProductAmountBuyPolicy(0, buyTypes, 5, 10, "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createProductAmountBuyPolicyInvalidAmount() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createProductAmountBuyPolicyInvalidAmount(IBuyPolicyRepository repo) {
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createProductAmountBuyPolicy(0, buyTypes, 12, 10, ownerUsername);
         });
@@ -249,10 +285,12 @@ class BuyPolicyFacadeTest {
 
         assertEquals(expectedMessage1, expected1.getMessage());
         assertEquals(expectedMessage2, expected2.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryAgeLimitBuyPolicySuccess() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryAgeLimitBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
         int policyId = buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Fruits", buyTypes, 5, 10, ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
@@ -262,20 +300,24 @@ class BuyPolicyFacadeTest {
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryAgeLimitBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryAgeLimitBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Fruits", buyTypes, 5, 10, "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryAgeLimitBuyPolicyInvalidAmount() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryAgeLimitBuyPolicyInvalidAmount(IBuyPolicyRepository repo) {
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Fruit", buyTypes, 12, 10, ownerUsername);
         });
@@ -298,10 +340,12 @@ class BuyPolicyFacadeTest {
         assertEquals(expectedMessage2, expected2.getMessage());
         assertEquals(expectedMessage3, expected3.getMessage());
         assertEquals(expectedMessage4, expected4.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryHourLimitBuyPolicySuccess() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryHourLimitBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
         int policyId = buyPolicyFacade.createCategoryHourLimitBuyPolicy("Fans", buyTypes, LocalTime.of(7,0),  LocalTime.of(16,0), ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
@@ -311,20 +355,24 @@ class BuyPolicyFacadeTest {
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryHourLimitBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryHourLimitBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createCategoryHourLimitBuyPolicy("Fans", buyTypes, LocalTime.of(7,0),  LocalTime.of(16,0), "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryHourLimitBuyPolicyInvalidHours() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryHourLimitBuyPolicyInvalidHours(IBuyPolicyRepository repo) {
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createCategoryHourLimitBuyPolicy("Fans", buyTypes, LocalTime.of(22,0), LocalTime.of(13,0), ownerUsername);
         });
@@ -332,10 +380,12 @@ class BuyPolicyFacadeTest {
         String expectedMessage1 = Error.makeBuyPolicyParamsError("hour limit", LocalTime.of(22,0).toString(), LocalTime.of(13,0).toString());
 
         assertEquals(expectedMessage1, expected1.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryRoshChodeshBuyPolicySuccess() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryRoshChodeshBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
         int policyId = buyPolicyFacade.createCategoryRoshChodeshBuyPolicy("Shoes", buyTypes, ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
@@ -345,20 +395,24 @@ class BuyPolicyFacadeTest {
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryRoshChodeshBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryRoshChodeshBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createCategoryRoshChodeshBuyPolicy("Shoes", buyTypes, "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryHolidayBuyPolicySuccess() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryHolidayBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
         int policyId = buyPolicyFacade.createCategoryHolidayBuyPolicy("Shoes", buyTypes, ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
@@ -368,134 +422,158 @@ class BuyPolicyFacadeTest {
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createCategoryHolidayBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createCategoryHolidayBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.createCategoryHolidayBuyPolicy("Shoes", buyTypes, "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createAndBuyPolicySuccess() throws JsonProcessingException {
-        int policyId = buyPolicyFacade.createAndBuyPolicy(0, 1, ownerUsername);
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createAndBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
+        int policyId = buyPolicyFacade.createAndBuyPolicy(example1, example2, ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
         String resJson = toJson(resBuyPolicy);
 
-        BuyPolicy p0 = buyPolicyFacade.getBuyPolicy(0);
-        BuyPolicy p1 = buyPolicyFacade.getBuyPolicy(1);
+        BuyPolicy p0 = buyPolicyFacade.getBuyPolicy(example1);
+        BuyPolicy p1 = buyPolicyFacade.getBuyPolicy(example2);
         BuyPolicy expected = new AndBuyPolicy(policyId, p0, p1);
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createAndBuyPolicyPolicyDoesNotExist() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createAndBuyPolicyPolicyDoesNotExist(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.createAndBuyPolicy(2, 1, ownerUsername);
+            buyPolicyFacade.createAndBuyPolicy(10, example2, ownerUsername);
         });
 
-        String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(2);
+        String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(10);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createAndBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createAndBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.createAndBuyPolicy(0, 1, "Mr. Krabs");
+            buyPolicyFacade.createAndBuyPolicy(example1, example2, "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createOrBuyPolicySuccess() throws JsonProcessingException {
-        int policyId = buyPolicyFacade.createOrBuyPolicy(0, 1, ownerUsername);
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createOrBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
+        int policyId = buyPolicyFacade.createOrBuyPolicy(example1, example2, ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
         String resJson = toJson(resBuyPolicy);
 
-        BuyPolicy p0 = buyPolicyFacade.getBuyPolicy(0);
-        BuyPolicy p1 = buyPolicyFacade.getBuyPolicy(1);
+        BuyPolicy p0 = buyPolicyFacade.getBuyPolicy(example1);
+        BuyPolicy p1 = buyPolicyFacade.getBuyPolicy(example2);
         BuyPolicy expected = new OrBuyPolicy(policyId, p0, p1);
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createOrBuyPolicyPolicyDoesNotExist() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createOrBuyPolicyPolicyDoesNotExist(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.createOrBuyPolicy(2, 1, ownerUsername);
+            buyPolicyFacade.createOrBuyPolicy(10, example2, ownerUsername);
         });
 
-        String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(2);
+        String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(10);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createOrBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createOrBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.createOrBuyPolicy(0, 1, "Mr. Krabs");
+            buyPolicyFacade.createOrBuyPolicy(example1, example2, "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createConditioningBuyPolicySuccess() throws JsonProcessingException {
-        int policyId = buyPolicyFacade.createConditioningBuyPolicy(0, 1, ownerUsername);
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createConditioningBuyPolicySuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
+        int policyId = buyPolicyFacade.createConditioningBuyPolicy(example1, example2, ownerUsername);
 
         BuyPolicy resBuyPolicy = buyPolicyFacade.getBuyPolicy(policyId);
         String resJson = toJson(resBuyPolicy);
 
-        BuyPolicy p0 = buyPolicyFacade.getBuyPolicy(0);
-        BuyPolicy p1 = buyPolicyFacade.getBuyPolicy(1);
+        BuyPolicy p0 = buyPolicyFacade.getBuyPolicy(example1);
+        BuyPolicy p1 = buyPolicyFacade.getBuyPolicy(example2);
         BuyPolicy expected = new ConditioningBuyPolicy(policyId, p0, p1);
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createConditioningBuyPolicyPolicyDoesNotExist() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createConditioningBuyPolicyPolicyDoesNotExist(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.createConditioningBuyPolicy(2, 1, ownerUsername);
+            buyPolicyFacade.createConditioningBuyPolicy(10, 1, ownerUsername);
         });
 
-        String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(2);
+        String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(10);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void createConditioningBuyPolicyNoPermissions() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createConditioningBuyPolicyNoPermissions(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.createConditioningBuyPolicy(0, 1, "Mr. Krabs");
+            buyPolicyFacade.createConditioningBuyPolicy(example1, example2, "Mr. Krabs");
         });
 
         String expectedMessage = Error.makeUserCanNotCreateBuyPolicyError("Mr. Krabs");
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void addBuyPolicyToStoreSuccess() throws JsonProcessingException {
-        int policyId = buyPolicyFacade.createOrBuyPolicy( 0, 1, ownerUsername);
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void addBuyPolicyToStoreSuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
+        int policyId = buyPolicyFacade.createOrBuyPolicy( example1, example2, ownerUsername);
         assertFalse(buyPolicyFacade.hasPolicy(0, policyId));
         buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, policyId);
         assertTrue(buyPolicyFacade.hasPolicy(0, policyId));
+        this.nextRepo = repo;
     }
 
-    @Test
-    void addBuyPolicyToStoreStoreDoesNotExist() throws JsonProcessingException {
-        int policyId = buyPolicyFacade.createOrBuyPolicy(0, 1, ownerUsername);
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void addBuyPolicyToStoreStoreDoesNotExist(IBuyPolicyRepository repo) throws JsonProcessingException {
+        int policyId = buyPolicyFacade.createOrBuyPolicy(example1, example2, ownerUsername);
 
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 1, policyId);
@@ -503,111 +581,129 @@ class BuyPolicyFacadeTest {
 
         String expectedMessage = Error.makeStoreNoStoreWithIdError(1);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void addBuyPolicyToStorePolicyDoesNotExist() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void addBuyPolicyToStorePolicyDoesNotExist(IBuyPolicyRepository repo) throws JsonProcessingException {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, 5);
         });
 
         String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(5);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void addBuyPolicyToStorePolicyAlreadyExists() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void addBuyPolicyToStorePolicyAlreadyExists(IBuyPolicyRepository repo) throws JsonProcessingException {
+        buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, example1);
+        buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, example2);
         IllegalArgumentException expected0 = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, 0);
+            buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, example1);
         });
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, 1);
+            buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, example2);
         });
 
-        String expectedMessage0 = Error.makeBuyPolicyAlreadyExistsError(0);
-        String expectedMessage1 = Error.makeBuyPolicyAlreadyExistsError(1);
+        String expectedMessage0 = Error.makeBuyPolicyAlreadyExistsError(example1);
+        String expectedMessage1 = Error.makeBuyPolicyAlreadyExistsError(example2);
 
         assertEquals(expectedMessage0, expected0.getMessage());
         assertEquals(expectedMessage1, expected1.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void addBuyPolicyToStoreNoPermission() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void addBuyPolicyToStoreNoPermission(IBuyPolicyRepository repo) throws JsonProcessingException {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.addBuyPolicyToStore("Mr. Krabs", 0, 0);
+            buyPolicyFacade.addBuyPolicyToStore("Mr. Krabs", 0, example1);
         });
 
         String expectedMessage = Error.makeStoreUserCannotAddBuyPolicyError("Mr. Krabs", 0);
 
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void removePolicyFromStoreSuccess() throws JsonProcessingException {
-        int policyId = buyPolicyFacade.createOrBuyPolicy(0, 1, ownerUsername);
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void removePolicyFromStoreSuccess(IBuyPolicyRepository repo) throws JsonProcessingException {
+        int policyId = buyPolicyFacade.createOrBuyPolicy(example1, example2, ownerUsername);
         buyPolicyFacade.addBuyPolicyToStore(ownerUsername, 0, policyId);
         assertTrue(buyPolicyFacade.hasPolicy(0, policyId));
         buyPolicyFacade.removePolicyFromStore(ownerUsername, 0, policyId);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void removePolicyFromStoreStoreDoesNotExist() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void removePolicyFromStoreStoreDoesNotExist(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.removePolicyFromStore(ownerUsername, 1, 0);
+            buyPolicyFacade.removePolicyFromStore(ownerUsername, 1, example1);
         });
 
         String expectedMessage = Error.makeStoreNoStoreWithIdError(1);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void removePolicyFromStorePolicyDoesNotExist() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void removePolicyFromStorePolicyDoesNotExist(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
             buyPolicyFacade.removePolicyFromStore(ownerUsername, 0, 5);
         });
 
         String expectedMessage = Error.makeBuyPolicyWithIdDoesNotExistError(5);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void removePolicyFromStoreNoPermission() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void removePolicyFromStoreNoPermission(IBuyPolicyRepository repo) {
         IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.removePolicyFromStore("Mr. Krabs", 0, 0);
+            buyPolicyFacade.removePolicyFromStore("Mr. Krabs", 0, example1);
         });
 
         String expectedMessage = Error.makeStoreUserCannotRemoveBuyPolicyError("Mr. Krabs", 0);
 
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void removePolicyFromStoreLawBuyPolicy() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void removePolicyFromStoreLawBuyPolicy(IBuyPolicyRepository repo) {
+        buyPolicyFacade.addLawBuyPolicyToStore(ownerUsername,0,example1);
         IllegalArgumentException expected0 = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.removePolicyFromStore(ownerUsername, 0, 0);
-        });
-        IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
-            buyPolicyFacade.removePolicyFromStore(ownerUsername, 0, 1);
+            buyPolicyFacade.removePolicyFromStore(ownerUsername, 0, example1);
         });
 
-        String expectedMessage0 = Error.makeCanNotRemoveLawBuyPolicyError(0);
-        String expectedMessage1 = Error.makeCanNotRemoveLawBuyPolicyError(1);
+        String expectedMessage0 = Error.makeCanNotRemoveLawBuyPolicyError(example1);
 
         assertEquals(expectedMessage0, expected0.getMessage());
-        assertEquals(expectedMessage1, expected1.getMessage());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void canBuyNoAlcohol() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void canBuyNoAlcohol(IBuyPolicyRepository repo) {
         List<CartItemDTO> cart = new ArrayList<>();
         cart.add(new CartItemDTO(0, 0, 5));
         Set<String> expected = new HashSet<>();
         Set<String> res = buyPolicyFacade.canBuy(0, cart, null);
         assertEquals(expected, res);
+        this.nextRepo = repo;
     }
 
-    @Test
-    void canBuyAdultTriesToBuyAlcoholAtNoon() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void canBuyAdultTriesToBuyAlcoholAtNoon(IBuyPolicyRepository repo) {
         try (MockedStatic<HourLimitBuyPolicy> mocked = mockStatic(HourLimitBuyPolicy.class)) {
             mocked.when(HourLimitBuyPolicy::getCurrTime).thenReturn(noon);
 
@@ -617,11 +713,13 @@ class BuyPolicyFacadeTest {
             Set<String> expected = new HashSet<>();
             Set<String> res = buyPolicyFacade.canBuy(0, cart, "Mr. Krabs");
             assertEquals(expected, res);
+            this.nextRepo = repo;
         }
     }
 
-    @Test
-    void canBuyAdultTriesToBuyAlcoholAtMidnight() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void canBuyAdultTriesToBuyAlcoholAtMidnight(IBuyPolicyRepository repo) {
         try (MockedStatic<HourLimitBuyPolicy> mocked = mockStatic(HourLimitBuyPolicy.class)) {
             mocked.when(HourLimitBuyPolicy::getCurrTime).thenReturn(behazotImHanadiBady);
 
@@ -632,11 +730,13 @@ class BuyPolicyFacadeTest {
             expected.add(Error.makeHourLimitBuyPolicyError("Alcohol", LocalTime.of(6, 0), LocalTime.of(23, 0)));
             Set<String> res = buyPolicyFacade.canBuy(0, cart, "Mr. Krabs");
             assertEquals(expected, res);
+            this.nextRepo = repo;
         }
     }
 
-    @Test
-    void canBuyBabyTriesToBuyAlcoholAtNoon() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void canBuyBabyTriesToBuyAlcoholAtNoon(IBuyPolicyRepository repo) {
         try (MockedStatic<HourLimitBuyPolicy> mocked = mockStatic(HourLimitBuyPolicy.class)) {
             mocked.when(HourLimitBuyPolicy::getCurrTime).thenReturn(noon);
 
@@ -647,11 +747,13 @@ class BuyPolicyFacadeTest {
             expected.add(Error.makeAgeLimitBuyPolicyError("Alcohol", 18, -1));
             Set<String> res = buyPolicyFacade.canBuy(0, cart, "FourSeasonsOrlandoBaby");
             assertEquals(expected, res);
+            this.nextRepo = repo;
         }
     }
 
-    @Test
-    void canBuyBabyTriesToBuyAlcoholAtMidnight() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void canBuyBabyTriesToBuyAlcoholAtMidnight(IBuyPolicyRepository repo) {
         try (MockedStatic<HourLimitBuyPolicy> mocked = mockStatic(HourLimitBuyPolicy.class)) {
             mocked.when(HourLimitBuyPolicy::getCurrTime).thenReturn(behazotImHanadiBady);
 
@@ -663,11 +765,13 @@ class BuyPolicyFacadeTest {
             expected.add(Error.makeAgeLimitBuyPolicyError("Alcohol", 18, -1));
             Set<String> res = buyPolicyFacade.canBuy(0, cart, "FourSeasonsOrlandoBaby");
             assertEquals(expected, res);
+            this.nextRepo = repo;
         }
     }
 
-    @Test
-    void canBuyGuestTriesToBuyAlcoholAtNoon() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void canBuyGuestTriesToBuyAlcoholAtNoon(IBuyPolicyRepository repo) {
         try (MockedStatic<HourLimitBuyPolicy> mocked = mockStatic(HourLimitBuyPolicy.class)) {
             mocked.when(HourLimitBuyPolicy::getCurrTime).thenReturn(noon);
 
@@ -679,11 +783,13 @@ class BuyPolicyFacadeTest {
             expected.add(Error.makeAgeLimitBuyPolicyError("Alcohol", 18, -1));
             Set<String> res = buyPolicyFacade.canBuy(0, cart, null);
             assertEquals(expected, res);
+            this.nextRepo = repo;
         }
     }
 
-    @Test
-    void canBuyGuestTriesToBuyAlcoholAtMidnight() {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void canBuyGuestTriesToBuyAlcoholAtMidnight(IBuyPolicyRepository repo) {
         try (MockedStatic<HourLimitBuyPolicy> mocked = mockStatic(HourLimitBuyPolicy.class)) {
             mocked.when(HourLimitBuyPolicy::getCurrTime).thenReturn(behazotImHanadiBady);
 
@@ -696,12 +802,15 @@ class BuyPolicyFacadeTest {
             expected.add(Error.makeAgeLimitBuyPolicyError("Alcohol", 18, -1));
             Set<String> res = buyPolicyFacade.canBuy(0, cart, null);
             assertEquals(expected, res);
+            this.nextRepo = repo;
         }
     }
 
-    @Test
-    void createPolicyFlyweight() throws JsonProcessingException {
-        Set<Integer> expected1 = Set.of(0, 1);
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void createPolicyFlyweight(IBuyPolicyRepository repo) throws JsonProcessingException {
+        Set<Integer> current = buyPolicyRepository.getAllPolicyIds();
+        Set<Integer> expected1 = new HashSet<>(current);
         assertEquals(expected1, buyPolicyRepository.getAllPolicyIds()); // default
 
         // adding a policy that already exists
@@ -710,12 +819,13 @@ class BuyPolicyFacadeTest {
 
         // adding a policy that does not exist
         buyPolicyFacade.createCategoryAgeLimitBuyPolicy("Chocolate", List.of(BuyType.immidiatePurchase), 18, -1, "WillyTheChocolateDude");
-        Set<Integer> expected2 = Set.of(0, 1, 2);
-        assertEquals(expected2, buyPolicyRepository.getAllPolicyIds());
+        assertNotEquals(expected1, buyPolicyRepository.getAllPolicyIds());
+        this.nextRepo = repo;
     }
 
-    @Test
-    void addPolicyToStoreProductsNotInStore() throws JsonProcessingException {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    void addPolicyToStoreProductsNotInStore(IBuyPolicyRepository repo) throws JsonProcessingException {
         generateStore1();
 
         int policyId1 = buyPolicyFacade.createProductKgBuyPolicy(0, List.of(BuyType.immidiatePurchase), 18, -1, "WillyTheChocolateDude");
@@ -728,5 +838,6 @@ class BuyPolicyFacadeTest {
 
         String expectedMessage = Error.makePolicyProductsNotInStore(0, Set.of(0, 4), policyId3);
         assertEquals(expectedMessage, expected.getMessage());
+        this.nextRepo = repo;
     }
 }

@@ -38,8 +38,8 @@ public class ConditioningBuyPolicy extends CompositeBuyPolicy{
     }
 
     @Override
-    public BuyPolicyDTO getDTO() {
-        return new CompositeBuyPolicyDTO(policy1.getId(), policy2.getId(), BuyPolicyTypeCodes.CONDITION);
+    public BuyPolicyData generateData() {
+        return new CompositeBuyPolicyData(policy1.getId(), policy2.getId(), BuyPolicyTypeCodes.CONDITION);
     }
 
     @Override

@@ -25,4 +25,5 @@ public abstract class BuyPolicyManager {
     public abstract void removeBuyPolicy(int buyPolicyId);
 
     public abstract Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user);
+    public abstract void clear();
 }

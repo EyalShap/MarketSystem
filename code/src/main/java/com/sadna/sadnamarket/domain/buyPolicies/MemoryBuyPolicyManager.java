@@ -83,4 +83,10 @@ public class MemoryBuyPolicyManager extends BuyPolicyManager{
         }
         return error;
     }
+
+    @Override
+    public void clear() {
+        this.buyPolicyIds = new ArrayList<>();
+        this.lawsBuyPolicyIds = new ArrayList<>();
+    }
 }
