@@ -103,9 +103,7 @@ public class StoreFacade {
             throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
 
         int newProductId = productFacade.addProduct(storeId, productName, productPrice, category, rank, productWeight, description);
-        Store store = storeRepository.findStoreByID(storeId);
-        store.addProduct(newProductId, productQuantity);
-        storeRepository.saveStore(store);
+        storeRepository.findStoreByID(storeId).addProduct(newProductId, productQuantity);
         return newProductId;
     }
 
