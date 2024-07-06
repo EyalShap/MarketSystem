@@ -3,14 +3,21 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@Table(name = "anddiscount")
 public class AndDiscount extends CompositeDiscount{
 
     public AndDiscount(int id, Discount discountA, Discount discountB) {
         super(id, discountA, discountB);
+    }
+    public AndDiscount(Discount discountA, Discount discountB) {
+        super(discountA, discountB);
     }
 
     @Override

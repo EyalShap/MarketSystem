@@ -468,4 +468,20 @@ public class Error {
     public static String makeStoreDidNotSetBankAccountError(int storeId) {
         return String.format("Store %d did not set a bank account.", storeId);
     }
+
+    public static String makeNoConditionWithIdExistError(int condId) {
+        return String.format("condition %d does not exist.", condId);
+    }
+
+    public static String makeNoDiscountWithIdExistError(int policyId) {
+        return String.format("Discount %d does not exist.", policyId);
+    }
+
+    public static String makeDiscountPolicyAlreadyExistsError(int discountPolicyId) {
+        return String.format("Discount with id %d already exist this store %.", discountPolicyId);
+    }
+
+    public static String makeNoDiscountWithIdExistInStoreError(int policyId) {
+        return String.format("Discount %d does not exist in this Store.", policyId);
+    }
 }

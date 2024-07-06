@@ -4,18 +4,34 @@ import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 
+@Entity
+@Table(name = "simplediscount")
 public class SimpleDiscount extends Discount {
     //percentage is (100-0)
+    @Column(name = "percentage")
     private final double percentage;
+    @Column(name = "productID")
     private Integer productID;
+    @Column(name = "categoryName")
     private String categoryName;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "condition_id", referencedColumnName = "id")
     private final Condition condition;
 
     public SimpleDiscount(int id, double percentage, Condition condition){
         super(id);
+        this.percentage = percentage;
+        productID = null;
+        categoryName = null;
+        this.condition = condition;
+    }
+
+    public SimpleDiscount(double percentage, Condition condition){
+        super();
         this.percentage = percentage;
         productID = null;
         categoryName = null;

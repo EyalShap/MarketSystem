@@ -2,18 +2,33 @@ package com.sadna.sadnamarket.domain.discountPolicies.Conditions;
 
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.Map;
 
-
+@Entity
+@Table(name = "MinProductCondition")
 public class MinProductCondition extends Condition{
+    @Column(name = "minAmount")
     private int minAmount;
+    @Column(name = "productID")
     private Integer productID;
+    @Column(name = "categoryName")
     private String categoryName;
 
     public MinProductCondition(int id, int minAmount){
         super(id);
+        this.minAmount = minAmount;
+        productID = null;
+        categoryName = null;
+    }
+    public MinProductCondition(int minAmount){
+        super();
         this.minAmount = minAmount;
         productID = null;
         categoryName = null;
@@ -100,5 +115,18 @@ public class MinProductCondition extends Condition{
             addEnding = "products";
         }
         return "the cart has at least " + minAmount + " " +addEnding;
+    }
+
+    @Override
+    public Query getUniqueQuery(Session session) {
+        Query query = session.createQuery("SELECT A FROM MinProductCondition A " +
+                "WHERE A.minAmount = :minAmount " +
+                "AND A.productID = :productID " +
+                "AND A.categoryName = :categoryName " );
+        query.setParameter("minAmount", minAmount);
+        query.setParameter("productID", productID);
+        query.setParameter("categoryName", categoryName);
+
+        return query;
     }
 }
