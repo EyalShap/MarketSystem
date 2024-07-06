@@ -77,7 +77,7 @@ public class MarketService {
         // this.authFacade.register("SM", "1234", "sami", "hatuka", "shawarma@gmail.com", "0511111111", LocalDate.of(1998, 12, 9));
         // this.userFacade.setSystemManagerUserName("SM");
     }
-
+    
     public static MarketService getInstance() {
         if (instance == null) {
             instance = new MarketService(null);

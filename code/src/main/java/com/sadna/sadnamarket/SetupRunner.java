@@ -43,7 +43,16 @@ public class SetupRunner {
         this.objectMapper = new ObjectMapper();
         this.dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     }
-
+    public SetupRunner(MarketService service) {
+        this.service = service;
+        this.users = new HashMap<>();
+        this.stores = new ArrayList<>();
+        this.products = new ArrayList<>();
+        this.requests = new ArrayList<>();
+        this.guests = new ArrayList<>();
+        this.objectMapper = new ObjectMapper();
+        this.dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    }
     public void setupFromJson(String filename) {  
        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename)) {
             if (inputStream == null) {
