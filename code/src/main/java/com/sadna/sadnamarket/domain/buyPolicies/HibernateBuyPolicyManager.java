@@ -5,8 +5,11 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.data.jpa.repository.QueryHints;
 
 import java.util.*;
 
@@ -19,9 +22,10 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean hasPolicy(int policyId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            List<StoreBuyPolicyDTO> list = session.createQuery( "select p.policyId from StoreBuyPolicyDTO p " +
+            List<StoreBuyPolicyRelation> list = session.createQuery( "select p.policyId from StoreBuyPolicyRelation p " +
                     "WHERE p.storeId = :storeId " +
                     "AND p.policyId = :policyId" )
                     .setParameter("storeId",storeId)
@@ -34,9 +38,10 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Integer> getAllPolicyIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            List<Integer> res = session.createQuery( "select p.policyId from StoreBuyPolicyDTO p WHERE p.storeId = :storeId" ).setParameter("storeId",storeId).list();
+            List<Integer> res = session.createQuery( "select p.policyId from StoreBuyPolicyRelation p WHERE p.storeId = :storeId" ).setParameter("storeId",storeId).list();
             return res;
         }
         catch (Exception e) {
@@ -51,7 +56,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            StoreBuyPolicyDTO dto = new StoreBuyPolicyDTO(storeId, buyPolicyId, false);
+            StoreBuyPolicyRelation dto = new StoreBuyPolicyRelation(storeId, buyPolicyId, false);
             session.save(dto); // Save the store and get the generated ID
             transaction.commit();
         }
@@ -68,7 +73,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            StoreBuyPolicyDTO dto = new StoreBuyPolicyDTO(storeId, buyPolicyId, true);
+            StoreBuyPolicyRelation dto = new StoreBuyPolicyRelation(storeId, buyPolicyId, true);
             session.save(dto); // Save the store and get the generated ID
             transaction.commit();
         }
@@ -86,7 +91,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            List<StoreBuyPolicyDTO> list = session.createQuery( "select p from StoreBuyPolicyDTO p " +
+            List<StoreBuyPolicyRelation> list = session.createQuery( "select p from StoreBuyPolicyRelation p " +
                             "WHERE p.storeId = :storeId " +
                             "AND p.policyId = :policyId" )
                     .setParameter("storeId",storeId)
@@ -97,13 +102,14 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
             session.delete(list.get(0));
             transaction.commit();
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             transaction.rollback();
-            throw new IllegalArgumentException(Error.makeCanNotRemoveLawBuyPolicyError(buyPolicyId));
+            throw new IllegalArgumentException(Error.makeDBError());
         }
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         Set<String> error = new HashSet<>();
         List<Integer> buyPolicyIds = getAllPolicyIds();
@@ -112,5 +118,20 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
             error.addAll(policy.canBuy(cart, products, user));
         }
         return error;
+    }
+
+    @Override
+    public void clear() {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.createQuery( "delete from StoreBuyPolicyRelation WHERE store = :storeId ")
+                    .setParameter("storeId",storeId).executeUpdate();
+            transaction.commit();
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 }

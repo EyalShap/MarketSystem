@@ -100,7 +100,7 @@ public class KgLimitBuyPolicy extends SimpleBuyPolicy{
     }
 
     @Override
-    public BuyPolicyDTO getDTO() {
-        return new RangedBuyPolicyDTO(getPolicySubject().dataString(), minValue, maxValue, BuyPolicyTypeCodes.KG);
+    public BuyPolicyData generateData() {
+        return new RangedBuyPolicyData(getPolicySubject().dataString(), minValue, maxValue, BuyPolicyTypeCodes.KG);
     }
 }

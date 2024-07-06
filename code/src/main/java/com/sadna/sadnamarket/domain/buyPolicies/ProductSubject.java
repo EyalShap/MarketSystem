@@ -2,7 +2,10 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.Cacheable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.List;
@@ -10,6 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 @Entity
 @DiscriminatorValue("PRODUCT")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ProductSubject extends PolicySubject{
     private int productId;
 

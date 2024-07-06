@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.relational.core.sql.In;
 import org.hibernate.query.Query;
 //import javax.persistence.Query;
@@ -52,6 +54,7 @@ public class HibernateOrderRepository implements IOrderRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<ProductDataPrice> getOrders(int storeId) {
         List<ProductDataPrice> productDataPrices=new LinkedList<>();
         List<Order> orders = null;
@@ -78,6 +81,7 @@ public class HibernateOrderRepository implements IOrderRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Map<Integer, OrderDetails> getProductDataPriceByMember(String nameMember) {
         Map<Integer, OrderDetails> ans=new HashMap<>();
         //Map<Integer, String> orderDataMap = new HashMap<>();
@@ -117,6 +121,7 @@ public class HibernateOrderRepository implements IOrderRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Map<Integer, OrderDTO> getOrderByOrderId(int orderId) {
         Map<Integer, OrderDTO> ans=new HashMap<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -134,6 +139,7 @@ public class HibernateOrderRepository implements IOrderRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<OrderDTO> getAllOrders() {
         List<OrderDTO> ans = new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

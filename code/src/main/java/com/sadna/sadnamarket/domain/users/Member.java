@@ -4,6 +4,7 @@ package com.sadna.sadnamarket.domain.users;
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.Map;
 
@@ -13,19 +14,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 @Entity
 @Table(name = "Members")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Member extends IUser {
     
     @Id

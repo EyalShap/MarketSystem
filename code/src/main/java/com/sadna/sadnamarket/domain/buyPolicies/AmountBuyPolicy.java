@@ -5,8 +5,6 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
 import java.util.*;
 
 
@@ -92,8 +90,8 @@ public class AmountBuyPolicy extends SimpleBuyPolicy {
     }
 
     @Override
-    public BuyPolicyDTO getDTO() {
-        return new RangedBuyPolicyDTO(getPolicySubject().dataString(), Double.valueOf(minValue), Double.valueOf(maxValue), BuyPolicyTypeCodes.AMOUNT);
+    public BuyPolicyData generateData() {
+        return new RangedBuyPolicyData(getPolicySubject().dataString(), Double.valueOf(minValue), Double.valueOf(maxValue), BuyPolicyTypeCodes.AMOUNT);
     }
 
     @Override

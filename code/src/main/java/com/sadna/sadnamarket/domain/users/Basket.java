@@ -2,27 +2,20 @@ package com.sadna.sadnamarket.domain.users;
 
 import com.sadna.sadnamarket.service.Error;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import java.util.Map;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.Table;
-
 @Entity
 @Table(name = "baskets")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Basket implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

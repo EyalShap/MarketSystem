@@ -2,12 +2,15 @@ package com.sadna.sadnamarket.domain.orders;
 import com.sadna.sadnamarket.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
 @Table(name = "OrderWrapper")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class OrderWrapper {
 
     @Id

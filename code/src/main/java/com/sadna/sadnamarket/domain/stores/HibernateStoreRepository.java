@@ -8,17 +8,20 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.data.relational.core.sql.In;
 
 import javax.persistence.NoResultException;
+import org.springframework.data.jpa.repository.QueryHints;
 import javax.transaction.Transactional;
 
 public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Store findStoreByID(int storeId) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             Store store = session.get(Store.class, storeId);
@@ -30,6 +33,7 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<Integer> getAllStoreIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<Integer> res = session.createQuery( "select s.storeId from Store s" ).list();
@@ -153,6 +157,7 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public int getProductAmountInStore(int storeId, int productId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()){
             Store store = session.get(Store.class, storeId);
@@ -220,18 +225,24 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public StoreDTO getStoreDTO(int storeId) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
-            store.getProductAmounts(); // for lazy loading
+            // for lazy loading
+            //store.getProductAmounts();
+            for(int productId : store.getProductAmounts().keySet()) {
+                store.getProductAmounts().get(productId);
+            }
             return store.getStoreDTO();
         }
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<String> checkCartInStore(int storeId, List<CartItemDTO> cart) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             Store store = session.get(Store.class, storeId);
@@ -256,6 +267,7 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Store findStoreByName(String storeName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Store res = session.createQuery("SELECT s FROM Store s where s.storeInfo.storeName = :name", Store.class).setParameter("name", storeName).getSingleResult();
@@ -290,6 +302,7 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public BankAccountDTO getStoreBankAccount(int storeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             //StoreDTO res = session.createQuery("select s from StoreDTO s where s.storeName = :name", StoreDTO.class).getSingleResult();
@@ -317,6 +330,7 @@ public class HibernateStoreRepository implements IStoreRepository{
     }*/
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean areProductsInStore(int storeId, Set<Integer> productIds) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             Store store = session.get(Store.class, storeId);
@@ -328,6 +342,7 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             Store store = session.get(Store.class, storeId);

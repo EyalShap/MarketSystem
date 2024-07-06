@@ -114,9 +114,4 @@ class BuyPolicyManagerTest {
 
         assertEquals(expectedMessage, expected.getMessage());
     }
-
-    @Test
-    void canBuy() throws JsonProcessingException {
-        // in buy policy facade tests
-    }
 }

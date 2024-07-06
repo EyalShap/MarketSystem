@@ -2,12 +2,15 @@ package com.sadna.sadnamarket.domain.payment;
 
 import com.sadna.sadnamarket.domain.stores.Store;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "bank_accounts")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class BankAccountDTO {
 /*
     @GeneratedValue(strategy = GenerationType.AUTO)

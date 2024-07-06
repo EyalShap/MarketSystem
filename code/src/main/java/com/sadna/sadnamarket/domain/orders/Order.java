@@ -1,11 +1,15 @@
 package com.sadna.sadnamarket.domain.orders;
 
 
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.*;
 import java.util.Map;
 
 @Entity
 @Table(name = "Orders")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Order {
 
     @Id
