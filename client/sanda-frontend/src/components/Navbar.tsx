@@ -27,8 +27,7 @@ export const Navbar = () => {
             const response = await exitGuest(Number(localStorage.getItem('guestId'))); // Call exitGuest function
             if (response) {
                 localStorage.removeItem('guestId'); // Clear guestId from localStorage
-                alert('guest exited successfully. The page will now refresh.'); // Inform the user
-                window.location.reload(); // Reload the page
+                alert('guest exited successfully.'); // Inform the user
             } else {
                 console.error('Error exiting guest:', response.statusText); // Handle error response if needed
             }

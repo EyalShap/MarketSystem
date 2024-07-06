@@ -12,7 +12,9 @@ public class RequestDTO extends NotificationDTO {
         this.storeId = request.getStoreId();
         this.role = request.getRole();
     }
+    public RequestDTO() {
 
+    }
     public String getSenderName() {
         return senderName;
     }

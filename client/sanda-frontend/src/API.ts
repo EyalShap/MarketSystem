@@ -28,7 +28,6 @@ export const login = async(username: string, password: string) => {
     ///request REST to login...
     const response=(await axios.post(`${server}/api/user/login`,{username: username, password: password},{headers:{
         'Content-Type': 'application/json',
-        //Authorization: `Bearer ${jwt_token}`
       }})).data
     return response;
 }
