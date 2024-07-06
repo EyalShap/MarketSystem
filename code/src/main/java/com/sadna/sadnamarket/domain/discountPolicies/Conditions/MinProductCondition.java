@@ -1,18 +1,24 @@
 package com.sadna.sadnamarket.domain.discountPolicies.Conditions;
 
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.SimpleDiscount;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import org.hibernate.Session;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
 @Table(name = "MinProductCondition")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class MinProductCondition extends Condition{
     @Column(name = "minAmount")
     private int minAmount;
@@ -128,5 +134,21 @@ public class MinProductCondition extends Condition{
         query.setParameter("categoryName", categoryName);
 
         return query;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MinProductCondition that = (MinProductCondition) o;
+        boolean sameCategory = Objects.equals(categoryName, that.categoryName);
+        boolean sameProduct = Objects.equals(productID, that.productID);
+        boolean sameMinAmount = Objects.equals(minAmount, that.minAmount);
+        return sameCategory && sameProduct && sameMinAmount;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(minAmount, productID, categoryName);
     }
 }

@@ -1,13 +1,17 @@
 package com.sadna.sadnamarket.domain.discountPolicies;
 
 import com.sadna.sadnamarket.HibernateUtil;
-import com.sadna.sadnamarket.domain.buyPolicies.StoreBuyPolicyDTO;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyManager;
+import com.sadna.sadnamarket.domain.buyPolicies.HibernateBuyPolicyManager;
 import com.sadna.sadnamarket.domain.discountPolicies.Discounts.Discount;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.data.jpa.repository.QueryHints;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +25,10 @@ public class HibernateDiscountPolicyManager extends DiscountPolicyManager{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean hasDiscountPolicy(int policyId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            List<StoreBuyPolicyDTO> list = session.createQuery( "select p.policyId from StoreDiscountPolicyRelation p " +
+            List<StoreDiscountPolicyRelation> list = session.createQuery( "select p.policyId from StoreDiscountPolicyRelation p " +
                             "WHERE p.storeId = :storeId " +
                             "AND p.policyId = :policyId" )
                     .setParameter("storeId", storeId)
@@ -36,6 +41,7 @@ public class HibernateDiscountPolicyManager extends DiscountPolicyManager{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Integer> getDiscountIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<Integer> res = session.createQuery( "select p.policyId from StoreDiscountPolicyRelation p WHERE p.storeId = :storeId" ).setParameter("storeId",storeId).list();
@@ -71,12 +77,21 @@ public class HibernateDiscountPolicyManager extends DiscountPolicyManager{
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            List<StoreBuyPolicyDTO> list = session.createQuery( "select p from StoreDiscountPolicyRelation p " +
+
+            List<Discount> checkDefault = session.createQuery( "select p from Discount p " +
+                            "WHERE p.policyId = :policyId " +
+                            "AND p.isDefault = :isDefault" )
+                    .setParameter("policyId",discountPolicyId)
+                    .setParameter("isDefault",false).list();
+            if(checkDefault.isEmpty()){
+                throw new IllegalArgumentException(Error.makeCannotRemoveDefaultDiscountFromStoreError(discountPolicyId));
+            }
+
+            List<StoreDiscountPolicyRelation> list = session.createQuery( "select p from StoreDiscountPolicyRelation p " +
                             "WHERE p.storeId = :storeId " +
                             "AND p.policyId = :policyId" )
                     .setParameter("storeId",storeId)
                     .setParameter("policyId",discountPolicyId).list();
-
             session.delete(list.get(0));
             transaction.commit();
         }
@@ -86,6 +101,7 @@ public class HibernateDiscountPolicyManager extends DiscountPolicyManager{
         }
     }
 
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<ProductDataPrice> giveDiscount(List<CartItemDTO> cart, Map<Integer, ProductDTO> productDTOMap) throws Exception {
         List<ProductDataPrice> listProductDataPrice = new ArrayList<>();
         //create the ProductDataPrices and add them to listProductDataPrice
@@ -101,5 +117,20 @@ public class HibernateDiscountPolicyManager extends DiscountPolicyManager{
             discount.giveDiscount(productDTOMap, listProductDataPrice);
         }
         return listProductDataPrice;
+    }
+
+    @Override
+    public void clear() {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.createQuery( "delete from StoreDiscountPolicyRelation WHERE store = :storeId ")
+                    .setParameter("storeId",storeId).executeUpdate();
+            transaction.commit();
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 }

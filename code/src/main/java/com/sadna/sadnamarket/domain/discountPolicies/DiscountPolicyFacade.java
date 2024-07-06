@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.domain.discountPolicies;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.IConditionRespository;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
@@ -52,6 +53,15 @@ public class DiscountPolicyFacade {
     }
 
     // ---DiscountsPolicy-Creations---------------------------------------------------------------
+
+    public int createDefaultDiscountPolicy(double percentage, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
+        int conditionTrueId = conditionRepository.createTrueCondition();
+        Condition condition = conditionRepository.findConditionByID(conditionTrueId);
+        return discountPolicyRepository.addDefaultDiscount(percentage, condition);
+    }
     public int createAdditionDiscountPolicy(int policyId1, int policyId2, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
@@ -295,4 +305,6 @@ public class DiscountPolicyFacade {
                 return true;
         return false;
     }
+
+
 }

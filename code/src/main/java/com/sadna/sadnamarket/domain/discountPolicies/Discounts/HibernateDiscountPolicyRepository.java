@@ -2,21 +2,24 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.HibernateUtil;
-import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyDTO;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
-import com.sadna.sadnamarket.domain.stores.Store;
-import com.sadna.sadnamarket.domain.stores.StoreInfo;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyManager;
+import com.sadna.sadnamarket.domain.discountPolicies.HibernateDiscountPolicyManager;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.data.jpa.repository.QueryHints;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class HibernateDiscountPolicyRespository implements IDiscountPolicyRepository{
+public class HibernateDiscountPolicyRepository implements IDiscountPolicyRepository{
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean discountPolicyExists(int policyId) {
         try {
             findDiscountPolicyByID(policyId);
@@ -28,9 +31,10 @@ public class HibernateDiscountPolicyRespository implements IDiscountPolicyReposi
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<Integer> getAllPolicyIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            List<Integer> res = session.createQuery( "select d.id from discounts d" ).list();
+            List<Integer> res = session.createQuery( "select d.id from Discount d" ).list();
             return new HashSet<>(res);
         }
         catch (Exception e) {
@@ -39,6 +43,7 @@ public class HibernateDiscountPolicyRespository implements IDiscountPolicyReposi
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Discount findDiscountPolicyByID(int policyId) throws Exception {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             Discount discount = session.get(Discount.class, policyId);
@@ -117,6 +122,19 @@ public class HibernateDiscountPolicyRespository implements IDiscountPolicyReposi
         return addDiscountPolicy(newDiscountPolicy);
     }
 
+    @Override
+    public int addDefaultDiscount(double percentage, Condition condition) throws JsonProcessingException {
+        if(percentage >100 || percentage <0){
+            throw new IllegalArgumentException(Error.percentageForDiscountIsNotInRange(percentage));
+        }
+        SimpleDiscount newDiscountPolicy = new SimpleDiscount(percentage, condition);
+        newDiscountPolicy.setOnStore();
+        newDiscountPolicy.setDefault();
+        return addDiscountPolicy(newDiscountPolicy);
+    }
+
+
+
     private int addDiscountPolicy(Discount discount){
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -125,6 +143,26 @@ public class HibernateDiscountPolicyRespository implements IDiscountPolicyReposi
             session.save(discount);
             transaction.commit();
             return discount.getId();
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
+    }
+
+    @Override
+    public DiscountPolicyManager createManager(DiscountPolicyFacade facade, int storeId) {
+        return new HibernateDiscountPolicyManager(facade,storeId);
+    }
+
+    @Override
+    public void clear() {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.createQuery( "delete from Discount").executeUpdate();
+            session.createQuery( "delete from StoreDiscountPolicyRelation").executeUpdate();
+            transaction.commit();
         }
         catch (Exception e) {
             transaction.rollback();

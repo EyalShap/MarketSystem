@@ -17,4 +17,5 @@ public interface IConditionRespository {
     int createXorCondition(Condition conditionA, Condition conditionB) throws JsonProcessingException;
     int createAndCondition(Condition conditionA, Condition conditionB) throws JsonProcessingException;
     int createOrCondition(Condition conditionA, Condition conditionB) throws JsonProcessingException;
+    public void clear();
 }

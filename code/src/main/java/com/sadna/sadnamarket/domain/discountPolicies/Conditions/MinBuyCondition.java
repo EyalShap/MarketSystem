@@ -6,10 +6,14 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import org.hibernate.Session;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -17,6 +21,8 @@ import javax.persistence.Table;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Entity
 @Table(name = "minbuycondition")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class MinBuyCondition extends Condition{
     @Column(name = "minBuy")
     private final int minBuy;
@@ -57,5 +63,18 @@ public class MinBuyCondition extends Condition{
                 "WHERE A.minBuy = :minBuy " );
         query.setParameter("minBuy", minBuy);
         return query;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MinBuyCondition that = (MinBuyCondition) o;
+        return Objects.equals(minBuy, that.minBuy);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(minBuy);
     }
 }

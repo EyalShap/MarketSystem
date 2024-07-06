@@ -3,6 +3,9 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyManager;
+import com.sadna.sadnamarket.domain.discountPolicies.HibernateDiscountPolicyManager;
 import com.sadna.sadnamarket.service.Error;
 
 import java.util.HashMap;
@@ -11,7 +14,7 @@ import java.util.Set;
 
 public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository{
     private Map<Integer, Discount> discountPolicies;
-    private Map<String, Integer> discountPoliciesDesc;
+    private Map<Discount, Integer> discountPoliciesDesc;
     private int nextId;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -88,16 +91,27 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
         return addDiscountPolicyToMaps(newDiscountPolicy);
     }
 
+    @Override
+    public int addDefaultDiscount(double percentage, Condition condition) throws JsonProcessingException {
+        if(percentage >100 || percentage <0){
+            throw new IllegalArgumentException(Error.percentageForDiscountIsNotInRange(percentage));
+        }
+        SimpleDiscount newDiscountPolicy = new SimpleDiscount(nextId, percentage, condition);
+        newDiscountPolicy.setOnStore();
+        newDiscountPolicy.setDefault();
+        return addDiscountPolicyToMaps(newDiscountPolicy);
+    }
+
     private int addDiscountPolicyToMaps(Discount newDiscountPolicy) throws JsonProcessingException {
-        String newConditionDesc = newDiscountPolicy.getClass().getName() + "-" + objectMapper.writeValueAsString(newDiscountPolicy);
-        if(!discountPoliciesDesc.containsKey(newConditionDesc)) {
+        //String newConditionDesc = newDiscountPolicy.getClass().getName() + "-" + objectMapper.writeValueAsString(newDiscountPolicy);
+        if(!discountPoliciesDesc.containsKey(newDiscountPolicy)) {
             discountPolicies.put(nextId, newDiscountPolicy);
-            discountPoliciesDesc.put(newConditionDesc, nextId);
+            discountPoliciesDesc.put(newDiscountPolicy, nextId);
             nextId++;
             return nextId - 1;
         }
         else {
-            return discountPoliciesDesc.get(newConditionDesc);
+            return discountPoliciesDesc.get(newDiscountPolicy);
         }
     }
 
@@ -116,4 +130,17 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
     public boolean discountPolicyExists(int discountPolicyID) {
         return discountPolicies.containsKey(discountPolicyID);
     }
+
+    @Override
+    public DiscountPolicyManager createManager(DiscountPolicyFacade facade, int storeId) {
+        return new HibernateDiscountPolicyManager(facade,storeId);
+    }
+
+    @Override
+    public void clear() {
+        this.discountPolicies = new HashMap<>();
+        this.discountPoliciesDesc = new HashMap<>();
+        this.nextId = 0;
+    }
+
 }

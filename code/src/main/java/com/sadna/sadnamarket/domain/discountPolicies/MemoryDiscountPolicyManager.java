@@ -32,14 +32,17 @@ public class MemoryDiscountPolicyManager extends DiscountPolicyManager{
     }
 
     public synchronized void removeDiscountPolicy(int discountPolicyId) throws Exception{
-        /*if(discountIds.contains(discountPolicyId))
-            throw new Exception();
-        discountIds.remove(discountPolicyId);*/
-        if(discountIds.contains(discountPolicyId))
-            discountIds.remove(discountPolicyId);
+        if (!hasDiscountPolicy(discountPolicyId)) {
+            throw new IllegalArgumentException(Error.makeNoDiscountWithIdExistInStoreError(discountPolicyId));
+        }
+        Discount discount = discountPolicyFacade.getDiscountPolicy(discountPolicyId);
+        if(discount.isDefault()) {
+            throw new IllegalArgumentException(Error.makeCannotRemoveDefaultDiscountFromStoreError(discountPolicyId));
+        }
+        discountIds.remove(discountPolicyId);
+
     }
 
-    // for now that function dosent do anything special
     public List<ProductDataPrice> giveDiscount(List<CartItemDTO> cart, Map<Integer, ProductDTO> productDTOMap) throws Exception {
         List<ProductDataPrice> listProductDataPrice = new ArrayList<>();
         //create the ProductDataPrices and add them to listProductDataPrice
@@ -55,6 +58,11 @@ public class MemoryDiscountPolicyManager extends DiscountPolicyManager{
             discount.giveDiscount(productDTOMap, listProductDataPrice);
         }
         return listProductDataPrice;
+    }
+
+    @Override
+    public void clear() {
+        this.discountIds = new ArrayList<>();
     }
 
 }

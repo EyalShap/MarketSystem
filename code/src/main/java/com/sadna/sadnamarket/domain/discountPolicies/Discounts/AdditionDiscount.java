@@ -2,7 +2,9 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import java.util.Map;
 
 @Entity
 @Table(name = "additiondiscount")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class AdditionDiscount extends CompositeDiscount{
     public AdditionDiscount(int id, Discount discountA, Discount discountB) {
         super(id, discountA, discountB);

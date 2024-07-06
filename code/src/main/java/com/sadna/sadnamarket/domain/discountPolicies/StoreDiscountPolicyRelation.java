@@ -1,6 +1,5 @@
 package com.sadna.sadnamarket.domain.discountPolicies;
 
-import com.sadna.sadnamarket.domain.buyPolicies.StoreBuyPolicyDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -484,4 +484,8 @@ public class Error {
     public static String makeNoDiscountWithIdExistInStoreError(int policyId) {
         return String.format("Discount %d does not exist in this Store.", policyId);
     }
+
+    public static String makeCannotRemoveDefaultDiscountFromStoreError(int discountPolicyId) {
+        return String.format("Discount %d cannot be removed from this Store.", discountPolicyId);
+    }
 }

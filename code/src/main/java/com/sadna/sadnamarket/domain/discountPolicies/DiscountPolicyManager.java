@@ -25,4 +25,5 @@ public abstract class DiscountPolicyManager  {
     public abstract void removeDiscountPolicy(int discountPolicyId) throws Exception;
 
     public abstract List<ProductDataPrice> giveDiscount(List<CartItemDTO> cart, Map<Integer, ProductDTO> productDTOMap) throws Exception;
+    public abstract void clear();
 }
