@@ -1,9 +1,13 @@
 package com.sadna.sadnamarket.domain.products;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import java.util.*;
 import javax.persistence.*;
 import java.text.MessageFormat;
 @Entity
 @Table(name = "Products")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

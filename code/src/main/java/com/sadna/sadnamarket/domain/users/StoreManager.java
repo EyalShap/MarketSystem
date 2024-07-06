@@ -3,12 +3,18 @@ package com.sadna.sadnamarket.domain.users;
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.Cacheable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.util.List;
 
 @Entity
 @DiscriminatorValue("STORE_MANAGER")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class StoreManager extends UserRoleHibernate {
     private List<String> appointments;
     private static final Logger logger = LogManager.getLogger(StoreManager.class);

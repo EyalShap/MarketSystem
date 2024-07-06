@@ -1,14 +1,15 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "storebuypolicies")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class StoreBuyPolicyRelation implements Serializable {
     @Id
     @Column(name = "store")

@@ -3,9 +3,11 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -14,6 +16,7 @@ import java.util.Set;
 
 public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public BuyPolicy findBuyPolicyByID(int policyId) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             BuyPolicyData policyDTO = session.get(BuyPolicyData.class, policyId);
@@ -31,6 +34,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<Integer> getAllPolicyIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<Integer> res = session.createQuery( "select p.policyId from BuyPolicyData p" ).list();
@@ -121,6 +125,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
         return addBuyPolicy(policy);
     }
 
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     private BuyPolicyData getExistingBuyPolicy(Session session, BuyPolicyData policyDTO){
         Query query = policyDTO.getUniqueQuery(session);
         List<BuyPolicyData> res = query.list();
@@ -131,6 +136,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean buyPolicyExists(int policyId) {
         try {
             findBuyPolicyByID(policyId);

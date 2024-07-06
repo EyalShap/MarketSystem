@@ -1,11 +1,13 @@
 package com.sadna.sadnamarket.domain.products;
 
 import com.sadna.sadnamarket.HibernateUtil;
+import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import com.sadna.sadnamarket.service.Error;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,6 +16,7 @@ import java.util.Set;
 
 public class HibernateProductRepository implements IProductRepository{
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Product getProduct(int productId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 //            ProductDTO productDTO=session.get(ProductDTO.class, productId);
@@ -25,6 +28,7 @@ public class HibernateProductRepository implements IProductRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<Integer> getAllProductIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<Integer> productIds = session.createQuery("SELECT p.productId FROM Product p", Integer.class).list();
@@ -35,6 +39,7 @@ public class HibernateProductRepository implements IProductRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> getAllProducts() {
         List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -51,6 +56,7 @@ public class HibernateProductRepository implements IProductRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> getProducts(List<Integer> productIds) {
         List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -107,6 +113,7 @@ public class HibernateProductRepository implements IProductRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean isExistProduct(int productId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Long> query = session.createQuery(
@@ -121,6 +128,7 @@ public class HibernateProductRepository implements IProductRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> filterByName(String productName) {
         //List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -142,6 +150,7 @@ public class HibernateProductRepository implements IProductRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> filterByCategory(String category) {
         //List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -163,6 +172,7 @@ public class HibernateProductRepository implements IProductRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> getTopProducts() {
         List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -189,7 +199,7 @@ public class HibernateProductRepository implements IProductRepository{
 //        Product product=new Product(id,productName,productPrice,productCategory,productRank,productWeight,storeId);
 //        return product;
 //    }
-
+/*
     public static void main(String[] args) {
         HibernateProductRepository a = new HibernateProductRepository();
         //Product p=new Product();
@@ -215,5 +225,5 @@ public class HibernateProductRepository implements IProductRepository{
         //Set<Integer>k=a.getAllProductIds();
         int x=4;
     }
-
+*/
 }

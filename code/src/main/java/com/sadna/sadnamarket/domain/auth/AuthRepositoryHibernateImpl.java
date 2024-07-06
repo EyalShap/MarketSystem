@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 public class AuthRepositoryHibernateImpl implements IAuthRepository {
@@ -49,6 +51,7 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public HashMap<String, String> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<UserCredential> userList = session.createQuery("from UserCredential", UserCredential.class).list();

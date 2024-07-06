@@ -2,12 +2,15 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 
 
 import org.hibernate.Session;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
 import javax.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public abstract class BuyPolicyData {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

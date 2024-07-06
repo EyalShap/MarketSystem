@@ -5,9 +5,11 @@ import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.data.jpa.repository.QueryHints;
 
 import java.util.*;
 
@@ -20,6 +22,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean hasPolicy(int policyId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<StoreBuyPolicyRelation> list = session.createQuery( "select p.policyId from StoreBuyPolicyRelation p " +
@@ -35,6 +38,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Integer> getAllPolicyIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<Integer> res = session.createQuery( "select p.policyId from StoreBuyPolicyRelation p WHERE p.storeId = :storeId" ).setParameter("storeId",storeId).list();
@@ -105,6 +109,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<String> canBuy(List<CartItemDTO> cart, Map<Integer, ProductDTO> products, MemberDTO user) {
         Set<String> error = new HashSet<>();
         List<Integer> buyPolicyIds = getAllPolicyIds();
