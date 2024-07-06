@@ -37,7 +37,7 @@ public class SadnaMarketApplication {
 			}
 		});*/
 		SpringApplication.run(SadnaMarketApplication.class, args);
-		MarketService s = new MarketService(new RealtimeService());
+		/*MarketService s = new MarketService(new RealtimeService());
 		s.register("dana", "123", "dana", "friedman", "dana@gmail.com", "1234567890", LocalDate.of(2003, 5, 26));
 		Response r = s.login("dana", "123");
 		Response dfd = s.createStore(r.getDataJson(), "dana", "tehj", "jenewfew", "jdnwe@gmail.com", "0123456789");
@@ -46,7 +46,7 @@ public class SadnaMarketApplication {
 		Response d = s.getStoreInfo(r.getDataJson(), "dana", id);
 		String json = d.getDataJson();
 		System.out.println(json);
-		int xlw = 9;
+		int xlw = 9;*/
 		//System.out.println(service.createStore("Alice", "hi").getDataJson());
 		//System.out.println(service.createStore("Alice", "hi").getDataJson());
 

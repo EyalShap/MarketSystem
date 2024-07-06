@@ -1,14 +1,19 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import org.hibernate.Session;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "compositebuypolicies")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CompositeBuyPolicyData extends BuyPolicyData {
     @Column(name = "id1")
     Integer id1;

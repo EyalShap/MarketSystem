@@ -1,8 +1,11 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import org.hibernate.Session;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -10,6 +13,8 @@ import java.util.LinkedList;
 
 @Entity
 @Table(name = "jewishbuypolicies")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class JewishCustomsBuyPolicyData extends BuyPolicyData {
     @Column(name = "subject")
     String subject;

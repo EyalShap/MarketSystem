@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import org.hibernate.Session;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
 import javax.persistence.*;
@@ -9,6 +10,8 @@ import java.util.LinkedList;
 
 @Entity
 @Table(name = "rangebuypolicies")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class RangedBuyPolicyData extends BuyPolicyData {
 
     @Column(name = "subject")

@@ -3,13 +3,19 @@ package com.sadna.sadnamarket.domain.stores;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.service.Error;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Entity
 @Table(name = "stores")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
