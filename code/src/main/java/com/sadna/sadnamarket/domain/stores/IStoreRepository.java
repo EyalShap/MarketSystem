@@ -53,6 +53,11 @@ public interface IStoreRepository {
 
     public boolean areProductsInStore(int storeId, Set<Integer> productIds);
 
+    public void addManagerToStore(String username, int storeId);
+    public void addOwnerToStore(String username, int storeId);
+    public void closeStore(int storeId);
+    public void reopenStore(int storeId);
+
     public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank);
 
     public static void cleanDB() {

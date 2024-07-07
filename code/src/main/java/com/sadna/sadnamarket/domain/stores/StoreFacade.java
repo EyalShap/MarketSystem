@@ -201,15 +201,11 @@ public class StoreFacade {
     }
 
     public void addStoreOwner(String newOwnerUsername, int storeId) {
-        Store store = storeRepository.findStoreByID(storeId);
-        store.addStoreOwner(newOwnerUsername);
-        storeRepository.saveStore(store);
+        storeRepository.addOwnerToStore(newOwnerUsername,storeId);
     }
 
     public void addStoreManager(String newManagerUsername, int storeId) {
-        Store store = storeRepository.findStoreByID(storeId);
-        store.addStoreManager(newManagerUsername);
-        storeRepository.saveStore(store);
+        storeRepository.addManagerToStore(newManagerUsername,storeId);
     }
 
     public void addManagerPermission(String currentOwnerUsername, String newManagerUsername, int storeId,

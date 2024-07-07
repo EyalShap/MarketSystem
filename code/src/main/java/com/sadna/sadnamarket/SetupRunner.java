@@ -33,16 +33,6 @@ public class SetupRunner {
 
 
 
-    public SetupRunner() {
-        this.service = MarketService.getInstance();
-        this.users = new HashMap<>();
-        this.stores = new ArrayList<>();
-        this.products = new ArrayList<>();
-        this.requests = new ArrayList<>();
-        this.guests = new ArrayList<>();
-        this.objectMapper = new ObjectMapper();
-        this.dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    }
     public SetupRunner(MarketService service) {
         this.service = service;
         this.users = new HashMap<>();
@@ -67,6 +57,10 @@ public class SetupRunner {
                 List<Object> resolvedParams = resolveParams(params);
 
                 Response res = executeMethod(methodName, resolvedParams);
+
+                if(res.getError()){
+                    throw new UnsupportedOperationException("Start from state failed at command " + command.get("method") + ": " + res.getErrorString());
+                }
 
                 if (methodName.equals("login")) {
                     users.put((String) params.get(0), res.getDataJson());

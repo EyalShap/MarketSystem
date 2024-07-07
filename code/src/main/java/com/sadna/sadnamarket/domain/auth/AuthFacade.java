@@ -66,5 +66,9 @@ public class AuthFacade {
 
     }
 
+    public void clear(){
+        iAuthRepository.clear();
+    }
+
 
 }

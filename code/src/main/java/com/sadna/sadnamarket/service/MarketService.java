@@ -3,22 +3,24 @@ package com.sadna.sadnamarket.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.sadna.sadnamarket.Config;
+import com.sadna.sadnamarket.SetupRunner;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.auth.AuthFacade;
+import com.sadna.sadnamarket.domain.auth.AuthRepositoryHibernateImpl;
 import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
-import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
-import com.sadna.sadnamarket.domain.buyPolicies.BuyType;
-import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
+import com.sadna.sadnamarket.domain.auth.IAuthRepository;
+import com.sadna.sadnamarket.domain.buyPolicies.*;
+import com.sadna.sadnamarket.domain.discountPolicies.Conditions.HibernateConditionRepository;
+import com.sadna.sadnamarket.domain.discountPolicies.Conditions.IConditionRespository;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.HibernateDiscountPolicyRepository;
+import com.sadna.sadnamarket.domain.discountPolicies.Discounts.IDiscountPolicyRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.discountPolicies.Discounts.MemoryDiscountPolicyRepository;
-import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
-import com.sadna.sadnamarket.domain.orders.OrderDTO;
-import com.sadna.sadnamarket.domain.orders.OrderDetails;
-import com.sadna.sadnamarket.domain.orders.OrderFacade;
-import com.sadna.sadnamarket.domain.products.ProductDTO;
-import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.orders.*;
+import com.sadna.sadnamarket.domain.products.*;
 import com.sadna.sadnamarket.domain.stores.*;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
@@ -52,14 +54,34 @@ public class MarketService {
 
     @Autowired
     public MarketService(RealtimeService realtimeService) {
+        this(realtimeService,
+                new HibernateStoreRepository(),
+                new HibernateOrderRepository(),
+                new HibernateProductRepository(),
+                new HibernateBuyPolicyRepository(),
+                new HibernateDiscountPolicyRepository(),
+                new HibernateConditionRepository(),
+                new AuthRepositoryHibernateImpl(),
+                new UserHibernateRepo());
+    }
+
+    public MarketService(RealtimeService realtimeService,
+                         IStoreRepository storeRepo,
+                         IOrderRepository orderRepo,
+                         IProductRepository productRepo,
+                         IBuyPolicyRepository policyRepo,
+                         IDiscountPolicyRepository discountRepo,
+                         IConditionRespository conditionRepo,
+                         IAuthRepository authRepo,
+                         IUserRepository userRepo) {
         this.realtimeService = realtimeService;
-        this.productFacade = new ProductFacade();
-        this.orderFacade = new OrderFacade(new MemoryOrderRepository());
-        this.storeFacade = new StoreFacade(new MemoryStoreRepository());
-        this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
-        this.discountPolicyFacade = new DiscountPolicyFacade(new MemoryConditionRepository(), new MemoryDiscountPolicyRepository());
-        this.userFacade = new UserFacade(realtimeService, new MemoryRepo(),storeFacade, orderFacade);
-        this.authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
+        this.productFacade = new ProductFacade(productRepo);
+        this.orderFacade = new OrderFacade(orderRepo);
+        this.storeFacade = new StoreFacade(storeRepo);
+        this.buyPolicyFacade = new BuyPolicyFacade(policyRepo);
+        this.discountPolicyFacade = new DiscountPolicyFacade(conditionRepo, discountRepo);
+        this.userFacade = new UserFacade(realtimeService, userRepo,storeFacade, orderFacade);
+        this.authFacade = new AuthFacade(authRepo, userFacade);
         this.orderFacade.setStoreFacade(storeFacade);
         this.storeFacade.setUserFacade(userFacade);
         this.storeFacade.setProductFacade(productFacade);
@@ -71,19 +93,26 @@ public class MarketService {
         this.buyPolicyFacade.setUserFacade(userFacade);
         this.discountPolicyFacade.setProductFacade(productFacade);
         this.discountPolicyFacade.setStoreFacade(storeFacade);
-        // this.authFacade.register("SM", "1234", "sami", "hatuka", "shawarma@gmail.com", "0511111111", LocalDate.of(1998, 12, 9));
-        // this.userFacade.setSystemManagerUserName("SM");
-    }
-    
-    public static MarketService getInstance() {
-        if (instance == null) {
-            instance = new MarketService(null);
+
+        if(Config.CLEAR){
+            clear();
         }
-        return instance;
+        if(Config.HAS_STATE){
+            SetupRunner runner = new SetupRunner(this);
+            runner.setupFromJson(Config.BEGIN);
+        }
     }
 
-    public static MarketService getNewInstance() {
-        instance =new MarketService(null);
+    public static MarketService getNewMemoryInstance() {
+        instance =new MarketService(null,
+                new MemoryStoreRepository(),
+                new MemoryOrderRepository(),
+                new MemoryProductRepository(),
+                new MemoryBuyPolicyRepository(),
+                new MemoryDiscountPolicyRepository(),
+                new MemoryConditionRepository(),
+                new AuthRepositoryMemoryImpl(),
+                new MemoryRepo());
         return instance;
     }
 
@@ -1636,5 +1665,15 @@ public class MarketService {
             logger.error("error get top products");
             return Response.createResponse(true, e.getMessage());
         }
+    }
+
+    public void clear(){
+        IStoreRepository.cleanDB();
+        discountPolicyFacade.clear();
+        buyPolicyFacade.clear();
+        authFacade.clear();
+        userFacade.clear();
+        productFacade.clear();
+        orderFacade.clear();
     }
 }

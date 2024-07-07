@@ -24,7 +24,7 @@ class MemberTests {
 
     @BeforeEach
     void clean(){
-        bridge.reset();
+        bridge.clear();
         username = "TestMember";
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();

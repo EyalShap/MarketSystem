@@ -107,6 +107,16 @@ public class MemoryProductRepository implements IProductRepository {
     }
 
     @Override
+    public void editProduct(int productId, String newProductName, double newPrice, String newCategory, double newRank, String newDesc) {
+        Product productToUpdate = products.get(productId);
+        productToUpdate.setProductName(newProductName);
+        productToUpdate.setProductPrice(newPrice);
+        productToUpdate.setProductCategory(newCategory);
+        productToUpdate.setProductRank(newRank);
+        productToUpdate.setDescription(newDesc);
+    }
+
+    @Override
     public List<Product> filterByName(String productName) {
         synchronized (products) {
 
@@ -131,5 +141,11 @@ public class MemoryProductRepository implements IProductRepository {
     @Override
     public List<Product> getTopProducts() {
         return products.values().stream().collect(Collectors.toList());
+    }
+
+    @Override
+    public void clean() {
+        this.nextProductId = 0;
+        this.products = new ConcurrentHashMap<>();
     }
 }

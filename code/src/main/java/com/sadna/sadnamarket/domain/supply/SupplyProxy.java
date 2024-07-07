@@ -14,7 +14,7 @@ public class SupplyProxy implements SupplyInterface {
         if(real.implemented()){
             return real.canMakeOrder(orderDetails, address);
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class SupplyProxy implements SupplyInterface {
         if(real.implemented()){
             return real.makeOrder(orderDetails, address);
         }
-        return null;
+        return "";
     }
 
     @Override
@@ -30,6 +30,6 @@ public class SupplyProxy implements SupplyInterface {
         if(real.implemented()){
             return real.cancelOrder(orderCode);
         }
-        return false;
+        return true;
     }
 }

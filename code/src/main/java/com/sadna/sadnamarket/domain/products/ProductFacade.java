@@ -98,11 +98,7 @@ public class ProductFacade {
                 throw new IllegalArgumentException(errorMessage);
             }
 
-            productToUpdate.setProductName(newProductName);
-            productToUpdate.setProductPrice(newPrice);
-            productToUpdate.setProductCategory(newCategory);
-            productToUpdate.setProductRank(newRank);
-            productToUpdate.setDescription(newDesc);
+            productRepository.editProduct(productId,newProductName,newPrice,newCategory,newRank,newDesc);
             logger.info("Product updated with ID: {}", productId);
         } catch (Exception e) {
             logger.error("Error updating product: {}", e.getMessage(), e);
@@ -135,10 +131,7 @@ public class ProductFacade {
                 throw new IllegalArgumentException(errorMessage);
             }
 
-            productToUpdate.setProductName(newProductName);
-            productToUpdate.setProductPrice(newPrice);
-            productToUpdate.setProductCategory(newCategory);
-            productToUpdate.setProductRank(newRank);
+            productRepository.editProduct(productId,newProductName,newPrice,newCategory,newRank,"");
             logger.info("Product updated with ID: {}", productId);
         } catch (Exception e) {
             logger.error("Error updating product: {}", e.getMessage(), e);
@@ -366,6 +359,11 @@ public class ProductFacade {
     public List<ProductDTO> getTopProducts(){
         return ProductMapper.toProductDTOList(productRepository.getTopProducts());
     }
+
+    public void clear(){
+        productRepository.clean();
+    }
+
     public boolean productExists(int productId) {
         return productRepository.isExistProduct(productId);
     }

@@ -42,7 +42,7 @@ public class CartTests {
     void clean() {
         PaymentService.getInstance().setController(new PaymentProxy());
         SupplyService.getInstance().setController(new SupplyProxy());
-        bridge.reset();
+        bridge.clear();
         Response resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         ownerUsername = "GuyStore";

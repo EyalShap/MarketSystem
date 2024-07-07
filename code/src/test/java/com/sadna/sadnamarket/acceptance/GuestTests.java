@@ -20,7 +20,7 @@ class GuestTests {
 
     @BeforeEach
     void clean() {
-        bridge.reset();
+        bridge.clear();
     }
 
     @Test

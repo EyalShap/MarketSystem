@@ -2,15 +2,18 @@ package com.sadna.sadnamarket.domain.orders;
 
 
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Map;
 
 @Entity
 @Table(name = "Orders")
 @Cacheable
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Order {
+public class Order implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,17 +21,18 @@ public class Order {
     @Column(name = "member_name")
     private String memberName;
 
+    @Id
     @Column(name = "store_id")
     private Integer storeId;
     @Column(name = "store_name_when_ordered")
     private String storeNameWhenOrdered;
     @ElementCollection
-    @CollectionTable(name = "Order_Product_Amounts", joinColumns = @JoinColumn(name = "order_id"))
+    @CollectionTable(name = "Order_Product_Amounts")
     @MapKeyColumn(name = "product_id")
     @Column(name = "amount")
     private Map<Integer, Integer> productAmounts;
     @ElementCollection
-    @CollectionTable(name = "Order_Products_Jsons", joinColumns = @JoinColumn(name = "order_id"))
+    @CollectionTable(name = "Order_Products_Jsons")
     @MapKeyColumn(name = "product_id")
     @Column(name = "json")
     private Map<Integer, String> orderProductsJsons;

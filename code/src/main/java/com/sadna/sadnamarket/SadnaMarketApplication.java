@@ -23,10 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class SadnaMarketApplication {
 	public static void main(String[] args) {
+		Config.read("config.json");
 		SpringApplication.run(SadnaMarketApplication.class, args);
-		SetupRunner setupRunner = new SetupRunner();
-        setupRunner.setupFromJson("config.json");
-		
 	}
 
 }

@@ -39,7 +39,7 @@ class RealtimeNotificationTests {
 
     @BeforeEach
     void clean() throws JsonProcessingException {
-        bridge.reset();
+        bridge.clear();
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);

@@ -73,4 +73,8 @@ public class OrderFacade {
     }
 
 
+    public void clear(){
+        orderRepository.clear();
+    }
+
 }

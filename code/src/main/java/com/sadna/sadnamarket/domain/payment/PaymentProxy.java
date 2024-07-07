@@ -14,7 +14,7 @@ public class PaymentProxy implements PaymentInterface{
         if(real.implemented()){
             return real.creditCardValid(creditDetails);
         }
-        return false;
+        return true;
     }
 
     @Override
@@ -22,6 +22,6 @@ public class PaymentProxy implements PaymentInterface{
         if(real.implemented()){
             return real.pay(amount, payerCard, receiverAccount);
         }
-        return false;
+        return true;
     }
 }

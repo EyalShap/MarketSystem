@@ -28,7 +28,7 @@ public class ProductInfoTests {
 
     @BeforeEach
     void clean() {
-        bridge.reset();
+        bridge.clear();
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         ownerUsername = "GuyStore";

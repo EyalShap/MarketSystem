@@ -43,7 +43,7 @@ class StoreOwnerTests {
 
     @BeforeEach
     void clean() throws JsonProcessingException {
-        bridge.reset();
+        bridge.clear();
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
@@ -277,7 +277,6 @@ class StoreOwnerTests {
         Response resp = bridge.appointOwner(token, username, storeId, "Eric");
         Assertions.assertTrue(resp.getError());
         Assertions.assertEquals(Error.makeMemberUserDoesntExistError("Eric"), resp.getErrorString());
-        Assertions.assertEquals(Error.makeMemberUserDoesntExistError("Eric"), resp.getErrorString());
     }
 
     @Test
@@ -289,7 +288,6 @@ class StoreOwnerTests {
         resp = bridge.appointOwner(maliciousToken, maliciousUsername, storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
         Assertions.assertEquals(Error.makeStoreUserCannotAddOwnerError(maliciousUsername, appointeeUsername, storeId), resp.getErrorString());
-        Assertions.assertEquals(Error.makeStoreUserCannotAddOwnerError(maliciousUsername, appointeeUsername, storeId), resp.getErrorString());
     }
 
     @Test
@@ -300,7 +298,6 @@ class StoreOwnerTests {
         bridge.signUp(uuid, "eric@excited.com", appointeeUsername, "password");
         resp = bridge.appointOwner("token that isn't real", "username that nobody has", storeId, appointeeUsername);
         Assertions.assertTrue(resp.getError());
-        Assertions.assertEquals(Error.makeAuthInvalidJWTError(), resp.getErrorString());
         Assertions.assertEquals(Error.makeAuthInvalidJWTError(), resp.getErrorString());
     }
 

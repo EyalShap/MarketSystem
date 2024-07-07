@@ -342,6 +342,82 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
+    public void addManagerToStore(String username, int storeId) {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            Store store = session.get(Store.class, storeId);
+            if (store == null) {
+                throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+            }
+            store.addStoreManager(username);
+            session.update(store);
+            transaction.commit();
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
+    }
+
+    @Override
+    public void addOwnerToStore(String username, int storeId) {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            Store store = session.get(Store.class, storeId);
+            if (store == null) {
+                throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+            }
+            store.addStoreOwner(username);
+            session.update(store);
+            transaction.commit();
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
+    }
+
+    @Override
+    public void closeStore(int storeId) {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            Store store = session.get(Store.class, storeId);
+            if (store == null) {
+                throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+            }
+            store.closeStore();
+            session.update(store);
+            transaction.commit();
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
+    }
+
+    @Override
+    public void reopenStore(int storeId) {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            Store store = session.get(Store.class, storeId);
+            if (store == null) {
+                throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+            }
+            store.reopenStore();
+            session.update(store);
+            transaction.commit();
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
+    }
+
+    @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {

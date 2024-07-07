@@ -1,5 +1,6 @@
 package com.sadna.sadnamarket.service;
 
+import com.sadna.sadnamarket.Config;
 import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -12,6 +13,14 @@ public class AppConfiguration {
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public MarketService marketService(ObjectProvider<RealtimeService> innerBeanProvider){
+        return new MarketService(innerBeanProvider.getObject());
+    }
+
+
+    @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public MarketService testingService(ObjectProvider<RealtimeService> innerBeanProvider){
+        Config.read("testconfig.json");
         return new MarketService(innerBeanProvider.getObject());
     }
 

@@ -33,8 +33,7 @@ public class UserHibernateRepo implements IUserRepository {
             if (member != null) {
                 return true;
             } else {
-                return false;
-                
+                throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(name));
             }
         }
     }
@@ -234,7 +233,7 @@ public class UserHibernateRepo implements IUserRepository {
             Transaction transaction = session.beginTransaction();
             Member member = session.get(Member.class, userName);
             if (member != null) {
-                member.setLogin(false);
+                member.logout();
                 session.update(member);
                 transaction.commit();
             } else {
@@ -760,6 +759,7 @@ public class UserHibernateRepo implements IUserRepository {
                 session.createNativeQuery("TRUNCATE TABLE user_orders").executeUpdate();
                 session.createNativeQuery("TRUNCATE TABLE user_roles").executeUpdate();
                 session.createNativeQuery("TRUNCATE TABLE Notification").executeUpdate();
+                session.createNativeQuery("TRUNCATE TABLE role_appointments").executeUpdate();
                 //session.createNativeQuery("TRUNCATE TABLE user_notifications").executeUpdate();
                 session.createNativeQuery("TRUNCATE TABLE carts").executeUpdate();
                 session.createNativeQuery("TRUNCATE TABLE guests").executeUpdate();
