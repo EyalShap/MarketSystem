@@ -6,6 +6,7 @@ import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyManager;
 import com.sadna.sadnamarket.domain.discountPolicies.HibernateDiscountPolicyManager;
+import com.sadna.sadnamarket.domain.discountPolicies.MemoryDiscountPolicyManager;
 import com.sadna.sadnamarket.service.Error;
 
 import java.util.HashMap;
@@ -133,7 +134,7 @@ public class MemoryDiscountPolicyRepository implements IDiscountPolicyRepository
 
     @Override
     public DiscountPolicyManager createManager(DiscountPolicyFacade facade, int storeId) {
-        return new HibernateDiscountPolicyManager(facade,storeId);
+        return new MemoryDiscountPolicyManager(facade);
     }
 
     @Override

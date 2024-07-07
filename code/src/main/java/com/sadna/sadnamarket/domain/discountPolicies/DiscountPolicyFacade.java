@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.discountPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyManager;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.IConditionRespository;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DiscountPolicyFacade {
-    private Map<Integer, MemoryDiscountPolicyManager> mapper;
+    private Map<Integer, DiscountPolicyManager> mapper;
     private IConditionRespository conditionRepository;
     private IDiscountPolicyRepository discountPolicyRepository;
     private ProductFacade productFacade;
@@ -29,7 +30,7 @@ public class DiscountPolicyFacade {
     private static DiscountPolicyFacade instance;
 
     public DiscountPolicyFacade(IConditionRespository conditionRepository, IDiscountPolicyRepository discountPolicyRepository) {
-        this.mapper = new HashMap<Integer, MemoryDiscountPolicyManager>();
+        this.mapper = new HashMap<Integer, DiscountPolicyManager>();
         this.conditionRepository = conditionRepository;
         this.discountPolicyRepository = discountPolicyRepository;
 
@@ -245,8 +246,8 @@ public class DiscountPolicyFacade {
         if(!discountPolicyRepository.discountPolicyExists(policyId))
             throw new Exception();
         if(!mapper.containsKey(storeId))
-            mapper.put(storeId, new MemoryDiscountPolicyManager(this));
-        MemoryDiscountPolicyManager manager = mapper.get(storeId);
+            mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
+        DiscountPolicyManager manager = mapper.get(storeId);
         manager.addDiscountPolicy(policyId);
 
     }
@@ -256,10 +257,10 @@ public class DiscountPolicyFacade {
         if (!storeFacade.hasPermission(username, storeId, Permission.REMOVE_DISCOUNT_POLICY))
             throw new IllegalArgumentException(String.format(Error.makeStoreUserCannotRemoveDiscountPolicyError(username, storeId)));
         if(!mapper.containsKey(storeId))
-            throw new Exception();
+            mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
         if(!discountPolicyRepository.discountPolicyExists(policyId))
             throw new Exception();
-        MemoryDiscountPolicyManager manager = mapper.get(storeId);
+        DiscountPolicyManager manager = mapper.get(storeId);
         manager.removeDiscountPolicy(policyId);
     }
 
@@ -267,7 +268,10 @@ public class DiscountPolicyFacade {
 
     public List<ProductDataPrice> calculatePrice(int storeId, List<CartItemDTO> cart) throws Exception {
         int itemID;
-        MemoryDiscountPolicyManager discountManager = mapper.get(storeId);
+        if (!mapper.containsKey(storeId)){
+            mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
+        }
+        DiscountPolicyManager discountManager = mapper.get(storeId);
         Map<Integer, ProductDTO> productDTOMap = new HashMap<>();
         // get ProductDTOs
         for(CartItemDTO cartItemDTO : cart){
@@ -288,10 +292,11 @@ public class DiscountPolicyFacade {
     }
 
     public List<PolicyDescriptionDTO> getStoreDiscountDescriptions(int storeId) throws Exception {
-        if(!mapper.containsKey(storeId)){
-            return new LinkedList<>();
+        if (!mapper.containsKey(storeId)){
+            mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
         }
-        MemoryDiscountPolicyManager manager = mapper.get(storeId);
+
+        DiscountPolicyManager manager = mapper.get(storeId);
         List<PolicyDescriptionDTO> descs = new LinkedList<>();
         for(int id : manager.getDiscountIds()){
             descs.add(new PolicyDescriptionDTO(id,getDiscountDescription(id)));
@@ -306,5 +311,12 @@ public class DiscountPolicyFacade {
         return false;
     }
 
-
+    public void clear(){
+        for(int storeId : mapper.keySet()){
+            mapper.get(storeId).clear();
+        }
+        this.mapper = new HashMap<Integer, DiscountPolicyManager>();
+        discountPolicyRepository.clear();
+        conditionRepository.clear();
+    }
 }

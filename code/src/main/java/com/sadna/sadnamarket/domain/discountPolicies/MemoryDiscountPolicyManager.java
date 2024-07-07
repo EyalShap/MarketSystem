@@ -39,8 +39,7 @@ public class MemoryDiscountPolicyManager extends DiscountPolicyManager{
         if(discount.isDefault()) {
             throw new IllegalArgumentException(Error.makeCannotRemoveDefaultDiscountFromStoreError(discountPolicyId));
         }
-        discountIds.remove(discountPolicyId);
-
+        discountIds.removeIf(id -> id == discountPolicyId);
     }
 
     public List<ProductDataPrice> giveDiscount(List<CartItemDTO> cart, Map<Integer, ProductDTO> productDTOMap) throws Exception {

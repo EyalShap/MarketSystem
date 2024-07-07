@@ -54,5 +54,23 @@
         <mapping class="com.sadna.sadnamarket.domain.users.StoreManager"/>
         <mapping class="com.sadna.sadnamarket.domain.users.StoreOwner"/>
         <mapping class="com.sadna.sadnamarket.domain.users.StoreFounder"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.StoreDiscountPolicyRelation"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Discounts.Discount"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Discounts.CompositeDiscount"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Discounts.AndDiscount"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Discounts.AdditionDiscount"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Discounts.MaximumDiscount"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Discounts.OrDiscount"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Discounts.SimpleDiscount"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Discounts.XorDiscount"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Conditions.CompositeCondition"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Conditions.AndCondition"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Conditions.MinBuyCondition"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Conditions.MinProductCondition"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Conditions.OrCondition"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Conditions.TrueCondition"/>
+        <mapping class="com.sadna.sadnamarket.domain.discountPolicies.Conditions.XorCondition"/>
+
     </session-factory>
 </hibernate-configuration>
