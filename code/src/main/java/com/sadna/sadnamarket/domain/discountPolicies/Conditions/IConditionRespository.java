@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Set;
 
 public interface IConditionRespository {
-    public boolean conditionExists(int policyId);
+    public boolean conditionExists(int condId);
     public Set<Integer> getAllConditionsIds();
     public Condition findConditionByID(int condId) throws Exception;
 
@@ -17,4 +17,5 @@ public interface IConditionRespository {
     int createXorCondition(Condition conditionA, Condition conditionB) throws JsonProcessingException;
     int createAndCondition(Condition conditionA, Condition conditionB) throws JsonProcessingException;
     int createOrCondition(Condition conditionA, Condition conditionB) throws JsonProcessingException;
+    public void clear();
 }

@@ -3,19 +3,39 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+@Entity
+@Table(name = "simplediscount")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SimpleDiscount extends Discount {
     //percentage is (100-0)
+    @Column(name = "percentage")
     private final double percentage;
+    @Column(name = "productID")
     private Integer productID;
+    @Column(name = "categoryName")
     private String categoryName;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "condition_id", referencedColumnName = "id")
     private final Condition condition;
 
     public SimpleDiscount(int id, double percentage, Condition condition){
         super(id);
+        this.percentage = percentage;
+        productID = null;
+        categoryName = null;
+        this.condition = condition;
+    }
+
+    public SimpleDiscount(double percentage, Condition condition){
+        super();
         this.percentage = percentage;
         productID = null;
         categoryName = null;
@@ -144,6 +164,24 @@ public class SimpleDiscount extends Discount {
             addEnding ="all products";
         }
         return "If " + condition.description() + " then there is a " + percentage + "% discount on " + addEnding;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleDiscount that = (SimpleDiscount) o;
+        boolean sameCategory = Objects.equals(categoryName, that.categoryName);
+        boolean sameProduct = Objects.equals(productID, that.productID);
+        boolean samePercent = Objects.equals(percentage, that.percentage);
+        boolean sameCondition = Objects.equals(condition, that.condition);
+
+        return sameCategory && sameProduct && samePercent && sameCondition && super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(percentage, productID, categoryName, condition);
     }
 
 }

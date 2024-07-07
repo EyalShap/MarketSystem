@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class MemoryConditionRepository implements IConditionRespository{
     private Map<Integer, Condition> conditions;
-    private Map<String, Integer> conditionsDesc;
+    private Map<Condition, Integer> conditionsDesc;
     private int nextId;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -78,15 +78,15 @@ public class MemoryConditionRepository implements IConditionRespository{
     }
 
     private int addConditionToMaps(Condition newCondition) throws JsonProcessingException {
-        String newConditionDesc = newCondition.getClass().getName() + "-" + objectMapper.writeValueAsString(newCondition);
-        if(!conditionsDesc.containsKey(newConditionDesc)) {
+        //String newConditionDesc = newCondition.getClass().getName() + "-" + objectMapper.writeValueAsString(newCondition);
+        if(!conditionsDesc.containsKey(newCondition)) {
             conditions.put(nextId, newCondition);
-            conditionsDesc.put(newConditionDesc, nextId);
+            conditionsDesc.put(newCondition, nextId);
             nextId++;
             return nextId - 1;
         }
         else {
-            return conditionsDesc.get(newConditionDesc);
+            return conditionsDesc.get(newCondition);
         }
     }
     public Condition findConditionByID(int condId) throws Exception {
@@ -102,6 +102,13 @@ public class MemoryConditionRepository implements IConditionRespository{
     @Override
     public Set<Integer> getAllConditionsIds() {
         return conditions.keySet();
+    }
+
+    @Override
+    public void clear() {
+        this.conditions = new HashMap<>();
+        this.conditionsDesc = new HashMap<>();
+        this.nextId = 0;
     }
 
 }

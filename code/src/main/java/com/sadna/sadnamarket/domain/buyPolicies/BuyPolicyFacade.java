@@ -1,7 +1,6 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyManager;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.PolicyDescriptionDTO;
@@ -164,8 +163,9 @@ public class BuyPolicyFacade {
             throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
         if (!storeFacade.hasPermission(username, storeId, Permission.REMOVE_BUY_POLICY))
             throw new IllegalArgumentException(Error.makeStoreUserCannotRemoveBuyPolicyError(username, storeId));
-        if(mapper.containsKey(storeId))
-            mapper.get(storeId).removeBuyPolicy(policyId);
+        if (!mapper.containsKey(storeId))
+            mapper.put(storeId, buyPolicyRepository.createManager(this,storeId));
+        mapper.get(storeId).removeBuyPolicy(policyId);
     }
 
     private boolean hasPermission(String username, Permission permission) {
@@ -178,6 +178,8 @@ public class BuyPolicyFacade {
     // --------------------------------------------------------------------------------
 
     public Set<String> canBuy(int storeId, List<CartItemDTO> cart, String username) {
+        if (!mapper.containsKey(storeId))
+            mapper.put(storeId, buyPolicyRepository.createManager(this,storeId));
         BuyPolicyManager buyPolicyManager = mapper.get(storeId);
         MemberDTO user;
         try {
@@ -201,16 +203,15 @@ public class BuyPolicyFacade {
     public boolean hasPolicy(int storeId, int policyId) {
         synchronized (mapper) {
             if (!mapper.containsKey(storeId))
-                return false;
+                mapper.put(storeId, buyPolicyRepository.createManager(this,storeId));
             BuyPolicyManager manager = mapper.get(storeId);
             return manager.hasPolicy(policyId);
         }
     }
 
     public List<PolicyDescriptionDTO> getStorePolicyDescriptions(int storeId) throws Exception {
-        if(!mapper.containsKey(storeId)){
-            return new LinkedList<>();
-        }
+        if (!mapper.containsKey(storeId))
+            mapper.put(storeId, buyPolicyRepository.createManager(this,storeId));
         BuyPolicyManager manager = mapper.get(storeId);
         List<PolicyDescriptionDTO> descs = new LinkedList<>();
         for(int id : manager.getAllPolicyIds()){
@@ -219,4 +220,11 @@ public class BuyPolicyFacade {
         return descs;
     }
 
+    public void clear(){
+        for(int storeId : mapper.keySet()){
+            mapper.get(storeId).clear();
+        }
+        this.mapper = new HashMap<Integer, BuyPolicyManager>();
+        buyPolicyRepository.clear();
+    }
 }

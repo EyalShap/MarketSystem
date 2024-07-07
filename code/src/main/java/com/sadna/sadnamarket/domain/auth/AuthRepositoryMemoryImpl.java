@@ -3,13 +3,10 @@ package com.sadna.sadnamarket.domain.auth;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+
 
 public class AuthRepositoryMemoryImpl implements IAuthRepository {
 
@@ -36,7 +33,7 @@ public class AuthRepositoryMemoryImpl implements IAuthRepository {
     
     private boolean isPasswordCorrect(String userName,String password){
         logger.info("start-isPasswordCorrect. username: {} ", userName);
-        boolean res= verifyPassword(password,userNameAndPassword.get(userName));
+        boolean res= PasswordHash.verifyPassword(password,userNameAndPassword.get(userName));
         logger.info("end-isPasswordCorrect. returnedValue:{}",res);
         return res;
     }
@@ -54,7 +51,7 @@ public class AuthRepositoryMemoryImpl implements IAuthRepository {
     public void add(String username, String password) {
         if (hasMember(username))
             throw new IllegalArgumentException(Error.makeAuthUsernameExistsError());
-        userNameAndPassword.put(username,hashPassword(password));
+        userNameAndPassword.put(username,PasswordHash.hashPassword(password));
     }
     @Override
     public void delete(String username) {
@@ -62,16 +59,6 @@ public class AuthRepositoryMemoryImpl implements IAuthRepository {
         userNameAndPassword.remove(username);
         logger.info("end delete {}",username);
     }
-    private static String hashPassword(String password) {
-    logger.info("start-hashPassword");
-    String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-    logger.info("end-hashPassword. returnedValue:{}",hashedPassword);
-    return hashedPassword;
-  }
-
-  private static boolean verifyPassword(String password, String hashedPassword) {
-    return BCrypt.checkpw(password, hashedPassword);
-  }
 @Override
 public void clear() {
     

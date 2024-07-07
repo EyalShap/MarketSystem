@@ -113,7 +113,7 @@ public class HourLimitBuyPolicy extends SimpleBuyPolicy{
     }
 
     @Override
-    public BuyPolicyDTO getDTO() {
-        return new RangedBuyPolicyDTO(getPolicySubject().dataString(), minValue.getHour() + ((double)minValue.getMinute())/60, maxValue.getHour() + ((double)maxValue.getMinute())/60, BuyPolicyTypeCodes.HOUR);
+    public BuyPolicyData generateData() {
+        return new RangedBuyPolicyData(getPolicySubject().dataString(), minValue.getHour() + ((double)minValue.getMinute())/60, maxValue.getHour() + ((double)maxValue.getMinute())/60, BuyPolicyTypeCodes.HOUR);
     }
 }

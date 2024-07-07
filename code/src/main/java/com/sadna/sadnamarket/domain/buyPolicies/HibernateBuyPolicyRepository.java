@@ -2,13 +2,12 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.HibernateUtil;
-import com.sadna.sadnamarket.domain.stores.Store;
-import com.sadna.sadnamarket.domain.stores.StoreDTO;
-import com.sadna.sadnamarket.domain.stores.StoreInfo;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -17,9 +16,10 @@ import java.util.Set;
 
 public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public BuyPolicy findBuyPolicyByID(int policyId) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
-            BuyPolicyDTO policyDTO = session.get(BuyPolicyDTO.class, policyId);
+            BuyPolicyData policyDTO = session.get(BuyPolicyData.class, policyId);
             if (policyDTO == null) {
                 throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
             }
@@ -34,9 +34,10 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<Integer> getAllPolicyIds() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            List<Integer> res = session.createQuery( "select p.policyId from BuyPolicyDTO p" ).list();
+            List<Integer> res = session.createQuery( "select p.policyId from BuyPolicyData p" ).list();
             return new HashSet<>(res);
         }
         catch (Exception e) {
@@ -48,8 +49,8 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            BuyPolicyDTO hibernateDto = buyPolicy.getDTO();
-            BuyPolicyDTO existingDto = getExistingBuyPolicy(session, hibernateDto);
+            BuyPolicyData hibernateDto = buyPolicy.generateData();
+            BuyPolicyData existingDto = getExistingBuyPolicy(session, hibernateDto);
             if(existingDto != null){
                 transaction.commit();
                 return existingDto.policyId;
@@ -124,9 +125,10 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
         return addBuyPolicy(policy);
     }
 
-    private BuyPolicyDTO getExistingBuyPolicy(Session session, BuyPolicyDTO policyDTO){
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
+    private BuyPolicyData getExistingBuyPolicy(Session session, BuyPolicyData policyDTO){
         Query query = policyDTO.getUniqueQuery(session);
-        List<BuyPolicyDTO> res = query.list();
+        List<BuyPolicyData> res = query.list();
         if(res.isEmpty()){
             return null;
         }
@@ -134,6 +136,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean buyPolicyExists(int policyId) {
         try {
             findBuyPolicyByID(policyId);
@@ -147,5 +150,20 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     @Override
     public BuyPolicyManager createManager(BuyPolicyFacade facade, int storeId) {
         return new HibernateBuyPolicyManager(facade,storeId);
+    }
+
+    @Override
+    public void clear() {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.createQuery( "delete from BuyPolicyData").executeUpdate();
+            session.createQuery( "delete from StoreBuyPolicyRelation").executeUpdate();
+            transaction.commit();
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 }

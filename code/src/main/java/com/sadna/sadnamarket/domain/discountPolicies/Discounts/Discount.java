@@ -4,16 +4,34 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
 @JsonIgnoreProperties(value = { "id" })
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public abstract class Discount {
-    protected int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    protected Integer id;
 
+    @Column(name = "isDefault")
+    private boolean isDefault;
     Discount(int id){
         this.id = id;
+        isDefault = false;
+    }
+    Discount(){
+        this.id = null;
+        isDefault = false;
     }
 
     public abstract void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
@@ -32,4 +50,18 @@ public abstract class Discount {
 
     abstract public String description();
 
+    public void setDefault() {
+        isDefault = true;
+    }
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Discount that = (Discount) o;
+        return Objects.equals(isDefault, that.isDefault);
+    }
 }

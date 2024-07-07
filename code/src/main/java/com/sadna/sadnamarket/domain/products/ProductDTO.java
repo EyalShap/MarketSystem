@@ -1,16 +1,29 @@
 package com.sadna.sadnamarket.domain.products;
+import java.util.*;
+//import java.util.Objects;
+import javax.persistence.*;
 
-import java.util.Objects;
-
+//@Entity
+//@Table(name = "Products")
 public class ProductDTO {
-    private int storeId;
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
     private int productID;
+    //@Column(name = "store_id")
+    private int storeId;
+    //@Column(name = "product_name")
     private String productName;
+    //@Column(name = "product_price")
     private double productPrice;
+    //@Column(name = "product_category")
     private String productCategory;
+    //@Column(name = "product_rank")
     private double productRank;
+    //@Column(name = "isActive")
     private boolean isActive;
+    //@Column(name = "product_weight")
     private double productWeight;
+    //@Column(name = "description")
     private String description;
 
     public ProductDTO(int productID, String productName, double productPrice, String productCategory,
@@ -85,12 +98,12 @@ public class ProductDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductDTO that = (ProductDTO) o;
-        return productID == that.productID && Double.compare(that.productPrice, productPrice) == 0 && Double.compare(that.productRank, productRank) == 0 && isActive == that.isActive && Double.compare(that.productWeight, productWeight) == 0 && Objects.equals(productName, that.productName) && Objects.equals(productCategory, that.productCategory) && Objects.equals(description, that.description);
+        return storeId == that.storeId && productID == that.productID && Double.compare(that.productPrice, productPrice) == 0 && Double.compare(that.productRank, productRank) == 0 && isActive == that.isActive && Double.compare(that.productWeight, productWeight) == 0 && Objects.equals(productName, that.productName) && Objects.equals(productCategory, that.productCategory) && Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productID, productName, productPrice, productCategory, productRank, isActive, productWeight, description);
+        return Objects.hash(storeId, productID, productName, productPrice, productCategory, productRank, isActive, productWeight, description);
     }
 
     public int getStoreId() {
@@ -99,5 +112,29 @@ public class ProductDTO {
 
     public void setStoreId(int storeId) {
         this.storeId = storeId;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public void setProductPrice(double productPrice) {
+        this.productPrice = productPrice;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public void setProductRank(double productRank) {
+        this.productRank = productRank;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public void setProductWeight(double productWeight) {
+        this.productWeight = productWeight;
     }
 }

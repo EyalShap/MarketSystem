@@ -33,3 +33,6 @@ logs/error.log
 logs/info.log
 logs/other.log
 code/.env
+logs/error.2024-06-27.log
+logs/info.2024-06-27.log
+logs/other.2024-06-27.log

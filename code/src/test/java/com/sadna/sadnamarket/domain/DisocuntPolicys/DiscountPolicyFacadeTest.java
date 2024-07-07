@@ -3,22 +3,40 @@ package com.sadna.sadnamarket.domain.DisocuntPolicys;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.sadna.sadnamarket.domain.auth.AuthFacade;
+import com.sadna.sadnamarket.domain.auth.AuthRepositoryMemoryImpl;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
+import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.*;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.Discounts.*;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
+import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
+import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import com.sadna.sadnamarket.domain.products.ProductFacade;
+import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
+import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.MemoryRepo;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
+public class DiscountPolicyFacadeTest{
     Map<Integer, ProductDTO> productDTOMap;
     Condition conditionTrue1;
     Condition conditionTrue2;
@@ -34,14 +52,83 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
 
     List<CartItemDTO> cart;
 
+    protected IConditionRespository conditionRepository;
+    protected IDiscountPolicyRepository discountPolicyRepository;
+
+    private StoreFacade storeFacade;
+    private AuthFacade authFacade;
+    private ProductFacade productFacade;
+    protected DiscountPolicyFacade discountPolicyFacade;
+
+    private static IDiscountPolicyRepository nextRepoDiscountPolicy = new MemoryDiscountPolicyRepository();
+    private static IConditionRespository nextRepoCondition = new MemoryConditionRepository();
+
     private String toJson(Object object) throws JsonProcessingException {
         return object.getClass().getName() + "-" + objectMapper.writeValueAsString(object);
 
     }
+    static Stream<Arguments> repositoryStream() {
+        return Stream.of(Arguments.of(new HibernateDiscountPolicyRepository(), new HibernateConditionRepository()), Arguments.of(new MemoryDiscountPolicyRepository(), new MemoryConditionRepository()));
+    }
 
     @BeforeEach
     public void setUp() throws Exception {
-        super.setUp();
+        setUpFacades(nextRepoDiscountPolicy, nextRepoCondition);
+        discountPolicyFacade.clear();
+        generateUsers();
+        generateStore0();
+        generateConditionAndPolicies();
+        MockitoAnnotations.openMocks(this);
+    }
+
+    private void setUpFacades(IDiscountPolicyRepository nextRepoDiscountPolicy, IConditionRespository nextRepoCondition) {
+        conditionRepository = nextRepoCondition;
+        discountPolicyRepository = nextRepoDiscountPolicy;
+        productFacade = new ProductFacade();
+        storeFacade = new StoreFacade(new MemoryStoreRepository());
+        OrderFacade orderFacade = new OrderFacade(new MemoryOrderRepository());
+        UserFacade userFacade = new UserFacade(new MemoryRepo(), storeFacade, orderFacade);
+        authFacade = new AuthFacade(new AuthRepositoryMemoryImpl(), userFacade);
+        discountPolicyFacade = new DiscountPolicyFacade(conditionRepository, discountPolicyRepository);
+        this.discountPolicyFacade.setProductFacade(productFacade);
+        this.discountPolicyFacade.setStoreFacade(storeFacade);
+
+        this.storeFacade.setUserFacade(userFacade);
+        this.storeFacade.setOrderFacade(orderFacade);
+        this.storeFacade.setProductFacade(productFacade);
+        this.storeFacade.setDiscountPolicyFacade(discountPolicyFacade);
+        BuyPolicyFacade buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
+        buyPolicyFacade.setStoreFacade(storeFacade);
+        buyPolicyFacade.setUserFacade(userFacade);
+        buyPolicyFacade.setProductFacade(productFacade);
+        this.storeFacade.setBuyPolicyFacade(buyPolicyFacade);
+    }
+
+    private void generateStore0() {
+
+        storeFacade.createStore("hila", "hila's bakery", "stips", "hilala@gmail.com", "0546661111");
+
+        storeFacade.addProductToStore("hila", 0, "eyal", 312, 100, "kids", 5, 2);
+        storeFacade.addProductToStore("hila", 0, "milk", 312, 20, "dairy", 5, 2);
+        storeFacade.addProductToStore("hila", 0, "cheese", 312, 40, "dairy", 5, 2);
+
+        storeFacade.createStore("maki", "maki's bakery", "stips", "maki@gmail.com", "0546661112");
+
+        storeFacade.addProductToStore("maki", 1, "eyal", 312, 100, "kids", 5, 2);
+        storeFacade.addProductToStore("maki", 1, "milk", 312, 20, "dairy", 5, 2);
+        storeFacade.addProductToStore("maki", 1, "cheese", 312, 40, "dairy", 5, 2);
+
+    }
+
+    private void generateUsers() {
+        authFacade.register("hila", "654321", "Eugene", "Krabs", "hilala@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
+        authFacade.login("hila", "654321");
+        authFacade.register("maki", "654321", "Eugene", "Krabs", "maki@gmail.com", "0521957682", LocalDate.of(1942, 11, 30));
+        authFacade.login("maki", "654321");
+
+    }
+
+    private void generateConditionAndPolicies() throws Exception {
         int minBuyConditionID1 = conditionRepository.createMinBuyCondition(100);
         conditionTrue1 = conditionRepository.findConditionByID(minBuyConditionID1);
         int minBuyConditionID3 = conditionRepository.createMinProductCondition(3, 2);
@@ -68,10 +155,12 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
         cart.add(new CartItemDTO(0, 0, 1));
         cart.add(new CartItemDTO(0, 1, 1));
         cart.add(new CartItemDTO(0, 2, 3));
+
     }
 
-    @Test
-    public void checkAddingDiscountToStore() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void checkAddingDiscountToStore(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         discountPolicyFacade.addDiscountPolicyToStore(0, onStore10discountTrue1ID, "hila");
         discountPolicyFacade.addDiscountPolicyToStore(0, onCategoryDairy10discountTrue1ID, "hila");
         discountPolicyFacade.addDiscountPolicyToStore(0, onStore10discountFalse1ID, "hila");
@@ -81,10 +170,14 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(16.2 , listProductDataPrices.get(1).getNewPrice());
         assertEquals(32.4 , listProductDataPrices.get(2).getNewPrice());
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void checkRemovingDiscountToStore() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void checkRemovingDiscountToStore(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         discountPolicyFacade.addDiscountPolicyToStore(0, onStore10discountTrue1ID, "hila");
         discountPolicyFacade.addDiscountPolicyToStore(0, onCategoryDairy10discountTrue1ID, "hila");
         discountPolicyFacade.addDiscountPolicyToStore(0, onStore10discountFalse1ID, "hila");
@@ -94,6 +187,9 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(18 , listProductDataPrices.get(1).getNewPrice());
         assertEquals(36 , listProductDataPrices.get(2).getNewPrice());
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
     @Test
@@ -169,7 +265,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createOnProductConditionDiscountDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,1, "hila");
+        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,conditionTrue1.getId(), "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
 
@@ -184,8 +280,8 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
 
     @Test
     public void createOnProductConditionDiscountDiscountFail() throws Exception {
-        //conditionId 1 is  MinBuyCondition(100);
-        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,1, "hila");
+        //conditionTrue1 is  MinBuyCondition(100);
+        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,conditionTrue1.getId(), "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
 
@@ -201,7 +297,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createOnCategoryConditionDiscountDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId = discountPolicyFacade.createOnCategoryConditionDiscountPolicy(10,"dairy",1, "hila");
+        int policyId = discountPolicyFacade.createOnCategoryConditionDiscountPolicy(10,"dairy",conditionTrue1.getId(), "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
 
@@ -218,7 +314,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createOnStoreConditionDiscountDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10,1, "hila");
+        int policyId = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10,conditionTrue1.getId(), "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
 
@@ -234,7 +330,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createOrDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createOrDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -255,7 +351,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createAndDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createAndDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -275,7 +371,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createTakeMinXorDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createTakeMinXorDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -297,7 +393,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createTakeMaxXorDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createTakeMaxXorDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -319,7 +415,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createAdditionDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createAdditionDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -340,7 +436,7 @@ public class DiscountPolicyFacadeTest extends DiscountPolicyTest{
     @Test
     public void createMaximumDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createMaximumDiscountPolicy(policyId1,policyId2, "hila");
 

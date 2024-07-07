@@ -1,17 +1,21 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import org.hibernate.Session;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.time.LocalTime;
 import java.util.LinkedList;
 
 @Entity
 @Table(name = "datebuypolicies")
-public class DateBuyPolicyDTO extends BuyPolicyDTO{
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class DateBuyPolicyData extends BuyPolicyData {
     @Column(name = "day")
     Integer day;
     @Column(name = "month")
@@ -21,11 +25,11 @@ public class DateBuyPolicyDTO extends BuyPolicyDTO{
     @Column(name = "subject")
     String subject;
 
-    public DateBuyPolicyDTO(){
+    public DateBuyPolicyData(){
 
     }
 
-    public DateBuyPolicyDTO(Integer policyId, Integer day, Integer month, Integer year, String subject) {
+    public DateBuyPolicyData(Integer policyId, Integer day, Integer month, Integer year, String subject) {
         this.policyId = policyId;
         this.day = day;
         this.month = month;
@@ -33,7 +37,7 @@ public class DateBuyPolicyDTO extends BuyPolicyDTO{
         this.subject = subject;
     }
 
-    public DateBuyPolicyDTO(Integer day, Integer month, Integer year, String subject) {
+    public DateBuyPolicyData(Integer day, Integer month, Integer year, String subject) {
         this.day = day;
         this.month = month;
         this.year = year;
@@ -42,7 +46,7 @@ public class DateBuyPolicyDTO extends BuyPolicyDTO{
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT P FROM DateBuyPolicyDTO P " +
+        Query query = session.createQuery("SELECT P FROM DateBuyPolicyData P " +
                 "WHERE P.day = :day " +
                 "AND P.month = :month " +
                 "AND P.year = :year " +

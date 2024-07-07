@@ -51,7 +51,7 @@ public class RoshChodeshBuyPolicy extends SimpleBuyPolicy{
     }
 
     @Override
-    public BuyPolicyDTO getDTO() {
-        return new JewishCustomsBuyPolicyDTO(getPolicySubject().dataString(), BuyPolicyTypeCodes.ROSH_KHODESH);
+    public BuyPolicyData generateData() {
+        return new JewishCustomsBuyPolicyData(getPolicySubject().dataString(), BuyPolicyTypeCodes.ROSH_KHODESH);
     }
 }

@@ -3,21 +3,59 @@ package com.sadna.sadnamarket.domain.stores;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.service.Error;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Entity
+@Table(name = "stores")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Store {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "store_id")
     private Integer storeId;
+
+    @Column(name = "is_active")
     private Boolean isActive;
+
+    @Embedded
     private StoreInfo storeInfo;
+
+    @ElementCollection
+    @CollectionTable(name = "store_products", joinColumns = @JoinColumn(name = "store_id"))
+    @MapKeyColumn(name = "product_id")
+    @Column(name = "amount")
     private Map<Integer, Integer> productAmounts;
+
+    @Column(name = "founder_username")
     private String founderUsername;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_owners", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "username")
     private Set<String> ownerUsernames;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_managers", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "username")
     private Set<String> managerUsernames;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_orders", joinColumns = @JoinColumn(name = "store_id"))
+    @Column(name = "order_ids")
     private Set<Integer> orderIds;
+
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private BankAccountDTO bankAccount;
+
+    @Transient
     private final Object lock = new Object();
 
     public Store(int storeId, String founderUsername, StoreInfo storeInfo) {
@@ -45,12 +83,12 @@ public class Store {
     private void setAnythingButId(String founderUsername, StoreInfo storeInfo) {
         this.isActive = true;
         this.storeInfo = storeInfo;
-        this.productAmounts = new ConcurrentHashMap<>();
+        this.productAmounts = new HashMap<>();
         this.founderUsername = founderUsername;
-        this.ownerUsernames = Collections.synchronizedSet(new HashSet<>());
+        this.ownerUsernames = new HashSet<>();
         this.ownerUsernames.add(founderUsername);
-        this.managerUsernames = Collections.synchronizedSet(new HashSet<>());
-        this.orderIds = Collections.synchronizedSet(new HashSet<>());
+        this.managerUsernames = new HashSet<>();
+        this.orderIds = new HashSet<>();
     }
 
     public int getStoreId() {
@@ -306,28 +344,10 @@ public class Store {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Store store = (Store) o;
-        StoreInfo info = store.getStoreInfo();
-        if (!info.equals(storeInfo))
-            return false;
-
-        return storeId == store.storeId &&
-                isActive == store.isActive &&
-                Objects.equals(productAmounts, store.productAmounts) &&
-                Objects.equals(founderUsername, store.founderUsername) &&
-                Objects.equals(ownerUsernames, store.ownerUsernames) &&
-                Objects.equals(managerUsernames, store.managerUsernames) &&
-                //Objects.equals(sellerUsernames, store.sellerUsernames) &&
-                Objects.equals(orderIds, store.orderIds);
+        return this.getStoreDTO().equals(store.getStoreDTO());
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(storeId, isActive, storeInfo, productAmounts, founderUsername, ownerUsernames,
-                managerUsernames, orderIds, lock);
-    }
 }

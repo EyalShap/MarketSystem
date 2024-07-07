@@ -1,5 +1,7 @@
 package com.sadna.sadnamarket.domain.discountPolicies;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyManager;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.IConditionRespository;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.MemoryConditionRepository;
@@ -52,6 +54,15 @@ public class DiscountPolicyFacade {
     }
 
     // ---DiscountsPolicy-Creations---------------------------------------------------------------
+
+    public int createDefaultDiscountPolicy(double percentage, String username) throws Exception {
+        if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
+            throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
+
+        int conditionTrueId = conditionRepository.createTrueCondition();
+        Condition condition = conditionRepository.findConditionByID(conditionTrueId);
+        return discountPolicyRepository.addDefaultDiscount(percentage, condition);
+    }
     public int createAdditionDiscountPolicy(int policyId1, int policyId2, String username) throws Exception {
         if (!hasPermission(username, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateDiscountPolicyError(username));
@@ -235,7 +246,7 @@ public class DiscountPolicyFacade {
         if(!discountPolicyRepository.discountPolicyExists(policyId))
             throw new Exception();
         if(!mapper.containsKey(storeId))
-            mapper.put(storeId, new DiscountPolicyManager(this));
+            mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
         DiscountPolicyManager manager = mapper.get(storeId);
         manager.addDiscountPolicy(policyId);
 
@@ -246,7 +257,7 @@ public class DiscountPolicyFacade {
         if (!storeFacade.hasPermission(username, storeId, Permission.REMOVE_DISCOUNT_POLICY))
             throw new IllegalArgumentException(String.format(Error.makeStoreUserCannotRemoveDiscountPolicyError(username, storeId)));
         if(!mapper.containsKey(storeId))
-            throw new Exception();
+            mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
         if(!discountPolicyRepository.discountPolicyExists(policyId))
             throw new Exception();
         DiscountPolicyManager manager = mapper.get(storeId);
@@ -257,6 +268,9 @@ public class DiscountPolicyFacade {
 
     public List<ProductDataPrice> calculatePrice(int storeId, List<CartItemDTO> cart) throws Exception {
         int itemID;
+        if (!mapper.containsKey(storeId)){
+            mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
+        }
         DiscountPolicyManager discountManager = mapper.get(storeId);
         Map<Integer, ProductDTO> productDTOMap = new HashMap<>();
         // get ProductDTOs
@@ -278,9 +292,10 @@ public class DiscountPolicyFacade {
     }
 
     public List<PolicyDescriptionDTO> getStoreDiscountDescriptions(int storeId) throws Exception {
-        if(!mapper.containsKey(storeId)){
-            return new LinkedList<>();
+        if (!mapper.containsKey(storeId)){
+            mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
         }
+
         DiscountPolicyManager manager = mapper.get(storeId);
         List<PolicyDescriptionDTO> descs = new LinkedList<>();
         for(int id : manager.getDiscountIds()){
@@ -294,5 +309,14 @@ public class DiscountPolicyFacade {
             if(storeFacade.hasPermission(username, storeId, permission))
                 return true;
         return false;
+    }
+
+    public void clear(){
+        for(int storeId : mapper.keySet()){
+            mapper.get(storeId).clear();
+        }
+        this.mapper = new HashMap<Integer, DiscountPolicyManager>();
+        discountPolicyRepository.clear();
+        conditionRepository.clear();
     }
 }

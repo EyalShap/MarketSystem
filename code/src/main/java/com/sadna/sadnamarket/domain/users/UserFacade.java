@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.RealtimeService;
 import org.apache.logging.log4j.LogManager;
@@ -109,6 +110,10 @@ public class UserFacade {
             logger.error("user doesnt exist",username);
             throw new IllegalStateException(Error.makeUserSystemManagerError());
         }
+        if(systemManagerUserName!=null){
+            logger.error("system manager already exist",username);
+            throw new IllegalStateException(Error.makeUserSystemManagerError());
+        }
         systemManagerUserName=username;
         logger.info("done set system username {}",username);
     }
@@ -206,6 +211,8 @@ public class UserFacade {
 
     public void accept(String acceptingName,int requestID){
         logger.info("{} accept request id: {}",acceptingName,requestID);
+        if(!iUserRepo.isLoggedIn(acceptingName))
+            throw new IllegalStateException(Error.makeMemberUserIsNotLoggedInError());
         Request request=iUserRepo.getRequest(acceptingName,requestID);
         int storeId=request.getStoreId();
         iUserRepo.accept(acceptingName,requestID,this);
@@ -554,7 +561,7 @@ public class UserFacade {
         }
         logger.info("credit card is valid {}",creditCard);
     }
-    private void createUserOrders(List<ProductDataPrice> storeBag, CreditCardDTO creditCard, String supplyString,String username){
+    private void createUserOrders(List<ProductDataPrice> storeBag, CreditCardDTO creditCard, String supplyString,String username) throws JsonProcessingException {
         logger.info("create user orders");
         SupplyService supply=SupplyService.getInstance();
         PaymentService payment = PaymentService.getInstance();
@@ -584,7 +591,7 @@ public class UserFacade {
         logger.info("got all orders for {}",username);
         return orderFacade.getAllOrders();
     }
-    private String makeSuplyment(Map<Integer,Integer> productAmount,AddressDTO addressDTO){
+    private String makeSuplyment(Map<Integer,Integer> productAmount,AddressDTO addressDTO) throws JsonProcessingException {
         logger.info("make supplyment {} with address {}",productAmount,addressDTO);
         SupplyService supply=SupplyService.getInstance();
         OrderDetailsDTO orderDetailsDTO=new OrderDetailsDTO(productAmount);
