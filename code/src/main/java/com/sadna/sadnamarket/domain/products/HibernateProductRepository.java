@@ -100,7 +100,7 @@ public class HibernateProductRepository implements IProductRepository{
 
             session.save(product);
             transaction.commit();
-            return product.getStoreId();
+            return product.getProductId();
         }catch (Exception e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
@@ -178,6 +178,16 @@ public class HibernateProductRepository implements IProductRepository{
         }
     }
 
+    public void clean(){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.createQuery("DELETE FROM Product").executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Database error", e);
+        }
+    }
+
 //    public Product productDTOToProduct(ProductDTO productDTO){
 //        int id=productDTO.getProductID();
 //        String productName=productDTO.getProductName();
@@ -190,13 +200,15 @@ public class HibernateProductRepository implements IProductRepository{
 //        return product;
 //    }
 
-    public static void main(String[] args) {
-        HibernateProductRepository a = new HibernateProductRepository();
+   // public static void main(String[] args) {
+      //  HibernateProductRepository a = new HibernateProductRepository();
+      //  a.clean();
         //Product p=new Product();
         //p.setActive();
         //p.setStoreId();
         //p.
-//        a.addProduct("banana",7,"fruit",4,2,4,"dsflkj");
+     //   int y=a.addProduct("banana",7,"fruit",4,2,4,"dsflkj");
+     //   System.out.println(y);
 //        a.addProduct("orange",10,"fruit",2,6,2,"aaaaa");
 //        a.addProduct("cucumber",2,"vegetable",1,10,7,"bkalba");
        // a.addProduct("banana",4,"fruit",5,2,17,"dsflkj");
@@ -213,7 +225,7 @@ public class HibernateProductRepository implements IProductRepository{
        // boolean k=a.isExistProduct(1116);
         //List<Product>r=a.getAllProducts();
         //Set<Integer>k=a.getAllProductIds();
-        int x=4;
-    }
+   //     int x=4;
+   // }
 
 }

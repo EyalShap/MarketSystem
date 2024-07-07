@@ -17,6 +17,7 @@ import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.orders.OrderDTO;
 import com.sadna.sadnamarket.domain.orders.OrderDetails;
 import com.sadna.sadnamarket.domain.orders.OrderFacade;
+import com.sadna.sadnamarket.domain.products.HibernateProductRepository;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
@@ -55,7 +56,7 @@ public class MarketService {
     @Autowired
     public MarketService(RealtimeService realtimeService) {
         this.realtimeService = realtimeService;
-        this.productFacade = new ProductFacade();
+        this.productFacade = new ProductFacade(new HibernateProductRepository());
         this.orderFacade = new OrderFacade(new MemoryOrderRepository());
         this.storeFacade = new StoreFacade(new MemoryStoreRepository());
         this.buyPolicyFacade = new BuyPolicyFacade(new MemoryBuyPolicyRepository());
