@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.QueryHint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 public class AuthRepositoryHibernateImpl implements IAuthRepository {
@@ -35,7 +37,7 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
         logger.info("start-isPasswordCorrect. username: {} ", username);
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             UserCredential userCredential = session.get(UserCredential.class, username);
-            boolean res = verifyPassword(password, userCredential.getPassword());
+            boolean res = PasswordHash.verifyPassword(password, userCredential.getPassword());
             logger.info("end-isPasswordCorrect. returnedValue:{}", res);
             return res;
         }
@@ -49,6 +51,7 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public HashMap<String, String> getAll() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             List<UserCredential> userList = session.createQuery("from UserCredential", UserCredential.class).list();
@@ -59,6 +62,7 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
 
     @Override
     public void add(String username, String password) {
+        logger.info("start-add. username: {} ", username);
         if (hasMember(username)) {
             throw new IllegalArgumentException(Error.makeAuthUsernameExistsError());
         }
@@ -66,9 +70,10 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             Transaction transaction = session.beginTransaction();
             UserCredential userCredential = new UserCredential();
             userCredential.setUsername(username);
-            userCredential.setPassword(hashPassword(password));
+            userCredential.setPassword(PasswordHash.hashPassword(password));
             session.save(userCredential);
             transaction.commit();
+            logger.info("end-add. username: {} ", username);
         }
     }
 
@@ -86,24 +91,17 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
         }
     }
 
-    private static String hashPassword(String password) {
-        logger.info("start-hashPassword");
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        logger.info("end-hashPassword. returnedValue:{}", hashedPassword);
-        return hashedPassword;
-    }
-
-    private static boolean verifyPassword(String password, String hashedPassword) {
-        return BCrypt.checkpw(password, hashedPassword);
-    }
+   
 
     @Override
     public void clear() {
+        logger.info("start-clear");
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             String hql = "DELETE FROM UserCredential";
             session.createQuery(hql).executeUpdate();
             transaction.commit();
+            logger.info("end-clear");
         }
     }
 }

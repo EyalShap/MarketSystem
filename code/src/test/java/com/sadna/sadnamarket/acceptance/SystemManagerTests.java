@@ -1,5 +1,6 @@
-package com.sadna.sadnamarket;
+package com.sadna.sadnamarket.acceptance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.api.Response;
@@ -39,14 +40,10 @@ class SystemManagerTests {
     String maliciousToken;
 
     @BeforeEach
-    void clean() {
+    void clean() throws JsonProcessingException {
         bridge.reset();
-        SupplyInterface supplyMock = Mockito.mock(SupplyInterface.class);
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
-        SupplyService.getInstance().setController(supplyMock);
-        Mockito.when(supplyMock.canMakeOrder(Mockito.any(), Mockito.any())).thenReturn(true);
-        Mockito.when(supplyMock.makeOrder(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
         String storeOwnerUsername = "StoreOwnerMan";
@@ -57,7 +54,7 @@ class SystemManagerTests {
         resp = bridge.openStore(storeOwnerToken, storeOwnerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
         bridge.setStoreBankAccount(storeOwnerToken, storeOwnerUsername, storeId,
-                new BankAccountDTO("10", "392", "393013", "2131516175", null));
+                new BankAccountDTO("10", "392", "393013", "2131516175"));
         resp = bridge.guestEnterSystem();
         uuid = resp.getDataJson();
         buyerUsername = "Billy";

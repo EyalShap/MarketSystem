@@ -1,17 +1,20 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import org.hibernate.Session;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.time.LocalTime;
-import java.util.LinkedList;
 
 @Entity
 @Table(name = "compositebuypolicies")
-public class CompositeBuyPolicyDTO extends BuyPolicyDTO{
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class CompositeBuyPolicyData extends BuyPolicyData {
     @Column(name = "id1")
     Integer id1;
     @Column(name = "id2")
@@ -19,17 +22,17 @@ public class CompositeBuyPolicyDTO extends BuyPolicyDTO{
     @Column(name = "logic")
     String logic;
 
-    public CompositeBuyPolicyDTO(){
+    public CompositeBuyPolicyData(){
 
     }
-    public CompositeBuyPolicyDTO(Integer policyId,Integer id1, Integer id2, String logic) {
+    public CompositeBuyPolicyData(Integer policyId, Integer id1, Integer id2, String logic) {
         this.policyId = policyId;
         this.id1 = id1;
         this.id2 = id2;
         this.logic = logic;
     }
 
-    public CompositeBuyPolicyDTO(Integer id1, Integer id2, String logic) {
+    public CompositeBuyPolicyData(Integer id1, Integer id2, String logic) {
         this.id1 = id1;
         this.id2 = id2;
         this.logic = logic;
@@ -37,7 +40,7 @@ public class CompositeBuyPolicyDTO extends BuyPolicyDTO{
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT P FROM CompositeBuyPolicyDTO P " +
+        Query query = session.createQuery("SELECT P FROM CompositeBuyPolicyData P " +
                 "WHERE P.id1 = :id1 " +
                 "AND P.id2 = :id2 " +
                 "AND P.logic = :logic ");

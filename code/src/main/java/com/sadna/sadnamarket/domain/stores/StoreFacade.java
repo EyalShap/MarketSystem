@@ -35,6 +35,12 @@ public class StoreFacade {
         this.storeRepository = storeRepository;
     }
 
+    public StoreFacade() {}
+
+    public void setStoreRepository(IStoreRepository repo) {
+        this.storeRepository = repo;
+    }
+
     public void setUserFacade(UserFacade userFacade) {
         this.userFacade = userFacade;
     }
@@ -78,7 +84,7 @@ public class StoreFacade {
             buyPolicyFacade.addLawBuyPolicyToStore(founderUserName, storeId, policyId2);
 
             //adding kind of null discount
-            int discountPolicyID = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(0, founderUserName);
+            int discountPolicyID = discountPolicyFacade.createDefaultDiscountPolicy(0, founderUserName);
             discountPolicyFacade.addDiscountPolicyToStore(storeId, discountPolicyID, founderUserName);
         }
         catch (Exception ignored) {
@@ -97,7 +103,7 @@ public class StoreFacade {
             throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
 
         int newProductId = productFacade.addProduct(storeId, productName, productPrice, category, rank, productWeight, description);
-        storeRepository.findStoreByID(storeId).addProduct(newProductId, productQuantity);
+        storeRepository.addProductToStore(storeId, newProductId, productQuantity);
         return newProductId;
     }
 
@@ -136,15 +142,10 @@ public class StoreFacade {
             double newPrice, String newCategory, double newRank, String newDesc) {
         if (!hasPermission(username, storeId, Permission.UPDATE_PRODUCTS))
             throw new IllegalArgumentException(Error.makeStoreUserCannotUpdateProductError(username, storeId));
-        Store store = storeRepository.findStoreByID(storeId);
-        synchronized (store.getProductAmounts()) {
-            if (!store.productExists(productId))
-                throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
 
-            store.setProductAmounts(productId, newQuantity);
-            productFacade.updateProduct(storeId, productId, newProductName, newPrice, newCategory, newRank, newDesc);
-            return productId;
-        }
+        storeRepository.updateProductAmountInStore(storeId, productId, newQuantity);
+        productFacade.updateProduct(storeId, productId, newProductName, newPrice, newCategory, newRank, newDesc);
+        return productId;
     }
 
     public int updateProduct(String username, int storeId, int productId, String newProductName, int newQuantity,
@@ -460,24 +461,14 @@ public class StoreFacade {
     public Map<ProductDTO, Integer> getProductsInfoAndFilter(String username, int storeId, String productName, String category,
                                                              double price, double minProductRank) throws JsonProcessingException {
         Store store = storeRepository.findStoreByID(storeId);
-        List<Integer> storeProductIds;
-        //synchronized (store.getProductAmounts()) {
-            if (!isStoreActive(storeId)) {
-                if (!store.isStoreOwner(username) && !store.isStoreManager(username)) {
-                    throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
-                }
-            }
 
-            StoreDTO dto = storeRepository.getStoreDTO(storeId);
-            Map<Integer, Integer> productAmounts = dto.getProductAmounts();
-            storeProductIds = new ArrayList<>(productAmounts.keySet());
-        //}
-            List<ProductDTO> filteredProducts = productFacade.getFilteredProducts(storeProductIds, productName, price, category, minProductRank);
-            Map<ProductDTO, Integer> res = new HashMap<>();
-            for (ProductDTO product : filteredProducts)
-                res.put(product, productAmounts.get(product.getProductID()));
-            return res;
+        if (!isStoreActive(storeId)) {
+            if (!store.isStoreOwner(username) && !store.isStoreManager(username)) {
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+               }
+        }
 
+        return storeRepository.getProductsInfoAndFilter(productFacade, storeId, productName, category, price, minProductRank);
     }
 
     public void setStoreBankAccount(String ownerUsername, int storeId, BankAccountDTO bankAccount) {
@@ -486,9 +477,8 @@ public class StoreFacade {
             if (!store.isStoreOwner(ownerUsername))
                 throw new IllegalArgumentException(Error.makeStoreUserCannotSetBankAccountError(ownerUsername, storeId));
 
-            bankAccount.setStore(store.getStoreDTO());
-            store.setBankAccount(bankAccount);
-            storeRepository.setStoreBankAccount(bankAccount);
+            bankAccount.setStore(store);
+            storeRepository.setStoreBankAccount(storeId, bankAccount);
         }
     }
 
@@ -572,9 +562,9 @@ public class StoreFacade {
     }
 
     public boolean hasProductInStock(int storeId, int productId, int amount){
-        /*if (!storeRepository.storeExists(storeId))
+        if (!storeRepository.storeExists(storeId))
             throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
-        Store store = storeRepository.findStoreByID(storeId);
+        /*Store store = storeRepository.findStoreByID(storeId);
         return store.hasProductInAmount(productId, amount);*/
         return storeRepository.hasProductInStock(storeId, productId, amount);
     }
@@ -680,8 +670,7 @@ public class StoreFacade {
     }
 
     public boolean areProductsInStore(int storeId, Set<Integer> productIds) {
-        Store store = storeRepository.findStoreByID(storeId);
-        return store.hasProducts(productIds);
+        return storeRepository.areProductsInStore(storeId, productIds);
     }
 
     public StoreDTO getStoreByName(String storeName, String username) {

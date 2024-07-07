@@ -28,6 +28,8 @@ import com.sadna.sadnamarket.domain.stores.IStoreRepository;
 import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
 import com.sadna.sadnamarket.domain.supply.*;
 import com.sadna.sadnamarket.domain.users.*;
+import com.sadna.sadnamarket.service.Error;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,6 +40,9 @@ import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.stores.StoreDTO;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 
+import javax.transaction.Transactional;
+
+@Transactional
 public class UserFacadeIntegrationTest {
 
     private MemoryRepo iUserRepo;
@@ -102,35 +107,9 @@ public class UserFacadeIntegrationTest {
         this.buyPolicyFacade.setProductFacade(productFacade);
 
         this.paymentService = PaymentService.getInstance();
-        this.paymentService.setController(new PaymentInterface() {
-            @Override
-            public boolean creditCardValid(CreditCardDTO creditDetails) {
-                return true;
-            }
-
-            @Override
-            public boolean pay(double amount, CreditCardDTO payerCard, BankAccountDTO receiverAccount) {
-                return true;
-            }
-        });
-
         this.supplyService = SupplyService.getInstance();
-        this.supplyService.setController(new SupplyInterface() {
-            @Override
-            public boolean canMakeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
-                return true;
-            }
+        turnOn_externalServices();
 
-            @Override
-            public String makeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
-                return "null";
-            }
-
-            @Override
-            public boolean cancelOrder(String orderCode) {
-                return true;
-            }
-        });
     }
 
     @Before
@@ -150,6 +129,37 @@ public class UserFacadeIntegrationTest {
                 "cat1", 3.8, 4.0);
         this.testProductId2 = storeFacade.addProductToStore(testUsername1, testStoreId, "productName2", 5, 10.0, "cat2",
                 3.8, 4.0);
+
+    }
+
+    public void turnOn_externalServices() {
+        this.paymentService.setController(new PaymentInterface() {
+            @Override
+            public boolean creditCardValid(CreditCardDTO creditDetails) {
+                return true;
+            }
+
+            @Override
+            public boolean pay(double amount, CreditCardDTO payerCard, BankAccountDTO receiverAccount) {
+                return true;
+            }
+        });
+        this.supplyService.setController(new SupplyInterface() {
+            @Override
+            public boolean canMakeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
+                return true;
+            }
+
+            @Override
+            public String makeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
+                return "null";
+            }
+
+            @Override
+            public boolean cancelOrder(String orderCode) {
+                return true;
+            }
+        });
     }
 
     @Test
@@ -400,4 +410,98 @@ public class UserFacadeIntegrationTest {
 
         assertDoesNotThrow(() -> userFacade.purchaseCart(testUsername1, creditCardDTO, addressDTO));
     }
+
+    @Test
+    public void purchaseCart_failCreditCard() throws Exception {
+        turnOn_externalServices();
+        this.paymentService.setController(new PaymentInterface() {
+            @Override
+            public boolean creditCardValid(CreditCardDTO creditDetails) {
+                return false;
+            }
+
+            @Override
+            public boolean pay(double amount, CreditCardDTO payerCard, BankAccountDTO receiverAccount) {
+                return false;
+            }
+        });
+        userFacade.addProductToCart(testUsername1, testStoreId, testProductId1, 2);
+        userFacade.addProductToCart(testUsername1, testStoreId, testProductId2, 3);
+
+        CreditCardDTO creditCardDTO = new CreditCardDTO(testUsername1, testUsername1, new Date(), testPassword);
+        AddressDTO addressDTO = new AddressDTO(testPassword, testPassword, testPassword, testPassword, testUsername3,
+                testUsername2, testUsername1, testPassword);
+
+        try {
+            userFacade.purchaseCart(testUsername1, creditCardDTO, addressDTO);
+        } catch (Exception e) {
+            String expected = Error.makePurchaseInvalidCardError();
+            assertEquals(expected, e.getMessage());
+        }
+    }
+
+    @Test
+    public void purchaseCart_failPayment() throws Exception {
+        turnOn_externalServices();
+        this.paymentService.setController(new PaymentInterface() {
+            @Override
+            public boolean creditCardValid(CreditCardDTO creditDetails) {
+                return true;
+            }
+
+            @Override
+            public boolean pay(double amount, CreditCardDTO payerCard, BankAccountDTO receiverAccount) {
+                return false;
+            }
+        });
+        userFacade.addProductToCart(testUsername1, testStoreId, testProductId1, 2);
+        userFacade.addProductToCart(testUsername1, testStoreId, testProductId2, 3);
+
+        CreditCardDTO creditCardDTO = new CreditCardDTO(testUsername1, testUsername1, new Date(), testPassword);
+        AddressDTO addressDTO = new AddressDTO(testPassword, testPassword, testPassword, testPassword, testUsername3,
+                testUsername2, testUsername1, testPassword);
+
+        try {
+            userFacade.purchaseCart(testUsername1, creditCardDTO, addressDTO);
+        } catch (Exception e) {
+            String expected = Error.makePurchasePaymentCannotBeCompletedForStoreError(testStoreId);
+            assertEquals(expected, e.getMessage());
+        }
+    }
+
+    @Test
+    public void purchaseCart_failMakeOrder() throws Exception {
+        turnOn_externalServices();
+
+        this.supplyService.setController(new SupplyInterface() {
+            @Override
+            public boolean canMakeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
+                return false;
+            }
+
+            @Override
+            public String makeOrder(OrderDetailsDTO orderDetails, AddressDTO address) {
+                return "null";
+            }
+
+            @Override
+            public boolean cancelOrder(String orderCode) {
+                return true;
+            }
+        });
+        userFacade.addProductToCart(testUsername1, testStoreId, testProductId1, 2);
+        userFacade.addProductToCart(testUsername1, testStoreId, testProductId2, 3);
+
+        CreditCardDTO creditCardDTO = new CreditCardDTO(testUsername1, testUsername1, new Date(), testPassword);
+        AddressDTO addressDTO = new AddressDTO(testPassword, testPassword, testPassword, testPassword, testUsername3,
+                testUsername2, testUsername1, testPassword);
+
+        try {
+            userFacade.purchaseCart(testUsername1, creditCardDTO, addressDTO);
+        } catch (Exception e) {
+            String expected = Error.makePurchaseOrderCannotBeSuppliedError();
+            assertEquals(expected, e.getMessage());
+        }
+    }
+
 }

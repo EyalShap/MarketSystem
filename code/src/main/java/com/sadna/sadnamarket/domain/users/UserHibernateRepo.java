@@ -4,11 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import com.sadna.sadnamarket.service.Error;
 
 import com.sadna.sadnamarket.HibernateUtil;
+import org.springframework.data.jpa.repository.QueryHints;
 
 public class UserHibernateRepo implements IUserRepository {
 
@@ -24,6 +26,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean hasMember(String name) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, name);
@@ -63,6 +66,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<CartItemDTO> getUserCart(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, username);
@@ -75,6 +79,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<CartItemDTO> getGuestCart(int guestID) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Guest guest = session.get(Guest.class, guestID);
@@ -87,6 +92,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean hasPermissionToRole(String userName, Permission permission, int storeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, userName);
@@ -118,6 +124,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean isLoggedIn(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, username);
@@ -318,6 +325,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Permission> getPermissions(String userName, int storeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, userName);
@@ -422,6 +430,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Integer> getOrdersHistory(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, username);
@@ -449,6 +458,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<NotificationDTO> getNotifications(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -479,6 +489,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<UserRoleDTO> getUserRolesString(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -493,6 +504,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public UserRole getRoleOfStore(String userName, int storeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, userName);
@@ -505,6 +517,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<UserRoleHibernate> getUserRoles(String username) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, username);
@@ -547,6 +560,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Request getRequest(String acceptingName, int requestID) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, acceptingName);
@@ -661,6 +675,7 @@ public class UserHibernateRepo implements IUserRepository {
     }
 
     @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public boolean isApointee(String giverUserName, String userName, int storeId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Member member = session.get(Member.class, giverUserName);

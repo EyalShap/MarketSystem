@@ -6,11 +6,13 @@ import com.sadna.sadnamarket.service.Error;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.transaction.Transactional;
 import java.time.LocalTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
 class StoreIntegrationTests {
     private Store store;
 
@@ -19,7 +21,7 @@ class StoreIntegrationTests {
     }
 
     private BankAccountDTO generateBankAccount() {
-        return new BankAccountDTO("123", "456", "789", "Willy", null);
+        return new BankAccountDTO("123", "456", "789", "Willy");
     }
 
     private Store generateStore() {
@@ -91,8 +93,8 @@ class StoreIntegrationTests {
     @Test
     void setBankAccount() {
         BankAccountDTO expected0 = generateBankAccount();
-        BankAccountDTO expected1 =  new BankAccountDTO("321", "654", "987", "Mr. Krabs", null);
-        BankAccountDTO newAccount =  new BankAccountDTO("321", "654", "987", "Mr. Krabs", null);
+        BankAccountDTO expected1 =  new BankAccountDTO("321", "654", "987", "Mr. Krabs");
+        BankAccountDTO newAccount =  new BankAccountDTO("321", "654", "987", "Mr. Krabs");
 
         assertEquals(expected0, store.getBankAccount());
 

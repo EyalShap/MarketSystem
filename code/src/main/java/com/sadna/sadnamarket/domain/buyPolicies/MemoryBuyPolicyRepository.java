@@ -131,4 +131,11 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
         return new MemoryBuyPolicyManager(facade);
     }
 
+    @Override
+    public void clear() {
+        this.buyPolicies = new HashMap<>();
+        this.buyPoliciesDesc = new HashMap<>();
+        this.nextId = 0;
+    }
+
 }

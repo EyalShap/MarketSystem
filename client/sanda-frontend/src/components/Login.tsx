@@ -22,7 +22,12 @@ export const Login = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const resp = await loginFromGuest(username, password,Number.parseInt(localStorage.getItem("guestId") as string)); // Assuming login is an async function
+            let resp;
+            if(localStorage.getItem("guestId") === null){
+            resp = await login(username, password); // Assuming login is an async function
+            }else{
+            resp = await loginFromGuest(username, password,Number.parseInt(localStorage.getItem("guestId") as string)); // Assuming login is an async function
+            }
             if (resp.error) {
                 alert("Error: " + resp.errorString);
             } else {

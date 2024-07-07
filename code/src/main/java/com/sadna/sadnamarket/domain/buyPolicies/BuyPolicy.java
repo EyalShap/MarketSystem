@@ -1,11 +1,9 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemberDTO;
 
-import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,5 +37,5 @@ public abstract class BuyPolicy {
 
     public abstract boolean equals(Object other);
 
-    public abstract BuyPolicyDTO getDTO();
+    public abstract BuyPolicyData generateData();
 }

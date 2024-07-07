@@ -1,40 +1,44 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import org.hibernate.Session;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.query.Query;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.time.LocalTime;
 import java.util.LinkedList;
 
 @Entity
 @Table(name = "jewishbuypolicies")
-public class JewishCustomsBuyPolicyDTO extends BuyPolicyDTO{
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class JewishCustomsBuyPolicyData extends BuyPolicyData {
     @Column(name = "subject")
     String subject;
     @Column(name = "type")
     String type;
 
-    public JewishCustomsBuyPolicyDTO(){
+    public JewishCustomsBuyPolicyData(){
 
     }
 
-    public JewishCustomsBuyPolicyDTO(Integer policyId, String subject, String type) {
+    public JewishCustomsBuyPolicyData(Integer policyId, String subject, String type) {
         this.policyId = policyId;
         this.subject = subject;
         this.type = type;
     }
 
-    public JewishCustomsBuyPolicyDTO(String subject, String type) {
+    public JewishCustomsBuyPolicyData(String subject, String type) {
         this.subject = subject;
         this.type = type;
     }
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT P FROM JewishCustomsBuyPolicyDTO P " +
+        Query query = session.createQuery("SELECT P FROM JewishCustomsBuyPolicyData P " +
                 "WHERE P.type = :type " +
                 "AND P.subject = :subject ");
         query.setParameter("type",type);
