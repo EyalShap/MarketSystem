@@ -265,7 +265,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createOnProductConditionDiscountDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,1, "hila");
+        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,conditionTrue1.getId(), "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
 
@@ -280,8 +280,8 @@ public class DiscountPolicyFacadeTest{
 
     @Test
     public void createOnProductConditionDiscountDiscountFail() throws Exception {
-        //conditionId 1 is  MinBuyCondition(100);
-        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,1, "hila");
+        //conditionTrue1 is  MinBuyCondition(100);
+        int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,conditionTrue1.getId(), "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
 
@@ -297,7 +297,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createOnCategoryConditionDiscountDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId = discountPolicyFacade.createOnCategoryConditionDiscountPolicy(10,"dairy",1, "hila");
+        int policyId = discountPolicyFacade.createOnCategoryConditionDiscountPolicy(10,"dairy",conditionTrue1.getId(), "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
 
@@ -314,7 +314,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createOnStoreConditionDiscountDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10,1, "hila");
+        int policyId = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10,conditionTrue1.getId(), "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
 
@@ -330,7 +330,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createOrDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createOrDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -351,7 +351,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createAndDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createAndDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -371,7 +371,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createTakeMinXorDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createTakeMinXorDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -393,7 +393,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createTakeMaxXorDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createTakeMaxXorDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -415,7 +415,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createAdditionDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createAdditionDiscountPolicy(policyId1,policyId2, "hila");
 
@@ -436,7 +436,7 @@ public class DiscountPolicyFacadeTest{
     @Test
     public void createMaximumDiscountSuccess() throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
-        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, 1, "hila");
+        int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
         int policyId = discountPolicyFacade.createMaximumDiscountPolicy(policyId1,policyId2, "hila");
 
