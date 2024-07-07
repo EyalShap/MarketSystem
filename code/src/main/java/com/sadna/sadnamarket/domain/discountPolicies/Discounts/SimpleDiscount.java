@@ -3,16 +3,30 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.Session;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.query.Query;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+@Entity
+@Table(name = "simplediscount")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SimpleDiscount extends Discount {
     //percentage is (100-0)
-    private final double percentage;
+    @Column(name = "percentage")
+    private double percentage;
+    @Column(name = "productID")
     private Integer productID;
+    @Column(name = "categoryName")
     private String categoryName;
-    private final Condition condition;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "condition_id", referencedColumnName = "id")
+    private Condition condition;
 
     public SimpleDiscount(int id, double percentage, Condition condition){
         super(id);
@@ -20,6 +34,18 @@ public class SimpleDiscount extends Discount {
         productID = null;
         categoryName = null;
         this.condition = condition;
+    }
+
+    public SimpleDiscount(double percentage, Condition condition){
+        super();
+        this.percentage = percentage;
+        productID = null;
+        categoryName = null;
+        this.condition = condition;
+    }
+
+    // Default constructor required by JPA
+    protected SimpleDiscount() {
     }
 
     public void setOnProductID(int productID) {
@@ -144,6 +170,42 @@ public class SimpleDiscount extends Discount {
             addEnding ="all products";
         }
         return "If " + condition.description() + " then there is a " + percentage + "% discount on " + addEnding;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleDiscount that = (SimpleDiscount) o;
+        boolean sameCategory = Objects.equals(categoryName, that.categoryName);
+        boolean sameProduct = Objects.equals(productID, that.productID);
+        boolean samePercent = Objects.equals(percentage, that.percentage);
+        boolean sameCondition = Objects.equals(condition, that.condition);
+
+        return sameCategory && sameProduct && samePercent && sameCondition && super.equals(o);
+    }
+
+    @Override
+    public org.hibernate.query.Query getUniqueQuery(Session session) {
+        Query query = session.createQuery("SELECT A FROM SimpleDiscount A " +
+                "WHERE (A.percentage = :percentage " +
+                "AND A.productID = :productID " +
+                "AND A.categoryName = :categoryName " +
+                "AND A.condition.id = :condition_id " +
+                "And A.isDefault = :isDefault)" );
+        query.setParameter("percentage", percentage);
+        query.setParameter("productID", productID);
+        query.setParameter("categoryName", categoryName);
+        query.setParameter("condition_id", condition.getId());
+        query.setParameter("isDefault", isDefault);
+
+
+        return query;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(percentage, productID, categoryName, condition);
     }
 
 }

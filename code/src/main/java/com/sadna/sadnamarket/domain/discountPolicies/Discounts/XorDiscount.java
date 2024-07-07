@@ -2,16 +2,33 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.Cacheable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+@Entity
+@Table(name = "xordiscount")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class XorDiscount extends CompositeDiscount{
     //0 = min, 1 = max
+    @Column(name = "minOrMax")
     int minOrMax;
 
     public XorDiscount(int id, Discount discountA, Discount discountB){
         super(id, discountA, discountB);
+    }
+    public XorDiscount(Discount discountA, Discount discountB) {
+        super(discountA, discountB);
+    }
+    // Default constructor required by JPA
+    protected XorDiscount() {
     }
 
     @Override
@@ -111,5 +128,19 @@ public class XorDiscount extends CompositeDiscount{
         description = description + "discountA: " + discountA.description() + "\n";
         description = description + "discountB: " + discountB.description();
         return description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        XorDiscount that = (XorDiscount) o;
+        boolean equalMinOrMax = Objects.equals(minOrMax, that.minOrMax);
+        return super.equals(o) && equalMinOrMax;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(discountA, discountB, minOrMax);
     }
 }

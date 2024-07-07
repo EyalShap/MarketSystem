@@ -2,6 +2,8 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
+import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyManager;
 
 import java.util.Set;
 
@@ -19,4 +21,8 @@ public interface IDiscountPolicyRepository {
     public int addTakeMinXorDiscount(Discount discountA, Discount discountB) throws JsonProcessingException;
     public int addAdditionDiscount(Discount discountA, Discount discountB) throws JsonProcessingException;
     public int addAndDiscount(Discount discountA, Discount discountB) throws JsonProcessingException;
+    public int addDefaultDiscount(double percentage, Condition condition) throws JsonProcessingException;
+    public DiscountPolicyManager createManager(DiscountPolicyFacade facade, int storeId);
+    public void clear();
+
 }
