@@ -23,6 +23,7 @@ public class AndDiscount extends CompositeDiscount{
     public AndDiscount(Discount discountA, Discount discountB) {
         super(discountA, discountB);
     }
+    public AndDiscount(){}
 
     @Override
     public void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {

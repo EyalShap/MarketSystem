@@ -21,6 +21,7 @@ public class MaximumDiscount extends CompositeDiscount{
     public MaximumDiscount(Discount discountA, Discount discountB) {
         super(discountA, discountB);
     }
+    public MaximumDiscount(){}
 
     @Override
     public void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice) {

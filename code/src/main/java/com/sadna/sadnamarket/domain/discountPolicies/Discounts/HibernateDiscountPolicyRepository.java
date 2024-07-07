@@ -10,6 +10,7 @@ import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 
 import java.util.HashSet;
@@ -139,7 +140,11 @@ public class HibernateDiscountPolicyRepository implements IDiscountPolicyReposit
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-
+            Discount existing = getExistingDiscount(session, discount);
+            if(existing != null){
+                transaction.commit();
+                return existing.getId();
+            }
             session.save(discount);
             transaction.commit();
             return discount.getId();
@@ -153,6 +158,16 @@ public class HibernateDiscountPolicyRepository implements IDiscountPolicyReposit
     @Override
     public DiscountPolicyManager createManager(DiscountPolicyFacade facade, int storeId) {
         return new HibernateDiscountPolicyManager(facade,storeId);
+    }
+
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
+    private Discount getExistingDiscount(Session session, Discount discount){
+        Query query = discount.getUniqueQuery(session);
+        List<Discount> res = query.list();
+        if(res.isEmpty()){
+            return null;
+        }
+        return res.get(0);
     }
 
     @Override

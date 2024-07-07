@@ -25,7 +25,7 @@ import javax.persistence.Table;
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class MinBuyCondition extends Condition{
     @Column(name = "minBuy")
-    private final int minBuy;
+    private int minBuy;
 
     public MinBuyCondition(int id, int minBuy){
         super(id);
@@ -35,6 +35,8 @@ public class MinBuyCondition extends Condition{
         super();
         this.minBuy = minBuy;
     }
+    public MinBuyCondition(){}
+
     @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice) {
         int itemID;
@@ -59,7 +61,7 @@ public class MinBuyCondition extends Condition{
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT A FROM minbuycondition A " +
+        Query query = session.createQuery("SELECT A FROM MinBuyCondition A " +
                 "WHERE A.minBuy = :minBuy " );
         query.setParameter("minBuy", minBuy);
         return query;

@@ -39,6 +39,8 @@ public class MinProductCondition extends Condition{
         productID = null;
         categoryName = null;
     }
+    public MinProductCondition(){}
+
 
     public void setOnProductName(int productID) {
         this.productID = productID;

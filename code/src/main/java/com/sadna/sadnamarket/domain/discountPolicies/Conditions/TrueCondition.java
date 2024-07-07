@@ -39,8 +39,7 @@ public class TrueCondition extends Condition{
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT A FROM trueCondition A ");
-        return query;
+        return session.createQuery("FROM TrueCondition A");
     }
     @Override
     public boolean equals(Object o){

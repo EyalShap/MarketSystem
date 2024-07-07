@@ -50,4 +50,9 @@ public abstract class Condition{
 
     @Override
     public abstract boolean equals(Object o);
+
+    public boolean isComposite(){
+        return false;
+    }
+
 }

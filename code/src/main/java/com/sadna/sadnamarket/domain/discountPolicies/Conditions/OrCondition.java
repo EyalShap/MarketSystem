@@ -24,6 +24,8 @@ public class OrCondition extends CompositeCondition{
     public OrCondition(Condition conditionA, Condition conditionB) {
         super(conditionA, conditionB);
     }
+    public OrCondition(){}
+
     @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
         boolean condAisMet = conditionA.checkCond(productDTOMap, listProductsPrice);
@@ -38,11 +40,11 @@ public class OrCondition extends CompositeCondition{
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT A FROM orcondition A " +
-                "WHERE A.id1 = :id1 " +
-                "AND A.id2 = :id2 " );
-        query.setParameter("id1", conditionA.getId());
-        query.setParameter("id2",conditionB.getId());
+        Query query = session.createQuery("SELECT A FROM OrCondition A " +
+                "WHERE " +
+                " (A.conditionA.id = :idA AND A.conditionB.id = :idB) OR (A.conditionA.id = :idB AND A.conditionB.id = :idA)" );
+        query.setParameter("idA", conditionA.getId());
+        query.setParameter("idB",conditionB.getId());
         return query;
     }
 }

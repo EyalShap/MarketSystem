@@ -27,6 +27,9 @@ public class XorDiscount extends CompositeDiscount{
     public XorDiscount(Discount discountA, Discount discountB) {
         super(discountA, discountB);
     }
+    // Default constructor required by JPA
+    protected XorDiscount() {
+    }
 
     @Override
     public void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice) {

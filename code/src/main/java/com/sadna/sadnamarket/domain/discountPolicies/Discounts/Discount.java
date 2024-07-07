@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.Session;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.query.Query;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,7 +26,7 @@ public abstract class Discount {
     protected Integer id;
 
     @Column(name = "isDefault")
-    private boolean isDefault;
+    protected boolean isDefault;
     Discount(int id){
         this.id = id;
         isDefault = false;
@@ -33,6 +35,7 @@ public abstract class Discount {
         this.id = null;
         isDefault = false;
     }
+
 
     public abstract void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
     public abstract void giveDiscountWithoutCondition(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> ListProductsPrice);
@@ -64,4 +67,7 @@ public abstract class Discount {
         Discount that = (Discount) o;
         return Objects.equals(isDefault, that.isDefault);
     }
+
+    abstract public Query getUniqueQuery(Session session);
+
 }

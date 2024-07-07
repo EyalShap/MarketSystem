@@ -23,6 +23,8 @@ public class XorCondition extends CompositeCondition{
     public XorCondition(Condition conditionA, Condition conditionB) {
         super(conditionA, conditionB);
     }
+    public XorCondition(){}
+
     @Override
     public boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice) {
         boolean condAisMet = conditionA.checkCond(productDTOMap, listProductsPrice);
@@ -37,11 +39,11 @@ public class XorCondition extends CompositeCondition{
 
     @Override
     public Query getUniqueQuery(Session session) {
-        Query query = session.createQuery("SELECT A FROM xorcondition A " +
-                "WHERE A.id1 = :id1 " +
-                "AND A.id2 = :id2 " );
-        query.setParameter("id1", conditionA.getId());
-        query.setParameter("id2",conditionB.getId());
+        Query query = session.createQuery("SELECT A FROM XorCondition A " +
+                "WHERE " +
+                " (A.conditionA.id = :idA AND A.conditionB.id = :idB) OR (A.conditionA.id = :idB AND A.conditionB.id = :idA)" );
+        query.setParameter("idA", conditionA.getId());
+        query.setParameter("idB",conditionB.getId());
         return query;
     }
 }

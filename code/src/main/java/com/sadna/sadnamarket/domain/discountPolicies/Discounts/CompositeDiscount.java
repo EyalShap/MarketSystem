@@ -3,7 +3,9 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 import com.sadna.sadnamarket.domain.buyPolicies.CompositeBuyPolicy;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.Session;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.query.Query;
 
 import javax.persistence.*;
 import java.util.List;
@@ -31,6 +33,9 @@ public abstract class CompositeDiscount extends Discount {
         this.discountA = discountA;
         this.discountB = discountB;
     }
+    // Default constructor required by JPA
+    protected CompositeDiscount() {
+    }
 
     @Override
     public abstract void giveDiscount(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice);
@@ -54,4 +59,19 @@ public abstract class CompositeDiscount extends Discount {
     public int hashCode() {
         return Objects.hash(discountA, discountB);
     }
+
+    @Override
+    public Query getUniqueQuery(Session session) {
+        Query query = session.createQuery("SELECT A FROM CompositeDiscount A " +
+                "WHERE " +
+                "((A.discountA.id = :idA AND A.discountB.id = :idB) OR ( A.discountA.id = :idB AND A.discountB.id = :idA))" +
+                "And (A.isDefault = :isDefault)");
+        query.setParameter("idA", discountA.getId());
+        query.setParameter("idB",discountB.getId());
+        query.setParameter("isDefault", isDefault);
+        return query;
+    }
+
+
+
 }

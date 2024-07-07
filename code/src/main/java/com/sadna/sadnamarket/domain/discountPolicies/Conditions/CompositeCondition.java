@@ -35,6 +35,9 @@ public abstract class CompositeCondition extends Condition{
         this.conditionA = conditionA;
         this.conditionB = conditionB;
     }
+
+    public CompositeCondition(){}
+
     @Override
     public abstract boolean checkCond(Map<Integer, ProductDTO> productDTOMap, List<ProductDataPrice> listProductsPrice);
     @Override
@@ -53,6 +56,11 @@ public abstract class CompositeCondition extends Condition{
     @Override
     public int hashCode() {
         return Objects.hash(conditionA, conditionB);
+    }
+
+    @Override
+    public boolean isComposite(){
+        return true;
     }
 
 }

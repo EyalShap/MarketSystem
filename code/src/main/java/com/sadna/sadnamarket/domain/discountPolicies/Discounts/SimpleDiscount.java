@@ -3,7 +3,9 @@ package com.sadna.sadnamarket.domain.discountPolicies.Discounts;
 import com.sadna.sadnamarket.domain.discountPolicies.Conditions.Condition;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
+import org.hibernate.Session;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.query.Query;
 
 import javax.persistence.*;
 import java.util.List;
@@ -17,14 +19,14 @@ import java.util.Objects;
 public class SimpleDiscount extends Discount {
     //percentage is (100-0)
     @Column(name = "percentage")
-    private final double percentage;
+    private double percentage;
     @Column(name = "productID")
     private Integer productID;
     @Column(name = "categoryName")
     private String categoryName;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "condition_id", referencedColumnName = "id")
-    private final Condition condition;
+    private Condition condition;
 
     public SimpleDiscount(int id, double percentage, Condition condition){
         super(id);
@@ -40,6 +42,10 @@ public class SimpleDiscount extends Discount {
         productID = null;
         categoryName = null;
         this.condition = condition;
+    }
+
+    // Default constructor required by JPA
+    protected SimpleDiscount() {
     }
 
     public void setOnProductID(int productID) {
@@ -177,6 +183,24 @@ public class SimpleDiscount extends Discount {
         boolean sameCondition = Objects.equals(condition, that.condition);
 
         return sameCategory && sameProduct && samePercent && sameCondition && super.equals(o);
+    }
+
+    @Override
+    public org.hibernate.query.Query getUniqueQuery(Session session) {
+        Query query = session.createQuery("SELECT A FROM SimpleDiscount A " +
+                "WHERE (A.percentage = :percentage " +
+                "AND A.productID = :productID " +
+                "AND A.categoryName = :categoryName " +
+                "AND A.condition.id = :condition_id " +
+                "And A.isDefault = :isDefault)" );
+        query.setParameter("percentage", percentage);
+        query.setParameter("productID", productID);
+        query.setParameter("categoryName", categoryName);
+        query.setParameter("condition_id", condition.getId());
+        query.setParameter("isDefault", isDefault);
+
+
+        return query;
     }
 
     @Override

@@ -79,10 +79,11 @@ public class HibernateDiscountPolicyManager extends DiscountPolicyManager{
             transaction = session.beginTransaction();
 
             List<Discount> checkDefault = session.createQuery( "select p from Discount p " +
-                            "WHERE p.policyId = :policyId " +
+                            "WHERE p.id = :id " +
                             "AND p.isDefault = :isDefault" )
-                    .setParameter("policyId",discountPolicyId)
+                    .setParameter("id",discountPolicyId)
                     .setParameter("isDefault",false).list();
+            // checkDefault is empty if the policy is default
             if(checkDefault.isEmpty()){
                 throw new IllegalArgumentException(Error.makeCannotRemoveDefaultDiscountFromStoreError(discountPolicyId));
             }

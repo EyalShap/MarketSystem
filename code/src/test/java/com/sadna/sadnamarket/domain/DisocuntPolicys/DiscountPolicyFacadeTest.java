@@ -192,8 +192,9 @@ public class DiscountPolicyFacadeTest{
         nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void checkMultipleStore() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void checkMultipleStore(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         discountPolicyFacade.addDiscountPolicyToStore(0, onStore10discountTrue1ID, "hila");
         discountPolicyFacade.addDiscountPolicyToStore(0, onCategoryDairy10discountTrue1ID, "hila");
         discountPolicyFacade.addDiscountPolicyToStore(0, onStore10discountFalse1ID, "hila");
@@ -215,10 +216,14 @@ public class DiscountPolicyFacadeTest{
         assertEquals(90 , listProductDataPricesB.get(0).getNewPrice());
         assertEquals(16.2 , listProductDataPricesB.get(1).getNewPrice());
         assertEquals(32.4 , listProductDataPricesB.get(2).getNewPrice());
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOnProductSimpleDiscountDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOnProductSimpleDiscountDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         int policyId = discountPolicyFacade.createOnProductSimpleDiscountPolicy(10, 0, "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
@@ -230,10 +235,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOnCategorySimpleDiscountDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOnCategorySimpleDiscountDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         int policyId = discountPolicyFacade.createOnCategorySimpleDiscountPolicy(10, "dairy", "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
@@ -245,10 +254,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOnStoreSimpleDiscountDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOnStoreSimpleDiscountDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         int policyId = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
 
         Discount resDiscount = discountPolicyFacade.getDiscountPolicy(policyId);
@@ -260,10 +273,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOnProductConditionDiscountDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOnProductConditionDiscountDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,conditionTrue1.getId(), "hila");
 
@@ -276,10 +293,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOnProductConditionDiscountDiscountFail() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOnProductConditionDiscountDiscountFail(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionTrue1 is  MinBuyCondition(100);
         int policyId = discountPolicyFacade.createOnProductConditionDiscountPolicy(10,0,conditionTrue1.getId(), "hila");
 
@@ -292,10 +313,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertNotEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOnCategoryConditionDiscountDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOnCategoryConditionDiscountDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId = discountPolicyFacade.createOnCategoryConditionDiscountPolicy(10,"dairy",conditionTrue1.getId(), "hila");
 
@@ -308,11 +333,15 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
 
-    @Test
-    public void createOnStoreConditionDiscountDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOnStoreConditionDiscountDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10,conditionTrue1.getId(), "hila");
 
@@ -325,10 +354,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOrDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOrDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
@@ -346,10 +379,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createAndDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createAndDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
@@ -367,9 +404,13 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
-    @Test
-    public void createTakeMinXorDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createTakeMinXorDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
@@ -388,10 +429,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createTakeMaxXorDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createTakeMaxXorDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
@@ -410,10 +455,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createAdditionDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createAdditionDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
@@ -431,10 +480,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createMaximumDiscountSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createMaximumDiscountSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int policyId1 = discountPolicyFacade.createOnStoreConditionDiscountPolicy(10, conditionTrue1.getId(), "hila");
         int policyId2 = discountPolicyFacade.createOnStoreSimpleDiscountPolicy(10, "hila");
@@ -452,10 +505,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createMinBuyConditionSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createMinBuyConditionSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int conditionId = discountPolicyFacade.createMinBuyCondition(10, "hila");
 
@@ -467,10 +524,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOnProductConditionSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOnProductConditionSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int conditionId = discountPolicyFacade.createMinProductCondition(10, 0, "hila");
 
@@ -483,10 +544,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createMinProductOnCategoryConditionSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createMinProductOnCategoryConditionSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int conditionId = discountPolicyFacade.createMinProductOnCategoryCondition(10, "dairy", "hila");
 
@@ -499,10 +564,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createMinProductOnStoreConditionSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createMinProductOnStoreConditionSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int conditionId = discountPolicyFacade.createMinProductOnStoreCondition(10, "hila");
 
@@ -515,10 +584,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createAndConditionSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createAndConditionSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int conditionId1 = discountPolicyFacade.createMinProductOnStoreCondition(10, "hila");
         int conditionId2 = discountPolicyFacade.createMinProductOnCategoryCondition(10, "dairy", "hila");
@@ -534,10 +607,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createOrConditionSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createOrConditionSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int conditionId1 = discountPolicyFacade.createMinProductOnStoreCondition(10, "hila");
         int conditionId2 = discountPolicyFacade.createMinProductOnCategoryCondition(10, "dairy", "hila");
@@ -553,10 +630,14 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 
-    @Test
-    public void createXorConditionSuccess() throws Exception {
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void createXorConditionSuccess(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
         //conditionId 1 is  MinBuyCondition(100);
         int conditionId1 = discountPolicyFacade.createMinProductOnStoreCondition(10, "hila");
         int conditionId2 = discountPolicyFacade.createMinProductOnCategoryCondition(10, "dairy", "hila");
@@ -572,5 +653,8 @@ public class DiscountPolicyFacadeTest{
         String expectedJson = toJson(expected);
 
         assertEquals(expectedJson, resJson);
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
     }
 }
