@@ -16,6 +16,7 @@ import com.sadna.sadnamarket.domain.orders.OrderFacade;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.stores.MemoryStoreRepository;
+import com.sadna.sadnamarket.domain.stores.PolicyDescriptionDTO;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.MemoryRepo;
@@ -170,6 +171,25 @@ public class DiscountPolicyFacadeTest{
         assertEquals(90 , listProductDataPrices.get(0).getNewPrice());
         assertEquals(16.2 , listProductDataPrices.get(1).getNewPrice());
         assertEquals(32.4 , listProductDataPrices.get(2).getNewPrice());
+
+        nextRepoDiscountPolicy = discountPolicyRepo;
+        nextRepoCondition = conditionRepo;
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("repositoryStream")
+    public void removeDefault(IDiscountPolicyRepository discountPolicyRepo, IConditionRespository conditionRepo) throws Exception {
+        List<PolicyDescriptionDTO> discountsInStoreBefore = discountPolicyFacade.getStoreDiscountDescriptions(0);
+        int defaultId = discountsInStoreBefore.get(0).getPolicyId();
+        try {
+            discountPolicyFacade.removeDiscountPolicyFromStore(0, defaultId, "hila");
+            fail("Expected Error was not thrown.");
+        } catch (Exception ignored) {
+        }
+
+        List<PolicyDescriptionDTO> discountsInStoreAfter = discountPolicyFacade.getStoreDiscountDescriptions(0);
+        assertEquals(discountsInStoreBefore.size() , discountsInStoreAfter.size());
 
         nextRepoDiscountPolicy = discountPolicyRepo;
         nextRepoCondition = conditionRepo;
