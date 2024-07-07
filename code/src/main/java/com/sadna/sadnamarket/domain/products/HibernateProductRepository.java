@@ -229,31 +229,5 @@ public class HibernateProductRepository implements IProductRepository{
 //        Product product=new Product(id,productName,productPrice,productCategory,productRank,productWeight,storeId);
 //        return product;
 //    }
-/*
-    public static void main(String[] args) {
-        HibernateProductRepository a = new HibernateProductRepository();
-        //Product p=new Product();
-        //p.setActive();
-        //p.setStoreId();
-        //p.
-//        a.addProduct("banana",7,"fruit",4,2,4,"dsflkj");
-//        a.addProduct("orange",10,"fruit",2,6,2,"aaaaa");
-//        a.addProduct("cucumber",2,"vegetable",1,10,7,"bkalba");
-       // a.addProduct("banana",4,"fruit",5,2,17,"dsflkj");
 
-//        List<Integer> u=new ArrayList<>();
-//        u.add(1116);
-//        u.add(1118);
-//        u.add(1148);
-//        List<Product>t=a.getProducts(u);
-        //List<Product>j=getTopProducts();
-        //List<Product>h= a.filterByCategory("fruit");
-        //List<Product> u =a.filterByName("banana");
-       // a.removeProduct(1119);
-       // boolean k=a.isExistProduct(1116);
-        //List<Product>r=a.getAllProducts();
-        //Set<Integer>k=a.getAllProductIds();
-        int x=4;
-    }
-*/
 }
