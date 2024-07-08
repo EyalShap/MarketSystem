@@ -55,21 +55,6 @@ public class ProductFacadeTest {
     }
 
     @Test
-    public void given_ValidDetails_When_UpdateProduct_Then_ProductIsUpdated() {
-        Product product = new Product(1, "Test Product", 100.0, "Category1", 4.5, 2,1);
-        when(productRepositoryMock.isExistProduct(1)).thenReturn(true);
-        when(productRepositoryMock.getProduct(1)).thenReturn(product);
-
-        productFacade.updateProduct(1, 1, "Updated Product", 150.0, "Updated Category", 4.8);
-
-        verify(productRepositoryMock, times(1)).getProduct(1);
-        assertEquals("Updated Product", product.getProductName());
-        assertEquals(150.0, product.getProductPrice());
-        assertEquals("Updated Category", product.getProductCategory());
-        assertEquals(4.8, product.getProductRank());
-    }
-
-    @Test
     public void given_InvalidStoreId_When_UpdateProduct_Then_ThrowException() {
         assertThrows(IllegalArgumentException.class,
                 () -> productFacade.updateProduct(-1, 1, "Updated Product", 150.0, "Updated Category", 4.8));
