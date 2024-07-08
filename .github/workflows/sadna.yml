@@ -44,7 +44,7 @@ jobs:
       - name: Run Tests
         run: |
           cd code
-          mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="CartTests,GuestTests,ProductInfoTests,RealtimeNotificationTests,SystemManagerTests,FlyweightTests,SupplyAPITest"
+          mvn --batch-mode -Dmaven.test.failure.ignore=true test
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
