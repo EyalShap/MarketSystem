@@ -12,10 +12,6 @@ on:
   push:
     branches: [ "*" ]
 
-defaults:
- run:
-  working-directory: ./app
-
 jobs:
   build:
 
