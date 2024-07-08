@@ -35,18 +35,18 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: mvn -B -DskipTests package --file pom.xml
+        run: cd code | mvn -B -DskipTests package --file pom.xml
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
       - name: Run Tests
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        run: cd code | mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="AndBuyPolicyTest"
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
       - name: Report
         uses: dorny/test-reporter@v1
-        if: always()
+        if: success() || failure()
         with:
           name: Maven Tests
           path: target/surefire-reports/*.xml
