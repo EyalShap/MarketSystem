@@ -6,15 +6,17 @@ import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
 import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ProductInfoTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -26,9 +28,9 @@ public class ProductInfoTests {
     String ownerUsername;
     int storeId;
 
-    @BeforeEach
+    @BeforeAll
     void clean() {
-        bridge.reset();
+        bridge.clear();
         Response resp = bridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         ownerUsername = "GuyStore";
@@ -81,6 +83,7 @@ public class ProductInfoTests {
             Response resp = bridge.getProductData(null, null, productId);
             Assertions.assertTrue(resp.getError());
             Assertions.assertEquals(Error.makeStoreOfProductIsNotActiveError(productId), resp.getErrorString());
+            bridge.reopenStore(ownerToken,ownerUsername,storeId);
         } catch (Exception e) {
 
         }
@@ -98,6 +101,7 @@ public class ProductInfoTests {
             ProductDTO productDTO = objectMapper.readValue(json1, ProductDTO.class);
             Assertions.assertEquals(productId, productDTO.getProductID());
             Assertions.assertEquals("TestProduct", productDTO.getProductName());
+            bridge.reopenStore(ownerToken,ownerUsername,storeId);
         } catch (Exception e) {
 
         }

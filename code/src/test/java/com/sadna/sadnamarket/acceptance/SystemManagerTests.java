@@ -15,17 +15,18 @@ import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SystemManagerTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -39,9 +40,9 @@ class SystemManagerTests {
     String maliciousUsername;
     String maliciousToken;
 
-    @BeforeEach
+    @BeforeAll
     void clean() throws JsonProcessingException {
-        bridge.reset();
+        bridge.clear();
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);

@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.domain.supply;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.Config;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,7 +13,7 @@ public class ExternalSupplyAPI {
     private ObjectMapper mapper;
 
     public ExternalSupplyAPI(){
-        client = WebClient.create("https://damp-lynna-wsep-1984852e.koyeb.app/");
+        client = WebClient.create(Config.SUPPLY_URL);
         mapper = new ObjectMapper();
     }
     public String handshake() throws JsonProcessingException {

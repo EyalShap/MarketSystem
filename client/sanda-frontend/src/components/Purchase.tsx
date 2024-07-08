@@ -23,7 +23,6 @@ const schema = yup.object().shape({
   ordererName: yup.string().required("Orderer Name is required"),
   contactPhone: yup.string().required("Contact Phone is required"),
   contactEmail: yup.string().email("Contact Email must be a valid email").required("Contact Email is required"),
-  ordererId: yup.string().length(9, "An israeli ID consists of 9 digits").required("Orderer ID is required"),
 });
 
 const Purchase = () => {
@@ -177,17 +176,6 @@ const Purchase = () => {
     className={errors.contactEmail && touchedFields.contactEmail ? 'invalid' : ''}
   />
   {errors.contactEmail && <p className="error-message">{errors.contactEmail.message}</p>}
-</div>
-
-<div className="form-group">
-  <label htmlFor="ordererId" className='label'>Orderer ID</label>
-  <input
-    id="ordererId"
-    placeholder='Enter orderer ID'
-    {...register('ordererId', { onChange: () => trigger("ordererId") })}
-    className={errors.ordererId && touchedFields.ordererId ? 'invalid' : ''}
-  />
-  {errors.ordererId && <p className="error-message">{errors.ordererId.message}</p>}
 </div>
         <button type="submit" className='button'>Complete Purchase</button>
       </form>

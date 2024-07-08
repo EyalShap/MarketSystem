@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.domain.payment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.Config;
 import com.sadna.sadnamarket.domain.payment.WSEPHandshakeRequest;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -10,7 +11,7 @@ public class ExternalPaymentAPI {
     private ObjectMapper mapper;
 
     public ExternalPaymentAPI(){
-        client = WebClient.create("https://damp-lynna-wsep-1984852e.koyeb.app/");
+        client = WebClient.create(Config.PAYMENT_URL);
         mapper = new ObjectMapper();
     }
 

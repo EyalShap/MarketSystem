@@ -128,6 +128,25 @@ public class HibernateProductRepository implements IProductRepository{
     }
 
     @Override
+    public void editProduct(int productId, String newProductName, double newPrice, String newCategory, double newRank, String newDesc) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            Product productToUpdate = session.get(Product.class, productId);
+            productToUpdate.setProductName(newProductName);
+            productToUpdate.setProductPrice(newPrice);
+            productToUpdate.setProductCategory(newCategory);
+            productToUpdate.setProductRank(newRank);
+            productToUpdate.setDescription(newDesc);
+            session.update(productToUpdate);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw new IllegalArgumentException("Database error", e);
+        }
+    }
+
+    @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> filterByName(String productName) {
         //List<Product> products=new ArrayList<>();
@@ -188,6 +207,7 @@ public class HibernateProductRepository implements IProductRepository{
         }
     }
 
+    @Override
     public void clean(){
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();

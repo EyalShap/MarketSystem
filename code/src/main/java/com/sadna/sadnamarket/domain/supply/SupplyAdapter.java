@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.supply;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sadna.sadnamarket.Config;
 
 public class SupplyAdapter implements SupplyInterface {
 
@@ -11,7 +12,7 @@ public class SupplyAdapter implements SupplyInterface {
     }
 
     public boolean implemented(){
-        return true;
+        return Config.SUPPLY_ENABLE;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.payment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sadna.sadnamarket.Config;
 
 import javax.management.ServiceNotFoundException;
 import java.util.Calendar;
@@ -46,6 +47,6 @@ public class PaymentAdapter implements PaymentInterface{
     }
 
     public boolean implemented(){
-        return true;
+        return Config.PAYMENT_ENABLE;
     }
 }

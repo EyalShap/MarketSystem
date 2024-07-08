@@ -19,14 +19,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.env.AbstractEnvironment;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class SadnaMarketApplication {
 	public static void main(String[] args) {
+		Config.read("config.json");
+		System.setProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME,"default");
 		SpringApplication.run(SadnaMarketApplication.class, args);
-		SetupRunner setupRunner = new SetupRunner();
-        setupRunner.setupFromJson("config.json");
-		
 	}
 
 }

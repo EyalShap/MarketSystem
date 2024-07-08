@@ -19,11 +19,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Date;
 import java.util.LinkedList;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class RealtimeNotificationTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -39,7 +41,7 @@ class RealtimeNotificationTests {
 
     @BeforeEach
     void clean() throws JsonProcessingException {
-        bridge.reset();
+        bridge.clear();
         PaymentInterface paymentMock = Mockito.mock(PaymentInterface.class);
         PaymentService.getInstance().setController(paymentMock);
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);

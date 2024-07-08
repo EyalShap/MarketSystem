@@ -1351,6 +1351,7 @@ export const buyCart = async(purchase: PurchaseInfoModel): Promise<RestResponse>
             digitsOnTheBack: purchase.digitsOnBack,
             expirationDate: purchase.expirationDate,
             ownerId: purchase.ownerId,
+            ownerName: purchase.ordererName
           },
           addressDTO: {
             country: purchase.country,
@@ -1361,7 +1362,6 @@ export const buyCart = async(purchase: PurchaseInfoModel): Promise<RestResponse>
             ordererName: purchase.ordererName,
             contactPhone: purchase.contactPhone,
             contactEmail: purchase.contactEmail,
-            ordererId: purchase.ordererId,
           }
     }
     if(localStorage.getItem("token") != null){

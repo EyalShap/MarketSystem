@@ -125,7 +125,7 @@ public class HibernateDiscountPolicyManager extends DiscountPolicyManager{
         Transaction transaction = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.createQuery( "delete from StoreDiscountPolicyRelation WHERE store = :storeId ")
+            session.createQuery( "delete from StoreDiscountPolicyRelation WHERE storeId = :storeId ")
                     .setParameter("storeId",storeId).executeUpdate();
             transaction.commit();
         }

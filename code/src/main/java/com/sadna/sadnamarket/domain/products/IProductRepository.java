@@ -19,9 +19,13 @@ public interface IProductRepository {
 
 
     public boolean isExistProduct(int productId);
+    public void editProduct(int productId, String newProductName, double newPrice, String newCategory,
+                            double newRank, String newDesc);
 
     public List<Product> filterByName(String productName);
 
     public List<Product> filterByCategory(String category);
     public List <Product> getTopProducts();
+
+    public void clean();
 }

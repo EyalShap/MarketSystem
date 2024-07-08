@@ -12,4 +12,6 @@ public interface IOrderRepository {
     Map<Integer,OrderDetails> getProductDataPriceByMember(String nameMember);
     Map<Integer,OrderDTO> getOrderByOrderId(int orderId);
     List<OrderDTO> getAllOrders();
+
+    public void clear();
 }

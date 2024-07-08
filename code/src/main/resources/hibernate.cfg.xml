@@ -4,8 +4,6 @@
     <session-factory>
         <!-- JDBC Database connection settings -->
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://sadnadb.c3802a2ys7i0.us-east-2.rds.amazonaws.com:3306/sadna?useSSL=true</property>
-
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 
         <!-- Connection pool settings -->

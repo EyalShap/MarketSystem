@@ -180,6 +180,12 @@ public class MemoryOrderRepository implements IOrderRepository {
         return allOrders;
     }
 
+    @Override
+    public void clear() {
+        orders=new HashMap<>();
+        this.nextOrderId = 0;
+    }
+
     public void resetOrders(){
         orders = new HashMap<>();
     }

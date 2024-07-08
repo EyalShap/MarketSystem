@@ -155,6 +155,17 @@ public class HibernateOrderRepository implements IOrderRepository{
         return ans;
     }
 
+    @Override
+    public void clear() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.createQuery("DELETE FROM Order").executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Database error", e);
+        }
+    }
+
     public static ProductDataPrice fromJson(String jsonString) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {

@@ -67,6 +67,30 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
+    public void addManagerToStore(String username, int storeId) {
+        Store store = findStoreByID(storeId);
+        store.addStoreManager(username);
+    }
+
+    @Override
+    public void addOwnerToStore(String username, int storeId) {
+        Store store = findStoreByID(storeId);
+        store.addStoreOwner(username);
+    }
+
+    @Override
+    public void closeStore(int storeId) {
+        Store store = findStoreByID(storeId);
+        store.closeStore();
+    }
+
+    @Override
+    public void reopenStore(int storeId) {
+        Store store = findStoreByID(storeId);
+        store.reopenStore();
+    }
+
+    @Override
     public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank) {
         Store store = findStoreByID(storeId);
 

@@ -21,6 +21,7 @@ public class HibernateUtil {
             // Create the SessionFactory from hibernate.cfg.xml
             Dotenv dotenv = Dotenv.load();
             Configuration configuration = new Configuration().configure();
+            configuration.setProperty("hibernate.connection.url", Config.DB_URL);
             configuration.setProperty("hibernate.connection.username", dotenv.get("DB_USERNAME"));
             configuration.setProperty("hibernate.connection.password", dotenv.get("DB_PASSWORD"));
             return configuration.buildSessionFactory();

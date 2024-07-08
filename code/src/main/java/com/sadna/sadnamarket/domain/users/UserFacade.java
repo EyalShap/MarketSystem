@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sadna.sadnamarket.Config;
 import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.service.RealtimeService;
 import org.apache.logging.log4j.LogManager;
@@ -112,6 +113,10 @@ public class UserFacade {
         }
         if(systemManagerUserName!=null){
             logger.error("system manager already exist",username);
+            throw new IllegalStateException(Error.makeUserSystemManagerError());
+        }
+        if(!username.equals(Config.SYSMAN)){
+            logger.error("wrong system manager",username);
             throw new IllegalStateException(Error.makeUserSystemManagerError());
         }
         systemManagerUserName=username;
@@ -263,7 +268,7 @@ public class UserFacade {
     public int logout(String userName){
         logger.info("{} logout ",userName);
         if(!iUserRepo.hasMember(userName))
-            throw new NoSuchElementException("User doesnt exist in system");
+            throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
 
         iUserRepo.logout(userName);
         logger.info("{} done logout",userName);
@@ -650,6 +655,10 @@ public class UserFacade {
     }
     public boolean isApointee(String apointee,String apointer,int store_id){
         return iUserRepo.isApointee(apointer, apointee,store_id);
+    }
+
+    public void clear(){
+        iUserRepo.clear();
     }
 
     public void setRealtime(RealtimeService realtime) {
