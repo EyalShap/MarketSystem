@@ -44,14 +44,14 @@ jobs:
       - name: Run Acceptance Tests
         run: |
           cd code
-          mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="com.sadna.sadnamarket.acceptance.*"
+          mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="de.acceptance.**"
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
       - name: Run Unit Tests
         run: |
           cd code
-          mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="com.sadna.sadnamarket.domain.*"
+          mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="de.domain.**"
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
