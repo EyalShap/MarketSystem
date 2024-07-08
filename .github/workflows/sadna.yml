@@ -41,17 +41,10 @@ jobs:
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
-      - name: Run Acceptance Tests
+      - name: Run Tests
         run: |
           cd code
-          mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="de.acceptance.**"
-        env:
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}          
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
-      - name: Run Unit Tests
-        run: |
-          cd code
-          mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="de.domain.**"
+          mvn --batch-mode -Dmaven.test.failure.ignore=true test
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
