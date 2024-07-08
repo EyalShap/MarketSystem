@@ -37,7 +37,9 @@ jobs:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
       - name: Run Tests
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        run: |
+          cd code
+          mvn --batch-mode -Dmaven.test.failure.ignore=true test
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
