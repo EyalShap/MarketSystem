@@ -22,6 +22,7 @@ public class Config {
     public static boolean SUPPLY_ENABLE = false;
     public static boolean PAYMENT_ENABLE = false;
     public static boolean CLEAR = false;
+    public static int CONCURRENT_LOOPS = 0;
 
 
     public static void read(String path){
@@ -53,6 +54,9 @@ public class Config {
             if(conf.has("state")){
                 Config.BEGIN = conf.get("state").asText();
                 HAS_STATE = true;
+            }
+            if(conf.has("concurrency_loop")){
+                Config.CONCURRENT_LOOPS = conf.get("concurrency_loop").asInt();
             }
         } catch (IOException e) {
             e.printStackTrace();

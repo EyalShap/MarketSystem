@@ -1,5 +1,5 @@
 {
   "sysman": "IAmAboutToBeGivenGreatPowers",
-  "db": "jdbc:mysql://sadnadb.c3802a2ys7i0.us-east-2.rds.amazonaws.com:3306/sadna_test?useSSL=true"
+  "db": "jdbc:mysql://sadnadb.c3802a2ys7i0.us-east-2.rds.amazonaws.com:3306/sadna_test?useSSL=true",
+  "concurrency_loop": "5"
 }
-  

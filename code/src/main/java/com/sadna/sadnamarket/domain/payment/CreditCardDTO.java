@@ -17,6 +17,10 @@ public class CreditCardDTO {
         this.ownerName = "israel";
     }
 
+    public CreditCardDTO(){
+
+    }
+
     public CreditCardDTO(String creditCardNumber, String digitsOnTheBack, Date expirationDate, String ownerId, String ownerName) {
         this.creditCardNumber = creditCardNumber;
         this.digitsOnTheBack = digitsOnTheBack;
