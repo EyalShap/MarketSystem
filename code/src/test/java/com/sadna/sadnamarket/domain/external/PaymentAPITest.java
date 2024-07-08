@@ -6,16 +6,18 @@ import com.sadna.sadnamarket.domain.orders.MemoryOrderRepository;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.util.Date;
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PaymentAPITest {
 
     PaymentService service;
 
-    @BeforeEach
+    @BeforeAll
     void setUp(){
         Config.PAYMENT_ENABLE = true;
         Config.PAYMENT_URL = "https://damp-lynna-wsep-1984852e.koyeb.app/";

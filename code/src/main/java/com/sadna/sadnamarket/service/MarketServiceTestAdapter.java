@@ -232,6 +232,11 @@ public class MarketServiceTestAdapter {
         return testingService.closeStore(token, userId, storeId);
     }
 
+    public Response reopenStore(String token, String userId, int storeId) {
+        // return Response.createResponse(false, "true");
+        return testingService.reopenStore(token, userId, storeId);
+    }
+
     public Response getIsOwner(String token, String actorId, int storeId, String ownerId) {
         return testingService.getIsOwner(token, actorId, storeId, ownerId);
     }

@@ -8,16 +8,18 @@ import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.supply.SupplyService;
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.util.Date;
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SupplyAPITest {
 
     SupplyService service;
 
-    @BeforeEach
+    @BeforeAll
     void setUp(){
         Config.SUPPLY_ENABLE = true;
         Config.SUPPLY_URL = "https://damp-lynna-wsep-1984852e.koyeb.app/";
