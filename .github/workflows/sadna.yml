@@ -31,12 +31,14 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
-        run: cd code | mvn -B -DskipTests package --file pom.xml
+        run: cd code
+	run: mvn -B -DskipTests package --file pom.xml
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
       - name: Run Tests
-        run: cd code | mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="AndBuyPolicyTest"
+        run: cd code
+	run: mvn --batch-mode -Dmaven.test.failure.ignore=true test -Dtest="AndBuyPolicyTest"
         env:
           DB_USERNAME: ${{ secrets.DB_USERNAME }}          
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
