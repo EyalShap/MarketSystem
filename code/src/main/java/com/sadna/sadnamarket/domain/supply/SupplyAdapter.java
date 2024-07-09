@@ -31,6 +31,8 @@ public class SupplyAdapter implements SupplyInterface {
                 address.getZipCode());
         if(resp.equals("-1")){
             throw new UnsupportedOperationException("Supply transaction failed");
+        }else if(resp.equals(ExternalSupplyAPI.ERROR_TIMEOUT)){
+            throw new RuntimeException("Supply service has timed out");
         }
         return resp;
     }

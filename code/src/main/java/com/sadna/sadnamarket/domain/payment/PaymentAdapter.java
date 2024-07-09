@@ -43,6 +43,9 @@ public class PaymentAdapter implements PaymentInterface{
         if(resp.equals("-1")) {
             return false;
         }
+        if(resp.equals(ExternalPaymentAPI.ERROR_TIMEOUT)){
+            throw new RuntimeException("Payment service has timed out");
+        }
         return true;
     }
 

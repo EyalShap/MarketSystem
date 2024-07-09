@@ -3,17 +3,27 @@ package com.sadna.sadnamarket.domain.supply;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.Config;
+import io.netty.handler.timeout.ReadTimeoutException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.*;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import reactor.netty.http.client.HttpClient;
+
+import java.time.Duration;
 
 public class ExternalSupplyAPI {
     private WebClient client;
     private ObjectMapper mapper;
+    public static String ERROR_TIMEOUT = "TIMEOUT";
 
     public ExternalSupplyAPI(){
-        client = WebClient.create(Config.SUPPLY_URL);
+        HttpClient timoutClient = HttpClient.create().responseTimeout(Duration.ofSeconds(10));
+        client = WebClient.builder().baseUrl(Config.SUPPLY_URL)
+                .clientConnector(new ReactorClientHttpConnector(timoutClient))
+                .build();
         mapper = new ObjectMapper();
     }
     public String handshake() throws JsonProcessingException {
@@ -38,6 +48,13 @@ public class ExternalSupplyAPI {
     }
 
     private String sendRequest(WSEPRequest request) {
-        return client.post().uri("").body(request.getBody()).retrieve().bodyToMono(String.class).block();
+        try {
+            return client.post().uri("").body(request.getBody()).retrieve().bodyToMono(String.class).block();
+        }catch (WebClientRequestException e){
+            if(e.getCause() instanceof ReadTimeoutException){
+                return ERROR_TIMEOUT;
+            }
+            throw e;
+        }
     }
 }
