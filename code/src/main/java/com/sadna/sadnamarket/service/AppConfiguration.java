@@ -31,12 +31,16 @@ public class AppConfiguration {
         return new RealtimeService();
     }
 
+    @Lazy(true)
     @Bean
+    @Profile("test")
     public MarketServiceTestAdapter bridge(){
         return new MarketServiceTestAdapter();
     }
 
+    @Lazy(true)
     @Bean
+    @Profile("test")
     public MarketServiceTestAdapter memoryBridge(){
         MarketServiceTestAdapter bridge = new MarketServiceTestAdapter();
         bridge.reset();
