@@ -1,6 +1,6 @@
 {
   "sysman": "u1",
-  "db": "jdbc:mysql://sadnadb.c3802a2ys7i0.us-east-2.rds.amazonaws.com:3306/sadna?useSSL=true",
+  "db": "jdbc:mysql://sadnadb.c1ueowgcy9zp.eu-west-3.rds.amazonaws.com:3306/sadna?useSSL=true",
   "clear": "on",
   "supply": "https://damp-lynna-wsep-1984852e.koyeb.app/",
   "payment": "https://damp-lynna-wsep-1984852e.koyeb.app/",
