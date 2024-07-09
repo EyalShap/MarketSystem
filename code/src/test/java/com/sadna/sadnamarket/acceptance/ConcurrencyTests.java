@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.acceptance;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sadna.sadnamarket.Config;
 import com.sadna.sadnamarket.api.Response;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
@@ -9,8 +10,6 @@ import com.sadna.sadnamarket.domain.payment.PaymentInterface;
 import com.sadna.sadnamarket.domain.payment.PaymentService;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
-import com.sadna.sadnamarket.domain.supply.SupplyInterface;
-import com.sadna.sadnamarket.domain.supply.SupplyService;
 import com.sadna.sadnamarket.service.MarketServiceTestAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,10 +27,10 @@ import java.util.LinkedList;
 class ConcurrencyTests {
     ObjectMapper objectMapper = new ObjectMapper();
 
-    final int AMOUNT=1000;
+    final int AMOUNT= Config.CONCURRENT_LOOPS;
 
     @Autowired
-    MarketServiceTestAdapter bridge;
+    MarketServiceTestAdapter memoryBridge;
 
     String ownerUsername;
     String ownerToken;
@@ -41,20 +40,20 @@ class ConcurrencyTests {
 
     @BeforeEach
     void clean() {
-        bridge.reset();
+        memoryBridge.reset();
         ownerUsername = "StoreOwnerMan";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = memoryBridge.guestEnterSystem();
         String uuid = resp.getDataJson();
-        resp = bridge.signUp(uuid, "storeowner@store.com", ownerUsername, "imaginaryPassowrd");
+        resp = memoryBridge.signUp(uuid, "storeowner@store.com", ownerUsername, "imaginaryPassowrd");
         ownerToken = resp.getDataJson();
-        resp = bridge.openStore(ownerToken, ownerUsername, "Store's Store");
+        resp = memoryBridge.openStore(ownerToken, ownerUsername, "Store's Store");
         storeId = Integer.parseInt(resp.getDataJson());
-        bridge.setStoreBankAccount(ownerToken, ownerUsername, storeId,
+        memoryBridge.setStoreBankAccount(ownerToken, ownerUsername, storeId,
                 new BankAccountDTO("10", "392", "393013", "2131516175"));
-        resp = bridge.guestEnterSystem();
+        resp = memoryBridge.guestEnterSystem();
         uuid = resp.getDataJson();
         maliciousUsername = "Mallory";
-        resp = bridge.signUp(uuid, "mal@mal.com", maliciousUsername, "stolenPasswordBecauseImEvil");
+        resp = memoryBridge.signUp(uuid, "mal@mal.com", maliciousUsername, "stolenPasswordBecauseImEvil");
         maliciousToken = resp.getDataJson();
     }
 
@@ -65,23 +64,23 @@ class ConcurrencyTests {
         Mockito.when(paymentMock.creditCardValid(Mockito.any())).thenReturn(true);
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
 
-        Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
+        Response resp = memoryBridge.addProductToStore(ownerToken, ownerUsername, storeId,
                 new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2,true,storeId));
         int productId = Integer.parseInt(resp.getDataJson());
         for(int i = 0; i < AMOUNT; i++) {
             System.out.println("ENTERTING ITERATION NUMBER " + i);
-            bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 1);
-            resp = bridge.guestEnterSystem();
+            memoryBridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 1);
+            resp = memoryBridge.guestEnterSystem();
             String uuid1 = resp.getDataJson();
-            resp = bridge.guestEnterSystem();
+            resp = memoryBridge.guestEnterSystem();
             String uuid2 = resp.getDataJson();
             try {
-                bridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
-                bridge.addProductToBasketGuest(uuid2, storeId, productId, 1);
+                memoryBridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
+                memoryBridge.addProductToBasketGuest(uuid2, storeId, productId, 1);
                 Thread t1 = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        bridge.buyCartGuest(uuid1,
+                        memoryBridge.buyCartGuest(uuid1,
                                 new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                                 new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
                                         "+97254-989-4939", "jimjimmy@gmail.com"));
@@ -90,7 +89,7 @@ class ConcurrencyTests {
                 Thread t2 = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        bridge.buyCartGuest(uuid2,
+                        memoryBridge.buyCartGuest(uuid2,
                                 new CreditCardDTO("4580458045804580", "852", new Date(1930297600), "213958804"),
                                 new AddressDTO("Israel", "Kfar Shmaryahu", "Jabotinsky 39", "Apartment 13", "1234567",
                                         "Bob Bobby",
@@ -101,7 +100,7 @@ class ConcurrencyTests {
                 t2.run();
                 t1.join();
                 t2.join();
-                Assertions.assertEquals(bridge.getStoreProductAmount(storeId, productId).getDataJson(), "0");
+                Assertions.assertEquals(memoryBridge.getStoreProductAmount(storeId, productId).getDataJson(), "0");
             } catch (Exception e) {
 
             }
@@ -129,9 +128,9 @@ class ConcurrencyTests {
 
     @Test
     void twoUsersRegisterSameName() {
-        Response resp = bridge.guestEnterSystem();
+        Response resp = memoryBridge.guestEnterSystem();
         final String uuid1 = resp.getDataJson();
-        resp = bridge.guestEnterSystem();
+        resp = memoryBridge.guestEnterSystem();
         final String uuid2 = resp.getDataJson();
         int[] success = new int[1];
         final String[] username = new String[1];
@@ -141,7 +140,7 @@ class ConcurrencyTests {
             Thread t1 = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Response resp = bridge.signUp(uuid1, "john@john.gmail.com", username[0], "password");
+                    Response resp = memoryBridge.signUp(uuid1, "john@john.gmail.com", username[0], "password");
                     if(!resp.getError()){
                         success[0]++;
                     }
@@ -150,7 +149,7 @@ class ConcurrencyTests {
             Thread t2 = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Response resp = bridge.signUp(uuid2, "john@john.gmail.com", username[0], "password");
+                    Response resp = memoryBridge.signUp(uuid2, "john@john.gmail.com", username[0], "password");
                     if(!resp.getError()){
                         success[0]++;
                     }
@@ -179,11 +178,11 @@ class ConcurrencyTests {
         Mockito.when(paymentMock.pay(Mockito.anyDouble(), Mockito.any(), Mockito.any())).thenReturn(true);
         for(int i = 0; i < AMOUNT; i++) {
             System.out.println("ENTERTING ITERATION " + i);
-            Response resp = bridge.addProductToStore(ownerToken, ownerUsername, storeId,
+            Response resp = memoryBridge.addProductToStore(ownerToken, ownerUsername, storeId,
                     new ProductDTO(-1, "TestProduct", 100.3, "Product", 3.5, 2, true, storeId));
             int productId = Integer.parseInt(resp.getDataJson());
-            bridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 5);
-            resp = bridge.guestEnterSystem();
+            memoryBridge.setStoreProductAmount(ownerToken, ownerUsername, storeId, productId, 5);
+            resp = memoryBridge.guestEnterSystem();
             String uuid1 = resp.getDataJson();
             final int[] succeeded = new int[2];
             succeeded[0] = 0;
@@ -192,8 +191,8 @@ class ConcurrencyTests {
                 Thread t1 = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        bridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
-                        Response resp = bridge.buyCartGuest(uuid1,
+                        memoryBridge.addProductToBasketGuest(uuid1, storeId, productId, 1);
+                        Response resp = memoryBridge.buyCartGuest(uuid1,
                                 new CreditCardDTO("4722310696661323", "103", new Date(1830297600), "123456782"),
                                 new AddressDTO("Israel", "Yerukham", "Benyamin 12", "Apartment 12", "8053624", "Jim Jimmy",
                                         "+97254-989-4939", "jimjimmy@gmail.com"));
@@ -206,7 +205,7 @@ class ConcurrencyTests {
                 Thread t2 = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Response resp = bridge.removeProductFromStore(ownerToken, ownerUsername, storeId, productId);
+                        Response resp = memoryBridge.removeProductFromStore(ownerToken, ownerUsername, storeId, productId);
                         if (!resp.getError()) {
                             succeeded[0]++;
                             succeeded[1] = 5;
@@ -227,28 +226,28 @@ class ConcurrencyTests {
     @Test
     void twoAppointManagerSameUser() throws JsonProcessingException {
         // make mallory an owner so we have 2 owners to make this test
-        bridge.appointOwner(ownerToken, ownerUsername, storeId, maliciousUsername);
-        bridge.acceptOwnerAppointment(maliciousToken, maliciousUsername, storeId, bridge.getFirstNotification(maliciousUsername));
+        memoryBridge.appointOwner(ownerToken, ownerUsername, storeId, maliciousUsername);
+        memoryBridge.acceptOwnerAppointment(maliciousToken, maliciousUsername, storeId, memoryBridge.getFirstNotification(maliciousUsername));
 
         String[] appointeeUsername = new String[1];
         appointeeUsername[0] = "a";
-        Response resp = bridge.guestEnterSystem();
+        Response resp = memoryBridge.guestEnterSystem();
         String uuid = resp.getDataJson();
         for(int i = 0; i < AMOUNT; i++) {
-            resp = bridge.signUp(uuid, "eric@excited.com", appointeeUsername[0], "password");
+            resp = memoryBridge.signUp(uuid, "eric@excited.com", appointeeUsername[0], "password");
             String apointeeToken = resp.getDataJson();
             try {
                 Thread t1 = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Response resp = bridge.appointManager(ownerToken, ownerUsername, storeId, appointeeUsername[0],
+                        Response resp = memoryBridge.appointManager(ownerToken, ownerUsername, storeId, appointeeUsername[0],
                                 new LinkedList<>());
                     }
                 });
                 Thread t2 = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Response resp = bridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername[0],
+                        Response resp = memoryBridge.appointManager(maliciousToken, maliciousUsername, storeId, appointeeUsername[0],
                                 new LinkedList<>());
                     }
                 });
@@ -256,9 +255,9 @@ class ConcurrencyTests {
                 t2.run();
                 t1.join();
                 t2.join();
-                bridge.acceptManagerAppointment(apointeeToken, appointeeUsername[0], storeId, bridge.getFirstNotification(appointeeUsername[0]));
+                memoryBridge.acceptManagerAppointment(apointeeToken, appointeeUsername[0], storeId, memoryBridge.getFirstNotification(appointeeUsername[0]));
                 Assertions.assertEquals("true",
-                        bridge.getIsManager(ownerToken, ownerUsername, storeId, appointeeUsername[0]).getDataJson());
+                        memoryBridge.getIsManager(ownerToken, ownerUsername, storeId, appointeeUsername[0]).getDataJson());
                 appointeeUsername[0] = nextWord(appointeeUsername[0]);
             } catch (Exception e) {
 

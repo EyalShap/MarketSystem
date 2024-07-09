@@ -27,9 +27,9 @@ import com.sadna.sadnamarket.domain.supply.SupplyService;
 
 public class UserFacade {
     private IUserRepository iUserRepo; 
-    private static String systemManagerUserName;
-    private static StoreFacade storeFacade;
-    private static OrderFacade orderFacade;
+    private String systemManagerUserName;
+    private StoreFacade storeFacade;
+    private OrderFacade orderFacade;
     private static final Logger logger = LogManager.getLogger(UserFacade.class);
     private RealtimeService realtime;
 

@@ -159,7 +159,9 @@ public class HibernateOrderRepository implements IOrderRepository{
     public void clear() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
+            session.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
             session.createQuery("DELETE FROM Order").executeUpdate();
+            session.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             throw new IllegalArgumentException("Database error", e);

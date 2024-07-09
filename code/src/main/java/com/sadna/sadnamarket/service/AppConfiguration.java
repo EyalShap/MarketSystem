@@ -20,7 +20,6 @@ public class AppConfiguration {
 
     @Lazy(true)
     @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     @Profile("test")
     public MarketService testingService(ObjectProvider<RealtimeService> innerBeanProvider){
         Config.read("testconfig.json");
@@ -33,7 +32,14 @@ public class AppConfiguration {
     }
 
     @Bean
-    public MarketServiceTestAdapter marketServiceAdapter(){
+    public MarketServiceTestAdapter bridge(){
         return new MarketServiceTestAdapter();
+    }
+
+    @Bean
+    public MarketServiceTestAdapter memoryBridge(){
+        MarketServiceTestAdapter bridge = new MarketServiceTestAdapter();
+        bridge.reset();
+        return bridge;
     }
 }
