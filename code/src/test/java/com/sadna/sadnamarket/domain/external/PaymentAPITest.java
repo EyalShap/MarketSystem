@@ -40,4 +40,13 @@ public class PaymentAPITest {
         Assert.assertFalse(service.pay(100,badCard,null));
         Config.PAYMENT_ENABLE = false;
     }
+
+    @Test
+    void paymentFailureTimeoutTest() throws JsonProcessingException {
+        Config.PAYMENT_ENABLE = true;
+        CreditCardDTO badCard = new CreditCardDTO("2222333344445555", "986", new Date(1617311571), "204444444", "israel");
+        Exception e = Assert.assertThrows(RuntimeException.class,() -> service.pay(100,badCard,null));
+        Assert.assertEquals("Payment service has timed out",e.getMessage());
+        Config.PAYMENT_ENABLE = false;
+    }
 }
