@@ -662,6 +662,24 @@ public class UserFacade {
     }
 
     public void setRealtime(RealtimeService realtime) {
+        logger.info("set realtime service");
         this.realtime = realtime;
+        logger.info("done set realtime service");
+    }
+    public boolean isGuestExist(int guestID){
+        logger.info("check if guest exist {}",guestID);
+        boolean res= iUserRepo.isGuestExist(guestID);
+        logger.info("checked if guest exist {} and got {}",guestID,res);
+        return res;
+    }
+    public void logoutMembers(){
+        logger.info("logout all members");
+        iUserRepo.logoutMembers();
+        logger.info("done logout all members");
+    }
+    public void removeGuests(){
+        logger.info("remove all guests");
+        iUserRepo.removeGuests();
+        logger.info("done remove all guests");
     }
 }

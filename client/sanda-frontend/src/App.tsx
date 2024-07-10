@@ -18,7 +18,7 @@ import CreateStore from './components/CreateStore';
 import { StompSessionProvider } from 'react-stomp-hooks';
 import DiscountWizard from './components/DiscountWizard';
 import PermissionError from './components/PermissionError';
-import { enterAsGuest, loginUsingJwt } from './API';
+import { enterAsGuest, isGuestExists, loginUsingJwt } from './API';
 import BuyPolicyWizard from './components/BuyPolicyWizard';
 import AddProduct from './components/AddProduct';
 import { Product } from './components/Product';
@@ -43,11 +43,27 @@ export const AppContext = createContext<AppContextProps>({
 
 function App() {
   const [isloggedin, setIsloggedin] = useState(false);
-  const effectRan = useRef(false);;
+  const effectRan = useRef(false);
+  
   useEffect(() => {
     const fetchData = async () => {
       if (effectRan.current) return;          
-      if(localStorage.getItem("guestId")||isloggedin) return;
+      if(isloggedin) return;
+      if(localStorage.getItem("guestId")){
+        try{
+        const res=await isGuestExists(Number.parseInt(localStorage.getItem("guestId") as string));
+        if(!JSON.parse(res.dataJson)){
+          alert("Error occoured refreshing");
+          localStorage.clear();
+        }
+        else{
+          return;
+        }
+      }catch(e){
+        alert("Error occoured please try again later");
+        localStorage.clear();
+      }
+      }
       if(localStorage.getItem("token") !== null&& localStorage.getItem("username") !== "null"){
         const resp=await loginUsingJwt(localStorage.getItem("username") as string, localStorage.getItem("token") as string);
         if(!resp.error){
@@ -66,6 +82,7 @@ function App() {
         alert("Error occoured please try again later");
       }
     };
+    
     fetchData();
     effectRan.current = true;
   }, [isloggedin, setIsloggedin]);

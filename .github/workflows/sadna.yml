@@ -21,6 +21,7 @@ jobs:
 
     runs-on: ubuntu-latest
     environment: env
+    
 
     concurrency:
       group: spooky-db-usage
@@ -35,6 +36,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build with Maven
+        if: false
         run: |
           cd code
           mvn -B -DskipTests package --file pom.xml

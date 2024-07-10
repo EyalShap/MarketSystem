@@ -16,7 +16,7 @@ const schema = yup.object().shape({
   lastName: yup.string().required("Last Name is required"),
   emailAddress: yup.string().email("Invalid email format").required("Email is required"),
   phoneNumber: yup.string().required("Phone number is required"),
-  birthDate: yup.string().required("Birthday is required")
+  birthDate: yup.string().max(new Date().getDate()).required("Birthday is required")
 });
 
 const Profile = () => {
@@ -89,6 +89,13 @@ const Profile = () => {
     }
     if(data.birthDate!== defaultValues.birthDate) {
       data.birthDate = formatDate(new Date(data.birthDate).toISOString());
+      const birthDate = new Date(data.birthDate);
+      const currentDate = new Date();
+
+      if (birthDate > currentDate) {
+        alert("birthday cannot be in the future");
+        return;
+      }
       const response=await updateBirthday(data.birthDate);
       if(response.error)
         alert(response.error);

@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import '../styles/cart.css';
 // Assuming these interfaces and functions are imported correctly
-import { viewMemberCart, viewGuestCart, changeProductAmountInCart, changeProductAmountInCartGuest, removeProductFromCart, removeProductFromCartGuest, checkCart, checkCartGuest, loginUsingJwt } from '../API'; // Add necessary API functions
+import { viewMemberCart, viewGuestCart, changeProductAmountInCart, changeProductAmountInCartGuest, removeProductFromCart, removeProductFromCartGuest, checkCart, checkCartGuest, loginUsingJwt, isGuestExists } from '../API'; // Add necessary API functions
 import cartModel from '../models/CartModel';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '../App';
 import CustomizedDialogs from './CartError';
+import { bool } from 'yup';
 
 const Cart = () => {
     const {isloggedin , setIsloggedin } = useContext(AppContext);
@@ -32,6 +33,25 @@ const Cart = () => {
                     navigate('/');
                   }
             }
+            else if(!isloggedin&&localStorage.getItem("guestId")){
+            try{
+                const data=await isGuestExists(Number.parseInt(localStorage.getItem("guestId") as string));
+                if(JSON.parse(data.dataJson)===true){
+                await fetchCart(isloggedin);
+                await checkCart(isloggedin);
+                }
+                else{
+                    localStorage.clear();
+                    alert("cart not found please try again");
+                    navigate('/');
+                    navigate(0);
+                }
+            }catch(e: any){
+                console.log(e);
+                alert("Error occoured please try again later");
+                navigate('/');
+            }
+        }
             else{
                 await fetchCart(isloggedin);
                 await checkCart(isloggedin);

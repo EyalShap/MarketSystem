@@ -1271,10 +1271,6 @@ export const checkCart= async (username:string) => {
     return response.data;
 }
 
-export const checkCartGuest= async (guestId:number) => {
-    const response = await axios.post(`${server}/api/user/checkGuestCart?guestId=${guestId}`,{});
-    return response.data;
-}
 
 export const setStoreBankAccount = async(storeId: number, bank: BankAccountModel): Promise<RestResponse> => {
     const response = await axios.post(`${server}/api/stores/setStoreBankAccount?username=${localStorage.getItem("username")}&storeId=${storeId}`,bank,{ 
@@ -1401,3 +1397,13 @@ export const exitGuest = async (guestId: number) => {
     });
     return response.data;
 };
+
+export const isGuestExists = async (guestId: number) => {
+    const response = await axios.post(`${server}/api/user/checkGuestExist?guestId=${guestId}`, {});
+    return response.data;
+}
+
+export const checkCartGuest= async (guestId:number) => {
+    const response = await axios.post(`${server}/api/user/checkGuestCart?guestId=${guestId}`,{});
+    return response.data;
+}

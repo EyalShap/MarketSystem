@@ -101,6 +101,8 @@ public class MarketService {
             SetupRunner runner = new SetupRunner(this);
             runner.setupFromJson(Config.BEGIN);
         }
+        userFacade.logoutMembers();
+        userFacade.removeGuests();
     }
 
     public static MarketService getNewMemoryInstance() {
@@ -1666,8 +1668,20 @@ public class MarketService {
             return Response.createResponse(true, e.getMessage());
         }
     }
+    public Response isGuestExist(int guestId){
+        try{
+            logger.info("check if guest {} exists", guestId);
+            boolean res = userFacade.isGuestExist(guestId);
+            logger.info("finished check if guest {} exists", guestId);
+            return Response.createResponse(false, objectMapper.writeValueAsString(res));
+        }catch(Exception e){
+            logger.error("error check if guest {} exists", guestId);
+            return Response.createResponse(true, e.getMessage());
+        }
+    }
 
     public void clear(){
+        logger.info("clearing all data");
         IStoreRepository.cleanDB();
         discountPolicyFacade.clear();
         buyPolicyFacade.clear();
@@ -1675,5 +1689,6 @@ public class MarketService {
         userFacade.clear();
         productFacade.clear();
         orderFacade.clear();
+        logger.info("finished clearing all data");
     }
 }

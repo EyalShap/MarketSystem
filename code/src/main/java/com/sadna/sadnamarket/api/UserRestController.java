@@ -13,10 +13,6 @@ import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.logging.Log;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -381,6 +377,9 @@ public class UserRestController {
         return marketService.checkIfSystemManager(username);
     }
     
-    
+    @PostMapping("/checkGuestExist")
+    public Response checkGuestExist(@RequestParam int guestId) {
+        return marketService.isGuestExist(guestId);
+    }
     
 }
