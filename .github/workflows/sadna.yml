@@ -52,7 +52,7 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD}}
       - name: Report
         uses: dorny/test-reporter@v1
-        if: success() || failure()
+        if: false && (success() || failure())
         with:
           name: Maven Tests
           path: code/target/surefire-reports/*.xml
