@@ -17,17 +17,17 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 public class AuthRepositoryHibernateImpl implements IAuthRepository {
 
-    private static final Logger logger = LogManager.getLogger(AuthFacade.class);
+    private static final Logger logger = LogManager.getLogger(AuthRepositoryHibernateImpl.class);
 
     @Override
     public void login(String username, String password) {
         logger.info("start-Login. username: {} ", username);
         if (!hasMember(username)) {
-            logger.error("user doesn't exist");
+            logger.info("user doesn't exist");
             throw new NoSuchElementException(Error.makeAuthUserDoesntExistError());
         }
         if (!isPasswordCorrect(username, password)) {
-            logger.error("password incorrect");
+            logger.info("password incorrect");
             throw new IllegalArgumentException(Error.makeAuthPasswordIncorrectError());
         }
         logger.info("end-Login.");

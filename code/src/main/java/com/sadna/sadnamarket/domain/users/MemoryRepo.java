@@ -471,4 +471,27 @@ public class MemoryRepo implements IUserRepository {
     @Override
     public void clear() {
     }
+
+
+    @Override
+    public boolean isGuestExist(int guestID) {
+        logger.info("check if guest exist with guestID={}", guestID);
+        boolean res= guests.containsKey(guestID);
+        logger.info("Exiting isGuestExist with result={}", res);
+        return res;
+    }
+
+
+    @Override
+    public void logoutMembers() {
+        logger.info("Entering logoutMembers");
+        logger.info("Exiting logoutMembers as no need to logout in memory");
+    }
+
+
+    @Override
+    public void removeGuests() {
+        logger.info("Entering removeGuests");
+        logger.info("Exiting removeGuests as no need to remove in memory");
+    }
 }

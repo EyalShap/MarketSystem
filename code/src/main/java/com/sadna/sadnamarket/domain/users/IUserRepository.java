@@ -55,5 +55,7 @@ public interface IUserRepository {
     StoreManager createStoreManagerRole(int storeId);
     StoreOwner createStoreOwnerRole(int storeId,String apointee);
     StoreFounder createStoreFounderRole(int storeId, String apointee);
-
+    boolean isGuestExist(int guestID);
+    void logoutMembers();
+    void removeGuests();
 }

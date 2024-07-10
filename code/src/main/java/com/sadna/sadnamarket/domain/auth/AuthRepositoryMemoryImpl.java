@@ -20,11 +20,11 @@ public class AuthRepositoryMemoryImpl implements IAuthRepository {
     public void login(String username, String password) {
         logger.info("start-Login. username: {} ", username);
         if(!hasMember(username)){
-            logger.error("user doesnt exist");
+            logger.info("user doesnt exist");
             throw new NoSuchElementException(Error.makeAuthUserDoesntExistError());
         }
         if(!isPasswordCorrect(username,password)){
-            logger.error("password incorrect");
+            logger.info("password incorrect");
             throw new IllegalArgumentException(Error.makeAuthPasswordIncorrectError());
             }
         logger.info("end-Login.");
