@@ -260,28 +260,19 @@ public class StoreFacade {
     }
 
     public boolean closeStore(String username, int storeId) {
-        Store store = storeRepository.findStoreByID(storeId);
+        /*Store store = storeRepository.findStoreByID(storeId);
         if (!store.getFounderUsername().equals(username))
             throw new IllegalArgumentException(Error.makeStoreUserCannotCloseStoreError(username, storeId));
 
         store.closeStore();
-        storeRepository.saveStore(store);
+        storeRepository.saveStore(store);*/
 
-        String msg = String.format("The store \"%s\" was closed.", store.getStoreInfo().getStoreName());
-        Set<String> ownerUsernames = store.getOwnerUsernames();
-        Set<String> managerUsernames = store.getManagerUsernames();
-        for (String ownerUsername : ownerUsernames) {
-            userFacade.notify(ownerUsername, msg);
-        }
-        for (String managerUsername : managerUsernames) {
-            userFacade.notify(managerUsername, msg);
-        }
-
+        storeRepository.changeStoreState(username, storeId, false, userFacade);
         return true;
     }
 
     public boolean reopenStore(String username, int storeId) {
-        Store store = storeRepository.findStoreByID(storeId);
+        /*Store store = storeRepository.findStoreByID(storeId);
         if (!store.getFounderUsername().equals(username))
             throw new IllegalArgumentException(Error.makeStoreUserCannotCloseStoreError(username, storeId));
 
@@ -296,8 +287,8 @@ public class StoreFacade {
         }
         for (String managerUsername : managerUsernames) {
             userFacade.notify(managerUsername, msg);
-        }
-
+        }*/
+        storeRepository.changeStoreState(username, storeId, true, userFacade);
         return true;
     }
 
@@ -505,9 +496,7 @@ public class StoreFacade {
     }*/
 
     public int addOrderId(int storeId, int orderId) {
-        Store store = storeRepository.findStoreByID(storeId);
-        store.addOrderId(orderId);
-        storeRepository.saveStore(store);
+        storeRepository.addOrderIdToStore(storeId, orderId);
         return orderId;
     }
 

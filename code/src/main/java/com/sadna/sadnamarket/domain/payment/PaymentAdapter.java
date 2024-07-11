@@ -39,7 +39,7 @@ public class PaymentAdapter implements PaymentInterface{
         String cvv = payerCard.getDigitsOnTheBack();
         String ownerId = payerCard.getOwnerId();
 
-        String resp = service.pay(0, creditCardNumber, month, year, ownerName, cvv, ownerId);
+        String resp = service.pay(amount, creditCardNumber, month, year, ownerName, cvv, ownerId);
         if(resp.equals("-1")) {
             return false;
         }
