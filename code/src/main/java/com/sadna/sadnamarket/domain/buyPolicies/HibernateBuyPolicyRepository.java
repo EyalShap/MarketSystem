@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.buyPolicies;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sadna.sadnamarket.HibernateTimeoutLengths;
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.PersistenceException;
@@ -10,17 +11,38 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 
+import java.io.IOError;
 import java.time.LocalTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
+    private Timer timeoutTimer;
+    private TimerTask handleTimeout;
+
+    private void refreshTimerTask(){
+        timeoutTimer = new Timer("timeout");
+        Thread.UncaughtExceptionHandler handler = Thread.currentThread().getUncaughtExceptionHandler();
+        handleTimeout = new TimerTask() {
+            @Override
+            public void run() {
+                Thread.currentThread().setUncaughtExceptionHandler(handler);
+                throw new InternalError(new RuntimeException("DB Timed Out"));
+            }
+        };
+    }
+
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public BuyPolicy findBuyPolicyByID(int policyId) {
+        refreshTimerTask();
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            timeoutTimer.schedule(handleTimeout,
+                    HibernateTimeoutLengths.MS_DB_SHORT+HibernateTimeoutLengths.MS_TIMEOUT_PADDING);
             BuyPolicyData policyDTO = session.get(BuyPolicyData.class, policyId);
+            timeoutTimer.cancel();
             if (policyDTO == null) {
                 throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(policyId));
             }
@@ -37,8 +59,11 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Set<Integer> getAllPolicyIds() {
+        refreshTimerTask();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            timeoutTimer.schedule(handleTimeout, HibernateTimeoutLengths.MS_DB_CLEAR_SELECTALL);
             List<Integer> res = session.createQuery( "select p.policyId from BuyPolicyData p" ).list();
+            timeoutTimer.cancel();
             return new HashSet<>(res);
         }
         catch (Exception e) {
@@ -48,8 +73,10 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
 
     private int addBuyPolicy(BuyPolicy buyPolicy) {
         Transaction transaction = null;
+        refreshTimerTask();
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+            timeoutTimer.schedule(handleTimeout,
+                    HibernateTimeoutLengths.MS_DB_MEDIUM+HibernateTimeoutLengths.MS_TIMEOUT_PADDING);
             BuyPolicyData hibernateDto = buyPolicy.generateData();
             BuyPolicyData existingDto = getExistingBuyPolicy(session, hibernateDto);
             if(existingDto != null){
@@ -58,6 +85,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             }
             session.save(hibernateDto); // Save the store and get the generated ID
             transaction.commit();
+            timeoutTimer.cancel();
             return hibernateDto.policyId;
         }
         catch (Exception e) {
@@ -68,7 +96,10 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
 
     private int addCompositeBuyPolicy(int id1, int id2, String logic) {
         Transaction transaction = null;
+        refreshTimerTask();
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            timeoutTimer.schedule(handleTimeout,
+                    HibernateTimeoutLengths.MS_DB_MEDIUM+HibernateTimeoutLengths.MS_TIMEOUT_PADDING);
             transaction = session.beginTransaction();
             BuyPolicyData policyDTO = session.get(BuyPolicyData.class, id1);
             if (policyDTO == null) {
@@ -86,6 +117,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             }
             session.save(hibernateDto); // Save the store and get the generated ID
             transaction.commit();
+            timeoutTimer.cancel();
             return hibernateDto.policyId;
         }
         catch (PersistenceException e) {
@@ -181,11 +213,14 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     @Override
     public void clear() {
         Transaction transaction = null;
+        refreshTimerTask();
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            timeoutTimer.schedule(handleTimeout, HibernateTimeoutLengths.MS_DB_CLEAR_SELECTALL);
             transaction = session.beginTransaction();
             session.createQuery( "delete from BuyPolicyData").executeUpdate();
             session.createQuery( "delete from StoreBuyPolicyRelation").executeUpdate();
             transaction.commit();
+            timeoutTimer.cancel();
         }
         catch (Exception e) {
             transaction.rollback();
