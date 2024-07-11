@@ -7,6 +7,7 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
@@ -58,33 +59,29 @@ public class HibernateStoreRepository implements IStoreRepository{
     @Override
     public int addStore(String founderUsername, String storeName, String address, String email, String phoneNumber) {
         verify(storeName, address, email, phoneNumber);
-        if (storeNameExists(storeName))
-            throw new IllegalArgumentException(
-                    Error.makeStoreWithNameAlreadyExistsError(storeName));
 
-        Transaction transaction = null;
-        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            Store createdStore = new Store(founderUsername, new StoreInfo(storeName, address, email, phoneNumber));
-            session.save(createdStore);
-            //StoreDTO newStore = new StoreDTO(storeName, address, email, phoneNumber, founderUsername);
-            //session.save(newStore);
-            transaction.commit();
-            return createdStore.getStoreId();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            session.beginTransaction();
+
+            try{
+                //check if store exists
+                Store storeWithName = session.createQuery("SELECT s FROM Store s where s.storeInfo.storeName = :name", Store.class).setParameter("name", storeName).getSingleResult();
+                throw new IllegalArgumentException(Error.makeStoreWithNameAlreadyExistsError(storeName));
+            }
+            catch (NoResultException e) {
+                Store createdStore = new Store(founderUsername, new StoreInfo(storeName, address, email, phoneNumber));
+                session.save(createdStore);
+                session.getTransaction().commit();
+                return createdStore.getStoreId();
+            }
         }
         catch (Exception e) {
-            transaction.rollback();
+            session.getTransaction().rollback();
             throw e;
         }
-    }
-
-    private boolean storeNameExists(String storeName) {
-        try {
-            findStoreByName(storeName);
-            return true;
-        }
-        catch (Exception e) {
-            return false;
+        finally {
+            session.close();
         }
     }
 
@@ -99,7 +96,7 @@ public class HibernateStoreRepository implements IStoreRepository{
         }
     }
 
-    @Override
+    /*@Override
     public void saveStore(Store store) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         try {
@@ -113,7 +110,7 @@ public class HibernateStoreRepository implements IStoreRepository{
         finally {
             session.close();
         }
-    }
+    }*/
 
     @Override
     public void addProductToStore(int storeId, int productId, int amount) {
@@ -141,7 +138,16 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public boolean productExists(int storeId, int productId) {
-        return findStoreByID(storeId).getProductAmounts().containsKey(productId);
+        try {
+            getProductAmountInStore(storeId, productId);
+            return true;
+        }
+        catch(Exception e) {
+            if (e.getMessage().equals(Error.makeStoreProductDoesntExistError(storeId, productId))) {
+                return false;
+            }
+            throw e;
+        }
     }
 
     @Override
@@ -184,9 +190,10 @@ public class HibernateStoreRepository implements IStoreRepository{
                 throw new IllegalArgumentException(Error.makeStoreProductDoesntExistError(storeId, productId));
             }
             store.deleteProduct(productId);
-            String deleteQuery = "DELETE FROM store_products WHERE store_id = :storeId AND product_id = :productId";
-            Query query = session.createNativeQuery(deleteQuery).setParameter("storeId", storeId).setParameter("productId", productId);
-            query.executeUpdate();
+            //String deleteQuery = "DELETE FROM store_products WHERE store_id = :storeId AND product_id = :productId";
+            //Query query = session.createNativeQuery(deleteQuery).setParameter("storeId", storeId).setParameter("productId", productId);
+            //query.executeUpdate();
+            session.update(store);
             session.getTransaction().commit();
         }
         catch (Exception e) {
@@ -255,14 +262,24 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart) {
-        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
             Set<String> errors = store.updateStock(cart);
-            saveStore(store);
+            session.update(store);
+            session.getTransaction().commit();
             return errors;
+        }
+        catch (Exception e) {
+            session.getTransaction().rollback();
+            throw e;
+        }
+        finally {
+            session.close();
         }
     }
 
@@ -283,9 +300,9 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public void setStoreBankAccount(int storeId, BankAccountDTO bankAccountDTO) {
-        Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()){
-            transaction = session.beginTransaction();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try{
+            session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
@@ -293,11 +310,14 @@ public class HibernateStoreRepository implements IStoreRepository{
             store.setBankAccount(bankAccountDTO);
             session.merge(store);
             session.save(bankAccountDTO);
-            transaction.commit();
+            session.getTransaction().commit();
         }
         catch (Exception e) {
-            transaction.rollback();
+            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        finally {
+            session.close();
         }
     }
 
@@ -343,77 +363,111 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public void addManagerToStore(String username, int storeId) {
-        Transaction transaction = null;
-        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
             store.addStoreManager(username);
             session.update(store);
-            transaction.commit();
+            session.getTransaction().commit();
         }
         catch (Exception e) {
-            transaction.rollback();
+            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        finally {
+            session.close();
         }
     }
 
     @Override
     public void addOwnerToStore(String username, int storeId) {
-        Transaction transaction = null;
-        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
             store.addStoreOwner(username);
             session.update(store);
-            transaction.commit();
+            session.getTransaction().commit();
         }
         catch (Exception e) {
-            transaction.rollback();
+            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        finally {
+            session.close();
         }
     }
 
     @Override
-    public void closeStore(int storeId) {
-        Transaction transaction = null;
-        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+    public void addOrderIdToStore(int storeId, int orderId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
-            store.closeStore();
+            store.addOrderId(orderId);
             session.update(store);
-            transaction.commit();
+            session.getTransaction().commit();
         }
         catch (Exception e) {
-            transaction.rollback();
+            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        finally {
+            session.close();
         }
     }
 
     @Override
-    public void reopenStore(int storeId) {
-        Transaction transaction = null;
-        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+    public void changeStoreState(String username, int storeId, boolean open, UserFacade userFacade) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        try {
+            session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
-            store.reopenStore();
+            if (!store.getFounderUsername().equals(username))
+                throw new IllegalArgumentException(Error.makeStoreUserCannotCloseStoreError(username, storeId));
+            if(!open) {
+                store.closeStore();
+            }
+            else {
+                store.reopenStore();
+            }
             session.update(store);
-            transaction.commit();
+            session.getTransaction().commit();
+
+            notifyAboutStore(open, store, userFacade);
         }
         catch (Exception e) {
-            transaction.rollback();
-            throw new IllegalArgumentException(Error.makeDBError());
+            session.getTransaction().rollback();
+            throw e;
+        }
+        finally {
+            session.close();
+        }
+    }
+
+    private void notifyAboutStore(boolean open, Store store, UserFacade userFacade) {
+        String format = open ? "The store \"%s\" was reopened." : "The store \"%s\" was closed.";
+        String msg = String.format(format, store.getStoreInfo().getStoreName());
+        Set<String> ownerUsernames = store.getOwnerUsernames();
+        Set<String> managerUsernames = store.getManagerUsernames();
+        for (String ownerUsername : ownerUsernames) {
+            userFacade.notify(ownerUsername, msg);
+        }
+        for (String managerUsername : managerUsernames) {
+            userFacade.notify(managerUsername, msg);
         }
     }
 

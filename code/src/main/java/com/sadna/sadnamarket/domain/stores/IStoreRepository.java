@@ -5,6 +5,7 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.data.relational.core.sql.In;
@@ -29,7 +30,7 @@ public interface IStoreRepository {
 
     public int getProductAmountInStore(int storeId, int productId);
 
-    public void saveStore(Store store);
+    //public void saveStore(Store store);
 
     public void addProductToStore(int storeId, int productId, int amount);
 
@@ -55,8 +56,8 @@ public interface IStoreRepository {
 
     public void addManagerToStore(String username, int storeId);
     public void addOwnerToStore(String username, int storeId);
-    public void closeStore(int storeId);
-    public void reopenStore(int storeId);
+    public void addOrderIdToStore(int storeId, int orderId);
+    public void changeStoreState(String username, int storeId, boolean open, UserFacade userFacade);
 
     public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank);
 
@@ -81,4 +82,5 @@ public interface IStoreRepository {
             }
         }
     }
+
 }

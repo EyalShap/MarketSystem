@@ -4,6 +4,7 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.UserFacade;
 import com.sadna.sadnamarket.service.Error;
 import org.springframework.data.relational.core.sql.In;
 
@@ -79,15 +80,37 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
-    public void closeStore(int storeId) {
-        Store store = findStoreByID(storeId);
-        store.closeStore();
+    public void addOrderIdToStore(int storeId, int orderId) {
+        findStoreByID(storeId).addOrderId(orderId);
     }
 
     @Override
-    public void reopenStore(int storeId) {
+    public void changeStoreState(String username, int storeId, boolean open, UserFacade userFacade) {
         Store store = findStoreByID(storeId);
-        store.reopenStore();
+        if (!store.getFounderUsername().equals(username))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotCloseStoreError(username, storeId));
+
+        if(!open) {
+            store.closeStore();
+        }
+        else {
+            store.reopenStore();
+        }
+
+        notifyAboutStore(open, store, userFacade);
+    }
+
+    private void notifyAboutStore(boolean open, Store store, UserFacade userFacade) {
+        String format = open ? "The store \"%s\" was reopened." : "The store \"%s\" was closed.";
+        String msg = String.format(format, store.getStoreInfo().getStoreName());
+        Set<String> ownerUsernames = store.getOwnerUsernames();
+        Set<String> managerUsernames = store.getManagerUsernames();
+        for (String ownerUsername : ownerUsernames) {
+            userFacade.notify(ownerUsername, msg);
+        }
+        for (String managerUsername : managerUsernames) {
+            userFacade.notify(managerUsername, msg);
+        }
     }
 
     @Override
@@ -139,10 +162,6 @@ public class MemoryStoreRepository implements IStoreRepository {
 
     public boolean storeExists(int storeId) {
         return stores.containsKey(storeId);
-    }
-
-    @Override
-    public void saveStore(Store store) {
     }
 
     @Override
