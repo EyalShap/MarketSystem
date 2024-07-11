@@ -29,6 +29,7 @@ import com.sadna.sadnamarket.domain.users.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -37,6 +38,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 @Component
+@Profile("default")
 public class MarketService {
     private static MarketService instance;
     private UserFacade userFacade;
@@ -103,6 +105,10 @@ public class MarketService {
         }
         userFacade.logoutMembers();
         userFacade.removeGuests();
+
+        if(!userFacade.hasSystemManager() && !Config.TESTING_MODE){
+            throw new UnsupportedOperationException("System cannot start without a System Manager");
+        }
     }
 
     public static MarketService getNewMemoryInstance() {

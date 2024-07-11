@@ -64,6 +64,17 @@ public class UserFacade {
         logger.info("removed guest {}",guestId);
     }
 
+    public boolean hasSystemManager(){
+        if(systemManagerUserName != null){
+            return true;
+        }
+        if(iUserRepo.hasMember(Config.SYSMAN)){
+            setSystemManagerUserName(Config.SYSMAN);
+            return true;
+        }
+        return false;
+    }
+
     public boolean checkPremssionToStore(String userName, int storeId,Permission permission){
         logger.info("check permission to {} for user {} for store {}",permission.getValue(),userName,storeId);
         boolean isAuthrized=iUserRepo.hasPermissionToRole(userName,permission,storeId);
