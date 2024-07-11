@@ -23,6 +23,7 @@ public class Config {
     public static boolean PAYMENT_ENABLE = false;
     public static boolean CLEAR = false;
     public static int CONCURRENT_LOOPS = 0;
+    public static boolean TESTING_MODE=false;
 
 
     public static void read(String path){
@@ -57,6 +58,9 @@ public class Config {
             }
             if(conf.has("concurrency_loop")){
                 Config.CONCURRENT_LOOPS = conf.get("concurrency_loop").asInt();
+            }
+            if(conf.has("testing")){
+                Config.TESTING_MODE = conf.get("testing").asText().equals("on");
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.logging.Log;
 
@@ -18,6 +19,7 @@ import org.apache.commons.logging.Log;
 
 
 @RestController
+@Profile("default")
 @RequestMapping("/api/user")
 @CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
 public class UserRestController {

@@ -11,11 +11,13 @@ import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.service.MarketService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @RestController
+@Profile("default")
 @RequestMapping("/api/stores")
 @CrossOrigin(origins = "*",allowedHeaders = "*") // Allow cross-origin requests from any source
 public class StoreRestController {
