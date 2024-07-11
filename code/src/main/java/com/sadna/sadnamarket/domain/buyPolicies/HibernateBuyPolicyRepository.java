@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.buyPolicies;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.QueryHint;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -65,6 +66,34 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
         }
     }
 
+    private int addCompositeBuyPolicy(int id1, int id2, String logic) {
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            BuyPolicyData policyDTO = session.get(BuyPolicyData.class, id1);
+            if (policyDTO == null) {
+                throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(id1));
+            }
+            policyDTO = session.get(BuyPolicyData.class, id2);
+            if (policyDTO == null) {
+                throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(id2));
+            }
+            BuyPolicyData hibernateDto = new CompositeBuyPolicyData(id1,id2,logic);
+            BuyPolicyData existingDto = getExistingBuyPolicy(session, hibernateDto);
+            if(existingDto != null){
+                transaction.commit();
+                return existingDto.policyId;
+            }
+            session.save(hibernateDto); // Save the store and get the generated ID
+            transaction.commit();
+            return hibernateDto.policyId;
+        }
+        catch (PersistenceException e) {
+            transaction.rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
+    }
+
     @Override
     public int addProductKgBuyPolicy(int productId, List<BuyType> buytypes, double min, double max) throws JsonProcessingException {
         KgLimitBuyPolicy policy = new KgLimitBuyPolicy(buytypes,new ProductSubject(productId),min,max);
@@ -108,21 +137,18 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
-    public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
-        AndBuyPolicy policy = new AndBuyPolicy(policy1, policy2);
-        return addBuyPolicy(policy);
+    public int addAndBuyPolicy(int id1, int id2) throws JsonProcessingException {
+        return addCompositeBuyPolicy(id1, id2, BuyPolicyTypeCodes.AND);
     }
 
     @Override
-    public int addOrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
-        OrBuyPolicy policy = new OrBuyPolicy(policy1, policy2);
-        return addBuyPolicy(policy);
+    public int addOrBuyPolicy(int id1, int id2) throws JsonProcessingException {
+        return addCompositeBuyPolicy(id1, id2, BuyPolicyTypeCodes.OR);
     }
 
     @Override
-    public int addConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
-        ConditioningBuyPolicy policy = new ConditioningBuyPolicy(policy1, policy2);
-        return addBuyPolicy(policy);
+    public int addConditioningBuyPolicy(int id1, int id2) throws JsonProcessingException {
+        return addCompositeBuyPolicy(id1, id2, BuyPolicyTypeCodes.CONDITION);
     }
 
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })

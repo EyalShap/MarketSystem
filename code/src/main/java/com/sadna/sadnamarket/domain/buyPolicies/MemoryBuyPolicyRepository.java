@@ -88,19 +88,25 @@ public class MemoryBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     @Override
-    public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
+    public int addAndBuyPolicy(int id1, int id2) throws JsonProcessingException {
+        BuyPolicy policy1 = findBuyPolicyByID(id1);
+        BuyPolicy policy2 = findBuyPolicyByID(id2);
         BuyPolicy newPolicy = new AndBuyPolicy(nextId, policy1, policy2);
         return addPolicyToMaps(newPolicy);
     }
 
     @Override
-    public int addOrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
+    public int addOrBuyPolicy(int id1, int id2) throws JsonProcessingException {
+        BuyPolicy policy1 = findBuyPolicyByID(id1);
+        BuyPolicy policy2 = findBuyPolicyByID(id2);
         BuyPolicy newPolicy = new OrBuyPolicy(nextId, policy1, policy2);
         return addPolicyToMaps(newPolicy);
     }
 
     @Override
-    public int addConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException {
+    public int addConditioningBuyPolicy(int id1, int id2) throws JsonProcessingException {
+        BuyPolicy policy1 = findBuyPolicyByID(id1);
+        BuyPolicy policy2 = findBuyPolicyByID(id2);
         BuyPolicy newPolicy = new ConditioningBuyPolicy(nextId, policy1, policy2);
         return addPolicyToMaps(newPolicy);
     }
