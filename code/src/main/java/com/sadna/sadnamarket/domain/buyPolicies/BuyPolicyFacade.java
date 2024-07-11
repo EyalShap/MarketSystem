@@ -103,27 +103,21 @@ public class BuyPolicyFacade {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
-        BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
-        BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
-        return buyPolicyRepository.addAndBuyPolicy(policy1, policy2);
+        return buyPolicyRepository.addAndBuyPolicy(policyId1, policyId2);
     }
 
     public synchronized int createOrBuyPolicy(int policyId1, int policyId2, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
-        BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
-        BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
-        return buyPolicyRepository.addOrBuyPolicy(policy1, policy2);
+        return buyPolicyRepository.addOrBuyPolicy(policyId1, policyId2);
     }
 
     public synchronized int createConditioningBuyPolicy(int policyId1, int policyId2, String username) throws JsonProcessingException {
         if (!hasPermission(username, Permission.ADD_BUY_POLICY))
             throw new IllegalArgumentException(Error.makeUserCanNotCreateBuyPolicyError(username));
 
-        BuyPolicy policy1 = buyPolicyRepository.findBuyPolicyByID(policyId1);
-        BuyPolicy policy2 = buyPolicyRepository.findBuyPolicyByID(policyId2);
-        return buyPolicyRepository.addConditioningBuyPolicy(policy1, policy2);
+        return buyPolicyRepository.addConditioningBuyPolicy(policyId1, policyId2);
     }
 
     private void checkAddBuyPolicyToStore(String username, int storeId, int policyId) {

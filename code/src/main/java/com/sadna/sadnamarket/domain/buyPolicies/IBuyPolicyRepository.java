@@ -17,9 +17,9 @@ public interface IBuyPolicyRepository {
     public int addCategoryRoshChodeshBuyPolicy(String category, List<BuyType> buytypes) throws JsonProcessingException;
     public int addCategoryHolidayBuyPolicy(String category, List<BuyType> buytypes) throws JsonProcessingException;
     public int addCategorySpecificDateBuyPolicy(String category, List<BuyType> buytypes, int day, int month, int year) throws JsonProcessingException;
-    public int addAndBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException;
-    public int addOrBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException;
-    public int addConditioningBuyPolicy(BuyPolicy policy1, BuyPolicy policy2) throws JsonProcessingException;
+    public int addAndBuyPolicy(int policyId1, int policyId2) throws JsonProcessingException;
+    public int addOrBuyPolicy(int policyId1, int policyId2) throws JsonProcessingException;
+    public int addConditioningBuyPolicy(int policyId1, int policyId2) throws JsonProcessingException;
     public boolean buyPolicyExists(int policyId);
     public BuyPolicyManager createManager(BuyPolicyFacade facade, int storeId);
     public void clear();
