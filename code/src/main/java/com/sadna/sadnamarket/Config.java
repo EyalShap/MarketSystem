@@ -17,7 +17,7 @@ public class Config {
     public static String SYSMAN;
     public static String SUPPLY_URL;
     public static String PAYMENT_URL;
-    public static String DB_URL = "jdbc:mysql://localhost:3306/sadna_test?useSSL=true";
+    public static String DB_URL = "jdbc:mysql://sadnadb.c1ueowgcy9zp.eu-west-3.rds.amazonaws.com:3306/sadna_test?useSSL=true";
     //DB_URL is Test by default so that the DB Integration/Unit tests will automatically use the test DB
     public static boolean SUPPLY_ENABLE = false;
     public static boolean PAYMENT_ENABLE = false;
