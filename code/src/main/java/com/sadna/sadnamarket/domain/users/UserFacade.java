@@ -65,7 +65,14 @@ public class UserFacade {
     }
 
     public boolean hasSystemManager(){
-        return systemManagerUserName != null;
+        if(systemManagerUserName != null){
+            return true;
+        }
+        if(iUserRepo.hasMember(Config.SYSMAN)){
+            setSystemManagerUserName(Config.SYSMAN);
+            return true;
+        }
+        return false;
     }
 
     public boolean checkPremssionToStore(String userName, int storeId,Permission permission){
