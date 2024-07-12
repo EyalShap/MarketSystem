@@ -10,6 +10,7 @@ import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.QueryHint;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -57,6 +58,9 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             List<UserCredential> userList = session.createQuery("from UserCredential", UserCredential.class).list();
             return (HashMap<String, String>) userList.stream()
                     .collect(Collectors.toMap(UserCredential::getUsername, UserCredential::getPassword));
+        }catch (HibernateException e){
+            logger.error("Error in getAll {}", e.getMessage());
+            throw new IllegalStateException(Error.makeDBError());
         }
     }
 
@@ -74,6 +78,9 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             session.save(userCredential);
             transaction.commit();
             logger.info("end-add. username: {} ", username);
+        }catch (HibernateException e){
+            logger.error("Error in add {}", e.getMessage());
+            throw new IllegalStateException(Error.makeDBError());
         }
     }
 
@@ -88,6 +95,9 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             }
             transaction.commit();
             logger.info("end-delete {}", username);
+        }catch (HibernateException e){
+            logger.error("Error in delete {}", e.getMessage());
+            throw new IllegalStateException(Error.makeDBError());
         }
     }
 
@@ -102,6 +112,10 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             session.createQuery(hql).executeUpdate();
             transaction.commit();
             logger.info("end-clear");
+        }
+        catch (HibernateException e){
+            logger.error("Error in clear {}", e.getMessage());
+            throw new IllegalStateException(Error.makeDBError());
         }
     }
 }
