@@ -106,7 +106,7 @@ public class MarketService {
         userFacade.logoutMembers();
         userFacade.removeGuests();
 
-        if(!userFacade.hasSystemManager() && !Config.TESTING_MODE){
+        if(!Config.TESTING_MODE && !userFacade.hasSystemManager()){
             throw new UnsupportedOperationException("System cannot start without a System Manager");
         }
     }

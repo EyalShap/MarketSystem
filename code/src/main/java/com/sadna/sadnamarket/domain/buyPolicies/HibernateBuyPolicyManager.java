@@ -27,7 +27,13 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
 
     private void refreshTimerTask(){
         timeoutTimer = new Timer("timeout");
-        Thread.UncaughtExceptionHandler handler = Thread.currentThread().getUncaughtExceptionHandler();
+        Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                System.err.println(e);
+                System.exit(1);
+            }
+        };
         handleTimeout = new TimerTask() {
             @Override
             public void run() {
@@ -52,6 +58,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
             return !list.isEmpty();
         }
         catch (Exception e) {
+            timeoutTimer.cancel();
             return false;
         }
     }
@@ -67,6 +74,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
             return res;
         }
         catch (Exception e) {
+            timeoutTimer.cancel();
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -83,12 +91,12 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
             session.save(dto); // Save the store and get the generated ID
             timeoutTimer.schedule(handleTimeout, HibernateTimeoutLengths.MS_DB_MEDIUM_SHORT+HibernateTimeoutLengths.MS_TIMEOUT_PADDING);
             transaction.commit();
-            timeoutTimer.cancel();
         }
         catch (Exception e) {
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
+        timeoutTimer.cancel();
     }
 
     @Override
@@ -103,12 +111,12 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
             session.save(dto); // Save the store and get the generated ID
             timeoutTimer.schedule(handleTimeout, HibernateTimeoutLengths.MS_DB_MEDIUM_SHORT+HibernateTimeoutLengths.MS_TIMEOUT_PADDING);
             transaction.commit();
-            timeoutTimer.cancel();
         }
         catch (Exception e) {
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
+        timeoutTimer.cancel();
     }
 
     @Override
@@ -131,12 +139,12 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
             session.delete(list.get(0));
             timeoutTimer.schedule(handleTimeout, HibernateTimeoutLengths.MS_DB_MEDIUM_SHORT+HibernateTimeoutLengths.MS_TIMEOUT_PADDING);
             transaction.commit();
-            timeoutTimer.cancel();
         }
         catch (HibernateException e) {
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
+        timeoutTimer.cancel();
     }
 
     @Override
@@ -161,11 +169,11 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
                     .setParameter("storeId",storeId).executeUpdate();
             timeoutTimer.schedule(handleTimeout, HibernateTimeoutLengths.MS_DB_CLEAR_SELECTALL);
             transaction.commit();
-            timeoutTimer.cancel();
         }
         catch (Exception e) {
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
+        timeoutTimer.cancel();
     }
 }

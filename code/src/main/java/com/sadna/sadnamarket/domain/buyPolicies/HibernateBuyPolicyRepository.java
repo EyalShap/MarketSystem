@@ -14,9 +14,6 @@ import org.springframework.data.jpa.repository.QueryHints;
 import java.io.IOError;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     private Timer timeoutTimer;
@@ -24,7 +21,13 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
 
     private void refreshTimerTask(){
         timeoutTimer = new Timer("timeout");
-        Thread.UncaughtExceptionHandler handler = Thread.currentThread().getUncaughtExceptionHandler();
+        Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                System.err.println(e);
+                System.exit(1);
+            }
+        };
         handleTimeout = new TimerTask() {
             @Override
             public void run() {
@@ -53,6 +56,9 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             }else{
                 return policyDTO.toBuyPolicy();
             }
+        }catch(Exception e){
+            timeoutTimer.cancel();
+            throw(e);
         }
     }
 
@@ -67,6 +73,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             return new HashSet<>(res);
         }
         catch (Exception e) {
+            timeoutTimer.cancel();
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -77,10 +84,12 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             timeoutTimer.schedule(handleTimeout,
                     HibernateTimeoutLengths.MS_DB_MEDIUM+HibernateTimeoutLengths.MS_TIMEOUT_PADDING);
+            transaction = session.beginTransaction();
             BuyPolicyData hibernateDto = buyPolicy.generateData();
             BuyPolicyData existingDto = getExistingBuyPolicy(session, hibernateDto);
             if(existingDto != null){
                 transaction.commit();
+                timeoutTimer.cancel();
                 return existingDto.policyId;
             }
             session.save(hibernateDto); // Save the store and get the generated ID
@@ -89,6 +98,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             return hibernateDto.policyId;
         }
         catch (Exception e) {
+            timeoutTimer.cancel();
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
@@ -103,16 +113,19 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             transaction = session.beginTransaction();
             BuyPolicyData policyDTO = session.get(BuyPolicyData.class, id1);
             if (policyDTO == null) {
+                timeoutTimer.cancel();
                 throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(id1));
             }
             policyDTO = session.get(BuyPolicyData.class, id2);
             if (policyDTO == null) {
+                timeoutTimer.cancel();
                 throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(id2));
             }
             BuyPolicyData hibernateDto = new CompositeBuyPolicyData(id1,id2,logic);
             BuyPolicyData existingDto = getExistingBuyPolicy(session, hibernateDto);
             if(existingDto != null){
                 transaction.commit();
+                timeoutTimer.cancel();
                 return existingDto.policyId;
             }
             session.save(hibernateDto); // Save the store and get the generated ID
@@ -121,6 +134,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             return hibernateDto.policyId;
         }
         catch (PersistenceException e) {
+            timeoutTimer.cancel();
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
@@ -220,11 +234,11 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             session.createQuery( "delete from BuyPolicyData").executeUpdate();
             session.createQuery( "delete from StoreBuyPolicyRelation").executeUpdate();
             transaction.commit();
-            timeoutTimer.cancel();
         }
         catch (Exception e) {
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
+        timeoutTimer.cancel();
     }
 }
