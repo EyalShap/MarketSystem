@@ -62,7 +62,6 @@ public class HibernateOrderRepository implements IOrderRepository{
             String hql = "FROM Order WHERE storeId = :storeId";
             Query<Order> query = session.createQuery(hql, Order.class);
             query.setParameter("storeId", storeId);
-            //orders =session.createQuery( "select s.storeId from StoreDTO s" ).list();
             orders=query.getResultList();
             for (Order order: orders) {
                 Map<Integer, String> orderProductsJsons=order.getOrderProductsJsons();
@@ -84,7 +83,6 @@ public class HibernateOrderRepository implements IOrderRepository{
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Map<Integer, OrderDetails> getProductDataPriceByMember(String nameMember) {
         Map<Integer, OrderDetails> ans=new HashMap<>();
-        //Map<Integer, String> orderDataMap = new HashMap<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql1 = "SELECT ow.id, ow.dateTimeOfPurchase FROM OrderWrapper ow WHERE ow.memberName = :memberName";
             Query<Object[]> query1 = session.createQuery(hql1, Object[].class);
@@ -105,7 +103,6 @@ public class HibernateOrderRepository implements IOrderRepository{
                         productDataPrices.add(fromJson(productsJsons));
                     }
                 }
-
                 if(productDataPrices.size()!=0) {
                     OrderDetails OrderDetails=new OrderDetails(productDataPrices,dateTime);
                     ans.put(orderId,OrderDetails);
