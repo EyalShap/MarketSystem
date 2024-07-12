@@ -65,11 +65,9 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             return hibernateDto.policyId;
         }
         catch (HibernateException e) {
-            transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
-            transaction.rollback();
             throw e;
         }
     }
@@ -97,11 +95,9 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             return hibernateDto.policyId;
         }
         catch (HibernateException e) {
-            transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch(Exception e) {
-            transaction.rollback();
             throw e;
         }
     }
@@ -203,11 +199,9 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             transaction.commit();
         }
         catch (HibernateException e) {
-            transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
-            transaction.rollback();
             throw e;
         }
     }
