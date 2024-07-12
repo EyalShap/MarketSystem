@@ -5,6 +5,7 @@ import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.QueryHint;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -32,6 +33,9 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
                 return policyDTO.toBuyPolicy();
             }
         }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 
     @Override
@@ -41,7 +45,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             List<Integer> res = session.createQuery( "select p.policyId from BuyPolicyData p" ).list();
             return new HashSet<>(res);
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -56,20 +60,25 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
                 transaction.commit();
                 return existingDto.policyId;
             }
-            session.save(hibernateDto); // Save the store and get the generated ID
+            session.save(hibernateDto);
             transaction.commit();
             return hibernateDto.policyId;
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw e;
         }
     }
 
     private int addCompositeBuyPolicy(int id1, int id2, String logic) {
-        Transaction transaction = null;
-        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
+        Session session = null;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            session.beginTransaction();
             BuyPolicyData policyDTO = session.get(BuyPolicyData.class, id1);
             if (policyDTO == null) {
                 throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(id1));
@@ -81,16 +90,20 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             BuyPolicyData hibernateDto = new CompositeBuyPolicyData(id1,id2,logic);
             BuyPolicyData existingDto = getExistingBuyPolicy(session, hibernateDto);
             if(existingDto != null){
-                transaction.commit();
+                session.getTransaction().commit();
                 return existingDto.policyId;
             }
             session.save(hibernateDto); // Save the store and get the generated ID
-            transaction.commit();
+            session.getTransaction().commit();
             return hibernateDto.policyId;
         }
-        catch (PersistenceException e) {
-            transaction.rollback();
+        catch (HibernateException e) {
+            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        catch (Exception e) {
+            session.getTransaction().rollback();
+            throw e;
         }
     }
 
@@ -168,6 +181,9 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             findBuyPolicyByID(policyId);
             return true;
         }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
         catch (Exception e) {
             return false;
         }
@@ -187,9 +203,13 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             session.createQuery( "delete from StoreBuyPolicyRelation").executeUpdate();
             transaction.commit();
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        catch (Exception e) {
+            transaction.rollback();
+            throw e;
         }
     }
 }
