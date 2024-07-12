@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -104,7 +105,7 @@ public class DiscountPolicyFacadeTest{
         this.storeFacade.setBuyPolicyFacade(buyPolicyFacade);
     }
 
-    private void generateStore0() {
+    private void generateStore0()  {
 
         storeFacade.createStore("hila", "hila's bakery", "stips", "hilala@gmail.com", "0546661111");
 

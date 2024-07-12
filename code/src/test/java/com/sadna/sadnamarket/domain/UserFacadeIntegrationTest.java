@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeoutException;
 
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
 import com.sadna.sadnamarket.domain.buyPolicies.MemoryBuyPolicyRepository;
@@ -113,7 +114,7 @@ public class UserFacadeIntegrationTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp()  {
         setUpFacades();
 
         authFacade.register(testUsername1, testPassword, "Idan", "Idan", "idan@gmail.com", "0501118121", testDate);
@@ -232,7 +233,7 @@ public class UserFacadeIntegrationTest {
     }
 
     @Test
-    public void testAddStoreOwnerFailWhichIsntRelatedToStore() {
+    public void testAddStoreOwnerFailWhichIsntRelatedToStore()  {
         int testStoreId3 = storeFacade.createStore(testUsername2, "store name 2", "address", "email@gmail.com",
                 "0588888888");
         assertThrows(IllegalArgumentException.class,

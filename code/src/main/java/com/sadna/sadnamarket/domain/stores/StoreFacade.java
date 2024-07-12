@@ -3,6 +3,7 @@ package com.sadna.sadnamarket.domain.stores;
 import java.time.LocalTime;
 
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.domain.buyPolicies.BuyPolicyFacade;
@@ -61,7 +62,7 @@ public class StoreFacade {
         this.discountPolicyFacade = discountPolicyFacade;
     }
 
-    public int createStore(String founderUserName, String storeName, String address, String email, String phoneNumber) {
+    public int createStore(String founderUserName, String storeName, String address, String email, String phoneNumber)  {
         if (!userFacade.isLoggedIn(founderUserName))
             throw new IllegalArgumentException(
                     Error.makeStoreUserHasToBeLoggedInError(founderUserName));

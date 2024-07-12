@@ -488,4 +488,8 @@ public class Error {
     public static String makeCannotRemoveDefaultDiscountFromStoreError(int discountPolicyId) {
         return String.format("Discount %d cannot be removed from this Store.", discountPolicyId);
     }
+
+    public static String makeDatabaseTimeoutError() {
+        return "There was a database timeout.";
+    }
 }

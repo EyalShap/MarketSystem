@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +32,7 @@ class StoreRepositoryTest {
 
     @ParameterizedTest
     @MethodSource("repositoryProvider")
-    void findStoreByID(IStoreRepository repo) {
+    void findStoreByID(IStoreRepository repo)  {
         int id0 = repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173");
         int id1 = repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173");
         int id2 = repo.addStore("Netta", "H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173");
@@ -47,7 +48,7 @@ class StoreRepositoryTest {
 
     @ParameterizedTest
     @MethodSource("repositoryProvider")
-    void getAllStoreIds(IStoreRepository repo) {
+    void getAllStoreIds(IStoreRepository repo)  {
         Set<Integer> expected0 = new HashSet<>();
         Set<Integer> expected1 = new HashSet<>();
         Set<Integer> expected2 = new HashSet<>();
@@ -87,7 +88,7 @@ class StoreRepositoryTest {
 
     @ParameterizedTest
     @MethodSource("repositoryProvider")
-    void addStoreAlreadyExists(IStoreRepository repo) {
+    void addStoreAlreadyExists(IStoreRepository repo)  {
         repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173");
 
         IllegalArgumentException expected1 = assertThrows(IllegalArgumentException.class, () -> {
@@ -100,7 +101,7 @@ class StoreRepositoryTest {
 
     @ParameterizedTest
     @MethodSource("repositoryProvider")
-    void storeExists(IStoreRepository repo) {
+    void storeExists(IStoreRepository repo)  {
         int id0 = repo.addStore("Alice", "American Eagle",  "Beer Sheva", "Eagle@gmail.com", "0548970173");
         int id1 = repo.addStore("Bob", "Shufersal",  "Beer Sheva", "Shufersal@gmail.com", "0548970173");
         int id2 = repo.addStore("Netta", "H&m",  "Beer Sheva", "Hm@gmail.com", "0548970173");

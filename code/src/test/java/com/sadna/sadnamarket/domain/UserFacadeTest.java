@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeoutException;
 
 
 import static org.junit.Assert.*;
@@ -68,7 +69,7 @@ public class UserFacadeTest {
     private LocalDate testDate=LocalDate.of(1990, 11, 11);
 
     @BeforeEach
-    public void setUp() {
+    public void setUp()  {
         MockitoAnnotations.openMocks(this);
         this.iUserRepo=new UserHibernateRepo();
         this.iAuthRepo=new AuthRepositoryHibernateImpl();
@@ -165,7 +166,7 @@ public class UserFacadeTest {
         assertTrue(userFacade.getMemberRoles(testUsername2).size()>0);
     }
     @Test
-    public void testAddStoreOwnerFailWhichIsntRelatedToStore() {    
+    public void testAddStoreOwnerFailWhichIsntRelatedToStore()  {
         when(storeFacade.createStore(any(), any(),  any(), any(), any())).thenReturn(3);
         int testStoreId3=storeFacade.createStore(testUsername1, null, null, null, null);
         assertThrows(IllegalArgumentException.class,()->userFacade.addOwnerRequest(testUsername1,testUsername2,testStoreId3));

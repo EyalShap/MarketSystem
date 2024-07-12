@@ -26,6 +26,7 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.payment.CreditCardDTO;
 import com.sadna.sadnamarket.domain.supply.AddressDTO;
 import com.sadna.sadnamarket.domain.users.*;
+import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,7 @@ public class MarketService {
         userFacade.logoutMembers();
         userFacade.removeGuests();
 
-        if(!Config.TESTING_MODE && !userFacade.hasSystemManager()  ){
+        if(!Config.TESTING_MODE && !userFacade.hasSystemManager()){
             throw new UnsupportedOperationException("System cannot start without a System Manager");
         }
     }
@@ -158,6 +159,18 @@ public class MarketService {
         }
     }
 
+    private Response handleException(Exception e) {
+        String functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
+        String log = String.format("Error in function %s: %s", functionName, e.getMessage());
+        if(e.getMessage().equals(Error.makeDBError())) {
+            logger.error(log);
+        }
+        else {
+            logger.info(log);
+        }
+        return Response.createResponse(true, e.getMessage());
+    }
+
     @Transactional
     public Response createStore(String token, String founderUsername, String storeName, String address, String email, String phoneNumber) {
         try {
@@ -168,8 +181,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(newStoreId));
         }
         catch (Exception e) {
-            logger.error("createStore: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From "My Stores" page, redirects to new store
 
@@ -183,8 +195,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(newProductId));
         }
         catch (Exception e) {
-            logger.error("addProductToStore: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, Actions menu, only for permission, new page
 
@@ -197,8 +208,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addProductToStore: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, Actions menu, only for owner, new page
 
@@ -211,8 +221,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(deletedProductId));
         }
         catch (Exception e) {
-            logger.error("deleteProductFromStore: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, X on products from products list, only for permission
 
@@ -225,9 +234,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }
         catch (Exception e) {
-            logger.error("updateProductInStore: " + e.getMessage());
-
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Product page, button, only for permission, new page
 
@@ -240,9 +247,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(updateProductId));
         }
         catch (Exception e) {
-            logger.error("updateProductInStore: " + e.getMessage());
-
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -255,9 +260,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(storeClosed));
         }
         catch (Exception e) {
-            logger.error("closeStore: " + e.getMessage());
-
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, Actions menu, only for owner, popup
 
@@ -270,9 +273,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(storeClosed));
         }
         catch (Exception e) {
-            logger.error("reopenStore: " + e.getMessage());
-
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -285,9 +286,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(owners));
         }
         catch (Exception e) {
-            logger.error("getOwners: " + e.getMessage());
-
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, Actions menu, only for owner, new page with list of owners, for each owner button that shows details (in squares like my stores)
 
@@ -299,8 +298,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(managers));
         }
         catch (Exception e) {
-            logger.error("getManagers: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, Actions menu, only for owner, new page with list of managers, for each manager button that shows details and permissions (in squares like my stores)
 
@@ -326,8 +324,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("sendStoreOwnerRequest: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, Actions menu, new page, enter username and click send
 
@@ -340,8 +337,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("sendStoreManagerRequest: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, Actions menu, new page, enter username and click send
 
@@ -354,8 +350,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(newUsername));
         }
         catch (Exception e) {
-            logger.error("acceptStoreOwnerRequest: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From notifications, choose "Request" notification and click "accept"
 
@@ -367,8 +362,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
         }
         catch (Exception e) {
-            logger.error("getStoreOrderHistory: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From Store page, Actions menu, only for persmission, new page
 
@@ -386,8 +380,7 @@ public class MarketService {
             return Response.createResponse(false, json);
         }
         catch (Exception e) {
-            logger.error("getStoreInfo: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From "my stores" page OR from search store (from main search)
 
@@ -405,8 +398,7 @@ public class MarketService {
             return Response.createResponse(false, json);
         }
         catch (Exception e) {
-            logger.error("getStoreByName: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -421,8 +413,7 @@ public class MarketService {
             return Response.createResponse(false, json);
         }
         catch (Exception e) {
-            logger.error("getStoreInfo: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //From boxes in store or from main search
 
@@ -444,8 +435,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(jsonMap));
         }
         catch (Exception e) {
-            logger.error("getProductsInfo: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //In store info window
 
@@ -459,8 +449,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(amount));
         }
         catch (Exception e) {
-            logger.error("getProductsInfo: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -487,8 +476,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
-            logger.error("createProductKgBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -501,8 +489,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
-            logger.error("createProductAmountBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //from Store window, Actions menu, new page
 
@@ -515,8 +502,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
-            logger.error("createCategoryAgeLimitBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -529,8 +515,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
-            logger.error("createCategoryHourLimitBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -543,8 +528,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
-            logger.error("createCategoryRoshChodeshBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -557,8 +541,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
-            logger.error("createCategoryHolidayBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -571,8 +554,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(policyId));
         }
         catch (Exception e) {
-            logger.error("createCategorySpecificDatePolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -585,8 +567,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(id));
         }
         catch (Exception e) {
-            logger.error("createAndBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -599,8 +580,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(id));
         }
         catch (Exception e) {
-            logger.error("createOrBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -613,8 +593,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(id));
         }
         catch (Exception e) {
-            logger.error("createConditioningBuyPolicy: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -627,8 +606,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addPolicyToStore: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -641,8 +619,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("addLawBuyPolicyToStore: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -655,8 +632,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(true));
         }
         catch (Exception e) {
-            logger.error("removeBuyPolicyFromStore: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //from Store window, Actions menu, new page
 
@@ -691,8 +667,7 @@ public class MarketService {
             return Response.createResponse(false, desc);
         }
         catch (Exception e) {
-            logger.error("failed to get description" + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -703,8 +678,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(descs));
         }
         catch (Exception e) {
-            logger.error("failed to get descriptions" + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -715,8 +689,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(descs));
         }
         catch (Exception e) {
-            logger.error("failed to get descriptions" + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -1023,10 +996,10 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(newManagerUsername));
         }
         catch (Exception e) {
-            logger.error("addManagerPermission: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //Store window->Actions menu->get Managers->choose a manager->shows details and permissions->edit permissions
+
     @Transactional
     public Response changeManagerPermission(String token, String currentOwnerUsername, String newManagerUsername, int storeId, HashSet<Permission> permission) {
         try {
@@ -1036,10 +1009,10 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(newManagerUsername));
         }
         catch (Exception e) {
-            logger.error("addManagerPermission: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //Store window->Actions menu->get Managers->choose a manager->shows details and permissions->edit permissions
+
     public Response getManagerPermissions(String token, String currentOwnerUsername, String managerUsername, int storeId) {
         try {
             checkToken(token, currentOwnerUsername);
@@ -1051,8 +1024,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(userFacade.getManagerPermissions(currentOwnerUsername, managerUsername, storeId)));
         }
         catch (Exception e) {
-            logger.error("getManagerPermissions: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     } //Store window->Actions menu->get Managers->choose a manager->shows details and permissions
 
@@ -1072,8 +1044,7 @@ public class MarketService {
             return Response.createResponse(false, objectMapper.writeValueAsString(enumInts));
         }
         catch (Exception e) {
-            logger.error("getManagerPermissions: " + e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -1510,35 +1481,39 @@ public class MarketService {
     public Response getIsOwner(String token, String username, int storeId, String ownerUsername) {
         try {
             checkToken(token, username);
+            logger.info(String.format("%s checked if %s is an owner of store %d.", username, ownerUsername, storeId));
             return Response.createResponse(false, String.valueOf(storeFacade.getIsOwner(username, storeId, ownerUsername)));
         } catch (Exception e) {
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
     public Response getIsActive(int storeId) {
         try {
+            logger.info(String.format("Checked if store %d is active.", storeId));
             return Response.createResponse(false, String.valueOf(storeFacade.isStoreActive(storeId)));
         } catch (Exception e) {
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
-    public Response getIsFounder(String token, String username, int storeId, String ownerUsername) {
+    public Response getIsFounder(String token, String username, int storeId, String founderUsername) {
         try {
             checkToken(token, username);
-            return Response.createResponse(false, String.valueOf(storeFacade.getIsFounder(username, storeId, ownerUsername)));
+            logger.info(String.format("%s checked if %s is a founder of store %d.", username, founderUsername, storeId));
+            return Response.createResponse(false, String.valueOf(storeFacade.getIsFounder(username, storeId, founderUsername)));
         } catch (Exception e) {
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
     public Response getIsManager(String token, String username, int storeId, String managerUsername) {
         try {
             checkToken(token, username);
+            logger.info(String.format("%s checked if %s is a manager of store %d.", username, managerUsername, storeId));
             return Response.createResponse(false, String.valueOf(storeFacade.getIsManager(username, storeId, managerUsername)));
         } catch (Exception e) {
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -1592,8 +1567,7 @@ public class MarketService {
             boolean res = storeFacade.hasPermission(actorUsername, actionUsername, storeId, permissionEnum);
             return Response.createResponse(false, objectMapper.writeValueAsString(res));
         }catch(Exception e){
-            logger.error("hasPermission failed for username: {}. Error: {}", actorUsername, e.getMessage());
-            return Response.createResponse(true, e.getMessage());
+            return handleException(e);
         }
     }
 
