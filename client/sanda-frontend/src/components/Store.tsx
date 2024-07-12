@@ -47,6 +47,7 @@ export const Store = () => {
       setStore(JSON.parse(storeResponse.dataJson))
     }else{
       navigate('/permission-error', {state: storeResponse.errorString})
+      return;
     }
     let owner: boolean = await isOwner(storeId!)
     let manager: boolean = await isManager(storeId!)
