@@ -104,7 +104,6 @@ public class UserFacade {
         logger.info("check for login for member {}",username);
         if(isExist(username)){
             logger.info("checked for login for member {}",username);
-
             return iUserRepo.isLoggedIn(username);
         }
         logger.info("check for login for member but member doesnt exist {}",username);
@@ -113,7 +112,9 @@ public class UserFacade {
 
     public boolean isExist(String userName){
         logger.info("check if member exist {}",userName);
-        return iUserRepo.hasMember(userName);
+        boolean res= iUserRepo.hasMember(userName);
+        logger.info("checked if member exist {} and got {}",userName,res);
+        return res;
     }
 
     public void setSystemManagerUserName(String username){
@@ -147,7 +148,7 @@ public class UserFacade {
         logger.info("{} tries to login",userName);
         isValid(userName);
         if(iUserRepo.isLoggedIn(userName)){
-            logger.error("user {} already logged in",userName);
+            logger.info("user {} already logged in",userName);
             throw new IllegalStateException(Error.makeUserLoggedInError());
         }
         iUserRepo.setLogin(userName,true);
@@ -265,7 +266,7 @@ public class UserFacade {
         logger.info("{} login from guest {}",userName,guestId);
         isValid(userName);
         if(iUserRepo.isLoggedIn(userName)){
-            logger.error("user {} already logged in",userName);
+            logger.info("user {} already logged in",userName);
             throw new IllegalStateException(Error.makeUserLoggedInError());
         }
         if(iUserRepo.getUserCart(userName).isEmpty()){
