@@ -41,6 +41,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -252,7 +253,7 @@ class StoreFacadeTest {
         return s;
     }
 
-    private void generateStore0(IStoreRepository repo) {
+    private void generateStore0(IStoreRepository repo)  {
         if(repo instanceof MemoryStoreRepository) {
             storeId0Mem = storeFacade.createStore("WillyTheChocolateDude", "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
         }
@@ -261,7 +262,7 @@ class StoreFacadeTest {
         }
     }
 
-    private void generateStore1(IStoreRepository repo) {
+    private void generateStore1(IStoreRepository repo)  {
         if(repo instanceof MemoryStoreRepository) {
             storeId1Mem = storeFacade.createStore("Mr. Krabs", "Krusty Krab", "Bikini Bottom", "krab@gmail.com", "0541085120");
         }
@@ -286,7 +287,6 @@ class StoreFacadeTest {
         StoreDTO expected = new StoreDTO(repo.findStoreByID(id));
         assertEquals(expected, res);
     }
-
 
     @ParameterizedTest
     @MethodSource("repositoryProvider")
@@ -781,7 +781,7 @@ class StoreFacadeTest {
 
     @ParameterizedTest
     @MethodSource("repositoryProvider")
-    void getStoreInfoSuccess(IStoreRepository repo) {
+    void getStoreInfoSuccess(IStoreRepository repo)  {
         setUp(repo);
         int id = storeFacade.createStore("WillyTheChocolateDude", "test1", "test", "test@gmail.com", "1234567890");
         StoreDTO dto1 = storeFacade.getStoreInfo("WillyTheChocolateDude", id);

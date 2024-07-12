@@ -32,6 +32,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -112,14 +113,14 @@ class BuyPolicyFacadeTest {
         this.buyPolicyFacade.setProductFacade(productFacade);
     }
 
-    private void generateStore0() {
+    private void generateStore0()  {
         storeFacade.createStore(ownerUsername, "Chocolate Factory", "Beer Sheva", "chocolate@gmail.com", "0541075403");
 
         storeFacade.addProductToStore(ownerUsername, 0, "Shokolad Parah", 1000, 5.5, "Chocolate", 4,2);
         storeFacade.addProductToStore(ownerUsername, 0, "Beer", 990, 15, "Alcohol", 4,0.3);
     }
 
-    private void generateStore1() {
+    private void generateStore1()  {
         LocalTime openingHour = LocalTime.of(10, 0);
         LocalTime closingHour = LocalTime.of(21, 0);
         LocalTime fridayClosingHour = LocalTime.of(14, 0);

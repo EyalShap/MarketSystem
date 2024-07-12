@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
@@ -10,13 +11,19 @@ import com.sadna.sadnamarket.domain.users.CartItemDTO;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.QueryHint;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.TransactionException;
+import org.hibernate.exception.JDBCConnectionException;
 import org.hibernate.query.Query;
 import org.springframework.data.relational.core.sql.In;
 
+import javax.persistence.LockTimeoutException;
 import javax.persistence.NoResultException;
 import org.springframework.data.jpa.repository.QueryHints;
+
+import javax.persistence.PersistenceException;
 import javax.transaction.Transactional;
 
 public class HibernateStoreRepository implements IStoreRepository{
@@ -31,6 +38,9 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store;
         }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 
     @Override
@@ -40,7 +50,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             List<Integer> res = session.createQuery( "select s.storeId from Store s" ).list();
             return new HashSet<>(res);
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -60,8 +70,9 @@ public class HibernateStoreRepository implements IStoreRepository{
     public int addStore(String founderUsername, String storeName, String address, String email, String phoneNumber) {
         verify(storeName, address, email, phoneNumber);
 
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
 
             try{
@@ -75,6 +86,10 @@ public class HibernateStoreRepository implements IStoreRepository{
                 session.getTransaction().commit();
                 return createdStore.getStoreId();
             }
+        }
+        catch (HibernateException e) {
+            session.getTransaction().rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             session.getTransaction().rollback();
@@ -90,6 +105,9 @@ public class HibernateStoreRepository implements IStoreRepository{
         try {
             findStoreByID(storeId);
             return true;
+        }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             return false;
@@ -114,8 +132,9 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public void addProductToStore(int storeId, int productId, int amount) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -128,8 +147,13 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.merge(store);
             session.getTransaction().commit();
         }
+        catch (HibernateException e) {
+            session.getTransaction().rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
         catch (Exception e) {
             session.getTransaction().rollback();
+            throw e;
         }
         finally {
             session.close();
@@ -141,6 +165,9 @@ public class HibernateStoreRepository implements IStoreRepository{
         try {
             getProductAmountInStore(storeId, productId);
             return true;
+        }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch(Exception e) {
             if (e.getMessage().equals(Error.makeStoreProductDoesntExistError(storeId, productId))) {
@@ -156,6 +183,9 @@ public class HibernateStoreRepository implements IStoreRepository{
         try {
             amountInStore = getProductAmountInStore(storeId, productId);
             return amountInStore >= amount;
+        }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             return false;
@@ -175,12 +205,16 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store.getProductAmounts().get(productId);
         }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 
     @Override
     public void deleteProductFromStore(int storeId, int productId) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -196,6 +230,10 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
+        catch (HibernateException e) {
+            session.getTransaction().rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
         catch (Exception e) {
             session.getTransaction().rollback();
             throw e;
@@ -207,8 +245,9 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public void updateProductAmountInStore(int storeId, int productId, int newAmount) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -221,6 +260,10 @@ public class HibernateStoreRepository implements IStoreRepository{
             store.setProductAmounts(productId, newAmount);
             session.update(store);
             session.getTransaction().commit();
+        }
+        catch (HibernateException e) {
+            session.getTransaction().rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             session.getTransaction().rollback();
@@ -240,11 +283,13 @@ public class HibernateStoreRepository implements IStoreRepository{
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
             // for lazy loading
-            //store.getProductAmounts();
             for(int productId : store.getProductAmounts().keySet()) {
                 store.getProductAmounts().get(productId);
             }
             return store.getStoreDTO();
+        }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
     }
 
@@ -258,12 +303,16 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store.checkCart(cart);
         }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 
     @Override
     public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -273,6 +322,10 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
             return errors;
+        }
+        catch (HibernateException e) {
+            session.getTransaction().rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             session.getTransaction().rollback();
@@ -290,6 +343,9 @@ public class HibernateStoreRepository implements IStoreRepository{
             Store res = session.createQuery("SELECT s FROM Store s where s.storeInfo.storeName = :name", Store.class).setParameter("name", storeName).getSingleResult();
             return res;
         }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
         catch (NoResultException e) {
             throw new IllegalArgumentException(Error.makeNoStoreWithNameError(storeName));
         }
@@ -300,8 +356,9 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public void setStoreBankAccount(int storeId, BankAccountDTO bankAccountDTO) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try{
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -311,6 +368,10 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.merge(store);
             session.save(bankAccountDTO);
             session.getTransaction().commit();
+        }
+        catch (HibernateException e) {
+            session.getTransaction().rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             session.getTransaction().rollback();
@@ -329,6 +390,9 @@ public class HibernateStoreRepository implements IStoreRepository{
             //return new Store(res);
             BankAccountDTO bankAccountDTO = session.get(BankAccountDTO.class, storeId);
             return bankAccountDTO;
+        }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (NoResultException e) {
             throw new IllegalArgumentException(Error.makeStoreDidNotSetBankAccountError(storeId));
@@ -359,12 +423,16 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store.hasProducts(productIds);
         }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 
     @Override
     public void addManagerToStore(String username, int storeId) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -374,9 +442,13 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        catch (Exception e) {
+            session.getTransaction().rollback();
+            throw e;
         }
         finally {
             session.close();
@@ -385,8 +457,9 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public void addOwnerToStore(String username, int storeId) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -396,9 +469,13 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        catch (Exception e) {
+            session.getTransaction().rollback();
+            throw e;
         }
         finally {
             session.close();
@@ -407,8 +484,9 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public void addOrderIdToStore(int storeId, int orderId) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -418,9 +496,13 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
+        }
+        catch (Exception e) {
+            session.getTransaction().rollback();
+            throw e;
         }
         finally {
             session.close();
@@ -429,8 +511,9 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     public void changeStoreState(String username, int storeId, boolean open, UserFacade userFacade) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = null;
         try {
+            session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             Store store = session.get(Store.class, storeId);
             if (store == null) {
@@ -448,6 +531,10 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.getTransaction().commit();
 
             notifyAboutStore(open, store, userFacade);
+        }
+        catch (HibernateException e) {
+            session.getTransaction().rollback();
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             session.getTransaction().rollback();
@@ -486,6 +573,9 @@ public class HibernateStoreRepository implements IStoreRepository{
             for (ProductDTO product : filteredProducts)
                 res.put(product, productAmounts.get(product.getProductID()));
             return res;
+        }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
     }
 
