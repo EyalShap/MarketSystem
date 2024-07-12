@@ -75,10 +75,9 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
     }
 
     private int addCompositeBuyPolicy(int id1, int id2, String logic) {
-        Session session = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
+        Transaction transaction = null;
+        try(Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
             BuyPolicyData policyDTO = session.get(BuyPolicyData.class, id1);
             if (policyDTO == null) {
                 throw new IllegalArgumentException(Error.makeBuyPolicyWithIdDoesNotExistError(id1));
@@ -90,19 +89,19 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             BuyPolicyData hibernateDto = new CompositeBuyPolicyData(id1,id2,logic);
             BuyPolicyData existingDto = getExistingBuyPolicy(session, hibernateDto);
             if(existingDto != null){
-                session.getTransaction().commit();
+                transaction.commit();
                 return existingDto.policyId;
             }
             session.save(hibernateDto); // Save the store and get the generated ID
-            session.getTransaction().commit();
+            transaction.commit();
             return hibernateDto.policyId;
         }
         catch (HibernateException e) {
-            session.getTransaction().rollback();
+            transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
-        catch (Exception e) {
-            session.getTransaction().rollback();
+        catch(Exception e) {
+            transaction.rollback();
             throw e;
         }
     }
