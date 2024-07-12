@@ -19,12 +19,12 @@ public class HibernateProductRepository implements IProductRepository{
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Product getProduct(int productId) {
-        if (!isExistProduct(productId)) {
-            throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
-        }
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Product.class, productId);
-        } catch (Exception e) {
+            Product ans = session.get(Product.class, productId);
+            if(ans ==null)
+                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
+            return ans;
+        } catch (HibernateException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -65,9 +65,6 @@ public class HibernateProductRepository implements IProductRepository{
     @Override
     public void removeProduct(int productId) {
         Transaction transaction = null;
-        if (!isExistProduct(productId)) {
-            throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
-        }
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             Product product = session.get(Product.class, productId);
@@ -75,7 +72,9 @@ public class HibernateProductRepository implements IProductRepository{
                 session.delete(product);
                 transaction.commit();
             }
-        } catch (Exception e) {
+            else
+                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
+        } catch (HibernateException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
