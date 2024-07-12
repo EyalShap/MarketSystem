@@ -29,6 +29,7 @@ import SearchOrdersByUsername from './components/OrderHistoryByUser';
 import StoreViewHistory from './components/StoreViewHistory';
 import SearchStoresResult from './components/SearchStoresResult';
 import EditProduct from './components/EditProduct';
+import CowComponent from './components/CowComponent';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -65,6 +66,7 @@ function App() {
       }
       }
       if(localStorage.getItem("token") !== null&& localStorage.getItem("username") !== "null"){
+        try{
         const resp=await loginUsingJwt(localStorage.getItem("username") as string, localStorage.getItem("token") as string);
         if(!resp.error){
          setIsloggedin(true);
@@ -74,7 +76,9 @@ function App() {
           localStorage.clear();
           alert("Session over please login again");
         }
-      }
+      }catch(e){
+        alert("Error occoured please try again later");      
+      }}
       try{
       const guestId = await enterAsGuest();
       localStorage.setItem("guestId", `${guestId}`);
@@ -117,7 +121,7 @@ function App() {
             <Route path="/managerStoreHistory" element={<StoreOrders />}/>
             <Route path="/managerUserHistory" element={<SearchOrdersByUsername />}/>
             <Route path="/search-stores-results" element={<SearchStoresResult />}/>
-
+            <Route path="/connectionError" element={<CowComponent />}/>
             <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
           </Routes>
         </Router>
