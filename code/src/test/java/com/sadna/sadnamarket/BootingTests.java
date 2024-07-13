@@ -62,7 +62,6 @@ public class BootingTests {
     public void testCrashConfig() throws Exception {
         //config contain state that register the two same user
         Config.read("configForTests/configTestCrash.json");
-        System.setProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "default");
 
         Exception exception = assertThrows(Exception.class, this::createMarket);
         String expectedMessage = "Start from state failed at command register: username already exists";
@@ -84,7 +83,6 @@ public class BootingTests {
         @BeforeAll
         public void setUpOnce() {
             Config.read("configForTests/configCheck.json");
-            System.setProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "default");
             createMarket();
         }
 
@@ -137,6 +135,7 @@ public class BootingTests {
         @AfterAll
         public void after() {
             market.clear();
+            Config.read("testconfig.json");
         }
     }
 
