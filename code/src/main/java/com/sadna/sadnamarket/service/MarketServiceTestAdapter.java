@@ -36,6 +36,7 @@ public class MarketServiceTestAdapter {
         return true;
     }
 
+
     public void injectRealtime(RealtimeService realtimeService){
         this.testingService.injectRealtime(realtimeService);
     }
@@ -64,8 +65,8 @@ public class MarketServiceTestAdapter {
         return testingService.login(username, passwordHash);
     }
 
-    public Response memberExists(String userId) {
-        return testingService.memberExists(userId);
+    public Response memberExists(String username) {
+        return testingService.memberExists(username);
     }
 
     public Response authenticate(String token, String username) {
@@ -315,6 +316,11 @@ public class MarketServiceTestAdapter {
                 });
         return notifications.get(0).getId();
     }
+    public Response checkIfSystemManager(String userName){
+        return testingService.checkIfSystemManager(userName);
+    }
+
+
 
     public void clear(){
         testingService.clear();
