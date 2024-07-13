@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BootingTests {
 
-    MarketService market;
+    static MarketService market;
     RealtimeService realtimeService;
     IStoreRepository storeRepo;
     IOrderRepository orderRepo;
@@ -72,8 +72,8 @@ public class BootingTests {
         //to do clear or something
     }
 
-    @After
-    public void after() {
+    @AfterAll
+    public static void after() {
         market.clear();
         Config.read("testconfig.json");
     }
@@ -131,12 +131,6 @@ public class BootingTests {
             Assertions.assertFalse(userRepo.isLoggedIn("u3"));
             Assertions.assertFalse(userRepo.isLoggedIn("u2"));
             Assertions.assertFalse(userRepo.isLoggedIn("u1"));
-        }
-
-        @AfterAll
-        public void after() {
-            market.clear();
-            Config.read("testconfig.json");
         }
     }
 
