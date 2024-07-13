@@ -28,8 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
 import com.sadna.sadnamarket.service.Error;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@ActiveProfiles("test")
+
 public class BootingTests {
 
     MarketService market;
