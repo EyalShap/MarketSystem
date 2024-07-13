@@ -75,6 +75,7 @@ public class BootingTests {
     @After
     public void after() {
         market.clear();
+        Config.read("testconfig.json");
     }
 
     @Nested
