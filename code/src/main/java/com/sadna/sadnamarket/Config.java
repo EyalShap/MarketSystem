@@ -43,24 +43,34 @@ public class Config {
             Config.DB_URL = conf.get("db").asText();
             if(conf.has("clear")){
                 Config.CLEAR = conf.get("clear").asText().equals("on");
+            }else{
+                Config.CLEAR = false;
             }
             if(conf.has("supply")){
                 Config.SUPPLY_URL = conf.get("supply").asText();
                 SUPPLY_ENABLE = true;
+            }else{
+                SUPPLY_ENABLE = false;
             }
             if(conf.has("payment")){
                 Config.PAYMENT_URL = conf.get("payment").asText();
                 PAYMENT_ENABLE = true;
+            }else{
+                PAYMENT_ENABLE = false;
             }
             if(conf.has("state")){
                 Config.BEGIN = conf.get("state").asText();
                 HAS_STATE = true;
+            }else{
+                HAS_STATE = false;
             }
             if(conf.has("concurrency_loop")){
                 Config.CONCURRENT_LOOPS = conf.get("concurrency_loop").asInt();
             }
             if(conf.has("testing")){
                 Config.TESTING_MODE = conf.get("testing").asText().equals("on");
+            }else{
+                TESTING_MODE = false;
             }
         } catch (IOException e) {
             e.printStackTrace();

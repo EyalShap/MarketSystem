@@ -74,7 +74,9 @@ public class BootingTests {
 
     @AfterAll
     public static void after() {
-        market.clear();
+        if(market != null){
+            market.clear();
+        }
         Config.read("testconfig.json");
     }
 
@@ -131,6 +133,13 @@ public class BootingTests {
             Assertions.assertFalse(userRepo.isLoggedIn("u3"));
             Assertions.assertFalse(userRepo.isLoggedIn("u2"));
             Assertions.assertFalse(userRepo.isLoggedIn("u1"));
+        }
+        @AfterAll
+        public void after() {
+            if(market != null){
+                market.clear();
+            }
+            Config.read("testconfig.json");
         }
     }
 
