@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import SearchedProduct from './SearchedProduct';
+import ProductInStore from './ProductInStore';
 import '../styles/searched-product.css';
 import ProductModel from '../models/ProductModel';
 import { searchProducts } from '../API'; // Adjust the import path based on your file structure
@@ -18,7 +19,7 @@ function SearchResults() {
   const [productsResults, setProductsResults] = useState<ProductModel[]>([]);
 
   useEffect(() => {
-    searchProducts("", searchTerm, searchCategory, minPrice, maxPrice,0)
+    searchProducts((localStorage.getItem("username") ? localStorage.getItem("username") : "")!, searchTerm, searchCategory, minPrice, maxPrice,0)
       .then((response) => {
          setProductsResults(response);
       })

@@ -8,6 +8,10 @@
     background-color: #f0f0f0;
   }
   
+  .stationary {
+    margin-bottom: 20px;
+  }
+
   .cow-animation {
     margin-bottom: 20px;
     animation: moveCow 2s linear infinite;

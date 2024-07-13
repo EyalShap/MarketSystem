@@ -385,6 +385,13 @@ public class StoreFacade {
         return order;
     }
 
+    public List<OrderDTO> getStoreOrderHistoryDTO(String username, int storeId) throws JsonProcessingException {
+        if (!storeRepository.findStoreByID(storeId).isStoreOwner(username) && !userFacade.isSystemManager(username))
+            throw new IllegalArgumentException(Error.makeStoreUserCannotStoreHistoryError(username, storeId));
+        List<OrderDTO> orders = orderFacade.getOrderHistory(storeId);
+        return orders;
+    }
+
     public StoreDTO getStoreInfo(String username, int storeId) {
         Store store = storeRepository.findStoreByID(storeId);
         synchronized (store) {

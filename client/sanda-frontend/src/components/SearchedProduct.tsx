@@ -4,6 +4,8 @@ import '../styles/general.css';
 import ProductModel from '../models/ProductModel';
 import { addProductToCartGuest, addProductToCartMember } from '../API';
 import { AppContext } from '../App';
+import RestResponse from '../models/RestResponse';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchedProductProps {
   product: ProductModel;
@@ -13,17 +15,23 @@ const SearchedProduct: React.FC<SearchedProductProps> = ({ product }) => {
   const { isloggedin } = useContext(AppContext);
   const [addedToCart, setAddedToCart] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
-  console.log(product.storeId);
-  function handleAddToCart(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+  const navigate = useNavigate();
+
+  async function handleAddToCart(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    let response;
       if(isloggedin){
-      addProductToCartMember(product.productID, product.storeId ? product.storeId : 0, selectedQuantity);
+      response = await addProductToCartMember(product.productID, product.storeId ? product.storeId : 0, selectedQuantity);
 
       }
       else{
-        addProductToCartGuest(product.productID, product.storeId ? product.storeId : 0, selectedQuantity);
+        response = await addProductToCartGuest(product.productID, product.storeId ? product.storeId : 0, selectedQuantity);
       }
+      if((response as RestResponse).error){
+        alert((response as RestResponse).errorString);
+      }else{
       console.log('Product added to cart:', product);
       setAddedToCart(true);
+      }
   }
 
   function handleQuantityChange(event: React.ChangeEvent<HTMLSelectElement>): void {
@@ -72,6 +80,9 @@ const SearchedProduct: React.FC<SearchedProductProps> = ({ product }) => {
 
       <button className="add-to-cart-button button-primary" onClick={handleAddToCart}>
         Add to Cart
+      </button>
+      <button className="add-to-cart-button button-secondary" onClick={() => navigate(`/product/${product.productID}`)}>
+        Go to page
       </button>
     </div>
   );

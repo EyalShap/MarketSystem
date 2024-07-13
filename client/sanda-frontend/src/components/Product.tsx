@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import RestResponse from '../models/RestResponse';
-import { addProductToCartGuest, addProductToCartMember, getProductDetails, hasPermission, removeProductFromStore } from '../API';
+import { addProductToCartGuest, addProductToCartMember, getProductAmount, getProductDetails, hasPermission, removeProductFromStore } from '../API';
 import ProductModel from '../models/ProductModel';
 import { TextField, Button, IconButton, Grid, Box, Typography, Container, Paper } from '@mui/material';
 import { AppContext } from '../App';
@@ -17,6 +17,7 @@ export const Product = () => {
     const { isloggedin, setIsloggedin } = useContext(AppContext);
     const [canDelete, setCanDelete] = useState(false);
     const [canEdit, setCanEdit] = useState(false);
+    const [productAmount, setProductAmount] = useState(0);
 
 
     useEffect(() => {
@@ -25,9 +26,11 @@ export const Product = () => {
             if (!productResponse.error) {
                 let productData: ProductModel = JSON.parse(productResponse.dataJson);
                 setProduct(productData);
+                let productStockAmount = await getProductAmount(productData.productID,productData.storeId!);
+                setProductAmount(productStockAmount)
                 let checkCanDelete: boolean = await hasPermission(`${productData.storeId!}`, Permission.DELETE_PRODUCTS);
                 let checkCanUpdate: boolean = await hasPermission(`${productData.storeId!}`, Permission.UPDATE_PRODUCTS);
-        
+                
                 setCanDelete(checkCanDelete);
                 setCanEdit(checkCanUpdate);
             } else {
@@ -97,6 +100,9 @@ export const Product = () => {
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                     Rank: {product.productRank ? product.productRank : 'N/A'}
+                </Typography>
+                <Typography variant="body1" gutterBottom>
+                    Current Amount: {productAmount ? productAmount : 'N/A'}
                 </Typography>
                 <Grid container spacing={2} alignItems="center">
                     <Grid item>

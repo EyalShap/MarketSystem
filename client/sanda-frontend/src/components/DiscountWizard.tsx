@@ -5,28 +5,53 @@ import Login from './Login';
 import Profile from './Profile';
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addDiscountToStore, createCompositeCondition, createCompositeDiscount, createConditionDiscount, createMinAmountCondition, createMinBuyCondition, createSimpleDiscount, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
+import { addDiscountToStore, createCompositeCondition, createCompositeDiscount, createConditionDiscount, createMinAmountCondition, createMinBuyCondition, createSimpleDiscount, describeCondition, describeDiscountPolicy, hasPermission, searchAndFilterStoreProducts } from '../API';
 import Permission from '../models/Permission';
 import RestResponse from '../models/RestResponse';
+import ProductModel from '../models/ProductModel';
+import Select, { SingleValue, ActionMeta } from 'react-select';
+import { NumberInput } from './NumberInput';
+
 
 const ConditionContext = createContext({
     condId: '-1',
-    setCondId: (cond: string) => {}
+    setCondId: (cond: string) => { }
+});
+
+const ProductsCategContext = createContext<{ products: any[], categs: any[] }>({
+    products: [],
+    categs: []
 });
 
 export const DiscountWizard = () => {
     const [currentElement, setCurrentElement] = useState(<SimpleDiscount />);
-    const {storeId} = useParams();
+    const [products, setProducts] = useState<any[]>([]);
+    const [categs, setCategs] = useState<any[]>([]);
+    const { storeId } = useParams();
     const navigate = useNavigate();
     interface Dictionary<T> {
         [Key: string]: T;
     }
 
     useEffect(() => {
-        const checkAllowed = async ()=> {
+        const checkAllowed = async () => {
             let canAccess: boolean = await hasPermission(storeId!, Permission.ADD_BUY_POLICY);
-            if(!canAccess){
-                navigate('/permission-error', {state: "You do not have Edit Buy Policies permission in the given store"})
+            if (!canAccess) {
+                navigate('/permission-error', { state: "You do not have Edit Buy Policies permission in the given store" })
+            } else {
+                let allProducts: ProductModel[] = await searchAndFilterStoreProducts(storeId!, "", "", -1, -1);
+                let categs: string[] = [];
+                let categValues: any[] = [];
+                let productValues: any[] = [];
+                allProducts.forEach(product => {
+                    if (!categs.includes(product.productCategory)) {
+                        categs.push(product.productCategory);
+                        categValues.push({ value: product.productCategory, label: product.productCategory })
+                    }
+                    productValues.push({ value: `${product.productID}`, label: `${product.productID} - ${product.productName}` })
+                })
+                setProducts(productValues);
+                setCategs(categValues);
             }
         }
         checkAllowed();
@@ -38,30 +63,49 @@ export const DiscountWizard = () => {
     textToElement["Composite Discount"] = <CompositeDiscount />
 
     return (
-        <div className="wizard">
-            <div className="selector">
-                {Object.keys(textToElement).map(buttontext => <button onClick={() => setCurrentElement(textToElement[buttontext])} className='selectorbutton'>{buttontext}</button>)}
+        <ProductsCategContext.Provider value={{ products: products, categs: categs }}>
+            <div className="wizard">
+                <div className="selector">
+                    {Object.keys(textToElement).map(buttontext => <button onClick={() => setCurrentElement(textToElement[buttontext])} className='selectorbutton'>{buttontext}</button>)}
+                </div>
+                <div className='element'>
+                    {currentElement}
+                </div>
             </div>
-            <div className='element'>
-                {currentElement}
-            </div>
-        </div>
+        </ProductsCategContext.Provider>
     );
 };
 
-const SimpleDiscount = () => {
+const SimpleDiscount = (props: any) => {
     const [percentage, setPercentage] = useState("0");
     const [mode, setMode] = useState("store");
     const [category, setCategory] = useState("");
     const [product, setProduct] = useState("");
-    const {storeId} = useParams();
+    const { storeId } = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
 
     const onCreate = async () => {
+        if(mode === "produ" && product === ""){
+            alert("You must choose product");
+            return;
+        }
+        if(mode === "categ" && category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createSimpleDiscount(parseFloat(percentage), mode, parseInt(product), category)
         alert(`Discount created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(mode === "produ" && product === ""){
+            alert("You must choose product");
+            return;
+        }
+        if(mode === "categ" && category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createSimpleDiscount(parseFloat(percentage), mode, parseInt(product), category)
         await addDiscountToStore(parseInt(storeId!), parseInt(id))
         alert(`Discount created with ID ${id} and added to store`)
@@ -77,7 +121,7 @@ const SimpleDiscount = () => {
                     defaultValue={"store"}
 
                     value={mode}
-                    onChange={(e,v) => setMode(v)}
+                    onChange={(e, v) => setMode(v)}
                     name="radio-buttons-group"
                 >
                     <FormControlLabel value={"store"} control={<Radio />} label="Whole Store" />
@@ -86,13 +130,13 @@ const SimpleDiscount = () => {
                 </RadioGroup>
             </FormControl>
             {mode === 'categ' &&
-                        <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value); }} />
+                <Select options={categs} isSearchable={true} onChange={(option, action) => setCategory(option.value)} />
             }
             {mode === 'produ' &&
-                        <TextField type='number' size='small' id="outlined-basic" label="Product ID" variant="outlined" value={product} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setProduct(event.target.value);}} />
+                <Select options={products} isSearchable={true} onChange={(option, action) => setProduct(option.value)} />
             }
-            <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Percentage" variant="outlined" value={percentage} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setPercentage(event.target.value); }} />
+            <h1 />
+            <NumberInput placeholder='Percentage' onChange={(event, val) => setPercentage(`${val}`)} min={0} max={100}/>
             <button onClick={onCreate} className='editorButton'>Create</button>
             <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
@@ -106,14 +150,32 @@ const ConditionDiscount = () => {
     const [product, setProduct] = useState("");
     const [condId, setCondId] = useState("-1");
     const value = { condId, setCondId };
-    const {storeId} = useParams();
+    const { storeId } = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
+
 
     const onCreate = async () => {
+        if(mode === "produ" && product === ""){
+            alert("You must choose product");
+            return;
+        }
+        if(mode === "categ" && category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createConditionDiscount(parseInt(condId), parseFloat(percentage), mode, parseInt(product), category)
         alert(`Discount created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(mode === "produ" && product === ""){
+            alert("You must choose product");
+            return;
+        }
+        if(mode === "categ" && category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createConditionDiscount(parseInt(condId), parseFloat(percentage), mode, parseInt(product), category)
         await addDiscountToStore(parseInt(storeId!), parseInt(id))
         alert(`Discount created with ID ${id} and added to store`)
@@ -125,7 +187,7 @@ const ConditionDiscount = () => {
             <h4>You can use the following sub-wizard to create and select a condition</h4>
             <p>{(condId === "-1") ? "You have not selected a condition yet" : `You have selected condition with ID ${condId}`}</p>
             <ConditionContext.Provider value={value}>
-                <ConditionWizard/>
+                <ConditionWizard />
             </ConditionContext.Provider>
             <FormControl>
                 <FormLabel id="group-label">Discount Applies on:</FormLabel>
@@ -134,7 +196,7 @@ const ConditionDiscount = () => {
                     defaultValue={"store"}
 
                     value={mode}
-                    onChange={(e,v) => setMode(v)}
+                    onChange={(e, v) => setMode(v)}
                     name="radio-buttons-group"
                 >
                     <FormControlLabel value={"store"} control={<Radio />} label="Whole Store" />
@@ -143,21 +205,22 @@ const ConditionDiscount = () => {
                 </RadioGroup>
             </FormControl>
             {mode === 'categ' &&
-                        <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value); }} />
+                <Select options={categs} isSearchable={true} onChange={(option, action) => setCategory(option.value)} />
             }
             {mode === 'produ' &&
-                        <TextField type='number' size='small' id="outlined-basic" label="Product ID" variant="outlined" value={product} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setProduct(event.target.value);}} />
+                <Select options={products} isSearchable={true} onChange={(option, action) => setProduct(option.value)} />
             }
-            <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Percentage" variant="outlined" value={percentage} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setPercentage(event.target.value); }} />
-            <button onClick = {onCreate} className='editorButton'>Create</button>
-            <button onClick = {onCreateAndSave} className='editorButton'>Create and add to store</button>
+            <h1 />
+            <NumberInput placeholder='Percentage' onChange={(event, val) => setPercentage(`${val}`)} min={0} max={100}/>
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
 
 const ConditionWizard = () => {
     const [currentElement, setCurrentElement] = useState(<AmountCondition />);
+
 
     interface Dictionary<T> {
         [Key: string]: T;
@@ -186,13 +249,30 @@ const AmountCondition = () => {
     const [category, setCategory] = useState("");
     const [product, setProduct] = useState("");
     const { condId, setCondId } = useContext(ConditionContext);
+    const { products, categs } = useContext(ProductsCategContext);
 
     const onCreate = async () => {
+        if(mode === "produ" && product === ""){
+            alert("You must choose product");
+            return;
+        }
+        if(mode === "categ" && category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(product), category)
         alert(`Condition created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(mode === "produ" && product === ""){
+            alert("You must choose product");
+            return;
+        }
+        if(mode === "categ" && category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createMinAmountCondition(parseInt(amount), mode, parseInt(product), category)
         alert(`Condition created with ID ${id}`)
         setCondId(id)
@@ -208,7 +288,7 @@ const AmountCondition = () => {
                     defaultValue={"store"}
 
                     value={mode}
-                    onChange={(e,v) => setMode(v)}
+                    onChange={(e, v) => setMode(v)}
                     name="radio-buttons-group"
                 >
                     <FormControlLabel value={"store"} control={<Radio />} label="Whole Store" />
@@ -217,15 +297,15 @@ const AmountCondition = () => {
                 </RadioGroup>
             </FormControl>
             {mode === 'categ' &&
-                        <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value); }} />
+                <Select options={categs} isSearchable={true} onChange={(option, action) => setCategory(option.value)} />
             }
             {mode === 'produ' &&
-                        <TextField type='number' size='small' id="outlined-basic" label="Product ID" variant="outlined" value={product} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setProduct(event.target.value);}} />
+                <Select options={products} isSearchable={true} onChange={(option, action) => setProduct(option.value)} />
             }
-            <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Minimum Amount" variant="outlined" value={amount} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setAmount(event.target.value); }} />
-            <button onClick = {onCreate} className='editorButton'>Create Condition</button>
-            <button onClick = {onCreateAndSave}className='editorButton'>Create Condition and use for discount</button>
+            <h1 />
+            <NumberInput placeholder='Minimum Amount' onChange={(event, val) => setAmount(`${val}`)} min={0}/>
+            <button onClick={onCreate} className='editorButton'>Create Condition</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create Condition and use for discount</button>
         </div>
     );
 };
@@ -248,10 +328,10 @@ const BuyCondition = () => {
     return (
         <div className='discountEditor'>
             <p>A discount with this condition will only apply if the total price of a purchase is above a minimum</p>
-            <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Minimum" variant="outlined" value={buy} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setBuy(event.target.value); }} />
-            <button onClick = {onCreate} className='editorButton'>Create Condition</button>
-            <button onClick = {onCreateAndSave}className='editorButton'>Create Condition and use for discount</button>
+            <h1 />
+            <NumberInput placeholder='Minimum' onChange={(event, val) => setBuy(`${val}`)} min={0}/>
+            <button onClick={onCreate} className='editorButton'>Create Condition</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create Condition and use for discount</button>
         </div>
     );
 };
@@ -264,34 +344,34 @@ const CompositeDiscount = () => {
     const [id2, setId2] = useState("0");
     const [desc1, setDesc1] = useState("");
     const [desc2, setDesc2] = useState("");
-    const {storeId} = useParams();
+    const { storeId } = useParams();
 
     const onCreate = async () => {
-        let id: string = await createCompositeDiscount(parseInt(id1),parseInt(id2),logic,decide)
+        let id: string = await createCompositeDiscount(parseInt(id1), parseInt(id2), logic, decide)
         alert(`Discount created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
-        let id: string = await createCompositeDiscount(parseInt(id1),parseInt(id2),logic,decide)
+        let id: string = await createCompositeDiscount(parseInt(id1), parseInt(id2), logic, decide)
         await addDiscountToStore(parseInt(storeId!), parseInt(id))
         alert(`Discount created with ID ${id} and added to store`)
     }
 
     useEffect(() => {
         fetchDescriptions();
-      },[id1,id2])
+    }, [id1, id2])
     const logicList = ["OR", "AND", "XOR", "Addition", "Maximum"]
-    const fetchDescriptions = async () =>{
+    const fetchDescriptions = async () => {
         let resp1: RestResponse = await describeDiscountPolicy(id1);
         let resp2: RestResponse = await describeDiscountPolicy(id2);
-        if(resp1.error){
+        if (resp1.error) {
             setDesc1(`Error: ${resp1.errorString}`)
-        }else{
+        } else {
             setDesc1(resp1.dataJson)
         }
-        if(resp2.error){
+        if (resp2.error) {
             setDesc2(`Error: ${resp2.errorString}`)
-        }else{
+        } else {
             setDesc2(resp2.dataJson)
         }
     }
@@ -306,35 +386,35 @@ const CompositeDiscount = () => {
                     defaultValue={"OR"}
 
                     value={logic}
-                    onChange={(e,v) => setLogic(v)}
+                    onChange={(e, v) => setLogic(v)}
                     name="radio-buttons-group"
                 >
                     {logicList.map(logi => <FormControlLabel value={logi} control={<Radio />} label={logi} />)}
                 </RadioGroup>
             </FormControl>
-            <h1/>
-            {logic === "XOR" && 
-            <FormControl>
-            <FormLabel id="group-label">Decision logic:</FormLabel>
-            <RadioGroup
-                aria-labelledby="group-label"
-                defaultValue={"MAX"}
+            <h1 />
+            {logic === "XOR" &&
+                <FormControl>
+                    <FormLabel id="group-label">Decision logic:</FormLabel>
+                    <RadioGroup
+                        aria-labelledby="group-label"
+                        defaultValue={"MAX"}
 
-                value={logic}
-                onChange={(e,v) => setDecide(v)}
-                name="radio-buttons-group"
-            >
-                <FormControlLabel value={"MAX"} control={<Radio />} label={"MAX"} />
-                <FormControlLabel value={"MIN"} control={<Radio />} label={"MIN"} />
-            </RadioGroup>
-        </FormControl>}
-            <h1/>
+                        value={logic}
+                        onChange={(e, v) => setDecide(v)}
+                        name="radio-buttons-group"
+                    >
+                        <FormControlLabel value={"MAX"} control={<Radio />} label={"MAX"} />
+                        <FormControlLabel value={"MIN"} control={<Radio />} label={"MIN"} />
+                    </RadioGroup>
+                </FormControl>}
+            <h1 />
             <TextField type='number' size='small' id="outlined-basic" label="ID of first discount" variant="outlined" value={id1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId1(event.target.value); }} />
             <p className='policyDescription'>Description: {desc1}</p>
             <TextField type='number' size='small' id="outlined-basic" label="ID of second discount" variant="outlined" value={id2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId2(event.target.value); }} />
             <p className='policyDescription'>Description: {desc2}</p>
-            <button onClick = {onCreate} className='editorButton'>Create</button>
-            <button onClick = {onCreateAndSave} className='editorButton'>Create and add to store</button>
+            <button onClick={onCreate} className='editorButton'>Create</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
     );
 };
@@ -350,19 +430,19 @@ const CompositeCondition = () => {
 
     useEffect(() => {
         fetchDescriptions();
-      },[id1,id2])
+    }, [id1, id2])
     const logicList = ["OR", "AND", "XOR"]
-    const fetchDescriptions = async () =>{
+    const fetchDescriptions = async () => {
         let resp1: RestResponse = await describeCondition(id1);
         let resp2: RestResponse = await describeCondition(id2);
-        if(resp1.error){
+        if (resp1.error) {
             setDesc1(`Error: ${resp1.errorString}`)
-        }else{
+        } else {
             setDesc1(resp1.dataJson)
         }
-        if(resp2.error){
+        if (resp2.error) {
             setDesc2(`Error: ${resp2.errorString}`)
-        }else{
+        } else {
             setDesc2(resp2.dataJson)
         }
     }
@@ -388,19 +468,19 @@ const CompositeCondition = () => {
                     defaultValue={"OR"}
 
                     value={logic}
-                    onChange={(e,v) => setLogic(v)}
+                    onChange={(e, v) => setLogic(v)}
                     name="radio-buttons-group"
                 >
                     {logicList.map(logi => <FormControlLabel value={logi} control={<Radio />} label={logi} />)}
                 </RadioGroup>
             </FormControl>
-            <h1/>
+            <h1 />
             <TextField type='number' size='small' id="outlined-basic" label="ID of first condition" variant="outlined" value={id1} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId1(event.target.value); }} />
             <p className='policyDescription'>Description: {desc1}</p>
             <TextField type='number' size='small' id="outlined-basic" label="ID of second condition" variant="outlined" value={id2} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setId2(event.target.value); }} />
             <p className='policyDescription'>Description: {desc2}</p>
-            <button onClick = {onCreate} className='editorButton'>Create Condition</button>
-            <button onClick = {onCreateAndSave} className='editorButton'>Create Condition and use for discount</button>
+            <button onClick={onCreate} className='editorButton'>Create Condition</button>
+            <button onClick={onCreateAndSave} className='editorButton'>Create Condition and use for discount</button>
         </div>
     );
 };

@@ -237,7 +237,7 @@ public class StoreRestController {
     }
 
 
-    @GetMapping("/getStoreProductAmount")
+    @PatchMapping("/getStoreProductAmount")
     public Response getStoreProductAmount(@RequestParam(value = "username", required = false) String username, @RequestBody ProductStoreRequest productStoreRequest ,HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
         String token = null;

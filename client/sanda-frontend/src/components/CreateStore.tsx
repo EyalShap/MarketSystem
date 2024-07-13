@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -6,6 +6,8 @@ import '../styles/CreateStore.css';
 import { createNewStore, loginUsingJwt } from '../API';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../App';
+import { Oval } from 'react-loader-spinner'
+import { Loading } from './Loading';
 
 // Define the schema for validation
 const schema = yup.object().shape({
@@ -27,6 +29,7 @@ const CreateStore = () => {
 
   const { isloggedin, setIsloggedin } = useContext(AppContext);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const reLogin = async () => {
@@ -51,6 +54,7 @@ const CreateStore = () => {
   }, [isloggedin, navigate, setIsloggedin]);
 
   const onSubmit: SubmitHandler<any> = async (data) => {
+    setLoading(true);
     const response = await createNewStore(data);
     if (response.error) {
       alert("Error: " + response.errorString);
@@ -58,6 +62,7 @@ const CreateStore = () => {
       alert("Store created successfully!");
       navigate(`/memberStores/${localStorage.getItem("username")}`);
     }
+    setLoading(false);
   };
 
   return (
@@ -117,6 +122,7 @@ const CreateStore = () => {
           {errors.phoneNumber && <p className="error-message">{errors.phoneNumber.message}</p>}
         </div>
         <button type="submit" className='button'>Create Store</button>
+        {loading && <Loading reason={"we are creating your store"}/>}
       </form>
     </div>
   );

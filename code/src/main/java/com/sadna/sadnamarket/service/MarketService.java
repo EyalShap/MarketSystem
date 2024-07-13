@@ -357,7 +357,7 @@ public class MarketService {
     public Response getStoreOrderHistory(String token, String username, int storeId) {
         try {
             checkToken(token, username);
-            List<ProductDataPrice> history = storeFacade.getStoreOrderHistory(username, storeId);
+            List<OrderDTO> history = storeFacade.getStoreOrderHistoryDTO(username, storeId);
             logger.info(String.format("User %s got order history from store %d.", username, storeId));
             return Response.createResponse(false, objectMapper.writeValueAsString(history));
         }

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '../App';
 import Permission from '../models/Permission';
 import { Categories } from '../models/CategoriesConst';
+import { Loading } from './Loading';
 
 // Define the schema for validation
 const schema = yup.object().shape({
@@ -26,6 +27,8 @@ const AddProduct = () => {
 
   const {storeId} = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
 
   useEffect(() => {
     const checkAllowed = async ()=> {
@@ -39,12 +42,14 @@ const AddProduct = () => {
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     const response = await addProduct(data, parseInt(storeId!));
+    setLoading(true);
     if (response.error) {
       alert("Error: " + response.errorString);
     } else {
       alert("Product created successfully!");
       navigate(`/store/${storeId}`);
     }
+    setLoading(false);
   };
 
   return (
@@ -115,6 +120,7 @@ const AddProduct = () => {
           {errors.productQuantity && <p className="error-message">{errors.productQuantity.message}</p>}
         </div>
         <button type="submit" className='button'>Add Product</button>
+        {loading && <Loading reason={"the product is being created"}/>}
       </form>
     </div>
   );

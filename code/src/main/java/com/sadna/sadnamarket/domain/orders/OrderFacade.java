@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sadna.sadnamarket.domain.discountPolicies.ProductDataPrice;
 import com.sadna.sadnamarket.domain.stores.StoreFacade;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OrderFacade {
     private IOrderRepository orderRepository;
@@ -58,6 +55,11 @@ public class OrderFacade {
 
     public List<ProductDataPrice> getOrders(int storeId) {
         return orderRepository.getOrders(storeId);
+    }
+
+    public List<OrderDTO> getOrderHistory(int storeId) {
+        List<OrderDTO> orderList = orderRepository.getOrderHistory(storeId);
+        return orderList;
     }
 
 
