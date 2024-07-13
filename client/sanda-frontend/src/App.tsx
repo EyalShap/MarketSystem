@@ -30,6 +30,7 @@ import StoreViewHistory from './components/StoreViewHistory';
 import SearchStoresResult from './components/SearchStoresResult';
 import EditProduct from './components/EditProduct';
 import CowComponent from './components/CowComponent';
+import { useSelector } from 'react-redux';
 
 interface AppContextProps {
   isloggedin: boolean;
@@ -45,6 +46,7 @@ export const AppContext = createContext<AppContextProps>({
 function App() {
   const [isloggedin, setIsloggedin] = useState(false);
   const effectRan = useRef(false);
+  const conerror = useSelector((state:any) => state.conerror.value)
   
   useEffect(() => {
     const fetchData = async () => {
@@ -92,40 +94,40 @@ function App() {
   }, [isloggedin, setIsloggedin]);
   return (
     <div className="App">
+      {conerror ? <CowComponent/> : 
       <AppContext.Provider value={{ isloggedin, setIsloggedin }}>
-        <Router>
-          {isloggedin ? 
-          <StompSessionProvider url={'http://127.0.0.1:8080/ws'}><MemberNavbar /></StompSessionProvider>
-           : <Navbar />}
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile/:username" element={<Profile />} />
-            <Route path="/orders/:username" element={<Orders />} />
-            <Route path="/cart/:username" element={<Cart />} />
-            <Route path="/search-results" element={<SearchResults />} />
-            <Route path="/store/:storeId" element={<Store/>}/>
-            <Route path="/product/:productId" element={<Product/>}/>
-            <Route path="/editproduct/:productId" element={<EditProduct/>}/>
-            <Route path="/store/:storeId/staff" element={<Staff/>}/>
-            <Route path="/store/:storeId/policy" element={<BuyPolicyWizard/>}/>
-            <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>
-            <Route path="/store/:storeId/addProduct" element={<AddProduct />}/>
-            <Route path="/store/:storeId/bank" element={<SetBankAccount />}/>
-            <Route path="/store/:storeId/orders" element={<StoreViewHistory />}/>
-            <Route path="/memberStores/:username" element={<MyStores />} />
-            <Route path="/createStore" element={<CreateStore />}/>
-            <Route path="/purchase" element={<Purchase />}/>
-            <Route path="/permission-error" element={<PermissionError />}/>
-            <Route path="/managerStoreHistory" element={<StoreOrders />}/>
-            <Route path="/managerUserHistory" element={<SearchOrdersByUsername />}/>
-            <Route path="/search-stores-results" element={<SearchStoresResult />}/>
-            <Route path="/connectionError" element={<CowComponent />}/>
-            <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
-          </Routes>
-        </Router>
-      </AppContext.Provider>
+      <Router>
+        {isloggedin ? 
+        <StompSessionProvider url={'http://127.0.0.1:8080/ws'}><MemberNavbar /></StompSessionProvider>
+         : <Navbar />}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/orders/:username" element={<Orders />} />
+          <Route path="/cart/:username" element={<Cart />} />
+          <Route path="/search-results" element={<SearchResults />} />
+          <Route path="/store/:storeId" element={<Store/>}/>
+          <Route path="/product/:productId" element={<Product/>}/>
+          <Route path="/editproduct/:productId" element={<EditProduct/>}/>
+          <Route path="/store/:storeId/staff" element={<Staff/>}/>
+          <Route path="/store/:storeId/policy" element={<BuyPolicyWizard/>}/>
+          <Route path="/store/:storeId/discount" element={<DiscountWizard/>}/>
+          <Route path="/store/:storeId/addProduct" element={<AddProduct />}/>
+          <Route path="/store/:storeId/bank" element={<SetBankAccount />}/>
+          <Route path="/store/:storeId/orders" element={<StoreViewHistory />}/>
+          <Route path="/memberStores/:username" element={<MyStores />} />
+          <Route path="/createStore" element={<CreateStore />}/>
+          <Route path="/purchase" element={<Purchase />}/>
+          <Route path="/permission-error" element={<PermissionError />}/>
+          <Route path="/managerStoreHistory" element={<StoreOrders />}/>
+          <Route path="/managerUserHistory" element={<SearchOrdersByUsername />}/>
+          <Route path="/search-stores-results" element={<SearchStoresResult />}/>
+          <Route path="/*" element={<h1>PAGE NOT FOUND!</h1>} />
+        </Routes>
+      </Router>
+    </AppContext.Provider>}
     </div>
   );
 }

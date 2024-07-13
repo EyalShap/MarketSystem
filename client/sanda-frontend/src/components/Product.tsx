@@ -22,17 +22,17 @@ export const Product = () => {
     useEffect(() => {
         const loadProduct = async () => {
             var productResponse: RestResponse = await getProductDetails(parseInt(productId!));
-            let productData: ProductModel = JSON.parse(productResponse.dataJson);
             if (!productResponse.error) {
+                let productData: ProductModel = JSON.parse(productResponse.dataJson);
                 setProduct(productData);
+                let checkCanDelete: boolean = await hasPermission(`${productData.storeId!}`, Permission.DELETE_PRODUCTS);
+                let checkCanUpdate: boolean = await hasPermission(`${productData.storeId!}`, Permission.UPDATE_PRODUCTS);
+        
+                setCanDelete(checkCanDelete);
+                setCanEdit(checkCanUpdate);
             } else {
                 navigate('/permission-error', { state: productResponse.errorString });
             }
-            let checkCanDelete: boolean = await hasPermission(`${productData.storeId!}`, Permission.DELETE_PRODUCTS);
-            let checkCanUpdate: boolean = await hasPermission(`${productData.storeId!}`, Permission.UPDATE_PRODUCTS);
-    
-            setCanDelete(checkCanDelete);
-            setCanEdit(checkCanUpdate);
         };
         loadProduct();
     }, []);
