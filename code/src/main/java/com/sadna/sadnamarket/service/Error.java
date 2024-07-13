@@ -10,7 +10,7 @@ public class Error {
     }
 
     public static String makeAuthUsernameExistsError(){
-        return "username already exits";
+        return "username already exists";
     }
 
     public static String makeAuthUserDoesntExistError(){
