@@ -2,6 +2,7 @@ package com.sadna.sadnamarket.domain.products;
 
 import com.sadna.sadnamarket.HibernateUtil;
 import jakarta.persistence.QueryHint;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import com.sadna.sadnamarket.service.Error;
@@ -19,10 +20,11 @@ public class HibernateProductRepository implements IProductRepository{
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Product getProduct(int productId) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-//            ProductDTO productDTO=session.get(ProductDTO.class, productId);
-//            return productDTOToProduct(productDTO);
-            return session.get(Product.class, productId);
-        } catch (Exception e) {
+            Product ans = session.get(Product.class, productId);
+            if(ans ==null)
+                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
+            return ans;
+        } catch (HibernateException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -41,14 +43,7 @@ public class HibernateProductRepository implements IProductRepository{
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> getAllProducts() {
-        List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-//            List<ProductDTO>productDTOS= session.createQuery("FROM ProductDTO", ProductDTO.class).list();
-//            for (ProductDTO productDTO : productDTOS) {
-//                products.add(productDTOToProduct(productDTO));
-//            }
-//            return products;
-
             return session.createQuery("FROM Product", Product.class).list();
         } catch (Exception e) {
             throw new IllegalArgumentException(Error.makeDBError());
@@ -58,17 +53,10 @@ public class HibernateProductRepository implements IProductRepository{
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> getProducts(List<Integer> productIds) {
-        List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Query<Product> query = session.createQuery(
                     "FROM Product p WHERE p.productId IN (:productIds)", Product.class);
-//            query.setParameterList("productIds", productIds);
-//            List<ProductDTO> productDTOs = query.list();
-//            for (ProductDTO productDTO : productDTOs) {
-//                products.add(productDTOToProduct(productDTO));
-//            }
-            return query.setParameterList("productIds", productIds).list();//test//
-//            return products;
+            return query.setParameterList("productIds", productIds).list();
         } catch (Exception e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
@@ -84,7 +72,9 @@ public class HibernateProductRepository implements IProductRepository{
                 session.delete(product);
                 transaction.commit();
             }
-        } catch (Exception e) {
+            else
+                throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
+        } catch (HibernateException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -149,17 +139,8 @@ public class HibernateProductRepository implements IProductRepository{
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> filterByName(String productName) {
-        //List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "FROM Product p WHERE p.productName LIKE :productName";
-//            List<ProductDTO> productDTOS=new ArrayList<>();
-//            productDTOS= session.createQuery(hql, ProductDTO.class)
-//                    .setParameter("productName", "%" + productName + "%")
-//                    .list();
-//            for (ProductDTO productDTO:productDTOS) {
-//                products.add(productDTOToProduct(productDTO));
-//            }
-//            return products;
             return session.createQuery(hql, Product.class)
                     .setParameter("productName", "%" + productName + "%")
                     .list();
@@ -171,17 +152,8 @@ public class HibernateProductRepository implements IProductRepository{
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public List<Product> filterByCategory(String category) {
-        //List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "FROM Product p WHERE p.productCategory = :category";
-//            List<ProductDTO> productDTOS=new ArrayList<>();
-//            productDTOS= session.createQuery(hql, ProductDTO.class)
-//                    .setParameter("category", category)
-//                    .list();
-//            for (ProductDTO productDTO:productDTOS) {
-//                products.add(productDTOToProduct(productDTO));
-//            }
-            //return products;
             return session.createQuery(hql, Product.class)
                     .setParameter("category", category)
                     .list();
@@ -196,11 +168,6 @@ public class HibernateProductRepository implements IProductRepository{
         List<Product> products=new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "FROM Product p ORDER BY p.productRank DESC";
-//            List<ProductDTO> productDTOS= session.createQuery(hql, ProductDTO.class).list();
-//            for (ProductDTO productDTO:productDTOS) {
-//                products.add(productDTOToProduct(productDTO));
-//            }
-//            return products;
             return session.createQuery(hql, Product.class).list();
         } catch (Exception e) {
             throw new IllegalArgumentException(Error.makeDBError());

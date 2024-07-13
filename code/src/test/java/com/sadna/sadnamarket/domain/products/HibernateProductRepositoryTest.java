@@ -92,5 +92,13 @@ public class HibernateProductRepositoryTest {
         assertTrue(repository.isExistProduct(productId));
     }
 
+    @Test
+    public void given_NonExistentProductId_When_RemoveProduct_Then_ThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> repository.removeProduct(-1));
+    }
 
+    @Test
+    public void given_NonExistentProductId_When_GetProduct_Then_ThrowException() {
+        assertThrows(IllegalArgumentException.class, () -> repository.getProduct(-1));
+    }
 }
