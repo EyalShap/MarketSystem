@@ -9,7 +9,7 @@ const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchCategory, setSearchCategory] = useState('all');
   const [minPrice, setMinPrice] = useState(0); // Default price
-const [maxPrice, setMaxPrice] = useState(100); // Default price
+const [maxPrice, setMaxPrice] = useState(10000000); // Default price
   const navigate = useNavigate();
 
 
@@ -19,10 +19,6 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
 
   const handleSearchSubmit = (event:any) => {
     event.preventDefault();
-    console.log('Search Term:', searchTerm);
-    console.log('Search Category:', searchCategory);
-    console.log('Min Price:', minPrice);
-    console.log('Max Price:', maxPrice);
     // Add your search logic here
   navigate(`/search-results?term=${encodeURIComponent(searchTerm)}&category=${encodeURIComponent(searchCategory)}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
   };
@@ -59,6 +55,7 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
               <input
                 type="range"
                 min="0"
+                step="50"
                 max={maxPrice}
                 value={minPrice}
                 onChange={handleMinPriceChange}
@@ -69,7 +66,8 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
               <input
                 type="range"
                 min={minPrice}
-                max="100"
+                step="50"
+                max="10000000"
                 value={maxPrice}
                 onChange={handleMaxPriceChange}
               />
