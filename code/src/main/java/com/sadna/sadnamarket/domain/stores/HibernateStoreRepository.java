@@ -417,7 +417,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store.hasProducts(productIds);
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -436,7 +436,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
@@ -463,7 +463,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
@@ -490,7 +490,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
@@ -526,7 +526,7 @@ public class HibernateStoreRepository implements IStoreRepository{
 
             notifyAboutStore(open, store, userFacade);
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
@@ -568,7 +568,7 @@ public class HibernateStoreRepository implements IStoreRepository{
                 res.put(product, productAmounts.get(product.getProductID()));
             return res;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
