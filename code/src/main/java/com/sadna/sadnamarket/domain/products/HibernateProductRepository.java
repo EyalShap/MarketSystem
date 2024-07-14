@@ -10,6 +10,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 
+import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +25,7 @@ public class HibernateProductRepository implements IProductRepository{
             if(ans ==null)
                 throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
             return ans;
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -74,7 +75,7 @@ public class HibernateProductRepository implements IProductRepository{
             }
             else
                 throw new IllegalArgumentException(Error.makeProductDoesntExistError(productId));
-        } catch (HibernateException e) {
+        } catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -132,7 +133,7 @@ public class HibernateProductRepository implements IProductRepository{
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
-            throw new IllegalArgumentException("Database error", e);
+            throw new IllegalArgumentException(Error.makeDBError());
         }
     }
 
