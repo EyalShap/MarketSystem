@@ -16,6 +16,8 @@ import org.hibernate.Transaction;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import javax.persistence.PersistenceException;
+
 public class AuthRepositoryHibernateImpl implements IAuthRepository {
 
     private static final Logger logger = LogManager.getLogger(AuthRepositoryHibernateImpl.class);
@@ -58,7 +60,7 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             List<UserCredential> userList = session.createQuery("from UserCredential", UserCredential.class).list();
             return (HashMap<String, String>) userList.stream()
                     .collect(Collectors.toMap(UserCredential::getUsername, UserCredential::getPassword));
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("Error in getAll {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -78,7 +80,7 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             session.save(userCredential);
             transaction.commit();
             logger.info("end-add. username: {} ", username);
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("Error in add {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -95,7 +97,7 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             }
             transaction.commit();
             logger.info("end-delete {}", username);
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("Error in delete {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -113,7 +115,7 @@ public class AuthRepositoryHibernateImpl implements IAuthRepository {
             transaction.commit();
             logger.info("end-clear");
         }
-        catch (HibernateException e){
+        catch (PersistenceException e){
             logger.error("Error in clear {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }

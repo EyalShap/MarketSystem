@@ -5,7 +5,6 @@ import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.QueryHint;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -33,7 +32,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
                 return policyDTO.toBuyPolicy();
             }
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -45,7 +44,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             List<Integer> res = session.createQuery( "select p.policyId from BuyPolicyData p" ).list();
             return new HashSet<>(res);
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -64,7 +63,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             transaction.commit();
             return hibernateDto.policyId;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -94,7 +93,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             transaction.commit();
             return hibernateDto.policyId;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch(Exception e) {
@@ -176,7 +175,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             findBuyPolicyByID(policyId);
             return true;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -198,7 +197,7 @@ public class HibernateBuyPolicyRepository implements IBuyPolicyRepository{
             session.createQuery( "delete from StoreBuyPolicyRelation").executeUpdate();
             transaction.commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
