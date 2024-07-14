@@ -492,4 +492,12 @@ public class Error {
     public static String makeDatabaseTimeoutError() {
         return "There was a database timeout.";
     }
+
+    public static String CannotMakeNegativeAmountCondition(int minAmount) {
+        return "cannot make condition with negative minimum amount.";
+    }
+
+    public static String CannotMakeNegativeMinBuyCondition(int minBuy) {
+        return "cannot make condition with negative min Buy.";
+    }
 }

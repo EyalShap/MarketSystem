@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.domain.stores.Store;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.QueryHint;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -21,6 +23,9 @@ public class HibernateConditionRepository implements IConditionRespository{
         try {
             findConditionByID(condId);
             return true;
+        }
+        catch (PersistenceException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             return false;
@@ -49,16 +54,25 @@ public class HibernateConditionRepository implements IConditionRespository{
             }
             return condition;
         }
+        catch (PersistenceException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
     }
 
     @Override
     public int createMinBuyCondition(int minBuy) throws JsonProcessingException {
+        if(minBuy < 0){
+            throw new IllegalArgumentException(Error.CannotMakeNegativeMinBuyCondition(minBuy));
+        }
         Condition newCondition = new MinBuyCondition(minBuy);
         return addCondition(newCondition);
     }
 
     @Override
     public int createMinProductCondition(int minAmount, int productID)throws JsonProcessingException {
+        if(minAmount < 0){
+            throw new IllegalArgumentException(Error.CannotMakeNegativeAmountCondition(minAmount));
+        }
         MinProductCondition newCondition = new MinProductCondition(minAmount);
         newCondition.setOnProductName(productID);
         return addCondition(newCondition);
@@ -66,6 +80,9 @@ public class HibernateConditionRepository implements IConditionRespository{
 
     @Override
     public int createMinProductOnCategoryCondition(int minAmount, String categoryName)throws JsonProcessingException {
+        if(minAmount < 0){
+            throw new IllegalArgumentException(Error.CannotMakeNegativeAmountCondition(minAmount));
+        }
         MinProductCondition newCondition = new MinProductCondition(minAmount);
         newCondition.setOnCategoryName(categoryName);
         return addCondition(newCondition);
@@ -73,6 +90,9 @@ public class HibernateConditionRepository implements IConditionRespository{
 
     @Override
     public int createMinProductOnStoreCondition(int minAmount)throws JsonProcessingException {
+        if(minAmount < 0){
+            throw new IllegalArgumentException(Error.CannotMakeNegativeAmountCondition(minAmount));
+        }
         MinProductCondition newCondition = new MinProductCondition(minAmount);
         newCondition.setOnStore();
         return addCondition(newCondition);
