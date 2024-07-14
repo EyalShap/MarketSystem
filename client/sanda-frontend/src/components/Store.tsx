@@ -11,6 +11,7 @@ import RestResponse from '../models/RestResponse';
 import PolicyDescriptionModel from '../models/PolicyDescriptionModel';
 import Permission from '../models/Permission';
 import { TiDelete } from "react-icons/ti";
+import { InfinitySpin } from 'react-loader-spinner';
 
 export const Store = () => {
     const {storeId} = useParams();
@@ -28,6 +29,7 @@ export const Store = () => {
     const [canRemoveDisPolicy, setRemoveDis] = useState(false)
     const [canRemoveBuyPolicy, setRemoveBuy] = useState(false)
     const [allCategs, setAllCategs] = useState<string[]>([])
+    const [loading, setLoading] = useState(false);
 
   useEffect(()=>{
     loadStore();
@@ -37,7 +39,9 @@ export const Store = () => {
   },[searchTerm,searchCategory,maxPrice])
 
   const loadProducts = async () => {
+    setLoading(true);
     setProducts(await searchAndFilterStoreProducts(storeId!, searchCategory, searchTerm, 0, maxPrice))
+    setLoading(false);
   }
 
   const loadStore = async () => {
@@ -127,6 +131,7 @@ export const Store = () => {
             </div>
             <div className="products">
                 <h1 className="products">Products:</h1>
+                {loading && <InfinitySpin width='100' color='black'/>}
                 <nav className="searcharea butinstore">
         <select className="category"  // Add this line
             value={searchCategory} onChange={handleCategoryChange}>

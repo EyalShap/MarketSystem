@@ -891,7 +891,7 @@ export const searchProducts = async (
             },
             params: {
                 productName,
-                productCategory,
+                productCategory: (productCategory === "Other" ? "all" : productCategory),
                 minProductPrice,
                 maxProductPrice,
                 minProductRank

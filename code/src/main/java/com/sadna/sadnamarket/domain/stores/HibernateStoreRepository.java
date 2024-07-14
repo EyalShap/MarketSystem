@@ -88,7 +88,6 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
         }
         catch (HibernateException e) {
-            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -148,7 +147,6 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.getTransaction().commit();
         }
         catch (HibernateException e) {
-            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -231,7 +229,6 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.getTransaction().commit();
         }
         catch (HibernateException e) {
-            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -262,7 +259,6 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.getTransaction().commit();
         }
         catch (HibernateException e) {
-            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -324,7 +320,6 @@ public class HibernateStoreRepository implements IStoreRepository{
             return errors;
         }
         catch (HibernateException e) {
-            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -370,7 +365,6 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.getTransaction().commit();
         }
         catch (HibernateException e) {
-            session.getTransaction().rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {

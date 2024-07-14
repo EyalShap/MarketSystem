@@ -9,7 +9,7 @@ const SearchBar = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchCategory, setSearchCategory] = useState('all');
   const [minPrice, setMinPrice] = useState(0); // Default price
-const [maxPrice, setMaxPrice] = useState(100); // Default price
+const [maxPrice, setMaxPrice] = useState(10000000); // Default price
   const navigate = useNavigate();
 
 
@@ -69,7 +69,7 @@ const [maxPrice, setMaxPrice] = useState(100); // Default price
               <input
                 type="range"
                 min={minPrice}
-                max="100"
+                max="10000000"
                 value={maxPrice}
                 onChange={handleMaxPriceChange}
               />
