@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '../App';
 import Permission from '../models/Permission';
 import { CreditCard } from '@mui/icons-material';
+import { Loading } from './Loading';
 
 // Define the schema for validation
 const schema = yup.object().shape({
@@ -30,8 +31,10 @@ const Purchase = () => {
     resolver: yupResolver(schema)
   });
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const onSubmit: SubmitHandler<any> = async (data) => {
+    setLoading(true);
     const response = await buyCart(data);
     if (response.error) {
       alert("Error: " + response.errorString);
@@ -39,6 +42,7 @@ const Purchase = () => {
       alert("Purchase is successful!");
       navigate(`/`);
     }
+    setLoading(false);
   };
 
   return (
@@ -178,6 +182,7 @@ const Purchase = () => {
   {errors.contactEmail && <p className="error-message">{errors.contactEmail.message}</p>}
 </div>
         <button type="submit" className='button'>Complete Purchase</button>
+        {loading && <Loading reason={"your purchase is being finalized"}/>}
       </form>
     </div>
   );

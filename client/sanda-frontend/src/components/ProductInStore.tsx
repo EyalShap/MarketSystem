@@ -1,8 +1,4 @@
-import StoreModel from '../models/StoreModel';
-import { getStoreInfo } from '../API';
-import ProductModel from '../models/ProductModel';
-import '../styles/Store.css';
-import { useEffect } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
 export const ProductInStore = (props: any) => {

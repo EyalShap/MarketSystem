@@ -1,6 +1,7 @@
 package com.sadna.sadnamarket.domain.stores;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sadna.sadnamarket.service.Error;
 
 import javax.persistence.*;
@@ -15,10 +16,14 @@ public class StoreDTO {
     private String address;
     private String email;
     private String phoneNumber;
+    @JsonIgnore
     private Map<Integer, Integer> productAmounts;
     private String founderUsername;
+    @JsonIgnore
     private Set<String> ownerUsernames;
+    @JsonIgnore
     private Set<String> managerUsernames;
+    @JsonIgnore
     private Set<Integer> orderIds;
 
     public StoreDTO() {

@@ -1,17 +1,30 @@
-import React, { useState } from 'react';
-import { getOrders } from '../API'; 
-import { OrderModel } from '../models/OrderModel'; 
-import '../styles/userHistoryOrders.css'; 
+import React, { useEffect, useState } from 'react';
+import { checkIsSystemManager, getOrders, getStoreOrderHistory } from '../API';
+import { OrderModel } from '../models/OrderModel';
+import '../styles/userHistoryOrders.css';
+import { useNavigate } from 'react-router-dom';
+import { AdvancedOrderModel } from '../models/AdvancedOrderModel';
 
 const SearchOrdersByUsername = () => {
     const [orders, setOrders] = useState<OrderModel[]>([]);
     const [username, setUsername] = useState<string>('');
+    const navigate = useNavigate();
 
-      const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    useEffect(() => {
+        const checkAllowed = async () => {
+            let canAccess: boolean = await checkIsSystemManager((localStorage.getItem("username") ? localStorage.getItem("username") : "")!);
+            if (!canAccess) {
+                navigate('/permission-error', { state: "You are not the system manager" })
+            }
+        }
+        checkAllowed();
+    }, [])
+
+    const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     };
 
-      const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (username.trim()) {
             const fetchedOrders = await getOrders(username);
@@ -21,16 +34,15 @@ const SearchOrdersByUsername = () => {
         }
     };
 
-
     return (
         <div className="main">
             <div className="page-title">Search Orders by Username</div>
             <form className="search-form" onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
-                    placeholder="Enter username..." 
-                    value={username} 
-                    onChange={handleUsernameChange} 
+                <input
+                    type="text"
+                    placeholder="Enter username..."
+                    value={username}
+                    onChange={handleUsernameChange}
                     className="search-input"
                 />
                 <button type="submit" className="submit-button">Search</button>
@@ -58,7 +70,7 @@ const SearchOrdersByUsername = () => {
                             {order.products.map((product) => (
                                 <React.Fragment key={product.id}>
                                     <div className="product-image-container">
-                                    
+
                                     </div>
                                     <div className="product-details">
                                         <div className="product-name">{product.name}</div>

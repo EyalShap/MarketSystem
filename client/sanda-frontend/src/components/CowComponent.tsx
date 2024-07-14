@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import '../styles/CowComponent.css';
 import cow from '../images/cow.png';
+import gnome from '../images/gnome.gif'
+import meme from '../images/meme.png'
 import { checkAlive, setFalse } from '../API';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -23,10 +25,22 @@ const CowComponent = () => {
     };
   }, []);
 
+  let sources = [
+    {src: "https://media1.tenor.com/m/5jpxCVc4hHgAAAAC/cow-dancing.gif", class: "cow-animation", width:100},
+    {src: cow, class: "cow-animation", width:100},
+    {src: cow, class: "cow-animation", width:100},
+    {src: "https://media1.tenor.com/m/5jpxCVc4hHgAAAAC/cow-dancing.gif", class: "cow-animation", width:100},
+    {src: "https://media1.tenor.com/m/qBYH22fSZSAAAAAC/toilet-spin.gif", class: "cow-animation", width:150},
+    {src: gnome, class: "stationary", width:150},
+    {src: meme, class: "stationary", width:200}
+  ]
+
+  let randomSource = sources[Math.floor(Math.random() * sources.length)]
+
   return (
     <div className="cow-container">
-      <div className="cow-animation">
-        <img src={"https://media1.tenor.com/m/5jpxCVc4hHgAAAAC/cow-dancing.gif"} alt="Cow" width="100" />
+      <div className={randomSource.class}>
+        <img src={randomSource.src} alt="Cow" width={randomSource.width} />
       </div>
       <div className="message">
         We are having connection problems, please come back later...

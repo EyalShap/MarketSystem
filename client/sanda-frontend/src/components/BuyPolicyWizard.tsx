@@ -6,18 +6,29 @@ import Login from './Login';
 import Profile from './Profile';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import Select, { SingleValue, ActionMeta } from 'react-select';
+
 
 
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addPolicyToStore, createAgePolicy, createAmountPolicy, createCompositeCondition, createCompositePolicy, createDatePolicy, createHolidayPolicy, createHourPolicy, createKgPolicy, createMinAmountCondition, createMinBuyCondition, createMonthPolicy, describeBuyPolicy, describeCondition, describeDiscountPolicy, hasPermission } from '../API';
+import { addPolicyToStore, createAgePolicy, createAmountPolicy, createCompositeCondition, createCompositePolicy, createDatePolicy, createHolidayPolicy, createHourPolicy, createKgPolicy, createMinAmountCondition, createMinBuyCondition, createMonthPolicy, describeBuyPolicy, describeCondition, describeDiscountPolicy, hasPermission, searchAndFilterStoreProducts } from '../API';
 import Permission from '../models/Permission';
 import RestResponse from '../models/RestResponse';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { NumberInput } from './NumberInput';
+import ProductModel from '../models/ProductModel';
+
+const ProductsCategContext = createContext<{ products: any[], categs: any[] }>({
+    products: [],
+    categs: []
+});
 
 export const BuyPolicyWizard = () => {
     const [currentElement, setCurrentElement] = useState(<WeightPolicy />);
     const {storeId} = useParams();
+    const [products, setProducts] = useState<any[]>([]);
+    const [categs, setCategs] = useState<any[]>([]);
     const navigate = useNavigate();
     interface Dictionary<T> {
         [Key: string]: T;
@@ -28,6 +39,20 @@ export const BuyPolicyWizard = () => {
             let canAccess: boolean = await hasPermission(storeId!, Permission.ADD_BUY_POLICY);
             if(!canAccess){
                 navigate('/permission-error', {state: "You do not have Edit Buy Policies permission in the given store"})
+            }else {
+                let allProducts: ProductModel[] = await searchAndFilterStoreProducts(storeId!, "", "", -1, -1);
+                let categs: string[] = [];
+                let categValues: any[] = [];
+                let productValues: any[] = [];
+                allProducts.forEach(product => {
+                    if (!categs.includes(product.productCategory)) {
+                        categs.push(product.productCategory);
+                        categValues.push({ value: product.productCategory, label: product.productCategory })
+                    }
+                    productValues.push({ value: `${product.productID}`, label: `${product.productID} - ${product.productName}` })
+                })
+                setProducts(productValues);
+                setCategs(categValues);
             }
         }
         checkAllowed();
@@ -44,6 +69,7 @@ export const BuyPolicyWizard = () => {
     textToElement["Composite Policy"] = <CompositePolicy />
 
     return (
+        <ProductsCategContext.Provider value={{ products: products, categs: categs }}>
         <div className="wizard">
             <div className="selector">
                 {Object.keys(textToElement).map(buttontext => <button onClick={() => setCurrentElement(textToElement[buttontext])} className='selectorbutton'>{buttontext}</button>)}
@@ -52,21 +78,31 @@ export const BuyPolicyWizard = () => {
                 {currentElement}
             </div>
         </div>
+        </ProductsCategContext.Provider>
     );
 };
 
 const WeightPolicy = () => {
     const [product, setProduct] = useState("");
-    const [minWeight, setMin] = useState("");
-    const [maxWeight, setMax] = useState("");
+    const [minWeight, setMin] = useState("-1");
+    const [maxWeight, setMax] = useState("0");
     const {storeId} = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
 
     const onCreate = async () => {
+        if(product === ""){
+            alert("You must choose product");
+            return;
+        }
         let id: string = await createKgPolicy(parseInt(product), parseFloat(maxWeight), parseFloat(minWeight))
         alert(`Buy policy created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(product === ""){
+            alert("You must choose product");
+            return;
+        }
         let id: string = await createKgPolicy(parseInt(product), parseFloat(maxWeight), parseFloat(minWeight))
         alert(`Buy policy created with ID ${id}`)
         await addPolicyToStore(parseInt(storeId!), parseInt(id));
@@ -75,11 +111,11 @@ const WeightPolicy = () => {
     return (
         <div className='discountEditor'>
             <h3>A certain product will only be allowed to be purchased within a range of weight</h3>
-            <TextField type='number' size='small' id="outlined-basic" label="Product ID" variant="outlined" value={product} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setProduct(event.target.value);}} />
+            <Select options={products} isSearchable={true} onChange={(option, action) => setProduct(option.value)} />
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Minimum Weight" variant="outlined" value={minWeight} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMin(event.target.value); }} />
+            <NumberInput placeholder='Minimum Weight' onChange={(event, val) => setMin(`${val}`)} min={-1}/>
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Maximum Weight" variant="outlined" value={maxWeight} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMax(event.target.value); }} />
+            <NumberInput placeholder='Maximum Weight' onChange={(event, val) => setMax(`${val}`)} min={-1}/>
             <button onClick={onCreate} className='editorButton'>Create</button>
             <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
@@ -88,16 +124,25 @@ const WeightPolicy = () => {
 
 const AmountPolicy = () => {
     const [product, setProduct] = useState("");
-    const [minAmount, setMin] = useState("");
-    const [maxAmount, setMax] = useState("");
+    const [minAmount, setMin] = useState("-1");
+    const [maxAmount, setMax] = useState("0");
     const {storeId} = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
 
     const onCreate = async () => {
+        if(product === ""){
+            alert("You must choose product");
+            return;
+        }
         let id: string = await createAmountPolicy(parseInt(product), parseInt(minAmount), parseInt(maxAmount))
         alert(`Buy policy created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(product === ""){
+            alert("You must choose product");
+            return;
+        }
         let id: string = await createAmountPolicy(parseInt(product), parseInt(minAmount), parseInt(maxAmount))
         alert(`Buy policy created with ID ${id}`)
         await addPolicyToStore(parseInt(storeId!), parseInt(id));
@@ -106,11 +151,11 @@ const AmountPolicy = () => {
     return (
         <div className='discountEditor'>
             <h3>A certain product will only be allowed to be purchased within a range of amount</h3>
-            <TextField type='number' size='small' id="outlined-basic" label="Product ID" variant="outlined" value={product} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setProduct(event.target.value);}} />
+            <Select options={products} isSearchable={true} onChange={(option, action) => setProduct(option.value)} />
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Minimum amount" variant="outlined" value={minAmount} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMin(event.target.value); }} />
+            <NumberInput placeholder='Minimum Amount' onChange={(event, val) => setMin(`${val}`)} min={-1}/>
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Maximum amount" variant="outlined" value={maxAmount} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMax(event.target.value); }} />
+            <NumberInput placeholder='Maximum Amount' onChange={(event, val) => setMax(`${val}`)} min={-1}/>
             <button onClick={onCreate} className='editorButton'>Create</button>
             <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
@@ -122,13 +167,22 @@ const AgePolicy = () => {
     const [minAge, setMin] = useState("");
     const [maxAge, setMax] = useState("");
     const {storeId} = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
 
     const onCreate = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createAgePolicy(category, parseInt(minAge), parseInt(maxAge))
         alert(`Buy policy created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createAgePolicy(category, parseInt(minAge), parseInt(maxAge))
         alert(`Buy policy created with ID ${id}`)
         await addPolicyToStore(parseInt(storeId!), parseInt(id));
@@ -137,11 +191,11 @@ const AgePolicy = () => {
     return (
         <div className='discountEditor'>
             <h3>A certain category will only be allowed to be purchased within a range of the buyer's age</h3>
-            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <Select options={categs} isSearchable={true} onChange={(option, action) => setCategory(option.value)} />
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Minimum age" variant="outlined" value={minAge} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMin(event.target.value); }} />
+            <NumberInput placeholder='Minimum Age' onChange={(event, val) => setMin(`${val}`)} min={-1}/>
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Maximum age" variant="outlined" value={maxAge} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMax(event.target.value); }} />
+            <NumberInput placeholder='Maximum Age' onChange={(event, val) => setMax(`${val}`)} min={-1}/>
             <button onClick={onCreate} className='editorButton'>Create</button>
             <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
@@ -153,13 +207,22 @@ const HourPolicy = () => {
     const [fromTime, setMin] = useState(dayjs('2024-04-17T12:00'));
     const [toTime, setMax] = useState(dayjs('2024-04-17T12:00'));
     const {storeId} = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
 
     const onCreate = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createHourPolicy(category, fromTime.hour(), fromTime.minute(), toTime.hour(), toTime.minute())
         alert(`Buy policy created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createHourPolicy(category, fromTime.hour(), fromTime.minute(), toTime.hour(), toTime.minute())
         alert(`Buy policy created with ID ${id}`)
         await addPolicyToStore(parseInt(storeId!), parseInt(id));
@@ -168,7 +231,7 @@ const HourPolicy = () => {
     return (
         <div className='discountEditor'>
             <h3>A certain category will only be allowed to be purchased at a certain time of day</h3>
-            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <Select options={categs} isSearchable={true} onChange={(option, action) => setCategory(option.value)} />
             <h1/>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <TimePicker label="From" value={fromTime} onChange={(newValue) => setMin(newValue!)}/>
@@ -186,13 +249,22 @@ const HourPolicy = () => {
 const RoshKodeshPolicy = () => {
     const [category, setCategory] = useState("");
     const {storeId} = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
 
     const onCreate = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createMonthPolicy(category)
         alert(`Buy policy created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createMonthPolicy(category)
         alert(`Buy policy created with ID ${id}`)
         await addPolicyToStore(parseInt(storeId!), parseInt(id));
@@ -201,7 +273,7 @@ const RoshKodeshPolicy = () => {
     return (
         <div className='discountEditor'>
             <h3>A certain category will not be sold at the start of the hebrew month</h3>
-            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <Select options={categs} isSearchable={true} onChange={(option, action) => setCategory(option.value)} />
             <button onClick={onCreate} className='editorButton'>Create</button>
             <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
@@ -211,13 +283,22 @@ const RoshKodeshPolicy = () => {
 const HolidayPolicy = () => {
     const [category, setCategory] = useState("");
     const {storeId} = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
 
     const onCreate = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createHolidayPolicy(category)
         alert(`Buy policy created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createHolidayPolicy(category)
         alert(`Buy policy created with ID ${id}`)
         await addPolicyToStore(parseInt(storeId!), parseInt(id));
@@ -226,7 +307,7 @@ const HolidayPolicy = () => {
     return (
         <div className='discountEditor'>
             <h3>A certain category will not be sold during holidays</h3>
-            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <Select options={categs} isSearchable={true} onChange={(option, action) => setCategory(option.value)} />
             <button onClick={onCreate} className='editorButton'>Create</button>
             <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>
@@ -239,14 +320,23 @@ const DatePolicy = () => {
     const [month, setMonth] = useState("-1");
     const [year, setYear] = useState("-1");
     const {storeId} = useParams();
+    const { products, categs } = useContext(ProductsCategContext);
 
 
     const onCreate = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createDatePolicy(category, parseInt(day), parseInt(month), parseInt(year))
         alert(`Buy policy created with ID ${id}`)
     }
 
     const onCreateAndSave = async () => {
+        if(category === ""){
+            alert("You must choose category");
+            return;
+        }
         let id: string = await createDatePolicy(category, parseInt(day), parseInt(month), parseInt(year))
         alert(`Buy policy created with ID ${id}`)
         await addPolicyToStore(parseInt(storeId!), parseInt(id));
@@ -255,13 +345,13 @@ const DatePolicy = () => {
     return (
         <div className='discountEditor'>
             <h3>A certain category will not be sold during a specified day, month or year</h3>
-            <TextField size='small' id="outlined-basic" label="Category" variant="outlined" value={category} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setCategory(event.target.value);}} />
+            <Select options={categs} isSearchable={true} onChange={(option, action) => setCategory(option.value)} />
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Day" variant="outlined" value={day} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setDay(event.target.value);}} />
+            <NumberInput placeholder='Day' onChange={(event, val) => setDay(`${val}`)} min={-1} max={31}/>
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Month" variant="outlined" value={month} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setMonth(event.target.value);}} />
+            <NumberInput placeholder='Month' onChange={(event, val) => setMonth(`${val}`)} min={-1} max={12}/>
             <h1/>
-            <TextField type='number' size='small' id="outlined-basic" label="Year" variant="outlined" value={year} onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setYear(event.target.value);}} />
+            <NumberInput placeholder='Year' onChange={(event, val) => setYear(`${val}`)} min={-1}/>
             <button onClick={onCreate} className='editorButton'>Create</button>
             <button onClick={onCreateAndSave} className='editorButton'>Create and add to store</button>
         </div>

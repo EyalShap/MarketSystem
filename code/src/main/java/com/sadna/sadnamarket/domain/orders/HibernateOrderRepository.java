@@ -81,6 +81,29 @@ public class HibernateOrderRepository implements IOrderRepository{
 
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
+    public List<OrderDTO> getOrderHistory(int storeId) {
+        List<Order> orders = null;
+        List<OrderDTO> orderDTOS = new LinkedList<>();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "FROM Order WHERE storeId = :storeId";
+            Query<Order> query = session.createQuery(hql, Order.class);
+            query.setParameter("storeId", storeId);
+            orders=query.getResultList();
+            for(Order order : orders){
+                orderDTOS.add(orderToDTO(order));
+            }
+        }catch (Exception e) {
+            throw new IllegalArgumentException(Error.makeDBError());
+        }
+
+        if(orders.isEmpty()){
+            throw new IllegalArgumentException(Error.makeOrderStoreNoOrdersError(storeId));
+        }
+        return orderDTOS;
+    }
+
+    @Override
+    @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
     public Map<Integer, OrderDetails> getProductDataPriceByMember(String nameMember) {
         Map<Integer, OrderDetails> ans=new HashMap<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

@@ -21,6 +21,7 @@ import AddProductModel from "./models/AddProductModel";
 import { BankAccountModel } from "./models/BankAccountModel";
 import { PurchaseInfoModel } from "./models/PurchaseInfoModel";
 import { configureStore, createSlice } from '@reduxjs/toolkit'
+import { AdvancedOrderModel } from "./models/AdvancedOrderModel";
 
 
 const errorSlice = createSlice({
@@ -726,6 +727,47 @@ export const getProductDetails = async (productId: number): Promise<RestResponse
     return { dataJson: "this will never happen", error: true, errorString: "We couldn't reach the server" };
 }
 
+export const getProductAmount = async (productId: number, storeId: number): Promise<number> => {
+    let request = {
+        storeId: storeId,
+        productId: productId
+    }
+    let url = `${server}/api/stores/getStoreProductAmount`;
+    let headers: any = {
+        'Content-Type': 'application/json',
+        // Authorization: `Bearer ${jwt_token}`
+    }
+    if (localStorage.getItem('token') != null) {
+        url = `${server}/api/stores/getStoreProductAmount?username=${localStorage.getItem("username")}`;
+        headers = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem("token")}` // Uncomment if you have a JWT token
+        }
+    }
+    try {
+        const response = (await axios.patch(url, request,
+            {
+                headers: headers
+            })).data;
+
+        if (response.error && response.errorString === "DB Error") {
+            connectionError.dispatch(errorSlice.actions.setTrue())
+        }
+        if (response.error) {
+            alert(response.errorString);
+            return 0;
+        }
+
+        const amount = parseInt(response.dataJson);
+
+        console.log(amount)
+        return amount;
+    } catch (error) {
+        connectionError.dispatch(errorSlice.actions.setTrue())
+    }
+    return 0;
+}
+
 export const updateFirstName = async (firstName: string) => {
     try {
         const response = await (await axios.patch(
@@ -858,10 +900,13 @@ export const searchProducts = async (
         if (response.error && response.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
         }
+        if(response.error){
+            alert(response.errorString);
+            return [];
+        }
         const dataJson = JSON.parse(response.dataJson);
-
         const products: ProductModel[] = dataJson.map((product: any) => ({
-            id: product.productID,
+            productID: product.productID,
             productName: product.productName,
             storeId: product.storeId, // Assuming storeId is same as productID
             productPrice: product.productPrice,
@@ -888,6 +933,11 @@ export const getOrders = async (username: string): Promise<OrderModel[]> => {
                 Authorization: `Bearer ${localStorage.getItem("token")}`
             }
         })).data;
+
+        if(response.error){
+            alert(response.errorString);
+            return [];
+        }
 
         const ordersData: { [key: number]: { products: ProductDataPrice[], dateTimeOfPurchase: string } } = JSON.parse(response.dataJson);
 
@@ -922,7 +972,7 @@ export const getOrders = async (username: string): Promise<OrderModel[]> => {
     }
 };
 
-export const getStoreOrderHistory = async (storeId: string): Promise<OrderModel[]> => {
+export const getStoreOrderHistory = async (storeId: string): Promise<AdvancedOrderModel[]> => {
     try {
 
         const response = (await axios.get(`${server}/api/stores/getStoreOrderHistory?username=${localStorage.getItem("username")}&storeId=${storeId}`, {
@@ -932,26 +982,17 @@ export const getStoreOrderHistory = async (storeId: string): Promise<OrderModel[
             }
         })).data;
 
+        if(response.error){
+            alert(response.errorString);
+            return [];
+        }
 
-        const ordersData: ProductDataPrice[] = JSON.parse(response.dataJson);
-
-        console.log(ordersData)
-        const total = ordersData.reduce((acc, product) => acc + product.newPrice * product.amount, 0);
-        const orderProducts: ProductOrderModel[] = ordersData.map(product => ({
-            id: product.id,
-            name: product.name,
-            quantity: product.amount,
-            storeId: product.storeId,
-            oldPrice: product.oldPrice,
-            newPrice: product.newPrice
-        }));
-
-        return [{
-            id: "0",
-            date: (new Date().toLocaleDateString()),
-            total: total,
-            products: orderProducts
-        }];
+        const ordersData: AdvancedOrderModel[] = JSON.parse(response.dataJson);
+        console.log(ordersData);
+        ordersData.forEach(order => {
+            order.products = Object.entries(order.orderProductsJsons).map(([key,value]) => JSON.parse(value))
+        })
+        return ordersData;
 
 
     } catch (error) {
@@ -1410,6 +1451,9 @@ export const createCompositeCondition = async (id1: number, id2: number, logic: 
         if (data.error && data.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
         }
+        if(data.error){
+            alert(`Error creating composite condition: ${data.errorString}`)
+        }
         return data.dataJson
     } catch (error) {
         connectionError.dispatch(errorSlice.actions.setTrue())
@@ -1436,6 +1480,9 @@ export const createCompositeDiscount = async (id1: number, id2: number, logic: s
         if (data.error && data.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
         }
+        if(data.error){
+            alert(`Error creating composite discount: ${data.errorString}`)
+        }
         return data.dataJson
     } catch (error) {
         connectionError.dispatch(errorSlice.actions.setTrue())
@@ -1460,6 +1507,9 @@ export const createCompositePolicy = async (id1: number, id2: number, logic: str
         let data: RestResponse = await response.data;
         if (data.error && data.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
+        }
+        if(data.error){
+            alert(`Error creating composite policy: ${data.errorString}`)
         }
         return data.dataJson
     } catch (error) {
@@ -1487,6 +1537,9 @@ export const createKgPolicy = async (productId: number, maxWeight: number, minWe
         if (data.error && data.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
         }
+        if(data.error){
+            alert(`Error creating policy: ${data.errorString}`)
+        }
         return data.dataJson
     } catch (error) {
         connectionError.dispatch(errorSlice.actions.setTrue())
@@ -1512,6 +1565,9 @@ export const createAmountPolicy = async (productId: number, minAmount: number, m
         let data: RestResponse = await response.data;
         if (data.error && data.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
+        }
+        if(data.error){
+            alert(`Error creating policy: ${data.errorString}`)
         }
         return data.dataJson
     } catch (error) {
@@ -1539,6 +1595,9 @@ export const createAgePolicy = async (category: string, minAge: number, maxAge: 
         if (data.error && data.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
         }
+        if(data.error){
+            alert(`Error creating policy: ${data.errorString}`)
+        }
         return data.dataJson
     } catch (error) {
         connectionError.dispatch(errorSlice.actions.setTrue())
@@ -1564,6 +1623,9 @@ export const createHourPolicy = async (category: string, fromHour: number, fromM
         let data: RestResponse = await response.data;
         if (data.error && data.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
+        }
+        if(data.error){
+            alert(`Error creating policy: ${data.errorString}`)
         }
         return data.dataJson
     } catch (error) {
@@ -1639,6 +1701,9 @@ export const createDatePolicy = async (category: string, day: number, month: num
         let data: RestResponse = await response.data;
         if (data.error && data.errorString === "DB Error") {
             connectionError.dispatch(errorSlice.actions.setTrue())
+        }
+        if(data.error){
+            alert(`Error creating policy: ${data.errorString}`)
         }
         return data.dataJson
     } catch (error) {

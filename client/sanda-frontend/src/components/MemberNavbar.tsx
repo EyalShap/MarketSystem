@@ -91,6 +91,9 @@ const MemberNavbar = () => {
    const handleGetAllOrdersClick = () => {
         return '/managerUserHistory';
     };
+    const handleGetStoreOrdersClick = () => {
+      return '/managerStoreHistory';
+  };
       const [showStoreSearch, setShowStoreSearch] = useState(false);
 
   return (
@@ -143,6 +146,7 @@ const MemberNavbar = () => {
                {isSystemManager && (
                 <>
                   <li className="menu-item"><Link to={handleGetAllOrdersClick()} className="navbar-link">Get User Orders</Link></li>
+                  <li className="menu-item"><Link to={handleGetStoreOrdersClick()} className="navbar-link">Get Store Orders</Link></li>
                 </>
               )} 
              
