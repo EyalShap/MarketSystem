@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.data.jpa.repository.QueryHints;
 
+import javax.persistence.PersistenceException;
 import java.util.*;
 
 public class HibernateBuyPolicyManager extends BuyPolicyManager{
@@ -102,7 +103,7 @@ public class HibernateBuyPolicyManager extends BuyPolicyManager{
             session.delete(list.get(0));
             transaction.commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             transaction.rollback();
             throw new IllegalArgumentException(Error.makeDBError());
         }

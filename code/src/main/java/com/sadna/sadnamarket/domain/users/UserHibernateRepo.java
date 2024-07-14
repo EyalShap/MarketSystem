@@ -16,6 +16,8 @@ import com.sadna.sadnamarket.service.Error;
 import com.sadna.sadnamarket.HibernateUtil;
 import org.springframework.data.jpa.repository.QueryHints;
 
+import javax.persistence.PersistenceException;
+
 public class UserHibernateRepo implements IUserRepository {
 
     private static final Logger logger = LogManager.getLogger(UserHibernateRepo.class);
@@ -29,7 +31,7 @@ public class UserHibernateRepo implements IUserRepository {
             session.save(member);
             transaction.commit();
             logger.info("User {} stored successfully",username);
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in store {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -48,7 +50,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.info("User {} doesn't exist",name);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(name));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in hasMember {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -64,7 +66,7 @@ public class UserHibernateRepo implements IUserRepository {
             transaction.commit();
             logger.info("Guest {} added successfully",guest.guestId);
             return guest.guestId;
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in addGuest {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         } 
@@ -85,7 +87,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("Guest {} doesn't exist",guestID);
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in deleteGuest {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -104,7 +106,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 return null;
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in getUserCart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -123,7 +125,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("Guest {} doesn't exist",guestID);
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in getting guest cart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -143,7 +145,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in has permission to role {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -168,7 +170,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in add notification {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -183,7 +185,7 @@ public class UserHibernateRepo implements IUserRepository {
             boolean res= member != null && member.isLoggedIn();
             logger.info("User {} is logged in={}",username,res);
             return res;
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in is logged in {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -205,7 +207,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in set login {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -227,7 +229,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in adding product to cart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -249,7 +251,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in remove product to cart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -268,7 +270,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestId));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in remove product from guest cart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -290,7 +292,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in change quantity cart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -312,7 +314,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("Guest {} doesn't exist",guestId);
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestId));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in guest changing quantity in cart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -334,7 +336,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in logout {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -357,7 +359,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in set cart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -379,7 +381,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in add role {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -401,7 +403,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in add role {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -423,7 +425,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error adding permission to role {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -444,7 +446,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in removePermissionFromRole {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -463,7 +465,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in getPermissions {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -485,7 +487,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error setting first Name {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -507,7 +509,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error last first Name {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -529,7 +531,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error setting email address {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -551,7 +553,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error setting phone number {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -570,7 +572,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error setting birthday {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -588,7 +590,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",userName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error getting member dto {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -607,7 +609,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error getting order history {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -625,7 +627,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error clear cart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -646,7 +648,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error get Notifications {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -668,7 +670,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",username);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error adding Order {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -686,7 +688,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error get UserRolesString {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -702,7 +704,7 @@ public class UserHibernateRepo implements IUserRepository {
             } else {
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(userName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error getting role of store {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -718,7 +720,7 @@ public class UserHibernateRepo implements IUserRepository {
             } else {
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error get user roles {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -736,7 +738,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(senderName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error addOwnerRequest {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -754,7 +756,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(senderName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error adding manager request {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -770,7 +772,7 @@ public class UserHibernateRepo implements IUserRepository {
             } else {
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(acceptingName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error getting request {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -792,7 +794,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",acceptingName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(acceptingName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error accepting request {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -811,7 +813,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(apointer));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error adding Apointer {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -833,7 +835,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",rejectingName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(rejectingName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error reject request {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -854,7 +856,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(username));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error leaving Role {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -874,7 +876,7 @@ public class UserHibernateRepo implements IUserRepository {
                 transaction.rollback();
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(remover));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in removeRoleFromMember {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -899,7 +901,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",sentName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(senderName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in addRequest {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -920,7 +922,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("User {} doesn't exist",giverUserName);
                 throw new NoSuchElementException(Error.makeMemberUserDoesntExistError(giverUserName));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in isApointee {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -942,7 +944,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("Guest {} doesn't exist",guestID);
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestID));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in clearGuestCart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -964,7 +966,7 @@ public class UserHibernateRepo implements IUserRepository {
                 logger.error("Guest {} doesn't exist",guestId);
                 throw new NoSuchElementException(Error.makeMemberGuestDoesntExistError(guestId));
             }
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in addProductToCart {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -979,7 +981,7 @@ public class UserHibernateRepo implements IUserRepository {
             transaction.commit();
             logger.info("Store manager role created for store {}",storeId);
             return role;
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in createStoreManagerRole {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         }
@@ -992,7 +994,7 @@ public class UserHibernateRepo implements IUserRepository {
             session.save(role);
             transaction.commit();
             return role;
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in createStoreOwnerRole {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         } 
@@ -1005,7 +1007,7 @@ public class UserHibernateRepo implements IUserRepository {
             session.save(role);
             transaction.commit();
             return role;
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in createStoreFounderRole {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         } 
@@ -1039,7 +1041,7 @@ public class UserHibernateRepo implements IUserRepository {
                 throw e;
             }
             logger.info("Data cleared successfully");
-    }catch (HibernateException e){
+    }catch (PersistenceException e){
         logger.error("database error in clear {}", e.getMessage());
         throw new IllegalStateException(Error.makeDBError());
     } 
@@ -1053,7 +1055,7 @@ public class UserHibernateRepo implements IUserRepository {
             boolean res=guest != null;
             logger.info("Guest {} exists={}",guestID,res);
             return res ;
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in isGuestExist {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         } 
@@ -1073,7 +1075,7 @@ public class UserHibernateRepo implements IUserRepository {
             }
             transaction.commit();
             logger.info("All members logged out successfully");
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in logout all members {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         } 
@@ -1090,7 +1092,7 @@ public class UserHibernateRepo implements IUserRepository {
             }
             transaction.commit();
             logger.info("All guests removed successfully");
-        }catch (HibernateException e){
+        }catch (PersistenceException e){
             logger.error("database error in remove all guests {}", e.getMessage());
             throw new IllegalStateException(Error.makeDBError());
         } 
