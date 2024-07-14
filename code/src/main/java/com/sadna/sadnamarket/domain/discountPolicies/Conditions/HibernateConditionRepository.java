@@ -53,7 +53,7 @@ public class HibernateConditionRepository implements IConditionRespository{
             }
             return condition;
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }

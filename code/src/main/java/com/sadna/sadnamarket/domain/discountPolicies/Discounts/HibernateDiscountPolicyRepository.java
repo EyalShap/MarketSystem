@@ -57,7 +57,7 @@ public class HibernateDiscountPolicyRepository implements IDiscountPolicyReposit
             }
             return discount;
         }
-        catch (Exception e) {
+        catch (HibernateException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
