@@ -4,6 +4,7 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import com.sadna.sadnamarket.service.Error;
 import org.springframework.data.relational.core.sql.In;
@@ -44,8 +45,15 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
-    public void setStoreBankAccount(int storeId, BankAccountDTO bankAccountDTO) {
-        findStoreByID(storeId).setBankAccount(bankAccountDTO);
+    public void setStoreBankAccount(int storeId, String ownerUsername, BankAccountDTO bankAccountDTO) {
+        Store store = findStoreByID(storeId);
+        synchronized (store) {
+            if (!store.isStoreOwner(ownerUsername))
+                throw new IllegalArgumentException(Error.makeStoreUserCannotSetBankAccountError(ownerUsername, storeId));
+
+            bankAccountDTO.setStore(store);
+            store.setBankAccount(bankAccountDTO);
+        }
     }
 
     @Override
@@ -114,8 +122,13 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
-    public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank) {
+    public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String username, String productName, String category, double price, double minProductRank) {
         Store store = findStoreByID(storeId);
+        if (!store.getIsActive()) {
+            if (!store.isStoreOwner(username) && !store.isStoreManager(username)) {
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+            }
+        }
 
         Map<Integer, Integer> productAmounts = store.getProductAmounts();
         List<Integer> storeProductIds = new ArrayList<>(productAmounts.keySet());
@@ -124,6 +137,20 @@ public class MemoryStoreRepository implements IStoreRepository {
         for (ProductDTO product : filteredProducts)
             res.put(product, productAmounts.get(product.getProductID()));
         return res;
+    }
+
+    @Override
+    public boolean hasPermission(String username, Store store, Permission permission, UserFacade userFacade) {
+        if (!userFacade.isLoggedIn(username))
+            return false;
+
+        if (store.isStoreOwner(username))
+            return true;
+
+        if (store.isStoreManager(username))
+            return userFacade.checkPremssionToStore(username, store.getStoreId(), permission);
+
+        return false;
     }
 
     /*@Override
@@ -166,6 +193,8 @@ public class MemoryStoreRepository implements IStoreRepository {
 
     @Override
     public void addProductToStore(int storeId, int productId, int amount) {
+        if(!findStoreByID(storeId).getIsActive())
+            throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
         if (productExists(storeId, productId))
             throw new IllegalArgumentException(Error.makeStoreProductAlreadyExistsError(productId));
 
@@ -184,7 +213,8 @@ public class MemoryStoreRepository implements IStoreRepository {
 
     @Override
     public int getProductAmountInStore(int storeId, int productId) {
-        return findStoreByID(storeId).getProductAmount(productId);
+        Store store = findStoreByID(storeId);
+        return store.getProductAmount(productId);
     }
 
     @Override
@@ -209,8 +239,15 @@ public class MemoryStoreRepository implements IStoreRepository {
     }
 
     @Override
-    public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart) {
-        return findStoreByID(storeId).updateStock(cart);
+    public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart, UserFacade userFacade, String username) {
+        Store store = findStoreByID(storeId);
+        Set<String> errors = store.updateStock(cart);
+        if(errors.size() == 0) {
+            for(String owner : store.getOwnerUsernames()){
+                userFacade.notify(owner, "User " + (username != null ? username+" " : "") + "made a purchase in your store " + store.getStoreInfo().getStoreName());
+            }
+        }
+        return errors;
     }
 
     private boolean storeNameExists(String storeName) {

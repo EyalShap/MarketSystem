@@ -8,9 +8,11 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.QueryHint;
+import org.apache.catalina.User;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -130,15 +132,34 @@ public class HibernateStoreRepository implements IStoreRepository{
         }
     }*/
 
+    public boolean hasPermission(String username, Store store, Permission permission, UserFacade userFacade) {
+        if (!userFacade.isLoggedIn(username))
+            return false;
+
+        //Store store = storeRepository.findStoreByID(storeId);
+        if (store.isStoreOwner(username))
+            return true;
+
+        if (store.isStoreManager(username))
+            return userFacade.checkPremssionToStore(username, store.getStoreId(), permission);
+
+        return false;
+    }
+
     @Override
     public void addProductToStore(int storeId, int productId, int amount) {
         Session session = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
+
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+            }
+
+            if(!store.getIsActive()) {
+                throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
             }
             if (store.getProductAmounts().containsKey(productId)) {
                 throw new IllegalArgumentException(Error.makeStoreProductAlreadyExistsError(productId));
@@ -309,7 +330,7 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
-    public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart) {
+    public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart, UserFacade userFacade, String username) {
         Session session = null;
         try {
             session = HibernateUtil.getSessionFactory().openSession();
@@ -321,6 +342,13 @@ public class HibernateStoreRepository implements IStoreRepository{
             Set<String> errors = store.updateStock(cart);
             session.update(store);
             session.getTransaction().commit();
+
+            if(errors.size() == 0) {
+                for(String owner : store.getOwnerUsernames()){
+                    userFacade.notify(owner, "User " + (username != null ? username+" " : "") + "made a purchase in your store " + store.getStoreInfo().getStoreName());
+                }
+            }
+
             return errors;
         }
         catch (HibernateException e) {
@@ -355,7 +383,7 @@ public class HibernateStoreRepository implements IStoreRepository{
     }
 
     @Override
-    public void setStoreBankAccount(int storeId, BankAccountDTO bankAccountDTO) {
+    public void setStoreBankAccount(int storeId, String ownerUsername, BankAccountDTO bankAccountDTO) {
         Session session = null;
         try{
             session = HibernateUtil.getSessionFactory().openSession();
@@ -364,10 +392,16 @@ public class HibernateStoreRepository implements IStoreRepository{
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
-            store.setBankAccount(bankAccountDTO);
-            session.merge(store);
-            session.save(bankAccountDTO);
-            session.getTransaction().commit();
+            synchronized (store) {
+                if (!store.isStoreOwner(ownerUsername))
+                    throw new IllegalArgumentException(Error.makeStoreUserCannotSetBankAccountError(ownerUsername, storeId));
+
+                bankAccountDTO.setStore(store);
+                store.setBankAccount(bankAccountDTO);
+                session.merge(store);
+                session.save(bankAccountDTO);
+                session.getTransaction().commit();
+            }
         }
         catch (HibernateException e) {
             session.getTransaction().rollback();
@@ -560,11 +594,16 @@ public class HibernateStoreRepository implements IStoreRepository{
 
     @Override
     @QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
-    public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank) {
+    public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String username, String productName, String category, double price, double minProductRank) {
         try(Session session = HibernateUtil.getSessionFactory().openSession()) {
             Store store = session.get(Store.class, storeId);
             if (store == null) {
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
+            }
+            if (!store.getIsActive()) {
+                if (!store.isStoreOwner(username) && !store.isStoreManager(username)) {
+                    throw new IllegalArgumentException(Error.makeStoreWithIdNotActiveError(storeId));
+                }
             }
             Map<Integer, Integer> productAmounts = store.getProductAmounts();
             List<Integer> storeProductIds = new ArrayList<>(productAmounts.keySet());

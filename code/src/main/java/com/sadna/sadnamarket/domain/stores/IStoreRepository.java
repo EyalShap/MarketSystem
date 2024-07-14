@@ -5,6 +5,7 @@ import com.sadna.sadnamarket.domain.payment.BankAccountDTO;
 import com.sadna.sadnamarket.domain.products.ProductDTO;
 import com.sadna.sadnamarket.domain.products.ProductFacade;
 import com.sadna.sadnamarket.domain.users.CartItemDTO;
+import com.sadna.sadnamarket.domain.users.Permission;
 import com.sadna.sadnamarket.domain.users.UserFacade;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -34,7 +35,6 @@ public interface IStoreRepository {
     //public void saveStore(Store store);
 
     public void addProductToStore(int storeId, int productId, int amount);
-
     public void deleteProductFromStore(int storeId, int productId);
 
     public void updateProductAmountInStore(int storeId, int productId, int newAmount);
@@ -43,11 +43,11 @@ public interface IStoreRepository {
 
     public Set<String> checkCartInStore(int storeId, List<CartItemDTO> cart);
 
-    public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart);
+    public Set<String> updateStockInStore(int storeId, List<CartItemDTO> cart, UserFacade userFacade, String username);
 
     public Store findStoreByName(String storeName);
 
-    public void setStoreBankAccount(int storeId, BankAccountDTO bankAccountDTO);
+    public void setStoreBankAccount(int storeId, String ownerUsername, BankAccountDTO bankAccountDTO);
 
     public BankAccountDTO getStoreBankAccount(int storeId);
 
@@ -60,7 +60,9 @@ public interface IStoreRepository {
     public void addOrderIdToStore(int storeId, int orderId);
     public void changeStoreState(String username, int storeId, boolean open, UserFacade userFacade);
 
-    public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String productName, String category, double price, double minProductRank);
+    public Map<ProductDTO, Integer> getProductsInfoAndFilter(ProductFacade productFacade, int storeId, String username, String productName, String category, double price, double minProductRank);
+
+    public boolean hasPermission(String username, Store store, Permission permission, UserFacade userFacade);
 
     public static void cleanDB() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
