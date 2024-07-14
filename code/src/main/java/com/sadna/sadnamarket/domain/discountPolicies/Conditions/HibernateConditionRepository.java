@@ -60,7 +60,7 @@ public class HibernateConditionRepository implements IConditionRespository{
 
     @Override
     public int createMinBuyCondition(int minBuy) throws JsonProcessingException {
-        if(minBuy >= 0){
+        if(minBuy < 0){
             throw new IllegalArgumentException(Error.CannotMakeNegativeMinBuyCondition(minBuy));
         }
         Condition newCondition = new MinBuyCondition(minBuy);
@@ -69,7 +69,7 @@ public class HibernateConditionRepository implements IConditionRespository{
 
     @Override
     public int createMinProductCondition(int minAmount, int productID)throws JsonProcessingException {
-        if(minAmount >= 0){
+        if(minAmount < 0){
             throw new IllegalArgumentException(Error.CannotMakeNegativeAmountCondition(minAmount));
         }
         MinProductCondition newCondition = new MinProductCondition(minAmount);
@@ -79,7 +79,7 @@ public class HibernateConditionRepository implements IConditionRespository{
 
     @Override
     public int createMinProductOnCategoryCondition(int minAmount, String categoryName)throws JsonProcessingException {
-        if(minAmount >= 0){
+        if(minAmount < 0){
             throw new IllegalArgumentException(Error.CannotMakeNegativeAmountCondition(minAmount));
         }
         MinProductCondition newCondition = new MinProductCondition(minAmount);
@@ -89,7 +89,7 @@ public class HibernateConditionRepository implements IConditionRespository{
 
     @Override
     public int createMinProductOnStoreCondition(int minAmount)throws JsonProcessingException {
-        if(minAmount >= 0){
+        if(minAmount < 0){
             throw new IllegalArgumentException(Error.CannotMakeNegativeAmountCondition(minAmount));
         }
         MinProductCondition newCondition = new MinProductCondition(minAmount);
