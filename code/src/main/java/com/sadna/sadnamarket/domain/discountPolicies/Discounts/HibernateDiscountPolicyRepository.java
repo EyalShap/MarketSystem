@@ -7,6 +7,7 @@ import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyFacade;
 import com.sadna.sadnamarket.domain.discountPolicies.DiscountPolicyManager;
 import com.sadna.sadnamarket.domain.discountPolicies.HibernateDiscountPolicyManager;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.QueryHint;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -27,7 +28,7 @@ public class HibernateDiscountPolicyRepository implements IDiscountPolicyReposit
             findDiscountPolicyByID(policyId);
             return true;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -57,7 +58,7 @@ public class HibernateDiscountPolicyRepository implements IDiscountPolicyReposit
             }
             return discount;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }

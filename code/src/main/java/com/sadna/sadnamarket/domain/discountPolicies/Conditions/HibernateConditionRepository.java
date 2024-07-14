@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.domain.stores.Store;
 import com.sadna.sadnamarket.service.Error;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.QueryHint;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -23,7 +24,7 @@ public class HibernateConditionRepository implements IConditionRespository{
             findConditionByID(condId);
             return true;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -53,7 +54,7 @@ public class HibernateConditionRepository implements IConditionRespository{
             }
             return condition;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
