@@ -122,7 +122,7 @@ class RealtimeNotificationTests {
         String apointeeToken = resp.getDataJson();
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
-        Assertions.assertEquals("You got appointment request",fake.getMessages(appointeeUsername).get(0));
+        Assertions.assertTrue(fake.getMessages(appointeeUsername).get(0).startsWith("You got a request from "));
         resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, bridge.getFirstNotification(appointeeUsername));
         Assertions.assertEquals("User " + appointeeUsername + " accepted request for Owner in " + storeId,fake.getMessages(username).get(0));
     }
@@ -136,7 +136,7 @@ class RealtimeNotificationTests {
         String apointeeToken = resp.getDataJson();
 
         resp = bridge.appointOwner(token, username, storeId, appointeeUsername);
-        Assertions.assertEquals("You got appointment request",fake.getMessages(appointeeUsername).get(0));
+        Assertions.assertTrue(fake.getMessages(appointeeUsername).get(0).startsWith("You got a request from "));
         resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, bridge.getFirstNotification(appointeeUsername),"");
         Assertions.assertEquals("User " + appointeeUsername + " rejected request for Owner in " + storeId,fake.getMessages(username).get(0));
     }
@@ -150,7 +150,7 @@ class RealtimeNotificationTests {
         String apointeeToken = resp.getDataJson();
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<>());
-        Assertions.assertEquals("You got appointment request",fake.getMessages(appointeeUsername).get(0));
+        Assertions.assertTrue(fake.getMessages(appointeeUsername).get(0).startsWith("You got a request from "));
         resp = bridge.acceptOwnerAppointment(apointeeToken, appointeeUsername, 1, bridge.getFirstNotification(appointeeUsername));
         Assertions.assertEquals("User " + appointeeUsername + " accepted request for Manager in " + storeId,fake.getMessages(username).get(0));
     }
@@ -164,7 +164,7 @@ class RealtimeNotificationTests {
         String apointeeToken = resp.getDataJson();
 
         resp = bridge.appointManager(token, username, storeId, appointeeUsername, new LinkedList<>());
-        Assertions.assertEquals("You got appointment request",fake.getMessages(appointeeUsername).get(0));
+        Assertions.assertTrue(fake.getMessages(appointeeUsername).get(0).startsWith("You got a request from "));
         resp = bridge.rejectOwnerAppointment(apointeeToken, appointeeUsername, bridge.getFirstNotification(appointeeUsername),"");
         Assertions.assertEquals("User " + appointeeUsername + " rejected request for Manager in " + storeId,fake.getMessages(username).get(0));
     }

@@ -889,7 +889,7 @@ public class UserHibernateRepo implements IUserRepository {
             Transaction transaction = session.beginTransaction();
             Member member = session.get(Member.class, sentName);
             if (member != null) {
-                Request req=new Request(senderName, "You got appointment request", storeId,reqType);
+                Request req=new Request(senderName, "You got a request from " + senderName + " to become " + reqType + " in " + storeId, storeId,reqType);
                 session.save(req);
                 RequestDTO request = member.getRequest(req);
                 session.update(member);

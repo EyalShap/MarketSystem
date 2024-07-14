@@ -133,7 +133,7 @@ public class Member extends IUser {
         throw new IllegalArgumentException(Error.makeMemberUserHasNoRoleError());
     }
 
-    private boolean hasRoleInStore(int store_id) {
+    public boolean hasRoleInStore(int store_id) {
         logger.info("Entering hasRoleInStore with store_id={}", store_id);
         for (UserRole role : getUserRoles()) {
             if (role.getStoreId() == store_id) {
@@ -244,13 +244,17 @@ public class Member extends IUser {
             throw new IllegalStateException(Error.makeMemberUserAlreadyHasRoleError());
         }
         notifyID++;
-        Request request = new Request(senderName, "You got appointment request", storeId, reqType,notifyID);
+        Request request=new Request(senderName, "You got a request from " + senderName + " to become " + reqType + " in " + storeId, storeId,reqType,notifyID);
         notifes.put(notifyID, request);
         logger.info("Exiting getRequest");
         return new RequestDTO(request);
     }
     public RequestDTO getRequest(Request request) {
-        logger.info("Entering getRequest with request={}", request);;
+        logger.info("Entering getRequest with request={}", request);
+        if (hasRoleInStore(request.getStoreId())) {
+            logger.error("Exception in getRequest: member already has role in store");
+            throw new IllegalStateException(Error.makeMemberUserAlreadyHasRoleError());
+        }
         notifes.put(request.getId(), request);
         logger.info("Exiting getRequest");
         return new RequestDTO(request);
@@ -263,7 +267,12 @@ public class Member extends IUser {
     }
     public void accept(int requestID,UserFacade userFacade) {
         logger.info("Entering accept with requestID={}", requestID);
-        notifes.get(requestID).accept(this,userFacade);
+        Notification notif = notifes.get(requestID);
+        if(notif.getStoreId() > 0 && hasRoleInStore(notif.getStoreId())){
+            notifes.remove(requestID);
+            throw new IllegalArgumentException("User already has role in store");
+        }
+        notif.accept(this,userFacade);
         notifes.remove(requestID);
         logger.info("Exiting accept");
     }

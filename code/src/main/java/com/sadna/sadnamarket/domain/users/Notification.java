@@ -54,6 +54,10 @@ public class Notification {
         logger.info("Exiting accept");
     }
 
+    public int getStoreId(){
+        return -1;
+    }
+
 
 
     @Override
