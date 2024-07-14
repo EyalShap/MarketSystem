@@ -11,7 +11,7 @@ import RestResponse from '../models/RestResponse';
 import PolicyDescriptionModel from '../models/PolicyDescriptionModel';
 import Permission from '../models/Permission';
 import { TiDelete } from "react-icons/ti";
-import { InfinitySpin } from 'react-loader-spinner';
+import { DNA, InfinitySpin } from 'react-loader-spinner';
 
 export const Store = () => {
     const {storeId} = useParams();
@@ -30,6 +30,8 @@ export const Store = () => {
     const [canRemoveBuyPolicy, setRemoveBuy] = useState(false)
     const [allCategs, setAllCategs] = useState<string[]>([])
     const [loading, setLoading] = useState(false);
+    const [loadingBuy, setLoadingBuy] = useState(false);
+    const [loadingDiscount, setLoadingDiscount] = useState(false);
 
   useEffect(()=>{
     loadStore();
@@ -57,10 +59,14 @@ export const Store = () => {
     let manager: boolean = await isManager(storeId!)
     setIsOwner(owner);
     setIsManager(manager);
+    setLoadingBuy(true);
+    setLoadingDiscount(true);
     setDiscountPolicies(await getStoreDiscounts(storeId!))
     setBuyPolicies(await getStorePolicies(storeId!))
     setRemoveBuy(await hasPermission(storeId!, Permission.REMOVE_BUY_POLICY))
+    setLoadingBuy(false);
     setRemoveDis(await hasPermission(storeId!, Permission.REMOVE_DISCOUNT_POLICY))
+    setLoadingDiscount(false);
     let allProducts: ProductModel[] = await searchAndFilterStoreProducts(storeId!, "", "", -1, -1);
     let categs: string[] = []
     let max: number = 0;
@@ -79,13 +85,17 @@ export const Store = () => {
   }
 
   const handleDeletePolicy = async (policyId: number) => {
+    setLoadingBuy(true);
     await removePolicyFromStore(parseInt(storeId!), policyId)
     setBuyPolicies(await getStorePolicies(storeId!))
+    setLoadingBuy(false);
   }
 
   const handleDeleteDiscount = async (policyId: number) => {
+    setLoadingDiscount(true);
     await removeDiscountFromStore(parseInt(storeId!), policyId)
     setDiscountPolicies(await getStoreDiscounts(storeId!))
+    setLoadingDiscount(false);
   }
 
   const handleInputChange = (event:any) => {
@@ -114,11 +124,13 @@ export const Store = () => {
             <div className="policies">
               <div className="listPolicies">
                 <h4>Purchase Policies:</h4>
+                {loadingBuy && <DNA width={100} />}
                 {buyPolicies.map(policy => <div className='policDiv'><p>{policy.description}</p>
                 {canRemoveBuyPolicy && <button className='removeButton' onClick = {() => handleDeletePolicy(policy.policyId)}><TiDelete /></button>}</div>)}
               </div>
               <div className="listPolicies">
                 <h4>Discount Policies:</h4>
+                {loadingDiscount && <DNA width={100} />}
                 {discountPolicies.map(policy => <div className='policDiv'><p>{policy.description}</p>
                 {canRemoveDisPolicy && <button className='removeButton' onClick={() => handleDeleteDiscount(policy.policyId)}><TiDelete /></button>}</div>)}
               </div>
