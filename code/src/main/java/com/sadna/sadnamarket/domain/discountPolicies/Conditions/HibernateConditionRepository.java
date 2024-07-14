@@ -5,6 +5,7 @@ import com.sadna.sadnamarket.HibernateUtil;
 import com.sadna.sadnamarket.domain.stores.Store;
 import com.sadna.sadnamarket.service.Error;
 import jakarta.persistence.QueryHint;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -21,6 +22,9 @@ public class HibernateConditionRepository implements IConditionRespository{
         try {
             findConditionByID(condId);
             return true;
+        }
+        catch (HibernateException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             return false;
@@ -48,6 +52,9 @@ public class HibernateConditionRepository implements IConditionRespository{
                 throw new IllegalArgumentException(Error.makeNoConditionWithIdExistError(condId));
             }
             return condition;
+        }
+        catch (Exception e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
     }
 
