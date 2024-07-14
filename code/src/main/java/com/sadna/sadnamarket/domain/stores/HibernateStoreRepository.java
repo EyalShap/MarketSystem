@@ -50,7 +50,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             List<Integer> res = session.createQuery( "select s.storeId from Store s" ).list();
             return new HashSet<>(res);
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
