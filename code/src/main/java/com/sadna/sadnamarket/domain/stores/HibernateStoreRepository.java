@@ -38,7 +38,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -87,7 +87,7 @@ public class HibernateStoreRepository implements IStoreRepository{
                 return createdStore.getStoreId();
             }
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -105,7 +105,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             findStoreByID(storeId);
             return true;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -146,7 +146,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.merge(store);
             session.getTransaction().commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -164,7 +164,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             getProductAmountInStore(storeId, productId);
             return true;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch(Exception e) {
@@ -182,7 +182,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             amountInStore = getProductAmountInStore(storeId, productId);
             return amountInStore >= amount;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -203,7 +203,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store.getProductAmounts().get(productId);
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -228,7 +228,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -258,7 +258,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.update(store);
             session.getTransaction().commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -284,7 +284,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store.getStoreDTO();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -299,7 +299,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             }
             return store.checkCart(cart);
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
     }
@@ -319,7 +319,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.getTransaction().commit();
             return errors;
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -338,11 +338,11 @@ public class HibernateStoreRepository implements IStoreRepository{
             Store res = session.createQuery("SELECT s FROM Store s where s.storeInfo.storeName = :name", Store.class).setParameter("name", storeName).getSingleResult();
             return res;
         }
-        catch (HibernateException e) {
-            throw new IllegalArgumentException(Error.makeDBError());
-        }
         catch (NoResultException e) {
             throw new IllegalArgumentException(Error.makeNoStoreWithNameError(storeName));
+        }
+        catch (PersistenceException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             throw new IllegalArgumentException(Error.makeDBError());
@@ -364,7 +364,7 @@ public class HibernateStoreRepository implements IStoreRepository{
             session.save(bankAccountDTO);
             session.getTransaction().commit();
         }
-        catch (HibernateException e) {
+        catch (PersistenceException e) {
             throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
@@ -385,11 +385,11 @@ public class HibernateStoreRepository implements IStoreRepository{
             BankAccountDTO bankAccountDTO = session.get(BankAccountDTO.class, storeId);
             return bankAccountDTO;
         }
-        catch (HibernateException e) {
-            throw new IllegalArgumentException(Error.makeDBError());
-        }
         catch (NoResultException e) {
             throw new IllegalArgumentException(Error.makeStoreDidNotSetBankAccountError(storeId));
+        }
+        catch (PersistenceException e) {
+            throw new IllegalArgumentException(Error.makeDBError());
         }
         catch (Exception e) {
             throw new IllegalArgumentException(Error.makeDBError());

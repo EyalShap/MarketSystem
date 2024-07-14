@@ -132,7 +132,7 @@ public class HibernateProductRepository implements IProductRepository{
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
-            throw new IllegalArgumentException("Database error", e);
+            throw new IllegalArgumentException(Error.makeDBError());
         }
     }
 
