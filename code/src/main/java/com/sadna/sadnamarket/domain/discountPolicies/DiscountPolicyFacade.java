@@ -244,7 +244,7 @@ public class DiscountPolicyFacade {
         if (!storeFacade.hasPermission(username, storeId, Permission.ADD_DISCOUNT_POLICY))
             throw new IllegalArgumentException(String.format(Error.makeStoreUserCannotAddDiscountPolicyError(username, storeId)));
         if(!discountPolicyRepository.discountPolicyExists(policyId))
-            throw new Exception();
+            throw new IllegalArgumentException(Error.makeNoDiscountWithIdExistError(policyId));
         if(!mapper.containsKey(storeId))
             mapper.put(storeId, discountPolicyRepository.createManager(this,storeId));
         DiscountPolicyManager manager = mapper.get(storeId);
