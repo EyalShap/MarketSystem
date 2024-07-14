@@ -13,7 +13,11 @@ const CowComponent = () => {
     let alive = await checkAlive();
     if(alive){
       dispatch(setFalse())
-      window.location.href = window.location.origin+"/";
+      if(window.location.href === window.location.origin+"/"){
+        window.location.reload()
+      }else{
+        window.location.href = window.location.origin+"/";
+      }
     }else{
       console.log("server still dead")
     }
