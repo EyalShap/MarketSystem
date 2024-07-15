@@ -360,8 +360,8 @@ public class HibernateStoreRepository implements IStoreRepository{
                 throw new IllegalArgumentException(Error.makeStoreNoStoreWithIdError(storeId));
             }
             store.setBankAccount(bankAccountDTO);
-            session.merge(store);
-            session.save(bankAccountDTO);
+            //session.merge(store);
+            session.saveOrUpdate(store.getBankAccount());
             session.getTransaction().commit();
         }
         catch (PersistenceException e) {
