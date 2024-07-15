@@ -42,6 +42,7 @@ public class AppConfiguration {
     @Bean
     @Profile("test")
     public MarketServiceTestAdapter memoryBridge(){
+        Config.read("testconfig.json");
         MarketServiceTestAdapter bridge = new MarketServiceTestAdapter();
         bridge.reset();
         return bridge;
