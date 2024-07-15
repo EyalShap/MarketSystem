@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import '../styles/cart.css';
 // Assuming these interfaces and functions are imported correctly
-import { viewMemberCart, viewGuestCart, changeProductAmountInCart, changeProductAmountInCartGuest, removeProductFromCart, removeProductFromCartGuest, checkCart, checkCartGuest, loginUsingJwt, isGuestExists } from '../API'; // Add necessary API functions
+import { viewMemberCart, viewGuestCart, changeProductAmountInCart, changeProductAmountInCartGuest, removeProductFromCart, removeProductFromCartGuest, checkCart, checkCartGuest, loginUsingJwt, isGuestExists, getProductAmount } from '../API'; // Add necessary API functions
 import cartModel from '../models/CartModel';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AppContext } from '../App';
@@ -15,7 +15,10 @@ const Cart = () => {
     const navigate = useNavigate();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [error, setError] = useState("");
-    const [showedError, setShowed] = useState(false)
+    const [showedError, setShowed] = useState(false);
+    const [productsMaxAmount, setProductsMaxAmount] = useState<{[id: string]: number}>({});
+
+    
 
     useEffect(() => {
         const checkLogin = async () => {
@@ -83,6 +86,12 @@ const Cart = () => {
             alert(res.errorString);
         }
         setCart(res as cartModel);
+        let productsAmountsDict: {[id: string]: number} = {};
+        for(const product of (res as cartModel).productsData){
+            let max = await getProductAmount(product.id, product.storeId);
+            productsAmountsDict[`${product.id}`] = max;
+        }
+        setProductsMaxAmount(productsAmountsDict);
     }catch(e: any){
         alert("Error occoured please try again later");
         navigate('/');
@@ -172,7 +181,7 @@ const Cart = () => {
                                     value={product.amount}
                                     onChange={(event) => handleQuantityChange(index, event)}
                                 >
-                                    {[...Array(10)].map((_, n) => (
+                                    {[...Array(productsMaxAmount[product.id])].map((_, n) => (
                                         <option key={n + 1} value={n + 1}>
                                             {n + 1}
                                         </option>
